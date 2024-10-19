@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\EmergencyCase;
+use App\Models\Patient;
 use Exception;
 
 class EmergencyCaseService
@@ -22,31 +23,22 @@ class EmergencyCaseService
 
     public function createCase($data)
     {
-        // Create patient if no exists
-        if($data['create_user']){
+        $patientID = $data['patient_id'];
+        
+        if($patientID == null)
+            $patientID = $this->createPatient($data);
+        
+        EmergencyCase::updateOrCreate([
+            'patient_id' => $patientID
+        ],
+        [
+            'cases' => json_encode($data['cases'])
+        ]);
 
-            // $this->createPatientIfNotExists($data['']);
-        }
-
-        // $newUser = User::create([
-            
-        //     "ci" => $data['ci'],
-        //     "name" => $data['name'],
-        //     "last_name" => $data['last_name'],
-        //     "email" => $data['email'],
-        //     "password" => Hash::make($data['ci']),
-        //     "phone_number" => $data['phone_number'],
-        //     "search" => $this->generateSearch($data),
-        // ]);
-
-        // $newUser->assignRole($data['role_name']);
-
-        // if($newUser->hasRole('doctor'))
-        //     $this->assignSpecialties($newUser,$data);
-
-        // return 0;
+        return 0;
 
     }
+
 
     public function updateUser($data, $user)
     {
@@ -85,24 +77,23 @@ class EmergencyCaseService
         return 0;
     }
 
-    private function assignSpecialties($user, $data)
-    {
+   private function createPatient($data){
+        $newPatient = Patient::create([
+            'ci' => $data['ci'],
+            'name' => $data['name'],
+            'last_name' => $data['last_name'],
+            'phone_number' => $data['phone_number'],
+            'search' => $this->generateSearch($data)      
+        ]);
 
-        if(!isset($data['specialties_ids']) || count($data['specialties_ids']) == 0 )
-            throw new Exception("El doctor debe tener alguna especialidad seleccionada", 401);
-        
-        $user->specialties()->sync($data['specialties_ids']);
-
-        return 0;
-            
-    }
+        return $newPatient->id;
+   }
 
     private function generateSearch($data)
     {
         $search = $data['ci'] . " "
                  .$data['name'] . " "
                  .$data['last_name'] . " "
-                 .$data['email'] . " "
                  .$data['phone_number'] . " ";
         
         return $search;

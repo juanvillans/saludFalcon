@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\EmergencyCaseService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 
 class EmergencyCaseController extends Controller
 {
@@ -20,31 +21,43 @@ class EmergencyCaseController extends Controller
     public function index(Request $request)
     {
         $this->params = [
-            'search' => $request->input('search'),
-            'page' => $request->input('page'),
-            'rows' => $request->input('rows'),
+            'search' => $request->input('search') ?? null,
+            'page' => $request->input('page') ?? null,
+            'rows' => $request->input('rows') ?? null,
         ];
 
         $emergencyCases = $this->emergencyCaseService->getCases($this->params);
 
-        return $emergencyCases;
+        return inertia('Dashboard/HistorialMedico',[
+            'data' => $emergencyCases
+        ]);
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+   
+   
     public function store(Request $request)
     {
-        //
+        DB::beginTransaction();
+
+        try 
+        {
+            $data = $request->all();
+
+            $this->emergencyCaseService->createCase($data);
+
+            DB::commit();
+
+            return redirect()->back()->with(['message' => 'Caso registrado con exito']);
+
+        }
+        catch (\Throwable $e)
+        {   
+            
+            DB::rollback();
+            
+            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+        }
     }
 
     /**
