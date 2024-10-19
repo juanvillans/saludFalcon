@@ -8,20 +8,14 @@
 
     const navPages = [
         {
-            icon: "uil:setting",
+            icon: "healthicons:doctor-male",
             href: "/admin/usuarios",
             name: "Usuarios",
         },
         {
             icon: "mdi:google-classroom",
-            href: "/admin/agenda",
-            name: "Agenda",
-        },
-
-        {
-            icon: "streamline:payment-10",
-            href: "/admin/pagos",
-            name: "Pagos",
+            href: "/admin/historial-medico",
+            name: "Historial Médico",
         },
         
     ];

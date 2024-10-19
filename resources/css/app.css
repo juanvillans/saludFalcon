@@ -185,8 +185,7 @@ h1 {
 }
 
 .btn_create {
-    padding: 10px;
-    padding-inline: 25px;
+  
     border-radius: 4px;
     background: var(--color4);
     font-weight: bold;
@@ -195,7 +194,13 @@ h1 {
     position: relative;
     z-index: 1;
 }
-
+@media (max-width: 350px) {
+    .btn_create {
+        bottom: 70px;
+        right: 20px;
+        position: fixed;
+    }
+}
 .btn_create:after {
     position: absolute;
     content: "";
