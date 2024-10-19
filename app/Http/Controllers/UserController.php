@@ -141,7 +141,7 @@ class UserController extends Controller
     {
         Auth::logout();
 
-        return redirect()->route('landpage');
+        return redirect()->route('login');
     }
 
     // public function changePassword(UpdatePasswordRequest $request)
