@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Resources\PatientResource;
 use App\Models\EmergencyCase;
 use App\Models\Patient;
 use Exception;
@@ -70,7 +71,7 @@ class EmergencyCaseService
         
         
         if(isset($patient->id))
-            return $patient;
+            return new PatientResource($patient);
         
         return null;
     }
