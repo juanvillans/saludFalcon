@@ -29,7 +29,8 @@ class EmergencyCaseController extends Controller
         $emergencyCases = $this->emergencyCaseService->getCases($this->params);
 
         return inertia('Dashboard/HistorialMedico',[
-            'data' => $emergencyCases
+            'data' => $emergencyCases,
+            'patient' => null,
         ]);
 
     }
