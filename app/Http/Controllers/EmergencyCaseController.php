@@ -72,7 +72,9 @@ class EmergencyCaseController extends Controller
         ];
 
         $patient = $this->emergencyCaseService->getPatientByCI($this->params);
-        return $patient;
+        return inertia('Dashboard/HistorialMedico',[
+            'patient' => $patient,
+        ]);
 
 
     }
