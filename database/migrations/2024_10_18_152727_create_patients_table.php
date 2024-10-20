@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string("name",50);
             $table->string("last_name",50);
             $table->string("phone_number",30)->nullable();
+            $table->string('sex');
+            $table->date('date_birth');
             $table->string('search');
             $table->timestamps();
         });

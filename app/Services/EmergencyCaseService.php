@@ -40,7 +40,7 @@ class EmergencyCaseService
     }
 
 
-    public function updateUser($data, $user)
+    public function updateCase($data, $user)
     {
 
         $user->update([
@@ -63,26 +63,24 @@ class EmergencyCaseService
 
     }
 
-    public function deleteUser($usuario)
-    {   
-        $authUserId = auth()->id();
-        $usuario->id == $authUserId ? throw new Exception("No puedes eliminar tu propio usuario", 401) : null;
+    public function getPatientByCI($param){
+        
+        $patient = Patient::where('ci',$param['ci'])->first();
 
-        $usuario->services()->delete();
-        $usuario->specialties()->detach();
-        $usuario->roles()->detach();
-
-        $usuario->delete();
-
-        return 0;
+        if(isset($patient->id))
+            return $patient;
+        
+        return null;
     }
 
    private function createPatient($data){
         $newPatient = Patient::create([
-            'ci' => $data['ci'],
-            'name' => $data['name'],
-            'last_name' => $data['last_name'],
-            'phone_number' => $data['phone_number'],
+            'ci' => $data['patient_ci'],
+            'name' => $data['patient_name'],
+            'last_name' => $data['patient_last_name'],
+            'phone_number' => $data['patient_phone_number'] ?? null,
+            'sex' => $data['patient_sex'],
+            'date_birth' => $data['patient_date_birth'],
             'search' => $this->generateSearch($data)      
         ]);
 

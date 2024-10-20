@@ -29,6 +29,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::get('/', [AppController::class, 'admin'])->name('admin');
     Route::resource('/usuarios', UserController::class)->middleware('role:admin');
     
+    Route::get('/patient', [EmergencyCaseController::class, 'patient'])->name('patient');
     Route::resource('/historial-medico', EmergencyCaseController::class);
 
     
