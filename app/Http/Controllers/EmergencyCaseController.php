@@ -72,7 +72,7 @@ class EmergencyCaseController extends Controller
         ];
 
         $patient = $this->emergencyCaseService->getPatientByCI($this->params);
-        return redirect('/admin/historial-medico')->with(['patient' => $patient]);
+        return $patient;
 
 
     }
