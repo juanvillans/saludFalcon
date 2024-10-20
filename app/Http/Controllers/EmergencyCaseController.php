@@ -30,7 +30,6 @@ class EmergencyCaseController extends Controller
 
         return inertia('Dashboard/HistorialMedico',[
             'data' => $emergencyCases,
-            'patient' => null,
         ]);
 
     }
@@ -73,10 +72,7 @@ class EmergencyCaseController extends Controller
         ];
 
         $patient = $this->emergencyCaseService->getPatientByCI($this->params);
-
-        return inertia('Dashboard/HistorialMedico',[
-            'patient' => $patient
-        ]);
+        return redirect('/admin/historial-medico')->with(['patient' => $patient]);
 
 
     }
