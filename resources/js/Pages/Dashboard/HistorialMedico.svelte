@@ -9,16 +9,19 @@
 
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, inertia, router, page } from "@inertiajs/svelte";
-    export let data = {
- 
-    };
-    data = JSON.parse(data)
-    data.data.forEach(patient => {
-        patient.cases = JSON.parse(patient.cases)
-    });
+    export let data = {};
+    // console.log(data.data[0].cases)
+
+    $: if (data) {
+        if (data?.data?.[0]?.cases instanceof Array == false) {
+            data.data.forEach((patient) => {
+                patient.cases = JSON.parse(patient.cases);
+            });
+        }
+    }
+    console.log({data})
     let instituteSpecialities = [];
     let specialities = [];
-    $: console.log({data});
     // Update data based on the current state of `data.specialties`
     const today = new Date();
 
@@ -51,13 +54,14 @@
             end_time: formattedTime,
             treatment: "",
             diagnosis: "",
+            status: "Alta",
         },
     };
     let form = useForm(structuredClone(emptyDataForm));
     // $: console.log({ $form });
 
     // console.log($form.newCase.diagnosis);
-    let visulizateType = "table"
+    let visulizateType = "table";
     let showModal = false;
     // $: console.log($form);
     let selectedRow = { status: false, id: 0 };
@@ -70,7 +74,12 @@
 
     function handleSubmit(event) {
         event.preventDefault();
-        $form.cases = [...$form.cases, $form.newCase];
+        if ($form.cases.length == 0) {
+            $form.cases = [$form.newCase]
+        } else {
+            console.log($form.cases)
+            $form.cases = [$form.newCase, ...$form.cases];
+        }
         $form.clearErrors();
         console.log(emptyDataForm);
         if (submitStatus == "Crear") {
@@ -79,7 +88,8 @@
                     if (errors.data) {
                         displayAlert({ type: "error", message: errors.data });
                     }
-                    $form.cases = $form.cases.props()
+                    
+                   $form.cases.shift();
                 },
                 onSuccess: (mensaje) => {
                     // $form.defaults()
@@ -174,7 +184,7 @@
         hours = hours % 12 || 12; // Converts 0 to 12 for midnight
 
         // Format minutes to always show two digits
-        minutes = minutes < 10 ? "0" + minutes : minutes;
+        minutes = minutes <= 10 ? "0" + minutes : minutes;
 
         // Return the formatted time
         return `${hours}:${minutes} ${suffix}`;
@@ -191,6 +201,31 @@
         const formattedDate = date.toLocaleDateString("es-ES", options);
 
         return formattedDate;
+    }
+
+    function timeBetweenDateAndTime(startDate, startTime, endDate, endTime, status) {
+        // Combine date and time strings into a single Date object
+        if (status == "Permanencia") {
+            const now = new Date(); // Get the current date and time
+        endDate = now.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+        endTime = now.toTimeString().split(' ')[0].substring(0, 5); // Format to HH:mm
+        }
+        console.log(startDate, startTime, endDate, endTime, status)
+        const startDateTime = new Date(`${startDate}T${startTime}`);
+        const endDateTime = new Date(`${endDate}T${endTime}`);
+
+        const diffInMs = endDateTime - startDateTime; // Difference in milliseconds
+        const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+        const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+        const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+        if (diffInDays > 0) {
+            return `${diffInDays} Dia${diffInDays > 1 ? "s" : ""}`;
+        } else if (diffInHours > 0) {
+            return `${diffInHours} Hora${diffInHours > 1 ? "s" : ""}`;
+        } else {
+            return `${diffInMinutes} Minuto${diffInMinutes > 1 ? "s" : ""}`;
+        }
     }
 </script>
 
@@ -346,18 +381,32 @@
             />
 
             <Input
-                type="date"
-                label={"Fecha de salida "}
-                bind:value={$form.newCase.end_date}
-                error={$form.errors?.newCase?.end_date}
-            />
-            <Input
-                type="time"
+                type="select"
                 required={true}
-                label={"Hora de salida *"}
-                bind:value={$form.newCase.end_time}
-                error={$form.errors?.newCase?.end_time}
-            />
+                label={"Estado *"}
+                bind:value={$form.newCase.status}
+                error={$form.errors?.newCase?.status}
+            >
+                <option value="Alta">Alta</option>
+                <option value="Permanencia">Permanencia</option>
+                <option value="Remitido">Remitido</option>
+                <option value="Fallecido">Fallecido</option>
+            </Input>
+            {#if $form.newCase.status !== "Permanencia"}
+                <Input
+                    type="date"
+                    label={"Fecha de salida "}
+                    bind:value={$form.newCase.end_date}
+                    error={$form.errors?.newCase?.end_date}
+                />
+                <Input
+                    type="time"
+                    required={true}
+                    label={"Hora de salida *"}
+                    bind:value={$form.newCase.end_time}
+                    error={$form.errors?.newCase?.end_time}
+                />
+            {/if}
         </fieldset>
     </form>
     <input
@@ -394,8 +443,9 @@
             submitStatus = "Crear";
         }}
     >
-        <span class="md:hidden  relative top-1 font-bold" 
-            ><iconify-icon icon="ic:round-add" style="font-size: 20px;"></iconify-icon></span
+        <span class="md:hidden relative top-1 font-bold"
+            ><iconify-icon icon="ic:round-add" style="font-size: 20px;"
+            ></iconify-icon></span
         >
         <span class="hidden md:block"> Nuevo caso </span>
     </button>
@@ -413,7 +463,8 @@
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
             <th>N°</th>
-            <th>Fecha de entrada</th>
+            <th>Duración</th>
+            <th>Estado</th>
             <th>Paciente</th>
             <th>Diagnóstico</th>
             <th>Tratamiento</th>
@@ -422,66 +473,146 @@
     </thead>
 
     <tbody slot="tbody">
-        {#each data?.data as row, i (row.id)}
-            <tr
-                on:click={(e) => {
-                    // let newSelectedRowStatus = !selectedRow.status;
-                    if (row.id != selectedRow.id) {
-                        selectedRow = {
-                            status: true,
-                            id: row.id,
-                            title: row.title,
-                        };
-                        $form.defaults({
-                            ...row,
-                            specialties_ids: row.specialties.map(
-                                (obj) => obj.id,
-                            ),
-                        });
-                        $form.clearErrors();
-                    } else {
-                        selectedRow = {
-                            status: false,
-                            id: 0,
-                            title: "",
-                        };
-                        $form.defaults({
-                            ...emptyDataForm,
-                        });
-                    }
-                }}
-                class={`md:max-h-[200px] overflow-hidden cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
-            >
-                <td>{i + 1}</td>
-                <td
-                    >{formatDateSpanish(row.cases[0].start_date)}
-                    <span class="opacity-60">-</span>
-                    {convertTo12HourFormat(row.cases[0].start_time)}
-                </td>
-                <td class="">
-                    <div class="flex items-center gap-2">
-                        {#if row.patient_sex == "Femenino"}
-                            <span class="text-pink text-2xl">
-                                <iconify-icon icon="fa-solid:female"
-                                ></iconify-icon>
-                            </span>
-                        {:else}
-                            <span class="text-color3 text-2xl">
-                                <iconify-icon icon="fa-solid:male"
-                                ></iconify-icon>
-                            </span>
-                        {/if}
-                        <span
-                            >{row.patient_name}
-                            {row.patient_last_name}
-                            - {row.patient_ci}
-                        </span>
-                    </div>
-                </td>
-                <td
-                    class="max-w-[340px] min-w-[320px] max-h-[100px] overflow-hidden"
-                    style="white-space: normal;"
+        {#if data?.data?.length > 0}
+            {#each data?.data as row, i (row.id)}
+                <tr
+                    on:click={(e) => {
+                        // let newSelectedRowStatus = !selectedRow.status;
+                        if (row.id != selectedRow.id) {
+                            selectedRow = {
+                                status: true,
+                                id: row.id,
+                                title: row.title,
+                            };
+                            $form.defaults({
+                                ...row,
+                                specialties_ids: row.specialties.map(
+                                    (obj) => obj.id,
+                                ),
+                            });
+                            $form.clearErrors();
+                        } else {
+                            selectedRow = {
+                                status: false,
+                                id: 0,
+                                title: "",
+                            };
+                            $form.defaults({
+                                ...emptyDataForm,
+                            });
+                        }
+                    }}
+                    class={`md:max-h-[200px] overflow-hidden cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
                 >
+                    <td>{i + 1}</td>
+                    <td>
+                        {timeBetweenDateAndTime(
+                            row.cases[0].start_date,
+                            row.cases[0].start_time,
+                            row.cases[0].end_date,
+                            row.cases[0].end_time,
+                            row.cases[0].status,
+                        )}
+
+                        <!-- {formatDateSpanish(row.cases[0].start_date)} -->
+                    </td>
+                    <td>
+                        {row.cases[0].status}
+                    </td>
+                    <td class="">
+                        <div class="flex items-center gap-2">
+                            {#if row.patient_sex == "Femenino"}
+                                <span class="text-pink text-2xl">
+                                    <iconify-icon icon="fa-solid:female"
+                                    ></iconify-icon>
+                                </span>
+                            {:else}
+                                <span class="text-color3 text-2xl">
+                                    <iconify-icon icon="fa-solid:male"
+                                    ></iconify-icon>
+                                </span>
+                            {/if}
+                            <span
+                                >{row.patient_name}
+                                {row.patient_last_name}
+                                - {row.patient_ci}
+                            </span>
+                        </div>
+                    </td>
+                    <td
+                        class="max-w-[340px] min-w-[320px] max-h-[100px] overflow-hidden"
+                        style="white-space: normal;"
+                    >
+                        {#if row.cases[0].diagnosis.length > 240}
+                            {row.cases[0].diagnosis.slice(0, 240)}
+                            <span
+                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                >...</span
+                            >
+                        {:else}
+                            {row.cases[0].diagnosis}
+                        {/if}
+                    </td>
+                    <!-- <td>{row.sex}</td> -->
+                    <td
+                        class="max-w-[340px] min-w-[320px] max-h-[100px] overflow-hidden"
+                        style="white-space: normal;"
+                    >
+                        {#if row.cases[0].treatment.length > 240}
+                            {row.cases[0].treatment.slice(0, 240)}
+                            <span
+                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                >...</span
+                            >
+                        {:else}
+                            {row.cases[0].treatment}
+                        {/if}
+                    </td>
+                    <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
+                    <td>
+                        {row.cases[0].doctor.name}
+                        {row.cases[0].doctor.last_name}
+                    </td>
+                </tr>
+            {/each}
+        {/if}
+    </tbody>
+</Table>
+
+{#if visulizateType == "card"}
+    <div class="grid gap-3">
+        {#each data?.data as row, i (row.id)}
+            <article
+                class={`w-full cursor-pointer bg-gray-50 p-2 md:p-5 rounded-md shadow-sm ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
+            >
+                <div class="flex justify-between bg-g">
+                    <span>{i + 1}</span>
+                    <p>
+                        {formatDateSpanish(row.cases[0].start_date)}
+                        <span class="opacity-60">-</span>
+                        {convertTo12HourFormat(row.cases[0].start_time)}
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    {#if row.patient_sex == "Femenino"}
+                        <span class="text-pink text-2xl">
+                            <iconify-icon icon="fa-solid:female"></iconify-icon>
+                        </span>
+                    {:else}
+                        <span class="text-color3 text-2xl">
+                            <iconify-icon icon="fa-solid:male"></iconify-icon>
+                        </span>
+                    {/if}
+                    <span
+                        >{row.patient_name}
+                        {row.patient_last_name}
+                        - {row.patient_ci}
+                    </span>
+                </div>
+
+                <p>
+                    <b>Diag.:</b>
                     {#if row.cases[0].diagnosis.length > 240}
                         {row.cases[0].diagnosis.slice(0, 240)}
                         <span
@@ -491,12 +622,10 @@
                     {:else}
                         {row.cases[0].diagnosis}
                     {/if}
-                </td>
+                </p>
                 <!-- <td>{row.sex}</td> -->
-                <td
-                    class="max-w-[340px] min-w-[320px] max-h-[100px] overflow-hidden"
-                    style="white-space: normal;"
-                >
+                <p class="my-2">
+                    <b>Trat.:</b>
                     {#if row.cases[0].treatment.length > 240}
                         {row.cases[0].treatment.slice(0, 240)}
                         <span
@@ -506,85 +635,20 @@
                     {:else}
                         {row.cases[0].treatment}
                     {/if}
-                </td>
+                </p>
                 <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
-                <td>
+                <p
+                    class="text-right justify-end w-full flex items-center gap-2"
+                >
                     {row.cases[0].doctor.name}
                     {row.cases[0].doctor.last_name}
-                </td>
-            </tr>
+                    <iconify-icon icon="mdi:doctor" style="font-size: 20px;"
+                    ></iconify-icon>
+                </p>
+            </article>
         {/each}
-    </tbody>
-</Table>
-
-{#if (visulizateType == "card")}
-<div class="grid gap-3">
-    {#each data?.data as row, i (row.id)}
-        <article
-            
-            class={`w-full cursor-pointer bg-gray-50 p-2 md:p-5 rounded-md shadow-sm ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
-        >
-        <div class="flex justify-between bg-g">
-
-            <span>{i + 1}</span>
-            <p>
-                {formatDateSpanish(row.cases[0].start_date)}
-                <span class="opacity-60">-</span>
-                {convertTo12HourFormat(row.cases[0].start_time)}
-            </p>
-        </div>
-
-            <div class="flex items-center gap-2">
-                {#if row.patient_sex == "Femenino"}
-                    <span class="text-pink text-2xl">
-                        <iconify-icon icon="fa-solid:female"></iconify-icon>
-                    </span>
-                {:else}
-                    <span class="text-color3 text-2xl">
-                        <iconify-icon icon="fa-solid:male"></iconify-icon>
-                    </span>
-                {/if}
-                <span
-                    >{row.patient_name}
-                    {row.patient_last_name}
-                    - {row.patient_ci}
-                </span>
-            </div>
-
-            <p>
-                <b>Diag.:</b>
-                {#if row.cases[0].diagnosis.length > 240}
-                    {row.cases[0].diagnosis.slice(0, 240)}
-                    <span
-                        class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                        >...</span
-                    >
-                {:else}
-                    {row.cases[0].diagnosis}
-                {/if}
-            </p>
-            <!-- <td>{row.sex}</td> -->
-            <p class="my-2">
-                <b>Trat.:</b>
-                {#if row.cases[0].treatment.length > 240}
-                    {row.cases[0].treatment.slice(0, 240)}
-                    <span
-                        class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                        >...</span
-                    >
-                {:else}
-                    {row.cases[0].treatment}
-                {/if}
-            </p>
-            <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
-            <p class="text-right justify-end w-full flex items-center gap-2">
-                {row.cases[0].doctor.name}
-                {row.cases[0].doctor.last_name}
-                <iconify-icon icon="mdi:doctor" style="font-size: 20px;"></iconify-icon>
-            </p>
-        </article>
-    {/each}
-</div>
+    </div>
 {/if}
+
 <style>
 </style>

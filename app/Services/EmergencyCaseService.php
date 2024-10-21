@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Resources\CaseCollection;
 use App\Http\Resources\PatientResource;
 use App\Models\EmergencyCase;
 use App\Models\Patient;
@@ -18,8 +19,8 @@ class EmergencyCaseService
         })
         ->with('patient')
         ->paginate($params['rows'] ?? 25, ['*'], 'page', $params['page']);
-
-        return $cases;
+        
+        return new CaseCollection($cases);
     }
 
     public function createCase($data)
