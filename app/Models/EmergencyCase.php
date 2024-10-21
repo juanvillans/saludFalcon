@@ -12,7 +12,8 @@ class EmergencyCase extends Model
 
     protected $fillable = [
         'patient_id',
-        'cases'
+        'cases',
+        'current_status',
     ];
 
     public function patient(){

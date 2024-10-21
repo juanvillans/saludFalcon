@@ -34,7 +34,8 @@ class EmergencyCaseService
             'patient_id' => $patientID
         ],
         [
-            'cases' => json_encode($data['cases'])
+            'cases' => json_encode($data['cases']),
+            'current_status' => $data['current_status'],
         ]);
 
         return 0;
