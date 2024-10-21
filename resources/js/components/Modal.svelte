@@ -1,40 +1,51 @@
 <script>
+    import { onMount } from "svelte";
+
     export let showModal = false; // Ensure default value is set
     export let onClose; // callback function
     export let modalClasses = "";
     let dialog; // HTMLDialogElement
 
+    onMount(() => {
+        window.addEventListener("popstate", () => {
+            showModal = false;
+        });
+    });
     // Show modal when showModal is true
     $: if (dialog && showModal) dialog.showModal();
 </script>
 
 {#if showModal}
-<dialog
-    bind:this={dialog}
-    on:close={() => {
-        showModal = false; // Close modal
-        if (onClose) onClose(); // Call the onClose callback
-    }}
-    on:click|self={() => dialog.close()}
-    class={`p-5 pb-2 rounded-xl min-w-[300px] ${modalClasses}`}
->
-    <div on:click|stopPropagation>
-        <slot name="header" />
-        <hr class="mt-3" />
-        <slot />
-        <hr class="my-4" />
-        <div class="flex justify-between gap-12">
-            <button class="text-gray-400" on:click={() => dialog.close()}>Cancelar</button>
-            <slot name="btn_footer" />
+    <dialog
+        bind:this={dialog}
+        on:close={() => {
+            showModal = false; // Close modal
+            if (onClose) onClose(); // Call the onClose callback
+        }}
+        on:click|self={() => dialog.close()}
+        class={`p-0 rounded-xl min-w-[300px] ${modalClasses}`}
+    >
+        <div class="p-6 pb-5" on:click|stopPropagation>
+            <slot name="header" />
+            <hr class="mt-3" />
+            <slot />
+            <hr class="my-4" />
+            <div class="flex justify-between gap-12">
+                <button class="text-gray-400" on:click={() => dialog.close()}
+                    >Cancelar</button
+                >
+                <slot name="btn_footer" />
+            </div>
         </div>
-    </div>
-</dialog>
+    </dialog>
 {/if}
 
 <style>
     dialog {
         width: fit-content;
+        z-index: 20 !important;
         border: none;
+        padding: none !important;
     }
     dialog::backdrop {
         background: rgba(0, 0, 0, 0.3);
@@ -66,6 +77,6 @@
         display: block;
     }
     hr {
-        opacity: .2;
+        opacity: 0.2;
     }
 </style>

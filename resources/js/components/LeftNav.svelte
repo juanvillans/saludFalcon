@@ -13,17 +13,18 @@
             name: "Usuarios",
         },
         {
-            icon: "mdi:google-classroom",
+            icon: "icon-park-outline:history-query",
             href: "/admin/historial-medico",
             name: "Historial Médico",
         },
         
     ];
+
 </script>
 
 <nav
-    on:mouseenter={() => toggleMenu()}
-    on:mouseleave={() => toggleMenu()}
+    on:mouseenter={toggleMenu}
+    on:mouseleave={toggleMenu}
     class="left_nav flex md:block items-center bg-color1 text-white h-full relative rounded-3xl overflow-hidden"
 >
     <!-- <button on:click={() => toggleMenu()} class="hidden md:block burger_icon  items-center pt-1  text-center text-2xl text-gray-300 hover:text-color4 bg-color2 bg-opacity-20 ">
@@ -43,12 +44,12 @@
                 <a
                     href={navPage.href}
                     use:inertia
-                    class="hover:text-color4 whitespace-nowrap z-10 rounded-md flex md:gap-2 items-center p-2 max-h-9 h-9"
+                    class="hover:text-color4 whitespace-nowrap z-10 rounded-md flex gap-1 md:gap-2 items-center p-2 max-h-9 h-9"
                     class:active={$page.url.startsWith(navPage.href)}
                     ><iconify-icon
-                        class="text-xlc md:text-lg"
+                        class="text-xl md:text-lg"
                         icon={navPage.icon}
-                    /><span class="label_link hidden md:block"
+                    /><span class:hidden={!$page.url.startsWith(navPage.href)} class="label_link text-xs md:text-base md:block"
                         >{navPage.name}
                     </span>
                    
@@ -60,8 +61,9 @@
 
 <style>
     .active {
-        background: #6595bf;
+        background-color: #6595bf;
         border-radius: 6px;
         font-weight: bold;
+        color: white;
     }
 </style>

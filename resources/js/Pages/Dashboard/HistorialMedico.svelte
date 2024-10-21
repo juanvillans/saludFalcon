@@ -6,51 +6,60 @@
     import debounce from "lodash/debounce";
 
     // import Alert from "../../components/Alert.svelte";
-    import Especialidades from "../../components/Especialidades.svelte";
-    import { displayAlert } from "../../stores/alertStore";
-    import { useForm, inertia } from "@inertiajs/svelte";
-    export let data = [];
 
+    import { displayAlert } from "../../stores/alertStore";
+    import { useForm, inertia, router, page } from "@inertiajs/svelte";
+    export let data = {
+ 
+    };
+    data = JSON.parse(data)
+    data.data.forEach(patient => {
+        patient.cases = JSON.parse(patient.cases)
+    });
     let instituteSpecialities = [];
     let specialities = [];
-    $: console.log(data);
-
-    $: if (data) {
-        UpdateData();
-    }
-
+    $: console.log({data});
     // Update data based on the current state of `data.specialties`
-    function UpdateData() {
-        instituteSpecialities = [];
-        specialities = [];
+    const today = new Date();
 
-        for (let i = 0; i < data.specialties.length; i++) {
-            const speciality = data.specialties[i];
-            if (speciality.status == 1) {
-                instituteSpecialities.push(speciality);
-            } else {
-                specialities.push(speciality);
-            }
-        }
-    }
+    // Format the date to YYYY-MM-DD
+    const formattedDate = today.toISOString().split("T")[0];
+
+    const hours = String(today.getHours()).padStart(2, "0");
+    const minutes = String(today.getMinutes()).padStart(2, "0");
+    const formattedTime = `${hours}:${minutes}`;
+
     const emptyDataForm = {
-        ci: "",
-        name: "",
-        last_name: "",
-        email: "",
-        phone_number: "",
-        role_name: "",
-        specialties: [],
-        specialties_ids: [],
+        patient_id: null,
+        patient_name: "",
+        patient_last_name: "",
+        patient_ci: "",
+        patient_sex: "",
+        patient_date_birth: "",
+        patient_phone_number: "",
+
+        cases: [],
+        newCase: {
+            doctor: {
+                id: $page.props.auth.user_id,
+                name: $page.props.auth.name,
+                last_name: $page.props.auth.last_name,
+            },
+            start_date: formattedDate,
+            end_date: formattedDate,
+            start_time: formattedTime,
+            end_time: formattedTime,
+            treatment: "",
+            diagnosis: "",
+        },
     };
+    let form = useForm(structuredClone(emptyDataForm));
+    // $: console.log({ $form });
 
-    let form = useForm({
-        ...emptyDataForm,
-    });
-
-
+    // console.log($form.newCase.diagnosis);
+    let visulizateType = "table"
     let showModal = false;
-    $: showModalCreateSpecialties = false;
+    // $: console.log($form);
     let selectedRow = { status: false, id: 0 };
 
     document.addEventListener("keydown", ({ key }) => {
@@ -61,25 +70,30 @@
 
     function handleSubmit(event) {
         event.preventDefault();
+        $form.cases = [...$form.cases, $form.newCase];
         $form.clearErrors();
+        console.log(emptyDataForm);
         if (submitStatus == "Crear") {
-            $form.post("/admin/usuarios", {
+            $form.post("/admin/historial-medico", {
                 onError: (errors) => {
                     if (errors.data) {
                         displayAlert({ type: "error", message: errors.data });
                     }
+                    $form.cases = $form.cases.props()
                 },
                 onSuccess: (mensaje) => {
+                    // $form.defaults()
                     $form.reset();
+                    $form.newCase = { ...emptyDataForm.newCase };
                     displayAlert({
                         type: "success",
-                        message: "Ok todo salió bien",
+                        message: "Nuevo Caso creado con exito",
                     });
                     showModal = false;
                 },
             });
         } else if (submitStatus == "Editar") {
-            $form.put(`/admin/usuarios/${$form.id}`, {
+            $form.put(`/admin/historial-medico/${$form.id}`, {
                 onError: (errors) => {
                     if (errors.data) {
                         displayAlert({ type: "error", message: errors.data });
@@ -89,7 +103,7 @@
                     $form.reset();
                     displayAlert({
                         type: "success",
-                        message: "Ok todo salió bien",
+                        message: "Nuevo Caso creado con exito",
                     });
                     showModal = false;
                     selectedRow = { status: false, id: 0, row: {} };
@@ -98,9 +112,8 @@
         }
     }
 
-
     function handleDelete(id) {
-        $form.delete(`/admin/usuarios/${id}`, {
+        $form.delete(`/admin/historial-medico/${id}`, {
             onBefore: () => confirm(`¿Está seguro de eliminar a este usuario?`),
             onError: (errors) => {
                 if (errors.data) {
@@ -123,145 +136,229 @@
         showModal = true;
     }
 
-    let submitStatus = "Crear";
-    let selectSpecialityModal = false;
-    let filteredSpecialities = [];
+    function searchPatient(ci) {
+        router.get(
+            "/admin/patient",
+            { ci },
+            {
+                onSuccess: (page) => {
+                    showModal = true;
+                    if (page.props.patient == null) {
+                        displayAlert({
+                            type: "error",
+                            message: "No se encontró,",
+                        });
 
-    $: if ($form.specialties) {
-        filteredSpecialities = instituteSpecialities.filter(
-            (obj) =>
-                !$form.specialties.some((speci) => speci.id == obj.id),
+                        return;
+                    }
+                    $form = { ...$form, ...page.props.patient.data };
+                },
+                onFinish: (visit) => {
+                    console.log(visit);
+                    prosecingSearchPatient = false;
+                },
+            },
         );
+    }
+    let submitStatus = "Crear";
+    let prosecingSearchPatient = false;
+
+    function convertTo12HourFormat(time24) {
+        // Split the input into hours and minutes
+        let [hours, minutes] = time24.split(":").map(Number);
+
+        // Determine AM or PM suffix
+        const suffix = hours >= 12 ? "PM" : "AM";
+
+        // Convert hours to 12-hour format
+        hours = hours % 12 || 12; // Converts 0 to 12 for midnight
+
+        // Format minutes to always show two digits
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+
+        // Return the formatted time
+        return `${hours}:${minutes} ${suffix}`;
+    }
+
+    function formatDateSpanish(dateString) {
+        const options = {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        };
+
+        const date = new Date(dateString);
+        const formattedDate = date.toLocaleDateString("es-ES", options);
+
+        return formattedDate;
     }
 </script>
 
 <svelte:head>
-    <title>Usuarios</title>
+    <title>Historial médico</title>
 </svelte:head>
 
-<Modal
-    showModal={selectSpecialityModal}
-    onClose={() => {
-        selectSpecialityModal = false;
-    }}
->
-    <ul>
-        {#each filteredSpecialities as speciality (speciality.id)}
-            <li>
-                <button
-                    class="rounded-full mb-1 px-3 py-1 hover:bg-color3 bg-color4"
-                    on:click={() => {
-                        $form.specialties = [
-                            ...$form.specialties,
-                            speciality,
-                        ];
-                        $form.specialties_ids = [
-                            ...$form.specialties_ids,
-                            speciality.id,
-                        ];
-                    }}>{speciality.name}</button
-                >
-            </li>
-        {/each}
-    </ul>
-</Modal>
-
 <Modal bind:showModal modalClasses={"max-w-[560px]"}>
-    <form
-        id="a-form"
-        on:submit={handleSubmit}
-        action=""
-        class="w-full px-5 mt-4 md:grid md:grid-cols-2 gap-x-5 p-6 pt-2 rounded-md"
-    >
-        <div class="mt-4 col-span-2">
-            <div class="flex justify-between items-center">
-                <span>Especialidades:</span>
+    <p slot="header">Registrar un nuevo caso</p>
+    <form id="a-form" on:submit={handleSubmit} action="">
+        <fieldset
+            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+        >
+            <legend
+                class="text-center px-5 py-1 pt-1.5 rounded-sm bg-color2 text-gray-100"
+                >DATOS DEL PACIENTE</legend
+            >
+            <div class="flex gap-1 items-end">
+                <Input
+                    type="number"
+                    required={true}
+                    label={"C.I *"}
+                    bind:value={$form.patient_ci}
+                    error={$form.errors?.patient_ci}
+                />
                 <button
                     type="button"
+                    title="Buscar si el paciente existe"
+                    class="bg-color4 h-fit px-2 rounded hover:bg-color1 hover:text-white"
                     on:click={() => {
-                        selectSpecialityModal = true;
+                        prosecingSearchPatient = true;
+                        searchPatient($form.patient_ci);
                     }}
-                    for="date1"
-                    class="ml-2 inline-block cursor-pointer text-color2 font-bold py-2 px-3 rounded bg-color2 bg-opacity-10 hover:bg-opacity-20 mt-3"
-                    ><iconify-icon class="mr-1 relative top-0.5" icon="gala:add"
-                    ></iconify-icon>Añadir Especialidad</button
                 >
+                    {#if prosecingSearchPatient == true}
+                        <iconify-icon
+                            class="mt-2 text-2xl"
+                            icon="eos-icons:bubble-loading"
+                        ></iconify-icon>
+                    {:else}
+                        <iconify-icon
+                            class="mt-2 text-2xl"
+                            icon="material-symbols:search"
+                        ></iconify-icon>
+                    {/if}
+                </button>
             </div>
-            <ul class="flex flex-wrap gap-x-2">
-                {#each $form.specialties as speciality (speciality.id)}
-                    <li>
-                        <span
-                            class="rounded-full text-black inline-block px-3 py-2 mt-2 bg-color4"
-                        >
-                            {speciality.name}
-                            <button
-                                on:click={(e) => {
-                                    $form.specialties =
-                                        $form.specialties.filter(
-                                            (v, i) => v.id != speciality.id,
-                                        );
-                                    $form.specialties_ids =
-                                        $form.specialties_ids.filter(
-                                            (v, i) => v != speciality.id,
-                                        );
-                                }}
-                                type="button"
-                                class="cursor-pointer hover:font-bold ml-1 hover:text-white aspect-square w-5 hover:bg-color1 rounded-full"
-                                title="Quitar especialidad"
-                            >
-                                <iconify-icon
-                                    class="relative top-1"
-                                    icon="ic:outline-close"
-                                ></iconify-icon>
-                            </button>
-                        </span>
-                    </li>
-                {/each}
-            </ul>
-        </div>
-        <Input
-            type="text"
-            required={true}
-            label={"Nombres"}
-            bind:value={$form.name}
-            error={$form.errors?.name}
-        />
-        <Input
-            type="text"
-            required={true}
-            label={"Apellidos"}
-            bind:value={$form.last_name}
-            error={$form.errors?.last_name}
-        />
-        <Input
-            type="email"
-            label="correo"
-            bind:value={$form.email}
-            error={$form.errors?.email}
-        />
-        <Input
-            type="number"
-            required={true}
-            label={"Cédula"}
-            bind:value={$form.ci}
-            error={$form.errors?.ci}
-        />
-        <Input
-            type="tel"
-            label={"Teléfono"}
-            bind:value={$form.phone_number}
-            error={$form.errors?.phone_number}
-        />
-        <Input
-            type="select"
-            required={true}
-            label={"Tipo de Usuario"}
-            bind:value={$form.role_name}
-            error={$form.errors?.role_name}
+            <Input
+                type="text"
+                required={true}
+                label={"Nombres del paciente *"}
+                bind:value={$form.patient_name}
+                error={$form.errors?.patient_name}
+            />
+            <Input
+                type="text"
+                required={true}
+                label={"Apellidos del paciente *"}
+                bind:value={$form.patient_last_name}
+                error={$form.errors?.patient_last_name}
+            />
+
+            <Input
+                type="date"
+                required={true}
+                label={"Fecha de Nacimiento*"}
+                bind:value={$form.patient_date_birth}
+                error={$form.errors?.patient_date_birth}
+            />
+            <div class="flex flex-col mt-6">
+                <label class="py-1 cursor-pointer hover:bg-gray-100">
+                    <input
+                        class="mr-3 inline-block"
+                        type="radio"
+                        bind:group={$form.patient_sex}
+                        value="Masculino"
+                        name="sex"
+                        id=""
+                    /><span class:font-bold={$form.patient_sex == "Masculino"}
+                        >Masculino</span
+                    >
+                </label>
+
+                <label class="py-1 cursor-pointer hover:bg-gray-100">
+                    <input
+                        class="mr-3 inline-block"
+                        type="radio"
+                        bind:group={$form.patient_sex}
+                        value="Femenino"
+                        name="sex"
+                        id=""
+                    /><span class:font-bold={$form.patient_sex == "Femenino"}
+                        >Femenino</span
+                    >
+                </label>
+            </div>
+
+            <Input
+                type="tel"
+                label={"Teléfono"}
+                bind:value={$form.patient_date_birth}
+                error={$form.errors?.patient_date_birth}
+            />
+        </fieldset>
+
+        <fieldset
+            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
         >
-            <option value="doctor">Doctor</option>
-            <option value="admin">Admin</option>
-        </Input>
+            <legend
+                class="text-center px-5 py-1 pt-1.5 rounded-sm bg-color2 text-gray-100"
+                >DIAGNÓSTICO Y TRATAMIENTO</legend
+            >
+            <Input
+                type="textarea"
+                required={true}
+                classes={"col-span-2"}
+                label={"Diagnóstico *"}
+                bind:value={$form.newCase.diagnosis}
+                error={$form?.errors?.newCase?.diagnosis}
+            />
+
+            <Input
+                type="textarea"
+                required={true}
+                classes={"col-span-2"}
+                label={"Tratamiento *"}
+                bind:value={$form.newCase.treatment}
+                error={$form.errors?.newCase?.treatment}
+            />
+        </fieldset>
+
+        <fieldset
+            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+        >
+            <legend
+                class="text-center px-5 py-1 pt-1.5 rounded-sm bg-color2 text-gray-100"
+                >DURACIÓN DE LA EMERGENCIA</legend
+            >
+            <Input
+                type="date"
+                required={true}
+                label={"Fecha de entrada *"}
+                bind:value={$form.newCase.start_date}
+                error={$form.errors?.newCase?.start_date}
+            />
+
+            <Input
+                type="time"
+                required={true}
+                label={"Hora de entrada *"}
+                bind:value={$form.newCase.start_time}
+                error={$form.errors?.newCase?.start_time}
+            />
+
+            <Input
+                type="date"
+                label={"Fecha de salida "}
+                bind:value={$form.newCase.end_date}
+                error={$form.errors?.newCase?.end_date}
+            />
+            <Input
+                type="time"
+                required={true}
+                label={"Hora de salida *"}
+                bind:value={$form.newCase.end_time}
+                error={$form.errors?.newCase?.end_time}
+            />
+        </fieldset>
     </form>
     <input
         form="a-form"
@@ -272,47 +369,38 @@
     />
 </Modal>
 
-<Modal bind:showModal={showModalCreateSpecialties}>
-    <Especialidades {instituteSpecialities} {specialities} {data} />
-</Modal>
-
 <div class="flex justify-between items-center">
     <button
-    class="btn_create inline-block p-2 px-3 "
-    on:click={(e) => {
-        if (submitStatus == "Editar") {
-            selectedRow = {
-                status: false,
-                id: 0,
-                title: "",
-            };
-            // console.log(emptyDataForm)
+        class="btn_create inline-block p-1 px-2 md:p-2 md:px-3"
+        on:click={(e) => {
+            if (submitStatus == "Editar") {
+                selectedRow = {
+                    status: false,
+                    id: 0,
+                    title: "",
+                };
+                // console.log(emptyDataForm)
 
-            $form.defaults({
-                ...emptyDataForm,
-            });
-            setTimeout(() => {
-                $form.reset();
-            }, 100);
-        }
-        e.preventDefault();
+                $form.defaults({
+                    ...emptyDataForm,
+                });
+                setTimeout(() => {
+                    $form.reset();
+                }, 100);
+            }
+            e.preventDefault();
 
-        showModal = true;
-        submitStatus = "Crear";
-    }}>
-    <span class="md:hidden text-4xl relative top-1 font-bold "><iconify-icon icon="ic:round-add"></iconify-icon></span>
-    <span class="hidden md:block">
-        Nuevo caso
-    </span>
-</button>
-    <!-- svelte-ignore missing-declaration -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <a
-        class="cursor-pointer border-b py-2 px-3 hover:bg-color4"
-        on:click={() => (showModalCreateSpecialties = true)}
-        >Especialidades de la institución</a
+            showModal = true;
+            submitStatus = "Crear";
+        }}
     >
+        <span class="md:hidden  relative top-1 font-bold" 
+            ><iconify-icon icon="ic:round-add" style="font-size: 20px;"></iconify-icon></span
+        >
+        <span class="hidden md:block"> Nuevo caso </span>
+    </button>
 </div>
+
 <Table
     {selectedRow}
     on:fillFormToEdit={fillFormToEdit}
@@ -325,17 +413,16 @@
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
             <th>N°</th>
-            <th>Nombres</th>
-            <th>Apellidos</th>
-            <th>C.I</th>
-            <th>Correo</th>
-            <th>Tel</th>
-            <th>Especialidad</th>
+            <th>Fecha de entrada</th>
+            <th>Paciente</th>
+            <th>Diagnóstico</th>
+            <th>Tratamiento</th>
+            <th>Doctor</th>
         </tr>
     </thead>
 
     <tbody slot="tbody">
-        {#each data.users.data as row, i}
+        {#each data?.data as row, i (row.id)}
             <tr
                 on:click={(e) => {
                     // let newSelectedRowStatus = !selectedRow.status;
@@ -363,28 +450,141 @@
                         });
                     }
                 }}
-                class={`cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
+                class={`md:max-h-[200px] overflow-hidden cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
             >
                 <td>{i + 1}</td>
-                <td>{row.name}</td>
-                <td>{row.last_name}</td>
-                <td>{row.ci}</td>
-                <td>{row.email}</td>
-                <!-- <td>{row.sex}</td> -->
-                <td>{row.phone_number}</td>
-                <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
-                <td class="flex gap-3"
-                    >{#if row.specialties.length != 0}
-                        {#each row.specialties as specialty (specialty.id)}
-                            <span class="px-3 py-1 rounded-full bg-gray-100">
-                                {specialty.name + " "}
+                <td
+                    >{formatDateSpanish(row.cases[0].start_date)}
+                    <span class="opacity-60">-</span>
+                    {convertTo12HourFormat(row.cases[0].start_time)}
+                </td>
+                <td class="">
+                    <div class="flex items-center gap-2">
+                        {#if row.patient_sex == "Femenino"}
+                            <span class="text-pink text-2xl">
+                                <iconify-icon icon="fa-solid:female"
+                                ></iconify-icon>
                             </span>
-                        {/each}
+                        {:else}
+                            <span class="text-color3 text-2xl">
+                                <iconify-icon icon="fa-solid:male"
+                                ></iconify-icon>
+                            </span>
+                        {/if}
+                        <span
+                            >{row.patient_name}
+                            {row.patient_last_name}
+                            - {row.patient_ci}
+                        </span>
+                    </div>
+                </td>
+                <td
+                    class="max-w-[340px] min-w-[320px] max-h-[100px] overflow-hidden"
+                    style="white-space: normal;"
+                >
+                    {#if row.cases[0].diagnosis.length > 240}
+                        {row.cases[0].diagnosis.slice(0, 240)}
+                        <span
+                            class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                            >...</span
+                        >
                     {:else}
-                        <span class="opacity-60">No tiene</span>
+                        {row.cases[0].diagnosis}
                     {/if}
+                </td>
+                <!-- <td>{row.sex}</td> -->
+                <td
+                    class="max-w-[340px] min-w-[320px] max-h-[100px] overflow-hidden"
+                    style="white-space: normal;"
+                >
+                    {#if row.cases[0].treatment.length > 240}
+                        {row.cases[0].treatment.slice(0, 240)}
+                        <span
+                            class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                            >...</span
+                        >
+                    {:else}
+                        {row.cases[0].treatment}
+                    {/if}
+                </td>
+                <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
+                <td>
+                    {row.cases[0].doctor.name}
+                    {row.cases[0].doctor.last_name}
                 </td>
             </tr>
         {/each}
     </tbody>
 </Table>
+
+{#if (visulizateType == "card")}
+<div class="grid gap-3">
+    {#each data?.data as row, i (row.id)}
+        <article
+            
+            class={`w-full cursor-pointer bg-gray-50 p-2 md:p-5 rounded-md shadow-sm ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
+        >
+        <div class="flex justify-between bg-g">
+
+            <span>{i + 1}</span>
+            <p>
+                {formatDateSpanish(row.cases[0].start_date)}
+                <span class="opacity-60">-</span>
+                {convertTo12HourFormat(row.cases[0].start_time)}
+            </p>
+        </div>
+
+            <div class="flex items-center gap-2">
+                {#if row.patient_sex == "Femenino"}
+                    <span class="text-pink text-2xl">
+                        <iconify-icon icon="fa-solid:female"></iconify-icon>
+                    </span>
+                {:else}
+                    <span class="text-color3 text-2xl">
+                        <iconify-icon icon="fa-solid:male"></iconify-icon>
+                    </span>
+                {/if}
+                <span
+                    >{row.patient_name}
+                    {row.patient_last_name}
+                    - {row.patient_ci}
+                </span>
+            </div>
+
+            <p>
+                <b>Diag.:</b>
+                {#if row.cases[0].diagnosis.length > 240}
+                    {row.cases[0].diagnosis.slice(0, 240)}
+                    <span
+                        class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                        >...</span
+                    >
+                {:else}
+                    {row.cases[0].diagnosis}
+                {/if}
+            </p>
+            <!-- <td>{row.sex}</td> -->
+            <p class="my-2">
+                <b>Trat.:</b>
+                {#if row.cases[0].treatment.length > 240}
+                    {row.cases[0].treatment.slice(0, 240)}
+                    <span
+                        class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                        >...</span
+                    >
+                {:else}
+                    {row.cases[0].treatment}
+                {/if}
+            </p>
+            <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
+            <p class="text-right justify-end w-full flex items-center gap-2">
+                {row.cases[0].doctor.name}
+                {row.cases[0].doctor.last_name}
+                <iconify-icon icon="mdi:doctor" style="font-size: 20px;"></iconify-icon>
+            </p>
+        </article>
+    {/each}
+</div>
+{/if}
+<style>
+</style>

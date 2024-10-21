@@ -88,11 +88,11 @@
             </div>
             {#if userNav}
                 <div
-                    class="absolute rounded-md flex items-center flex-col bg-color1 w-full z-50 px-3 top-10 -left-10 rounded-tr-none text-gray-100"
+                    class="absolute rounded-md min-w-[120px] flex items-center flex-col bg-color1 w-full z-50 px-3 top-10 -right-0 rounded-tr-none text-gray-100"
                 >
                     <a
                         href="/admin/logout"
-                        class="p-2 cursor-pointer hover:underline hover:text-gray-50 inline-block"
+                        class="p-2 w-full cursor-pointer hover:underline hover:text-gray-50 inline-block whitespace-nowrap"
                         >Cerrar sesión</a
                     >
                     <!-- <button on:click={authHandlers.logout} class="p-4 flex items-center text-rigth w-full justify-end hover:text-green4 gap-2 hover:font-bold hover:underline" >Cerrar sesión <iconify-icon icon="solar:logout-line-duotone" class="text-xl"></iconify-icon></button> -->

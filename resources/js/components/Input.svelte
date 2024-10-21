@@ -73,7 +73,7 @@
     <label for={label} class={` w-full text-gray-900 ${theme == "dark" ? "bg-color1 text-gray-100" : ''} ${labelClasses}`} {placeholder}>{label}</label>
     <div class="relative w-full parent_div">
         {#if type === "textarea"}
-            <textarea bind:value id={label} rows="1"></textarea>
+            <textarea  class={`mb-1.5 overflow-y-auto bg-gray-200 w-full p-3 py-4`} bind:value id={label} ></textarea>
         {:else if type === "select"}
                 
                 

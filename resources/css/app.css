@@ -3,9 +3,12 @@
 @tailwind utilities;
 /* @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap'); */
 
-* {
+*:not(iconify-icon) {
     font-family: "Figtree", sans-serif;
     /* color: #e4e4e4; */
+}
+*:not(iconify-icon) {
+    font-size: 12px;
 }
 
 :root {
@@ -62,9 +65,17 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
+@media (min-width: 550px) {
+    *:not(iconify-icon) {
+
+        font-size: 14px;
+    }
+}
 @media (min-width: 750px) {
     /* … */
-
+    *:not(iconify-icon) {
+        font-size: 16px;
+    }
     .main_and_footer_container::-webkit-scrollbar {
         width: 12px; /* width of the entire scrollbar */
     }
@@ -186,15 +197,15 @@ h1 {
 
 .btn_create {
   
-    border-radius: 4px;
+    border-radius: 8px;
     background: var(--color4);
     font-weight: bold;
     color: var(--color1);
-    box-shadow: 0 2px 10px 0px rgba(0, 0, 0, 0.253);
+    /* box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.075); */
     position: relative;
     z-index: 1;
 }
-@media (max-width: 350px) {
+@media (max-width: 450px) {
     .btn_create {
         bottom: 70px;
         right: 20px;
@@ -252,4 +263,9 @@ progress::-webkit-progress-bar {
 progress::-webkit-progress-value {
     border-radius: 10px 0 0 10px;
     background-color: rgb(88, 88, 88);
+}
+@media (min-width: 768px) {
+    *:not(iconify-icon) {
+        font-size: 17px;
+    }
 }

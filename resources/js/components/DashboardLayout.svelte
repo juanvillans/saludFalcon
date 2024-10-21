@@ -14,9 +14,12 @@
         // mainWidth = `width:${screenWidth}%`
         screenWidth =  window.innerWidth 
         // $: mainWidth = main.offsetWidth;
-        // if (screenWidth > 768) {
+        if (screenWidth > 768) {
             mainWidth =`width:${screenWidth - $navStatus.navWidth-20}px`
-        // }
+        } else {
+            mainWidth =`width:${screenWidth - 20}px`
+
+        }
     }
 
     onMount(() => {
@@ -31,12 +34,12 @@
     //   <div class="alert">{$page.props.flash.message}</div>
     // }
 </script>
-<Alert />
 
 <svelte:head>
-
+    
 </svelte:head>
 <div class="bg-gray-700 h-screen">
+    <Alert />
 
     <section class="bg-gray-200 h-full  dashboard_container p-2 rounded-2xl" class:menuStatus-false={$navStatus.isContracted}>
         

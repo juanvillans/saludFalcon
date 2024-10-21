@@ -27,7 +27,7 @@
 </script>
 
 <section class="w-full">
-    <div class="mt-6 md:flex md:items-center md:justify-between">
+    <div class=" md:flex md:items-center md:justify-between">
         <div class="flex gap-2 md:gap-7">
             <div
                 class="inline-flex overflow-hidden bg-gray-200 border border-dark border-opacity-30 divide-x divide-gray-300 rounded-lg rtl:flex-row-reverse"
