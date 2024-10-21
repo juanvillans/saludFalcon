@@ -67,7 +67,7 @@ class EmergencyCaseService
     public function getPatientByCI($param){
         
         
-        $patient = Patient::where('ci',$param['ci'])->first();
+        $patient = Patient::where('ci',$param['ci'])->with('emergencyCase')->first();
         
         
         if(isset($patient->id))
