@@ -22,6 +22,7 @@ class CaseResource extends JsonResource
                 'patient_phone_number' => $this->patient->phone_number,
                 'patient_sex' => $this->patient->sex,
                 'patient_date_birth' => $this->patient->date_birth,
+                'current_status' => $this->current_status,
                 'cases' => $this->cases,
         ];
     }

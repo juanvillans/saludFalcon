@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('patient_id');
             $table->json('cases');
+            $table->string('current_status');
             $table->timestamps();
         });
     }
