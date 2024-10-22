@@ -245,10 +245,10 @@
                 return "#397373";
                 break;
             case "Fallecido":
-                return "#397373";
+                return "#BF0404";
                 break;
             case "Remitido":
-                return "#BF0404";
+                return "#6a1ccd";
                 break;
             default:
                 break;
@@ -353,8 +353,8 @@
             <Input
                 type="tel"
                 label={"Teléfono"}
-                bind:value={$form.patient_date_birth}
-                error={$form.errors?.patient_date_birth}
+                bind:value={$form.patient_phone_number}
+                error={$form.errors?.patient_phone_number}
             />
         </fieldset>
 
@@ -414,10 +414,10 @@
                 bind:value={$form.newCase.status}
                 error={$form.errors?.newCase?.status}
             >
-                <option value="Alta">Alta</option>
-                <option value="Permanencia">Permanencia</option>
-                <option value="Remitido">Remitido</option>
-                <option value="Fallecido">Fallecido</option>
+                <option value="Alta"> <span class="block p-1 text-white" style={`background-color: ${getStatusColor("Alta")};`}>  </span> Alta </option>
+                <option value="Permanencia"> <span class="block p-1 text-white" style={`background-color: ${getStatusColor("Permanencia")};`}> </span> Permanencia </option>
+                <option value="Remitido"> <span class="block p-1 text-white" style={`background-color: ${getStatusColor("Remitido")};`}> </span> Remitido </option>
+                <option value="Fallecido"> <span class="block p-1 text-white" style={`background-color: ${getStatusColor("Fallecido")};`}> </span> Fallecido </option>
             </Input>
             {#if $form.newCase.status !== "Permanencia"}
                 <Input
