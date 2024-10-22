@@ -15,7 +15,10 @@ class EmergencyCaseService
         $cases = EmergencyCase::query()
         ->when($params['search'] ?? null, function($query, $search){
             
-            $query->where('search','like','%' . $search . '%');
+            $query->whereHas('patient', function ($query) use ($search){
+                
+                $query->where('search','like','%' . $search . '%');
+            });
         })
         ->with('patient')
         ->paginate($params['rows'] ?? 25, ['*'], 'page', $params['page']);
@@ -29,38 +32,16 @@ class EmergencyCaseService
         
         if($patientID == null)
             $patientID = $this->createPatient($data);
-        
+
+        $lastCase = $data['cases'][0];
+
         EmergencyCase::updateOrCreate([
             'patient_id' => $patientID
         ],
         [
             'cases' => json_encode($data['cases']),
-            'current_status' => $data['current_status'],
+            'current_status' => $lastCase['status'],
         ]);
-
-        return 0;
-
-    }
-
-
-    public function updateCase($data, $user)
-    {
-
-        $user->update([
-            
-            "ci" => $data['ci'],
-            "name" => $data['name'],
-            "last_name" => $data['last_name'],
-            "email" => $data['email'],
-            "search" => $this->generateSearch($data),
-        ]);
-
-        method_exists($user, 'revokeRoles') ? $user->revokeRoles(): null;
-        
-        $user->assignRole($data['role_name']);
-
-        if($user->hasRole('doctor'))
-            $this->assignSpecialties($user,$data);
 
         return 0;
 
@@ -69,7 +50,7 @@ class EmergencyCaseService
     public function getPatientByCI($param){
         
         
-        $patient = Patient::where('ci',$param['ci'])->with('emergencyCase')->first();
+        $patient = Patient::where('ci',$param['patient_ci'])->with('emergencyCase')->first();
         
         
         if(isset($patient->id))
@@ -94,10 +75,10 @@ class EmergencyCaseService
 
     private function generateSearch($data)
     {
-        $search = $data['ci'] . " "
-                 .$data['name'] . " "
-                 .$data['last_name'] . " "
-                 .$data['phone_number'] . " ";
+        $search = $data['patient_ci'] . " "
+                 .$data['patient_name'] . " "
+                 .$data['patient_last_name'] . " "
+                 .$data['patient_phone_number'] . " ";
         
         return $search;
     }
