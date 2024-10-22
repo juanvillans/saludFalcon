@@ -534,11 +534,11 @@
                     <td>{i + 1}</td>
                     <td>
                         {timeBetweenDateAndTime(
-                            row.cases[0].start_date,
-                            row.cases[0].start_time,
-                            row.cases[0].end_date,
-                            row.cases[0].end_time,
-                            row.cases[0].status,
+                            row.cases?.[0]?.start_date,
+                            row.cases?.[0]?.start_time,
+                            row.cases?.[0]?.end_date,
+                            row.cases?.[0]?.end_time,
+                            row.cases?.[0]?.status,
                         )}
 
                         <!-- {formatDateSpanish(row.cases[0].start_date)} -->
