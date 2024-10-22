@@ -32,7 +32,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::get('/historial-medico',[EmergencyCaseController::class,'index']);
     Route::post('/historial-medico',[EmergencyCaseController::class,'store']);
 
-    Route::get('/historial-medico/detalle-paciente',[EmergencyCaseController::class,'patientDetail']);
+    Route::get('/historial-medico/detalle-paciente/{patient}',[EmergencyCaseController::class,'patientDetail']);
     Route::put('/historial-medico/detalle-paciente/{patientID}',[EmergencyCaseController::class,'patientDetail']);
 
 

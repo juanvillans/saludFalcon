@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PatientResource;
+use App\Models\Patient;
 use App\Services\EmergencyCaseService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -63,8 +65,13 @@ class EmergencyCaseController extends Controller
         }
     }
 
-    public function patientDetail(Request $request){
-        return inertia('Dashboard/PatientDetail');
+    public function patientDetail(Request $request, Patient $patient){
+
+        $patient->load('emergencyCase');
+
+        return inertia('Dashboard/PatientDetail',[
+            'patient' => new PatientResource($patient)
+        ]);
     }
 
     public function update(Request $request, string $id)
