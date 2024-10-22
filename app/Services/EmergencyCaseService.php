@@ -60,6 +60,7 @@ class EmergencyCaseService
     }
 
    private function createPatient($data){
+
         $newPatient = Patient::create([
             'ci' => $data['patient_ci'],
             'name' => $data['patient_name'],
@@ -69,6 +70,8 @@ class EmergencyCaseService
             'date_birth' => $data['patient_date_birth'],
             'search' => $this->generateSearch($data)      
         ]);
+
+        dd('hola');
 
         return $newPatient->id;
    }

@@ -63,6 +63,10 @@ class EmergencyCaseController extends Controller
         }
     }
 
+    public function patientDetail(Request $request){
+        return inertia('Dashboard/PatientDetail');
+    }
+
     public function update(Request $request, string $id)
     {
         

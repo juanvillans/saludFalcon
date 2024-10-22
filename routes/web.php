@@ -28,8 +28,13 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 {
     Route::get('/', [AppController::class, 'admin'])->name('admin');
     Route::resource('/usuarios', UserController::class)->middleware('role:admin');
-    
-    Route::resource('/historial-medico', EmergencyCaseController::class);
+
+    Route::get('/historial-medico',[EmergencyCaseController::class,'index']);
+    Route::post('/historial-medico',[EmergencyCaseController::class,'store']);
+
+    Route::get('/historial-medico/detalle-paciente',[EmergencyCaseController::class,'patientDetail']);
+    Route::put('/historial-medico/detalle-paciente/{patientID}',[EmergencyCaseController::class,'patientDetail']);
+
 
     
 });
