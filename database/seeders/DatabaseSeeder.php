@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             SpecialtySeeder::class,
             UserSeeder::class,
-            PatientSeeder::class,
+            AreaSeeder::class,
         ]);
     }
 

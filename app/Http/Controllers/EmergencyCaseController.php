@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\PatientResource;
+use App\Models\Area;
 use App\Models\Patient;
 use App\Services\EmergencyCaseService;
 use Illuminate\Http\Request;
@@ -31,10 +32,12 @@ class EmergencyCaseController extends Controller
 
         $emergencyCases = $this->emergencyCaseService->getCases($this->params);
         $patient = $this->emergencyCaseService->getPatientByCI($this->params);
-
+        $areas = Area::all();
+        
         return inertia('Dashboard/HistorialMedico',[
             'data' => $emergencyCases,
             'patient' => $patient,
+            'areas' => $areas,
         ]);
 
     }

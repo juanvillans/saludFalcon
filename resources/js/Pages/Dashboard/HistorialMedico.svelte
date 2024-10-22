@@ -10,6 +10,7 @@
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, inertia, router, page } from "@inertiajs/svelte";
     export let data = {};
+
     // console.log(data.data[0].cases)
 
     $: if (data) {
