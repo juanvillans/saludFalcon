@@ -10,7 +10,7 @@
     export let filtersOptions = [];
     export let selectedRow;
     export let serverSideData = {};
-    export let pagination = true;
+    export let pagination = false;
 
     let filterClientData = {
         ...serverSideData.filters,
@@ -19,11 +19,16 @@
 
     const handleFilters = () => {
         router.get(`${$page.url}`, filterClientData);
-    }
-    
+    };
+
     const handleSearch = debounce((event) => {
         router.get(`${$page.url}`, filterClientData);
     }, 300);
+    let perPage = 0;
+    if (pagination) {
+        perPage = pagination.per_page
+    }
+    console.log(pagination);
 </script>
 
 <section class="w-full">
@@ -44,15 +49,17 @@
                     Todos
                 </button> -->
                 {#each Object.entries(filtersOptions) as [filterKey, filterOption]}
-                    {#each filterOption as filter ,i}
+                    {#each filterOption as filter, i}
                         <button
                             on:click={(e) => {
                                 filterClientData[filterKey] = filter.id;
                                 handleFilters();
                             }}
                             class="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-100"
-                            class:bg-gray-50={serverSideData.filters[filterKey] ==
-                                filter.id ||( i == 0 && !filterClientData[filterKey])}
+                            class:bg-gray-50={serverSideData.filters[
+                                filterKey
+                            ] == filter.id ||
+                                (i == 0 && !filterClientData[filterKey])}
                         >
                             {filter.name}
                         </button>
@@ -141,62 +148,77 @@
     {#if pagination}
         <!-- Pagination ---------------------------------------------------------------------------------------------- -->
         <div class="mt-2 sm:flex sm:items-center sm:justify-between">
+            
             <div class="text-sm text-gray-500">
-                Page <span class="font-medium text-gray-700"
-                    >{serverSideData.current_page} of {serverSideData.last_page}</span
-                >
+                Mostrando 
+                <select bind:value={perPage} name="" id="" on:change={(e) => console.log(e.target.value)}>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                </select>
+                de  <b> {pagination.total}</b> Registros  y {pagination.last_page} páginas
             </div>
-
             <!-- pagination buttons -->
             <div class="flex items-center mt-4 gap-x-4 sm:mt-0">
-                <a
-                    use:inertia
-                    href={serverSideData.prev_page_url}
-                    class="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 disabled:cursor-not-allowed
-                    white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100"
-                    disabled={serverSideData.prev_page_url == null}
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="w-5 h-5 rtl:-scale-x-100"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
-                        />
-                    </svg>
+                {#each pagination.links as link, i (link.label)}
+                    {#if i == 0}
+                        <a
+                            use:inertia
+                            href={pagination.prev}
+                            class={`flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 ${pagination.prev == null ? "opacity-50 cursor-not-allowed" : ""}`}
+                            disabled={pagination.prev == null}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
+                                class="w-5 h-5 rtl:-scale-x-100"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
+                                />
+                            </svg>
 
-                    <span> previous </span>
-                </a>
+                            <span> Anterior </span>
+                        </a>
+                    {:else if i == pagination.links.length - 1}
+                        <a
+                            use:inertia
+                            href={pagination.next}
+                            class={`flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 ${pagination.next == null ? "opacity-50 cursor-not-allowed" : ""}`}
+                            disabled={pagination.next == null}
+                        >
+                            <span> Siguiente </span>
 
-                <a
-                    use:inertia
-                    href={serverSideData.next_page_url}
-                    class="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100"
-                    disabled={serverSideData.next_page_url == null}
-                >
-                    <span> Next </span>
-
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="w-5 h-5 rtl:-scale-x-100"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
-                        />
-                    </svg>
-                </a>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
+                                class="w-5 h-5 rtl:-scale-x-100"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
+                                />
+                            </svg>
+                        </a>
+                    {:else}
+                        <a
+                            use:inertia
+                            class="aspect-square border p-1 bg-gray-50 px-4 flex items-center rounded cursor-pointer"
+                            href={link.url}
+                            class:active={link.active}>{link.label}</a
+                        >
+                    {/if}
+                {/each}
             </div>
         </div>
     {/if}
@@ -225,5 +247,8 @@
     }
     .scroll-table::-webkit-scrollbar-corner {
         background: rgba(0, 0, 0, 0.5);
+    }
+    a.active {
+        background-color: #c9ebf2;
     }
 </style>

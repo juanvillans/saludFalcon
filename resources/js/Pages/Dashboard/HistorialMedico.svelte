@@ -14,12 +14,12 @@
 
     $: if (data) {
         if (data?.data?.[0]?.cases instanceof Array == false) {
-            data.data.forEach((patient) => {
+            data?.data?.forEach((patient) => {
                 patient.cases = JSON.parse(patient.cases);
             });
         }
     }
-    console.log({data})
+    console.log({ data });
     let instituteSpecialities = [];
     let specialities = [];
     // Update data based on the current state of `data.specialties`
@@ -75,9 +75,9 @@
     function handleSubmit(event) {
         event.preventDefault();
         if ($form.cases.length == 0) {
-            $form.cases = [$form.newCase]
+            $form.cases = [$form.newCase];
         } else {
-            console.log($form.cases)
+            console.log($form.cases);
             $form.cases = [$form.newCase, ...$form.cases];
         }
         $form.clearErrors();
@@ -88,8 +88,8 @@
                     if (errors.data) {
                         displayAlert({ type: "error", message: errors.data });
                     }
-                    
-                   $form.cases.shift();
+
+                    $form.cases.shift();
                 },
                 onSuccess: (mensaje) => {
                     // $form.defaults()
@@ -151,6 +151,8 @@
             "/admin/patient",
             { ci },
             {
+                replace: true,
+                preserveState: true,
                 onSuccess: (page) => {
                     showModal = true;
                     if (page.props.patient == null) {
@@ -203,14 +205,20 @@
         return formattedDate;
     }
 
-    function timeBetweenDateAndTime(startDate, startTime, endDate, endTime, status) {
+    function timeBetweenDateAndTime(
+        startDate,
+        startTime,
+        endDate,
+        endTime,
+        status,
+    ) {
         // Combine date and time strings into a single Date object
         if (status == "Permanencia") {
             const now = new Date(); // Get the current date and time
-        endDate = now.toISOString().split('T')[0]; // Format to YYYY-MM-DD
-        endTime = now.toTimeString().split(' ')[0].substring(0, 5); // Format to HH:mm
+            endDate = now.toISOString().split("T")[0]; // Format to YYYY-MM-DD
+            endTime = now.toTimeString().split(" ")[0].substring(0, 5); // Format to HH:mm
         }
-        console.log(startDate, startTime, endDate, endTime, status)
+        console.log(startDate, startTime, endDate, endTime, status);
         const startDateTime = new Date(`${startDate}T${startTime}`);
         const endDateTime = new Date(`${endDate}T${endTime}`);
 
@@ -225,6 +233,25 @@
             return `${diffInHours} Hora${diffInHours > 1 ? "s" : ""}`;
         } else {
             return `${diffInMinutes} Minuto${diffInMinutes > 1 ? "s" : ""}`;
+        }
+    }
+
+    function getStatusColor(status) {
+        switch (status) {
+            case "Permanencia":
+                return "#F3BA2F";
+                break;
+            case "Alta":
+                return "#397373";
+                break;
+            case "Fallecido":
+                return "#397373";
+                break;
+            case "Remitido":
+                return "#BF0404";
+                break;
+            default:
+                break;
         }
     }
 </script>
@@ -457,7 +484,7 @@
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.id);
     }}
-    pagination={false}
+    pagination={{...data?.meta, ...data.links}}
 >
     <div slot="filterBox"></div>
     <thead slot="thead" class="sticky top-0 z-50">
@@ -517,7 +544,12 @@
                         <!-- {formatDateSpanish(row.cases[0].start_date)} -->
                     </td>
                     <td>
-                        {row.cases[0].status}
+                        <span
+                            class={`block px-1 py-0.5 rounded-md`}
+                            style={`background-color: ${getStatusColor(row.cases[0].status)};`}
+                        >
+                            {row.cases[0].status}
+                        </span>
                     </td>
                     <td class="">
                         <div class="flex items-center gap-2">

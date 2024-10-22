@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import Alert from "./Alert.svelte";
 
     export let showModal = false; // Ensure default value is set
     export let onClose; // callback function
@@ -25,6 +26,7 @@
         on:click|self={() => dialog.close()}
         class={`p-0 rounded-xl min-w-[300px] ${modalClasses}`}
     >
+    <Alert/>
         <div class="p-6 pb-5" on:click|stopPropagation>
             <slot name="header" />
             <hr class="mt-3" />
