@@ -548,7 +548,7 @@
                             class={`block px-1 py-0.5 rounded-md`}
                             style={`background-color: ${getStatusColor(row.cases[0].status)};`}
                         >
-                            {row.cases[0].status}
+                            {row.cases?.[0]?.status}
                         </span>
                     </td>
                     <td class="">
@@ -575,14 +575,14 @@
                         class="max-w-[340px] min-w-[320px] max-h-[100px] overflow-hidden"
                         style="white-space: normal;"
                     >
-                        {#if row.cases[0].diagnosis.length > 240}
-                            {row.cases[0].diagnosis.slice(0, 240)}
+                        {#if row.cases?.[0]?.diagnosis.length > 240}
+                            {row.cases?.[0]?.diagnosis.slice(0, 240)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
                         {:else}
-                            {row.cases[0].diagnosis}
+                            {row.cases?.[0]?.diagnosis}
                         {/if}
                     </td>
                     <!-- <td>{row.sex}</td> -->
@@ -590,20 +590,20 @@
                         class="max-w-[340px] min-w-[320px] max-h-[100px] overflow-hidden"
                         style="white-space: normal;"
                     >
-                        {#if row.cases[0].treatment.length > 240}
-                            {row.cases[0].treatment.slice(0, 240)}
+                        {#if row.cases?.[0]?.treatment.length > 240}
+                            {row.cases?.[0]?.treatment.slice(0, 240)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
                         {:else}
-                            {row.cases[0].treatment}
+                            {row.cases?.[0]?.treatment}
                         {/if}
                     </td>
                     <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
                     <td>
-                        {row.cases[0].doctor.name}
-                        {row.cases[0].doctor.last_name}
+                        {row.cases?.[0]?.doctor.name}
+                        {row.cases?.[0]?.doctor.last_name}
                     </td>
                 </tr>
             {/each}
