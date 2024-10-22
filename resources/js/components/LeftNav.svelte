@@ -25,7 +25,7 @@
 <nav
     on:mouseenter={toggleMenu}
     on:mouseleave={toggleMenu}
-    class="left_nav flex md:block items-center bg-color1 text-white h-full relative rounded-3xl overflow-hidden"
+    class="left_nav flex md:block items-center bg-color1 text-white h-14 md:h-full relative top-2 md:top-0 rounded-3xl overflow-hidden"
 >
     <!-- <button on:click={() => toggleMenu()} class="hidden md:block burger_icon  items-center pt-1  text-center text-2xl text-gray-300 hover:text-color4 bg-color2 bg-opacity-20 ">
     

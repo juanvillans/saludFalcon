@@ -16,7 +16,7 @@
         ...serverSideData.filters,
     };
     // $: $form, handleFilters()
-
+    console.log(serverSideData)
     const handleFilters = () => {
         router.get(`${$page.url}`, filterClientData);
     };

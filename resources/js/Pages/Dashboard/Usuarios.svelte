@@ -174,7 +174,7 @@
         id="a-form"
         on:submit={handleSubmit}
         action=""
-        class="w-full px-5 mt-4 md:grid md:grid-cols-2 gap-x-5 p-6 pt-2 rounded-md"
+        class="w-full px-5 mt-2 md:grid md:grid-cols-2 gap-x-5 p-6 pt-0 rounded-md"
     >
         <div class="mt-4 col-span-2">
             <div class="flex justify-between items-center">

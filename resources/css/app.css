@@ -14,10 +14,10 @@
 :root {
     --black: #000000;
     --dark: #161616;
-    --color1: #2477BF;
+    --color1: #2477bf;
     --color2: #397373;
-    --color3: #6595BF;
-    --color4: #C9EBF2;
+    --color3: #6595bf;
+    --color4: #c9ebf2;
     --white: #ffffff;
     --red: #bf0404;
     --green: #02731e;
@@ -26,16 +26,17 @@
     --ligthGreen: #54ffaf;
     --background: rgb(245, 245, 245);
 }
-.text-editor ul, .description ul  {
+.text-editor ul,
+.description ul {
     list-style-type: disc !important;
     padding: inherit !important;
     margin-left: 25px !important;
 }
-.text-editor ol, .description ol {
+.text-editor ol,
+.description ol {
     list-style-type: decimal !important;
     padding: inherit !important;
     margin-left: 25px !important;
-    
 }
 /* // dashboard  */
 .dashboard_container {
@@ -55,7 +56,7 @@
     background-color: rgb(231, 231, 231) !important;
     height: 200px !important;
     width: 382px !important;
-  }
+}
 .main_and_footer_container {
     display: grid;
     grid-template-rows: 1fr auto;
@@ -67,14 +68,20 @@
 }
 @media (min-width: 550px) {
     *:not(iconify-icon) {
-
         font-size: 14px;
+    }
+
+    h1 {
+        font-size: 16px;
     }
 }
 @media (min-width: 750px) {
     /* … */
     *:not(iconify-icon) {
         font-size: 16px;
+    }
+    h1 {
+        font-size: 19px;
     }
     .main_and_footer_container::-webkit-scrollbar {
         width: 12px; /* width of the entire scrollbar */
@@ -153,7 +160,7 @@ body {
 }
 
 h1 {
-    font-size: 30px;
+    font-size: 14px;
     color: var(--color2);
     font-weight: bold;
     /* letter-spacing: 1.1px; */
@@ -196,7 +203,6 @@ h1 {
 }
 
 .btn_create {
-  
     border-radius: 8px;
     background: var(--color4);
     font-weight: bold;
@@ -267,5 +273,8 @@ progress::-webkit-progress-value {
 @media (min-width: 768px) {
     *:not(iconify-icon) {
         font-size: 17px;
+    }
+    h1 {
+        font-size: 28px;
     }
 }

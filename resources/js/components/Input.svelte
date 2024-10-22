@@ -12,6 +12,7 @@
     export let inputClasses= false
     export let labelClasses= false
     export let disabled=false
+    export let readOnly=false
     export let error = false;
 
 </script>
@@ -73,11 +74,11 @@
     <label for={label} class={` w-full text-gray-900 ${theme == "dark" ? "bg-color1 text-gray-100" : ''} ${labelClasses}`} {placeholder}>{label}</label>
     <div class="relative w-full parent_div">
         {#if type === "textarea"}
-            <textarea  class={`mb-1.5 overflow-y-auto bg-gray-200 w-full p-3 py-4`} bind:value id={label} ></textarea>
+            <textarea readonly={readOnly} class={`mb-1.5 overflow-y-auto bg-gray-200 w-full p-3 py-4`} bind:value id={label} ></textarea>
         {:else if type === "select"}
                 
                 
-                <select on:focus class={`w-full ${inputClasses ? inputClasses : " p-2 bg-gray-200 "} ${error ? ' border-b border-red bg-red bg-opacity-10' : ""}`} id={label} bind:value  required={required} on:change > 
+                <select readonly={readOnly}  disabled={disabled} on:focus class={`w-full ${inputClasses ? inputClasses : " p-2 bg-gray-200 "} ${error ? ' border-b border-red bg-red bg-opacity-10' : ""}`} id={label} bind:value  required={required} on:change > 
                 <slot></slot>
             </select>
         {:else}
@@ -85,6 +86,7 @@
                 bind:value
                 {...{ type }}
                 id={label}
+                readonly={readOnly}
                 class={`w-full ${inputClasses ? inputClasses : "p-2 bg-gray-200 "} ${error ? ' border-b border-red bg-red bg-opacity-10' : ""}`}
                 required={required}
                 disabled={disabled}

@@ -28,7 +28,15 @@
     >
     <Alert/>
         <div class="p-6 pb-5" on:click|stopPropagation>
-            <slot name="header" />
+            <div class="sticky top-0 flex w-full items-center bg-white z-50">
+                <slot name="header" />
+                <button  style="font-size: 16px;" class="ml-auto p-1" on:click={() => dialog.close()}>
+
+                    <iconify-icon icon="line-md:close"></iconify-icon>
+                </button>
+            </div>
+            
+            
             <hr class="mt-3" />
             <slot />
             <hr class="my-4" />
