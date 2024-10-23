@@ -28,9 +28,10 @@
 </script>
 
 <Alert />
-<section class="bg-background min-h-screen flex justify-center items-center">
+<section class="bg-gray-50 min-h-screen flex justify-center items-center">
 
    <div class="w-11/12 max-w-sm">
+    <h1 class="text-center text-2xl">EMERGENCIAS FALCÓN</h1>
         <legend class="text-center opacity-70"
             >INICIAR SESIÓN</legend
         >
@@ -40,7 +41,7 @@
                     type="text"
                     name="ci"
                     required={true}
-                    label={"Cédula"}
+                    label={"Cédula *"}
                     bind:value={$form.ci}
                     error={$form.errors?.ci}
                 />
@@ -55,7 +56,7 @@
                     type="password"
                     required={true}
                     name="password"
-                    label={"Contraseña"}
+                    label={"Contraseña *"}
                     bind:value={$form.password}
                 />
             </div>

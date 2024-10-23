@@ -2,6 +2,7 @@
     import Table from "../../components/Table.svelte";
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
+    import StatusColor from "../../components/StatusColor.svelte";
     import axios from "axios";
     import debounce from "lodash/debounce";
 
@@ -149,10 +150,9 @@
 
     function searchPatient(ci) {
         router.get(
-            "/admin/patient",
+            "/admin/historial-medico",
             { ci },
             {
-                replace: true,
                 preserveState: true,
                 onSuccess: (page) => {
                     showModal = true;
@@ -164,7 +164,11 @@
 
                         return;
                     }
-                    $form = { ...$form, ...page.props.patient.data };
+                    $form = {
+                        ...$form,
+                        ...page.props.patient.data,
+                        cases: JSON.parse(page.props.patient.data.cases),
+                    };
                 },
                 onFinish: (visit) => {
                     console.log(visit);
@@ -173,38 +177,12 @@
             },
         );
     }
+
+    function goToDetailsPatientPage(id) {
+        router.get("/admin/historial-medico/detalle-paciente/" + id);
+    }
     let submitStatus = "Crear";
     let prosecingSearchPatient = false;
-
-    function convertTo12HourFormat(time24) {
-        // Split the input into hours and minutes
-        let [hours, minutes] = time24.split(":").map(Number);
-
-        // Determine AM or PM suffix
-        const suffix = hours >= 12 ? "PM" : "AM";
-
-        // Convert hours to 12-hour format
-        hours = hours % 12 || 12; // Converts 0 to 12 for midnight
-
-        // Format minutes to always show two digits
-        minutes = minutes <= 10 ? "0" + minutes : minutes;
-
-        // Return the formatted time
-        return `${hours}:${minutes} ${suffix}`;
-    }
-
-    function formatDateSpanish(dateString) {
-        const options = {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        };
-
-        const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString("es-ES", options);
-
-        return formattedDate;
-    }
 
     function timeBetweenDateAndTime(
         startDate,
@@ -237,24 +215,7 @@
         }
     }
 
-    function getStatusColor(status) {
-        switch (status) {
-            case "Permanencia":
-                return "#F3BA2F";
-                break;
-            case "Alta":
-                return "#397373";
-                break;
-            case "Fallecido":
-                return "#BF0404";
-                break;
-            case "Remitido":
-                return "#6a1ccd";
-                break;
-            default:
-                break;
-        }
-    }
+   
 </script>
 
 <svelte:head>
@@ -262,7 +223,7 @@
 </svelte:head>
 
 <Modal bind:showModal modalClasses={"max-w-[560px]"}>
-    <p slot="header">Registrar un nuevo caso</p>
+    <p slot="header" class="opacity-60">Registrar un nuevo caso</p>
     <form id="a-form" on:submit={handleSubmit} action="">
         <fieldset
             class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
@@ -277,6 +238,7 @@
                     required={true}
                     label={"C.I *"}
                     bind:value={$form.patient_ci}
+                    on:input={() => ($form.cases = [])}
                     error={$form.errors?.patient_ci}
                 />
                 <button
@@ -358,6 +320,58 @@
                 error={$form.errors?.patient_phone_number}
             />
         </fieldset>
+        
+        <fieldset
+            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+        >
+            <legend
+                class="text-center px-5 py-1 pt-1.5 rounded-sm bg-color2 text-gray-100"
+                >DATOS DE LA EMERGENCIA</legend
+            >
+            <Input
+                type="date"
+                required={true}
+                label={"Fecha de entrada *"}
+                bind:value={$form.newCase.start_date}
+                error={$form.errors?.newCase?.start_date}
+            />
+
+            <Input
+                type="time"
+                required={true}
+                label={"Hora de entrada *"}
+                bind:value={$form.newCase.start_time}
+                error={$form.errors?.newCase?.start_time}
+            />
+
+            <Input
+                type="select"
+                required={true}
+                label={"Estado *"}
+                bind:value={$form.newCase.status}
+                error={$form.errors?.newCase?.status}
+            >
+                <option value="Alta"> Alta </option>
+                <option value="Permanencia">Permanencia </option>
+                <option value="Remitido">Remitido </option>
+                <option value="Fallecido">Fallecido </option>
+            </Input>
+            {#if $form.newCase.status !== "Permanencia"}
+                <Input
+                    type="date"
+                    label={"Fecha de salida "}
+                    bind:value={$form.newCase.end_date}
+                    error={$form.errors?.newCase?.end_date}
+                />
+                <Input
+                    type="time"
+                    required={true}
+                    label={"Hora de salida *"}
+                    bind:value={$form.newCase.end_time}
+                    error={$form.errors?.newCase?.end_time}
+                />
+            {/if}
+        </fieldset>
 
         <fieldset
             class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
@@ -383,58 +397,6 @@
                 bind:value={$form.newCase.treatment}
                 error={$form.errors?.newCase?.treatment}
             />
-        </fieldset>
-
-        <fieldset
-            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
-        >
-            <legend
-                class="text-center px-5 py-1 pt-1.5 rounded-sm bg-color2 text-gray-100"
-                >DURACIÓN DE LA EMERGENCIA</legend
-            >
-            <Input
-                type="date"
-                required={true}
-                label={"Fecha de entrada *"}
-                bind:value={$form.newCase.start_date}
-                error={$form.errors?.newCase?.start_date}
-            />
-
-            <Input
-                type="time"
-                required={true}
-                label={"Hora de entrada *"}
-                bind:value={$form.newCase.start_time}
-                error={$form.errors?.newCase?.start_time}
-            />
-
-            <Input
-                type="select"
-                required={true}
-                label={"Estado *"}
-                bind:value={$form.newCase.status}
-                error={$form.errors?.newCase?.status}
-            >
-                <option value="Alta"> <span class="block p-1 text-white" style={`background-color: ${getStatusColor("Alta")};`}>  </span> Alta </option>
-                <option value="Permanencia"> <span class="block p-1 text-white" style={`background-color: ${getStatusColor("Permanencia")};`}> </span> Permanencia </option>
-                <option value="Remitido"> <span class="block p-1 text-white" style={`background-color: ${getStatusColor("Remitido")};`}> </span> Remitido </option>
-                <option value="Fallecido"> <span class="block p-1 text-white" style={`background-color: ${getStatusColor("Fallecido")};`}> </span> Fallecido </option>
-            </Input>
-            {#if $form.newCase.status !== "Permanencia"}
-                <Input
-                    type="date"
-                    label={"Fecha de salida "}
-                    bind:value={$form.newCase.end_date}
-                    error={$form.errors?.newCase?.end_date}
-                />
-                <Input
-                    type="time"
-                    required={true}
-                    label={"Hora de salida *"}
-                    bind:value={$form.newCase.end_time}
-                    error={$form.errors?.newCase?.end_time}
-                />
-            {/if}
         </fieldset>
     </form>
     <input
@@ -485,7 +447,7 @@
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.id);
     }}
-    pagination={{...data?.meta, ...data.links}}
+    pagination={{ ...data?.meta, ...data?.links }}
 >
     <div slot="filterBox"></div>
     <thead slot="thead" class="sticky top-0 z-50">
@@ -501,34 +463,35 @@
     </thead>
 
     <tbody slot="tbody">
-        {#if data?.data?.length > 0}
-            {#each data?.data as row, i (row.id)}
+        {#if data?.data?.length > 0 && data?.data?.[0].cases.length > 0}
+            {#each data?.data as row, i (row.patient_id)}
                 <tr
                     on:click={(e) => {
                         // let newSelectedRowStatus = !selectedRow.status;
-                        if (row.id != selectedRow.id) {
-                            selectedRow = {
-                                status: true,
-                                id: row.id,
-                                title: row.title,
-                            };
-                            $form.defaults({
-                                ...row,
-                                specialties_ids: row.specialties.map(
-                                    (obj) => obj.id,
-                                ),
-                            });
-                            $form.clearErrors();
-                        } else {
-                            selectedRow = {
-                                status: false,
-                                id: 0,
-                                title: "",
-                            };
-                            $form.defaults({
-                                ...emptyDataForm,
-                            });
-                        }
+                        // if (row.id != selectedRow.id) {
+                        //     selectedRow = {
+                        //         status: true,
+                        //         id: row.id,
+                        //         title: row.title,
+                        //     };
+                        //     $form.defaults({
+                        //         ...row,
+                        //         specialties_ids: row.specialties.map(
+                        //             (obj) => obj.id,
+                        //         ),
+                        //     });
+                        //     $form.clearErrors();
+                        // } else {
+                        //     selectedRow = {
+                        //         status: false,
+                        //         id: 0,
+                        //         title: "",
+                        //     };
+                        //     $form.defaults({
+                        //         ...emptyDataForm,
+                        //     });
+                        // }
+                        goToDetailsPatientPage(row.patient_id);
                     }}
                     class={`md:max-h-[200px] overflow-hidden cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
                 >
@@ -545,14 +508,10 @@
                         <!-- {formatDateSpanish(row.cases[0].start_date)} -->
                     </td>
                     <td>
-                        <span
-                            class={`block px-1 py-0.5 rounded-md`}
-                            style={`background-color: ${getStatusColor(row.cases[0].status)};`}
-                        >
-                            {row.cases?.[0]?.status}
-                        </span>
+                        <StatusColor status={row.cases?.[0]?.status} />
+                        
                     </td>
-                    <td class="">
+                    <td class="min-w-[120px]">
                         <div class="flex items-center gap-2">
                             {#if row.patient_sex == "Femenino"}
                                 <span class="text-pink text-2xl">
@@ -565,7 +524,7 @@
                                     ></iconify-icon>
                                 </span>
                             {/if}
-                            <span
+                            <span class="whitespace-normal"
                                 >{row.patient_name}
                                 {row.patient_last_name}
                                 - {row.patient_ci}
@@ -573,7 +532,7 @@
                         </div>
                     </td>
                     <td
-                        class="max-w-[340px] min-w-[320px] max-h-[100px] overflow-hidden"
+                        class="max-w-[340px] max-h-[100px] overflow-hidden"
                         style="white-space: normal;"
                     >
                         {#if row.cases?.[0]?.diagnosis.length > 240}

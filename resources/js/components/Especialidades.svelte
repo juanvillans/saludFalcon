@@ -8,9 +8,9 @@
     let searchTerm = "";
 
     // Function to handle form submission
-    function handleSubmit(id) {
+    function handleSubmit(id,name) {
         const userConfirmed = window.confirm(
-            "¿Está seguro de añadir esta especialidad?",
+            "¿Está seguro de añadir " + name + "?",
         );
 
         if (userConfirmed) {
@@ -27,9 +27,9 @@
     $: console.log(instituteSpecialities);
 </script>
 
-<main class="flex justify-between gap-8 md:gap-10">
-    <div class="offered sticky top-2">
-        <h1 class="mb-2">Especialidades y servicios de la institución</h1>
+<main class="md:flex justify-between gap-8 md:gap-10">
+    <div class="offered sticky top-2 bg-gray-50 w-full">
+        <h1 class="mb-2 ">Especialidades y servicios de la institución</h1>
         <ul class="text-lg p-2">
             {#each instituteSpecialities as speci (speci.id)}
                 <li>{speci.name}</li>
@@ -60,7 +60,7 @@
             {#each filteredItems as item (item.id)}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <li
-                    on:click={() => handleSubmit(item.id)}
+                    on:click={() => handleSubmit(item.id, item.name)}
                     class="flex items-center cursor-pointer hover:text-color2"
                 >
                     <span
