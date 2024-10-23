@@ -71,7 +71,6 @@ class EmergencyCaseService
             'search' => $this->generateSearch($data)      
         ]);
 
-        dd('hola');
 
         return $newPatient->id;
    }
