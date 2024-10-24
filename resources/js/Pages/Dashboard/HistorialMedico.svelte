@@ -22,6 +22,7 @@
         }
     }
     console.log({ data });
+    export let areas = [];
     let instituteSpecialities = [];
     let specialities = [];
     // Update data based on the current state of `data.specialties`
@@ -57,6 +58,7 @@
             treatment: "",
             diagnosis: "",
             status: "Alta",
+            area: "",
         },
     };
     let form = useForm(structuredClone(emptyDataForm));
@@ -65,7 +67,7 @@
     // console.log($form.newCase.diagnosis);
     let visulizateType = "table";
     let showModal = false;
-    // $: console.log($form);
+    $: console.log($form);
     let selectedRow = { status: false, id: 0 };
 
     document.addEventListener("keydown", ({ key }) => {
@@ -197,7 +199,6 @@
             endDate = now.toISOString().split("T")[0]; // Format to YYYY-MM-DD
             endTime = now.toTimeString().split(" ")[0].substring(0, 5); // Format to HH:mm
         }
-        console.log(startDate, startTime, endDate, endTime, status);
         const startDateTime = new Date(`${startDate}T${startTime}`);
         const endDateTime = new Date(`${endDate}T${endTime}`);
 
@@ -214,8 +215,6 @@
             return `${diffInMinutes} Minuto${diffInMinutes > 1 ? "s" : ""}`;
         }
     }
-
-   
 </script>
 
 <svelte:head>
@@ -320,7 +319,7 @@
                 error={$form.errors?.patient_phone_number}
             />
         </fieldset>
-        
+
         <fieldset
             class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
         >
@@ -356,6 +355,19 @@
                 <option value="Remitido">Remitido </option>
                 <option value="Fallecido">Fallecido </option>
             </Input>
+            {#if $form.newCase.status == "Remitido"}
+                <Input
+                    type="select"
+                    required={true}
+                    label={"Area remitida *"}
+                    bind:value={$form.newCase.area}
+                    error={$form.errors?.newCase?.area}
+                >
+                    {#each areas as area (area.id)}
+                         <option value={area}>{area.name} </option>
+                    {/each}
+                </Input>
+            {/if}
             {#if $form.newCase.status !== "Permanencia"}
                 <Input
                     type="date"
@@ -439,64 +451,180 @@
         >
         <span class="hidden md:block"> Nuevo caso </span>
     </button>
+
+    <div class="text-gray-600 text-xl md:text-2xl">
+        <iconify-icon
+            class="cursor-pointer"
+            title="Vizualizar tipo Tabla"
+            on:click={() => (visulizateType = "table")}
+            icon="material-symbols:table-sharp"
+            class:text-color1={visulizateType == "table"}
+            class:bg-color4={visulizateType == "table"}
+        ></iconify-icon>
+        <iconify-icon
+            class="cursor-pointer"
+            title="Vizualizar tipo lista"
+            on:click={() => (visulizateType = "card")}
+            icon="carbon:show-data-cards"
+            class:text-color1={visulizateType == "card"}
+            class:bg-color4={visulizateType == "card"}
+        ></iconify-icon>
+    </div>
 </div>
 
-<Table
-    {selectedRow}
-    on:fillFormToEdit={fillFormToEdit}
-    on:clickDeleteIcon={() => {
-        handleDelete(selectedRow.id);
-    }}
-    pagination={{ ...data?.meta, ...data?.links }}
->
-    <div slot="filterBox"></div>
-    <thead slot="thead" class="sticky top-0 z-50">
-        <tr>
-            <th>N°</th>
-            <th>Duración</th>
-            <th>Estado</th>
-            <th>Paciente</th>
-            <th>Diagnóstico</th>
-            <th>Tratamiento</th>
-            <th>Doctor</th>
-        </tr>
-    </thead>
+{#if visulizateType == "table"}
+    <Table
+        {selectedRow}
+        on:fillFormToEdit={fillFormToEdit}
+        on:clickDeleteIcon={() => {
+            handleDelete(selectedRow.id);
+        }}
+        pagination={{ ...data?.meta, ...data?.links }}
+    >
+        <div slot="filterBox"></div>
+        <thead slot="thead" class="sticky top-0 z-50">
+            <tr>
+                <th>N°</th>
+                <th>Duración</th>
+                <th>Estado</th>
+                <th>Paciente</th>
+                <th>Diagnóstico</th>
+                <th>Tratamiento</th>
+                <th>Doctor</th>
+            </tr>
+        </thead>
 
-    <tbody slot="tbody">
-        {#if data?.data?.length > 0 && data?.data?.[0].cases.length > 0}
-            {#each data?.data as row, i (row.patient_id)}
-                <tr
-                    on:click={(e) => {
-                        // let newSelectedRowStatus = !selectedRow.status;
-                        // if (row.id != selectedRow.id) {
-                        //     selectedRow = {
-                        //         status: true,
-                        //         id: row.id,
-                        //         title: row.title,
-                        //     };
-                        //     $form.defaults({
-                        //         ...row,
-                        //         specialties_ids: row.specialties.map(
-                        //             (obj) => obj.id,
-                        //         ),
-                        //     });
-                        //     $form.clearErrors();
-                        // } else {
-                        //     selectedRow = {
-                        //         status: false,
-                        //         id: 0,
-                        //         title: "",
-                        //     };
-                        //     $form.defaults({
-                        //         ...emptyDataForm,
-                        //     });
-                        // }
-                        goToDetailsPatientPage(row.patient_id);
-                    }}
-                    class={`md:max-h-[200px] overflow-hidden cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
+        <tbody slot="tbody">
+            {#if data?.data?.length > 0 && data?.data?.[0].cases.length > 0}
+                {#each data?.data as row, i (row.patient_id)}
+                    <tr
+                        on:click={(e) => {
+                            // let newSelectedRowStatus = !selectedRow.status;
+                            // if (row.id != selectedRow.id) {
+                            //     selectedRow = {
+                            //         status: true,
+                            //         id: row.id,
+                            //         title: row.title,
+                            //     };
+                            //     $form.defaults({
+                            //         ...row,
+                            //         specialties_ids: row.specialties.map(
+                            //             (obj) => obj.id,
+                            //         ),
+                            //     });
+                            //     $form.clearErrors();
+                            // } else {
+                            //     selectedRow = {
+                            //         status: false,
+                            //         id: 0,
+                            //         title: "",
+                            //     };
+                            //     $form.defaults({
+                            //         ...emptyDataForm,
+                            //     });
+                            // }
+                            goToDetailsPatientPage(row.patient_id);
+                        }}
+                        class={`md:max-h-[200px] overflow-hidden cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
+                    >
+                        <td>{i + 1}</td>
+                        <td>
+                            {timeBetweenDateAndTime(
+                                row.cases?.[0]?.start_date,
+                                row.cases?.[0]?.start_time,
+                                row.cases?.[0]?.end_date,
+                                row.cases?.[0]?.end_time,
+                                row.cases?.[0]?.status,
+                            )}
+
+                            <!-- {formatDateSpanish(row.cases[0].start_date)} -->
+                        </td>
+                        
+                        <td style="white-space: normal;">
+                            <StatusColor status={row.cases?.[0]?.status} />
+                            <p>
+                                {#if (row.cases?.[0]?.status == "Remitido")}
+                                    {row.cases?.[0]?.area?.name}
+                                {/if}
+
+                            </p>
+                        </td>
+                        <td class="min-w-[120px]">
+                            <div class="flex items-center gap-2">
+                                {#if row.patient_sex == "Femenino"}
+                                    <span class="text-pink text-2xl">
+                                        <iconify-icon icon="fa-solid:female"
+                                        ></iconify-icon>
+                                    </span>
+                                {:else}
+                                    <span class="text-color3 text-2xl">
+                                        <iconify-icon icon="fa-solid:male"
+                                        ></iconify-icon>
+                                    </span>
+                                {/if}
+                                <span class="whitespace-normal"
+                                    >{row.patient_name}
+                                    {row.patient_last_name}
+                                    - {row.patient_ci}
+                                </span>
+                            </div>
+                        </td>
+                        <td
+                            class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
+                            style="white-space: normal;"
+                        >
+                            {#if row.cases?.[0]?.diagnosis.length > 240}
+                                {row.cases?.[0]?.diagnosis.slice(0, 240)}
+                                <span
+                                    class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                    >...</span
+                                >
+                            {:else}
+                                {row.cases?.[0]?.diagnosis}
+                            {/if}
+                        </td>
+                        <!-- <td>{row.sex}</td> -->
+                        <td
+                            class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
+                            style="white-space: normal;"
+                        >
+                            {#if row.cases?.[0]?.treatment.length > 240}
+                                {row.cases?.[0]?.treatment.slice(0, 240)}
+                                <span
+                                    class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                    >...</span
+                                >
+                            {:else}
+                                {row.cases?.[0]?.treatment}
+                            {/if}
+                        </td>
+                        <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
+                        <td>
+                            {row.cases?.[0]?.doctor.name}
+                            {row.cases?.[0]?.doctor.last_name}
+                        </td>
+                    </tr>
+                {/each}
+            {/if}
+        </tbody>
+    </Table>
+{/if}
+
+{#if visulizateType == "card"}
+    <div class="grid gap-3 mt-3">
+        {#each data?.data as row, i (row.patient_id)}
+            <article
+                on:click={(e) => {
+                    goToDetailsPatientPage(row.patient_id);
+                }}
+                class={`relative w-full cursor-pointer bg-gray-50 p-2 md:p-5 rounded-md shadow-sm ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
+            >
+                <span
+                    class="h-fit absolute right-0 top-0 text-center col-span-2 bg-gray-100 p-1 rounded-lg inline-block w-10 px-2"
+                    >{i + 1}°</span
                 >
-                    <td>{i + 1}</td>
-                    <td>
+                <div class="flex gap-2 items-center">
+                    <p>
                         {timeBetweenDateAndTime(
                             row.cases?.[0]?.start_date,
                             row.cases?.[0]?.start_time,
@@ -504,95 +632,21 @@
                             row.cases?.[0]?.end_time,
                             row.cases?.[0]?.status,
                         )}
-
-                        <!-- {formatDateSpanish(row.cases[0].start_date)} -->
-                    </td>
-                    <td>
-                        <StatusColor status={row.cases?.[0]?.status} />
-                        
-                    </td>
-                    <td class="min-w-[120px]">
-                        <div class="flex items-center gap-2">
-                            {#if row.patient_sex == "Femenino"}
-                                <span class="text-pink text-2xl">
-                                    <iconify-icon icon="fa-solid:female"
-                                    ></iconify-icon>
-                                </span>
-                            {:else}
-                                <span class="text-color3 text-2xl">
-                                    <iconify-icon icon="fa-solid:male"
-                                    ></iconify-icon>
-                                </span>
-                            {/if}
-                            <span class="whitespace-normal"
-                                >{row.patient_name}
-                                {row.patient_last_name}
-                                - {row.patient_ci}
-                            </span>
-                        </div>
-                    </td>
-                    <td
-                        class="max-w-[340px] max-h-[100px] overflow-hidden"
-                        style="white-space: normal;"
-                    >
-                        {#if row.cases?.[0]?.diagnosis.length > 240}
-                            {row.cases?.[0]?.diagnosis.slice(0, 240)}
-                            <span
-                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                                >...</span
-                            >
-                        {:else}
-                            {row.cases?.[0]?.diagnosis}
-                        {/if}
-                    </td>
-                    <!-- <td>{row.sex}</td> -->
-                    <td
-                        class="max-w-[340px] min-w-[320px] max-h-[100px] overflow-hidden"
-                        style="white-space: normal;"
-                    >
-                        {#if row.cases?.[0]?.treatment.length > 240}
-                            {row.cases?.[0]?.treatment.slice(0, 240)}
-                            <span
-                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                                >...</span
-                            >
-                        {:else}
-                            {row.cases?.[0]?.treatment}
-                        {/if}
-                    </td>
-                    <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
-                    <td>
-                        {row.cases?.[0]?.doctor.name}
-                        {row.cases?.[0]?.doctor.last_name}
-                    </td>
-                </tr>
-            {/each}
-        {/if}
-    </tbody>
-</Table>
-
-{#if visulizateType == "card"}
-    <div class="grid gap-3">
-        {#each data?.data as row, i (row.id)}
-            <article
-                class={`w-full cursor-pointer bg-gray-50 p-2 md:p-5 rounded-md shadow-sm ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
-            >
-                <div class="flex justify-between bg-g">
-                    <span>{i + 1}</span>
-                    <p>
-                        {formatDateSpanish(row.cases[0].start_date)}
-                        <span class="opacity-60">-</span>
-                        {convertTo12HourFormat(row.cases[0].start_time)}
                     </p>
+                    |
+                    <StatusColor status={row.cases?.[0]?.status} />
+                    {#if (row.cases?.[0]?.status == "Remitido")}
+                        a {row.cases?.[0]?.area?.name}
+                    {/if}
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 mt-1">
                     {#if row.patient_sex == "Femenino"}
-                        <span class="text-pink text-2xl">
+                        <span class="text-pink text-lg sm:text-2xl">
                             <iconify-icon icon="fa-solid:female"></iconify-icon>
                         </span>
                     {:else}
-                        <span class="text-color3 text-2xl">
+                        <span class="text-color3 text-lg sm:text-2xl">
                             <iconify-icon icon="fa-solid:male"></iconify-icon>
                         </span>
                     {/if}
@@ -603,31 +657,41 @@
                     </span>
                 </div>
 
-                <p>
-                    <b>Diag.:</b>
-                    {#if row.cases[0].diagnosis.length > 240}
-                        {row.cases[0].diagnosis.slice(0, 240)}
-                        <span
-                            class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                            >...</span
-                        >
-                    {:else}
-                        {row.cases[0].diagnosis}
-                    {/if}
-                </p>
-                <!-- <td>{row.sex}</td> -->
-                <p class="my-2">
-                    <b>Trat.:</b>
-                    {#if row.cases[0].treatment.length > 240}
-                        {row.cases[0].treatment.slice(0, 240)}
-                        <span
-                            class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                            >...</span
-                        >
-                    {:else}
-                        {row.cases[0].treatment}
-                    {/if}
-                </p>
+                <div class="mt-2">
+                    <p>
+                        <iconify-icon
+                            class="text-lg sm:text-2xl relative top-1.5 text-red"
+                            icon="material-symbols:diagnosis"
+                        ></iconify-icon>
+                        {#if row.cases[0].diagnosis.length > 240}
+                            {row.cases[0].diagnosis.slice(0, 240)}
+                            <span
+                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                >...</span
+                            >
+                        {:else}
+                            {row.cases[0].diagnosis}
+                        {/if}
+                    </p>
+                </div>
+                <div class="mt-2">
+                    <p>
+                        <iconify-icon
+                            class="text-lg sm:text-2xl relative top-1.5 text-color1"
+                            icon="mdi:medicine-bottle"
+                        ></iconify-icon>
+                        {#if row.cases[0].treatment.length > 240}
+                            {row.cases[0].treatment.slice(0, 240)}
+                            <span
+                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                >...</span
+                            >
+                        {:else}
+                            {row.cases[0].treatment}
+                        {/if}
+                    </p>
+                </div>
+
                 <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
                 <p
                     class="text-right justify-end w-full flex items-center gap-2"
