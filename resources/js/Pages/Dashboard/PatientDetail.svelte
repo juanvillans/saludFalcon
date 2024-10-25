@@ -424,9 +424,9 @@
                                     a {single_case.area?.name?.name}
                                 {/if}
                                 el
-                                {formatDateSpanish(single_case.start_date)}
+                                {formatDateSpanish(single_case.end_date)}
                                 <span class="opacity-60">-</span>
-                                {convertTo12HourFormat(single_case.start_time)}
+                                {convertTo12HourFormat(single_case.end_time)}
                             </p>
                         </div>
 
