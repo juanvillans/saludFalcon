@@ -5,11 +5,16 @@
     import StatusColor from "../../components/StatusColor.svelte";
     export let areas = [];
     export let patient = false;
-    console.log({ patient });
-    if (patient) {
+    let countingCases;
+    let form;
+    
+    $: if (patient) {
         if (patient?.data?.cases instanceof Array == false) {
             patient.data.cases = JSON.parse(patient.data.cases);
         }
+        console.log({ patient });
+        form = useForm(structuredClone(patient.data));
+        countingCases = patient.data.cases.length;
     }
     let editStatus = false;
 
@@ -42,9 +47,6 @@
 
         return formattedDate;
     }
-    let form = useForm(structuredClone(patient.data));
-    let countingCases = patient.data.cases.length;
-    $: console.log(patient);
     let showAllCases = window.screen.width > 700 ? true : false;
 
     function updateClient(event) {
@@ -65,6 +67,7 @@
         });
     }
     function submitCases(event) {
+        console.log('Editando')
         event.preventDefault();
         $form.clearErrors();
         $form.post("/admin/historial-medico", {
@@ -84,9 +87,11 @@
 
     function handleDelete() {
         $form.post("/admin/historial-medico", {
-            onBefore: () =>{ if(confirm(`¿Está seguro de eliminar este caso?`)){
-                $form.cases = $form.cases.slice(1)
-            }},
+            onBefore: () => {
+                if (confirm(`¿Está seguro de eliminar este caso?`)) {
+                    $form.cases = $form.cases.slice(1);
+                }
+            },
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
@@ -183,7 +188,6 @@
 
             {#if $form.isDirty}
                 <input
-                    form="a-form"
                     type="submit"
                     value={$form.processing ? "Cargando..." : "Actualizar"}
                     class="hover:bg-color3 hover:text-white duration-200 mt-3 w-full col-span-2 bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
@@ -192,7 +196,7 @@
         </fieldset>
     </form>
 
-    <form on:submit={submitCases}  class="order-1 lg:order-2 w-full">
+    <form on:submit={submitCases} class="order-1 lg:order-2 w-full">
         <fieldset
             class=" sm:px-5 md:mt-4 md:grid grid-cols-2 gap-x-5 sm:border sm:p-6 pt-2 border-color2 rounded-md"
         >
@@ -229,12 +233,15 @@
                                     {#if single_case.status == "Remitido"}
                                         a {single_case.area?.name}
                                     {/if}
-                                    el
-                                    {formatDateSpanish(single_case.start_date)}
-                                    <span class="opacity-60">-</span>
-                                    {convertTo12HourFormat(
-                                        single_case.start_time,
-                                    )}
+
+                                    {#if single_case.status != "Permanencia"}
+                                        el
+                                        {formatDateSpanish(single_case.end_date)}
+                                        <span class="opacity-60">-</span>
+                                        {convertTo12HourFormat(
+                                            single_case.end_time,
+                                        )}
+                                    {/if}
                                 </p>
                                 {#if $page.props.auth.user_id == single_case.doctor.id}
                                     <div
@@ -255,8 +262,7 @@
                                         <button
                                             title="Eliminar"
                                             class="p-1 bg-gray-200 px-2 hover:bg-red text-gray-700 hover:text-white"
-                                            on:click={() =>
-                                                console.log("eliminar")}
+                                            on:click={() => handleDelete()}
                                         >
                                             <iconify-icon
                                                 icon="mdi:trash-outline"
@@ -387,12 +393,12 @@
                         </div>
 
                         <button
+                            type="button"
                             class="max-w-fit px-2 hover:bg-gray-200"
                             on:click={() => (editStatus = !editStatus)}
                             >Cancelar</button
                         >
                         <input
-                            form="a-form"
                             type="submit"
                             value={$form.processing ? "Cargando..." : "Editar"}
                             class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"

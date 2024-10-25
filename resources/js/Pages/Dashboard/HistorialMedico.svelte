@@ -373,21 +373,7 @@
     <button
         class="btn_create inline-block p-1 px-2 md:p-2 md:px-3"
         on:click={(e) => {
-            if (submitStatus == "Editar") {
-                selectedRow = {
-                    status: false,
-                    id: 0,
-                    title: "",
-                };
-                // console.log(emptyDataForm)
-
-                $form.defaults({
-                    ...emptyDataForm,
-                });
-                setTimeout(() => {
-                    $form.reset();
-                }, 100);
-            }
+            
             e.preventDefault();
 
             showModal = true;
@@ -423,11 +409,6 @@
 
 {#if visulizateType == "table"}
     <Table
-        {selectedRow}
-        on:fillFormToEdit={fillFormToEdit}
-        on:clickDeleteIcon={() => {
-            handleDelete(selectedRow.id);
-        }}
         pagination={{ ...data?.meta, ...data?.links }}
     >
         <div slot="filterBox"></div>
@@ -448,33 +429,9 @@
                 {#each data?.data as row, i (row.patient_id)}
                     <tr
                         on:click={(e) => {
-                            // let newSelectedRowStatus = !selectedRow.status;
-                            // if (row.id != selectedRow.id) {
-                            //     selectedRow = {
-                            //         status: true,
-                            //         id: row.id,
-                            //         title: row.title,
-                            //     };
-                            //     $form.defaults({
-                            //         ...row,
-                            //         specialties_ids: row.specialties.map(
-                            //             (obj) => obj.id,
-                            //         ),
-                            //     });
-                            //     $form.clearErrors();
-                            // } else {
-                            //     selectedRow = {
-                            //         status: false,
-                            //         id: 0,
-                            //         title: "",
-                            //     };
-                            //     $form.defaults({
-                            //         ...emptyDataForm,
-                            //     });
-                            // }
                             goToDetailsPatientPage(row.patient_id);
                         }}
-                        class={`md:max-h-[200px] overflow-hidden cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
+                        class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5`}
                     >
                         <td>{i + 1}</td>
                         <td>
