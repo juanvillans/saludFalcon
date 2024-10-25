@@ -47,6 +47,20 @@ class EmergencyCaseService
 
     }
 
+    public function updatePatient($data, $patient){
+        $patient->update([
+            'ci' => $data['patient_ci'],
+            'name' => $data['patient_name'],
+            'last_name' => $data['patient_last_name'],
+            'phone_number' => $data['patient_phone_number'],
+            'sex' => $data['patient_sex'],
+            'date_birth' => $data['patient_date_birth'],
+            'search' => $this->generateSearch($data)
+        ]);
+
+        return 0;
+    }
+
     public function getPatientByCI($param){
         
         
