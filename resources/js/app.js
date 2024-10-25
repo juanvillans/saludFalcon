@@ -1,6 +1,5 @@
 import { createInertiaApp } from "@inertiajs/svelte";
 import Layout from "./components/DashboardLayout.svelte";
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 createInertiaApp({
     resolve: (name) => {
