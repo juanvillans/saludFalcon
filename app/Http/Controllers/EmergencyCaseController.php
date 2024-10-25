@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PatientRequest;
 use App\Http\Resources\PatientResource;
 use App\Models\Area;
 use App\Models\Patient;
@@ -77,7 +78,7 @@ class EmergencyCaseController extends Controller
         ]);
     }
 
-    public function updatePatient(Request $request, Patient $patient)
+    public function updatePatient(PatientRequest $request, Patient $patient)
     {
         DB::beginTransaction();
 
