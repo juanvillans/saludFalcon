@@ -84,7 +84,6 @@ class EmergencyCaseService
                 'phone_number' => $data['patient_phone_number'] ?? null,
                 'sex' => $data['patient_sex'],
                 'date_birth' => $data['patient_date_birth'],
-                'search' => $this->generateSearch($data)      
             ]);
 
 
@@ -99,15 +98,6 @@ class EmergencyCaseService
             throw new Exception("Esta cédula ya se encuentra registrada", 403);
         
         return 0;
-    }
-
-    private function generateSearch($data){
-        $search = $data['patient_ci'] . " "
-                 .$data['patient_name'] . " "
-                 .$data['patient_last_name'] . " "
-                 .$data['patient_phone_number'] . " ";
-        
-        return $search;
     }
     
    private function validateCasesJSON($cases){

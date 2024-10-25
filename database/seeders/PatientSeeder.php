@@ -21,7 +21,6 @@ class PatientSeeder extends Seeder
             'phone_number' => "04125800610",
             'sex' => "Masculino",
             'date_birth' => Carbon::createFromDate(2000, 12, 25), 
-            'search' => "30847627 Juan Donquis 04125800610"
         ]);
     }
 }

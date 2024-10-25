@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Services\EmergencyCaseService;
 use DB;
 
 use Illuminate\Database\Seeder;
@@ -21,6 +22,7 @@ class DatabaseSeeder extends Seeder
             SpecialtySeeder::class,
             UserSeeder::class,
             AreaSeeder::class,
+            EmergencyCaseSeeder::class,
         ]);
     }
 
