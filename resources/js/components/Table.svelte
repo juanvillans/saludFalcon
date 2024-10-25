@@ -97,7 +97,7 @@
                 class="block w-full py-1.5 pr-5 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
         </div>
-        {#if selectedRow.status}
+        {#if selectedRow?.status}
             <div class="flex gap-5 relative items-end">
                 <button
                     on:click={() => dispatch("fillFormToEdit")}

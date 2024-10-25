@@ -3,13 +3,11 @@
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
     import StatusColor from "../../components/StatusColor.svelte";
-    import axios from "axios";
-    import debounce from "lodash/debounce";
 
     // import Alert from "../../components/Alert.svelte";
 
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm, inertia, router, page } from "@inertiajs/svelte";
+    import { useForm, router, page } from "@inertiajs/svelte";
     export let data = {};
 
     // console.log(data.data[0].cases)
@@ -23,8 +21,6 @@
     }
     console.log({ data });
     export let areas = [];
-    let instituteSpecialities = [];
-    let specialities = [];
     // Update data based on the current state of `data.specialties`
     const today = new Date();
 
@@ -67,14 +63,7 @@
     // console.log($form.newCase.diagnosis);
     let visulizateType = "table";
     let showModal = false;
-    $: console.log($form);
-    let selectedRow = { status: false, id: 0 };
-
-    document.addEventListener("keydown", ({ key }) => {
-        if (key === "Escape") {
-            selectedRow = { status: false, id: 0 };
-        }
-    });
+ 
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -85,7 +74,6 @@
             $form.cases = [$form.newCase, ...$form.cases];
         }
         $form.clearErrors();
-        console.log(emptyDataForm);
         if (submitStatus == "Crear") {
             $form.post("/admin/historial-medico", {
                 onError: (errors) => {
@@ -106,50 +94,11 @@
                     showModal = false;
                 },
             });
-        } else if (submitStatus == "Editar") {
-            $form.put(`/admin/historial-medico/${$form.id}`, {
-                onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
-                },
-                onSuccess: (mensaje) => {
-                    $form.reset();
-                    displayAlert({
-                        type: "success",
-                        message: "Nuevo Caso creado con exito",
-                    });
-                    showModal = false;
-                    selectedRow = { status: false, id: 0, row: {} };
-                },
-            });
         }
+
     }
 
-    function handleDelete(id) {
-        $form.delete(`/admin/historial-medico/${id}`, {
-            onBefore: () => confirm(`¿Está seguro de eliminar a este usuario?`),
-            onError: (errors) => {
-                if (errors.data) {
-                    displayAlert({ type: "error", message: errors.data });
-                }
-            },
-            onSuccess: (mensaje) => {
-                displayAlert({
-                    type: "success",
-                    message: "Usuario Eliminado",
-                });
-                selectedRow = { status: false, id: 0, row: {} };
-            },
-        });
-    }
-
-    function fillFormToEdit() {
-        submitStatus = "Editar";
-        $form.reset();
-        showModal = true;
-    }
-
+ 
     function searchPatient(ci) {
         router.get(
             "/admin/historial-medico",
@@ -424,21 +373,7 @@
     <button
         class="btn_create inline-block p-1 px-2 md:p-2 md:px-3"
         on:click={(e) => {
-            if (submitStatus == "Editar") {
-                selectedRow = {
-                    status: false,
-                    id: 0,
-                    title: "",
-                };
-                // console.log(emptyDataForm)
-
-                $form.defaults({
-                    ...emptyDataForm,
-                });
-                setTimeout(() => {
-                    $form.reset();
-                }, 100);
-            }
+            
             e.preventDefault();
 
             showModal = true;
@@ -474,11 +409,6 @@
 
 {#if visulizateType == "table"}
     <Table
-        {selectedRow}
-        on:fillFormToEdit={fillFormToEdit}
-        on:clickDeleteIcon={() => {
-            handleDelete(selectedRow.id);
-        }}
         pagination={{ ...data?.meta, ...data?.links }}
     >
         <div slot="filterBox"></div>
@@ -499,33 +429,9 @@
                 {#each data?.data as row, i (row.patient_id)}
                     <tr
                         on:click={(e) => {
-                            // let newSelectedRowStatus = !selectedRow.status;
-                            // if (row.id != selectedRow.id) {
-                            //     selectedRow = {
-                            //         status: true,
-                            //         id: row.id,
-                            //         title: row.title,
-                            //     };
-                            //     $form.defaults({
-                            //         ...row,
-                            //         specialties_ids: row.specialties.map(
-                            //             (obj) => obj.id,
-                            //         ),
-                            //     });
-                            //     $form.clearErrors();
-                            // } else {
-                            //     selectedRow = {
-                            //         status: false,
-                            //         id: 0,
-                            //         title: "",
-                            //     };
-                            //     $form.defaults({
-                            //         ...emptyDataForm,
-                            //     });
-                            // }
                             goToDetailsPatientPage(row.patient_id);
                         }}
-                        class={`md:max-h-[200px] overflow-hidden cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
+                        class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5`}
                     >
                         <td>{i + 1}</td>
                         <td>

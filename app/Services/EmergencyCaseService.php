@@ -33,18 +33,32 @@ class EmergencyCaseService
         if($patientID == null)
             $patientID = $this->createPatient($data);
 
-        $lastCase = $data['cases'][0];
+        $lastCase = $data['cases'][0] ?? null;
 
         EmergencyCase::updateOrCreate([
             'patient_id' => $patientID
         ],
         [
             'cases' => json_encode($data['cases']),
-            'current_status' => $lastCase['status'],
+            'current_status' => $lastCase['status'] ?? null,
         ]);
 
         return 0;
 
+    }
+
+    public function updatePatient($data, $patient){
+        $patient->update([
+            'ci' => $data['patient_ci'],
+            'name' => $data['patient_name'],
+            'last_name' => $data['patient_last_name'],
+            'phone_number' => $data['patient_phone_number'],
+            'sex' => $data['patient_sex'],
+            'date_birth' => $data['patient_date_birth'],
+            'search' => $this->generateSearch($data)
+        ]);
+
+        return 0;
     }
 
     public function getPatientByCI($param){
@@ -59,31 +73,35 @@ class EmergencyCaseService
         return null;
     }
 
-   private function createPatient($data){
+    private function createPatient($data){
 
-        $newPatient = Patient::create([
-            'ci' => $data['patient_ci'],
-            'name' => $data['patient_name'],
-            'last_name' => $data['patient_last_name'],
-            'phone_number' => $data['patient_phone_number'] ?? null,
-            'sex' => $data['patient_sex'],
-            'date_birth' => $data['patient_date_birth'],
-            'search' => $this->generateSearch($data)      
-        ]);
+            $this->validateIfRepeatCI($data['patient_ci']);
+
+            $newPatient = Patient::create([
+                'ci' => $data['patient_ci'],
+                'name' => $data['patient_name'],
+                'last_name' => $data['patient_last_name'],
+                'phone_number' => $data['patient_phone_number'] ?? null,
+                'sex' => $data['patient_sex'],
+                'date_birth' => $data['patient_date_birth'],
+            ]);
 
 
-        return $newPatient->id;
-   }
+            return $newPatient->id;
+    }
 
-    private function generateSearch($data)
-    {
-        $search = $data['patient_ci'] . " "
-                 .$data['patient_name'] . " "
-                 .$data['patient_last_name'] . " "
-                 .$data['patient_phone_number'] . " ";
+    private function validateIfRepeatCI($ci){
         
-        return $search;
+        $patient = Patient::where('ci',$ci)->first();
+        
+        if(isset($patient->id))
+            throw new Exception("Esta cédula ya se encuentra registrada", 403);
+        
+        return 0;
     }
     
+   private function validateCasesJSON($cases){
+    
+    }
 
 }

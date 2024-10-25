@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PatientRequest;
 use App\Http\Resources\PatientResource;
 use App\Models\Area;
 use App\Models\Patient;
@@ -56,7 +57,7 @@ class EmergencyCaseController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with(['message' => 'Caso registrado con exito']);
+            return redirect()->back()->with(['message' => 'Operación realizada con exito']);
 
         }
         catch (\Throwable $e)
@@ -77,9 +78,28 @@ class EmergencyCaseController extends Controller
         ]);
     }
 
-    public function update(Request $request, string $id)
+    public function updatePatient(PatientRequest $request, Patient $patient)
     {
-        
+        DB::beginTransaction();
+
+        try 
+        {
+            $data = $request->all();
+
+            $this->emergencyCaseService->updatePatient($data, $patient);
+
+            DB::commit();
+
+            return redirect()->back()->with(['message' => 'Datos del paciente actualizados']);
+
+        }
+        catch (\Throwable $e)
+        {   
+            
+            DB::rollback();
+            
+            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+        }
     }
 
     public function patient(Request $request){
@@ -96,8 +116,4 @@ class EmergencyCaseController extends Controller
 
     }
 
-    public function destroy(string $id)
-    {
-        //
-    }
 }

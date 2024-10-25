@@ -33,7 +33,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::post('/historial-medico',[EmergencyCaseController::class,'store']);
 
     Route::get('/historial-medico/detalle-paciente/{patient}',[EmergencyCaseController::class,'patientDetail']);
-    Route::put('/historial-medico/detalle-paciente/{patientID}',[EmergencyCaseController::class,'patientDetail']);
+    Route::put('/historial-medico/detalle-paciente/{patient}',[EmergencyCaseController::class,'updatePatient']);
 
 
     
