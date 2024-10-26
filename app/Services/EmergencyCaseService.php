@@ -73,25 +73,24 @@ class EmergencyCaseService
         return null;
     }
 
-   private function createPatient($data){
+    private function createPatient($data){
 
-        $this->validateIfRepeatCI($data['patient_ci']);
+            $this->validateIfRepeatCI($data['patient_ci']);
 
-        $newPatient = Patient::create([
-            'ci' => $data['patient_ci'],
-            'name' => $data['patient_name'],
-            'last_name' => $data['patient_last_name'],
-            'phone_number' => $data['patient_phone_number'] ?? null,
-            'sex' => $data['patient_sex'],
-            'date_birth' => $data['patient_date_birth'],
-            'search' => $this->generateSearch($data)      
-        ]);
+            $newPatient = Patient::create([
+                'ci' => $data['patient_ci'],
+                'name' => $data['patient_name'],
+                'last_name' => $data['patient_last_name'],
+                'phone_number' => $data['patient_phone_number'] ?? null,
+                'sex' => $data['patient_sex'],
+                'date_birth' => $data['patient_date_birth'],
+            ]);
 
 
-        return $newPatient->id;
-   }
+            return $newPatient->id;
+    }
 
-   private function validateIfRepeatCI($ci){
+    private function validateIfRepeatCI($ci){
         
         $patient = Patient::where('ci',$ci)->first();
         
@@ -100,16 +99,9 @@ class EmergencyCaseService
         
         return 0;
     }
-
-    private function generateSearch($data)
-    {
-        $search = $data['patient_ci'] . " "
-                 .$data['patient_name'] . " "
-                 .$data['patient_last_name'] . " "
-                 .$data['patient_phone_number'] . " ";
-        
-        return $search;
-    }
     
+   private function validateCasesJSON($cases){
+    
+    }
 
 }

@@ -85,6 +85,7 @@
             <input
                 bind:value
                 {...{ type }}
+                placeholder={placeholder}
                 id={label}
                 readonly={readOnly}
                 class={`w-full ${inputClasses ? inputClasses : "p-2 bg-gray-200 "} ${error ? ' border-b border-red bg-red bg-opacity-10' : ""}`}
