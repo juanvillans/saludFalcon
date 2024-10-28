@@ -11,7 +11,6 @@
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router, page } from "@inertiajs/svelte";
     export let data = {};
-
     // console.log(data.data[0].cases)
 
     $: if (data) {
@@ -21,7 +20,7 @@
             });
         }
     }
-    console.log({ data });
+    $: console.log({ $page });
     export let areas = [];
     // Update data based on the current state of `data.specialties`
     const today = new Date();
@@ -99,27 +98,32 @@
     }
 
     const searchPatient = debounce((ci) => {
-        router.visit("/admin/historial-medico", {
-            data: { ci },
-            preserveState: true,
-            only: ["patient"],
-            onSuccess: (page) => {
-                showModal = true;
-                if (page.props.patient == null) {
-                    return;
-                }
-                $form = {
-                    ...$form,
-                    ...page.props.patient.data,
-                    cases: JSON.parse(page.props.patient.data.cases),
-                };
+        showModal = true;
+
+        router.get(
+            "/admin/historial-medico",
+            { ci },
+            {
+                preserveState: true,
+                only: ["patient"],
+                onSuccess: (page) => {
+                    // showModal = true;
+                    if (page.props.patient == null) {
+                        return;
+                    }
+                    $form = {
+                        ...$form,
+                        ...page.props.patient.data,
+                        cases: JSON.parse(page.props.patient.data.cases),
+                    };
+                },
+                onFinish: (visit) => {
+
+                    prosecingSearchPatient = false;
+                },
             },
-            onFinish: (visit) => {
-                console.log(visit);
-                prosecingSearchPatient = false;
-            },
-        });
-    }, 300);
+        );
+    },210);
 
     function goToDetailsPatientPage(id) {
         router.get("/admin/historial-medico/detalle-paciente/" + id);
@@ -156,6 +160,7 @@
             return `${diffInMinutes} Minuto${diffInMinutes > 1 ? "s" : ""}`;
         }
     }
+    $: console.log({ showModal });
 </script>
 
 <svelte:head>
@@ -172,12 +177,21 @@
                 class="text-center px-5 py-1 pt-1.5 rounded-sm bg-color2 text-gray-100"
                 >DATOS DEL PACIENTE</legend
             >
-            {#if $form.patient_ci.toString().length >= 6}
-                <div class="w-full col-span-2 h-6 overflow-hidden text-center" transition:fade>
+            {#if $form?.patient_ci.toString().length >= 6}
+                <div
+                    class="w-full col-span-2 h-6 overflow-hidden text-center"
+                
+                >
                     {#if prosecingSearchPatient}
-                    <iconify-icon  class="text-3xl" icon="eos-icons:three-dots-loading"></iconify-icon>
-                    {:else if $form.patient_id !== null}
-                        <span class="flex items-center gap-2 text-center mx-auto justify-center"  transition:fade>
+                        <iconify-icon
+                            class="text-3xl"
+                            icon="eos-icons:three-dots-loading"
+                        ></iconify-icon>
+                    {:else if $form?.patient_id !== null}
+                        <span
+                            class="flex items-center gap-2 text-center mx-auto justify-center"
+                          
+                        >
                             <iconify-icon
                                 class="text-2xl text-color1"
                                 icon="iconoir:settings-profiles"
@@ -185,7 +199,10 @@
                             <small>Paciente Registrado</small>
                         </span>
                     {:else}
-                        <span class="flex items-center gap-2 text-center mx-auto justify-center" transition:fade>
+                        <span
+                            class="flex items-center gap-2 text-center mx-auto justify-center"
+                           
+                        >
                             <iconify-icon
                                 class="text-3xl"
                                 icon="clarity:new-line"
@@ -195,24 +212,24 @@
                     {/if}
                 </div>
             {/if}
-                <div>
-                    <Input
-                        type="number"
-                        required={true}
-                        label={"C.I *"}
-                        min={6}
-                        placeholder={"Minimo 6 números"}
-                        bind:value={$form.patient_ci}
-                        on:input={() => {
-                            prosecingSearchPatient = true;
-                            $form.patient_id = null;
-                            $form.cases = [];
-                            if ($form.patient_ci.toString().length >= 6) {
-                                searchPatient($form.patient_ci);
-                            }
-                        }}
-                        error={$form.errors?.patient_ci}
-                    />
+            <div>
+                <Input
+                    type="number"
+                    required={true}
+                    label={"C.I *"}
+                    min={100000}
+                    placeholder={"Minimo 6 números"}
+                    bind:value={$form.patient_ci}
+                    on:input={() => {
+                        prosecingSearchPatient = true;
+                        $form.patient_id = null;
+                        $form.cases = [];
+                        if ($form.patient_ci.toString().length >= 6) {
+                            searchPatient($form.patient_ci);
+                        }
+                    }}
+                    error={$form.errors?.patient_ci}
+                />
                 <!-- <button
                     type="button"
                     title="Buscar si el paciente existe"
@@ -430,7 +447,8 @@
 </div>
 
 {#if visulizateType == "table"}
-    <Table pagination={{ ...data?.meta, ...data?.links }}>
+    <Table pagination={{ ...data?.meta, ...data?.links }}
+    >
         <div slot="filterBox"></div>
         <thead slot="thead" class="sticky top-0 z-50">
             <tr>
@@ -536,14 +554,14 @@
 {/if}
 
 {#if visulizateType == "card"}
-    <div class="lg:grid lg:grid-cols-2 gap-3 mt-3">
+    <div class="lg:grid  lg:grid-cols-2 gap-3 mt-3">
         {#each data?.data as row, i (row.patient_id)}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <article
                 on:click={(e) => {
                     goToDetailsPatientPage(row.patient_id);
                 }}
-                class={`mb-3 relative w-full cursor-pointer bg-gray-50 p-2 md:p-5 rounded-md shadow-sm hover:bg-gray-500 hover:bg-opacity-5`}
+                class={`border mb-3 relative w-full cursor-pointer bg-gray-50 p-2 md:p-5 rounded-md shadow-sm hover:bg-gray-500 hover:bg-opacity-5`}
             >
                 <span
                     class="h-fit absolute right-0 top-0 text-center col-span-2 bg-gray-100 p-1 rounded-lg inline-block w-10 px-2"

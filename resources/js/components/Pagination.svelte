@@ -1,35 +1,64 @@
 <script>
-    import { inertia } from "@inertiajs/svelte";
-    import { router } from "@inertiajs/svelte";
-    import { page } from "@inertiajs/svelte";
+    import { page, router } from "@inertiajs/svelte";
+
     export let pagination = false;
     let perPage = 0;
     if (pagination) {
-        perPage = pagination.per_page
+        perPage = pagination.per_page;
     }
-    console.log(pagination);
+    console.log({ pagination });
 
+    // const screenZise = window.innerWidth;
+    // let maxNroLinkPages = 7;
+    // $: transformedPagination = () => {
+    //     if (screenZise < 500) {
+    //         return [pagination.links[pagination.current_page]];
+    //     } else {
+    //         // pagination.links.pop()
+    //         if (pagination.current_page == 1) {
+    //             let maxNroLinkPages = 7;
+    //             console.log({ transformedPagination });
+    //             return pagination.links.slice(
+    //                 pagination.current_page,
+    //                 maxNroLinkPages,
+    //             );
+    //         }
+    //         return pagination.links.slice(1).splice(pagination.current_page-2, pagination.current_page + maxNroLinkPages );
+    //         pagination.links;
+    //     }
+    // };
+    function updateFilters() {
+        router.get(`${window.location.pathname}`, urlProps);
+    }
+    let urlProps = {};
+    $: {
+        updateFilters(urlProps);
+    }
 </script>
 
 <div class="mt-2 sm:flex sm:items-center sm:justify-between">
-            
     <div class="text-sm text-gray-500">
-        Mostrando 
-        <select bind:value={perPage} name="" id="" on:change={(e) => console.log(e.target.value)}>
+        Mostrando
+        <select
+            bind:value={perPage}
+            name=""
+            id=""
+            on:change={(e) => (urlProps.per_page = perPage)}
+        >
             <option value={10}>10</option>
             <option value={25}>25</option>
             <option value={50}>50</option>
             <option value={100}>100</option>
         </select>
-        de  <b> {pagination.total}</b> Registros  y {pagination.last_page} páginas
+        de <b> {pagination.total}</b> Registros y {pagination.last_page} páginas
     </div>
     <!-- pagination buttons -->
     <div class="flex items-center mt-4 gap-x-4 sm:mt-0">
         {#each pagination.links as link, i (link.label)}
             {#if i == 0}
                 <a
-                    use:inertia
-                    href={pagination.prev}
+                    on:click|preventDefault={() =>
+                        urlProps.page = link.label}
                     class={`flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 ${pagination.prev == null ? "opacity-50 cursor-not-allowed" : ""}`}
                     disabled={pagination.prev == null}
                 >
@@ -47,18 +76,14 @@
                             d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
                         />
                     </svg>
-
-                    <span> Anterior </span>
                 </a>
             {:else if i == pagination.links.length - 1}
                 <a
-                    use:inertia
-                    href={pagination.next}
+                    on:click|preventDefault={() =>
+                        urlProps.page = link.label}
                     class={`flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 ${pagination.next == null ? "opacity-50 cursor-not-allowed" : ""}`}
                     disabled={pagination.next == null}
                 >
-                    <span> Siguiente </span>
-
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -76,12 +101,18 @@
                 </a>
             {:else}
                 <a
-                    use:inertia
+                    on:click|preventDefault={() =>
+                        urlProps.page = link.label}
                     class="aspect-square border p-1 bg-gray-50 px-4 flex items-center rounded cursor-pointer"
-                    href={link.url}
                     class:active={link.active}>{link.label}</a
                 >
             {/if}
         {/each}
     </div>
 </div>
+
+<style>
+    a.active {
+        background-color: #c9ebf2;
+    }
+</style>

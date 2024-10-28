@@ -85,6 +85,7 @@
     }
     .main_and_footer_container::-webkit-scrollbar {
         width: 12px; /* width of the entire scrollbar */
+        
     }
 
     .main_and_footer_container::-webkit-scrollbar-track {
