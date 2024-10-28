@@ -1,8 +1,9 @@
 <script>
     import Input from "../../components/Input.svelte";
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm, inertia, router, page } from "@inertiajs/svelte";
+    import { useForm, page } from "@inertiajs/svelte";
     import StatusColor from "../../components/StatusColor.svelte";
+    import Alert from "../../components/Alert.svelte";
     export let areas = [];
     export let patient = false;
     let countingCases;
@@ -52,7 +53,7 @@
     function updateClient(event) {
         event.preventDefault();
         $form.clearErrors();
-        $form.put("/admin/historial-medico/detalle-paciente", {
+        $form.put("/admin/historial-medico/detalle-paciente/"+$form.patient_id, {
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
@@ -67,7 +68,6 @@
         });
     }
     function submitCases(event) {
-        console.log('Editando')
         event.preventDefault();
         $form.clearErrors();
         $form.post("/admin/historial-medico", {
@@ -81,6 +81,7 @@
                     type: "success",
                     message: "Caso editado exitosamente!",
                 });
+                editStatus = false
             },
         });
     }
@@ -481,3 +482,4 @@
         </fieldset>
     </form>
 </div>
+<Alert />
