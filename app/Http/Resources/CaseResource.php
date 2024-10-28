@@ -13,17 +13,19 @@ class CaseResource extends JsonResource
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
-    {
+    {   
         return [
-                'patient_id' => $this->patient->id,
-                'patient_ci' => $this->patient->ci,
-                'patient_name' => $this->patient->name,
-                'patient_last_name' => $this->patient->last_name,
-                'patient_phone_number' => $this->patient->phone_number,
-                'patient_sex' => $this->patient->sex,
-                'patient_date_birth' => $this->patient->date_birth,
-                'current_status' => $this->current_status,
-                'cases' => $this->cases,
+            "id" => $this->id,
+            "cases" => $this->cases,
+            "current_status" => $this->current_status,
+            "patient_id" => $this->patient_id,
+            "patient_name" => $this->patient_name,
+            "patient_last_name" => $this->patient_last_name,
+            "patient_ci" => $this->patient_ci,
+            "patient_phone_number" => $this->patient_phone_number,
+            "patient_sex" => $this->patient_sex,
+            "patient_date_birth" => $this->patient_date_birth,
         ];
+
     }
 }

@@ -19,16 +19,19 @@ class EmergencyCaseService
                           
                           'emergency_cases.id', 'emergency_cases.cases', 'emergency_cases.current_status',
 
-                          'patients.name as patient_name', 'patients.last_name as patient_last_name', 'patients.ci as patient_ci', 
+                          'patients.id as patient_id','patients.name as patient_name', 'patients.last_name as patient_last_name', 'patients.ci as patient_ci', 
                           'patients.phone_number as patient_phone_number', 'patients.sex as patient_sex', 'patients.date_birth as patient_date_birth'
                         
                           ])
                 ->orderBy('emergency_cases.id', 'DESC');
         })
-        ->paginate();
+        ->paginate($params['rows'] ?? 25);
 
-        dd($cases);
-        
+        $cases->getCollection()->transform(function ($case) {
+            $case->cases = json_decode($case->cases, true);
+            return $case;
+        });
+
         return new CaseCollection($cases);
     }
 
@@ -61,7 +64,7 @@ class EmergencyCaseService
             'phone_number' => $data['patient_phone_number'],
             'sex' => $data['patient_sex'],
             'date_birth' => $data['patient_date_birth'],
-            'search' => $this->generateSearch($data)
+            // 'search' => $this->generateSearch($data)
         ]);
 
         return 0;

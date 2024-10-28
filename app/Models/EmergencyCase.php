@@ -25,11 +25,11 @@ class EmergencyCase extends Model
 
     public function toSearchableArray()
     {   
-        $casesArray = json_decode($this->cases , true);
 
         return [
             'cases' => '',
             'patients.name' => '',
+            'patients.ci' => '',
             'patients.last_name' => '',
             'patients.phone_number' => '',
             'patients.sex' => '',

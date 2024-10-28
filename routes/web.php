@@ -1,11 +1,7 @@
 <?php
 
-use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\AppController;
-use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\EmergencyCaseController;
-use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +30,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 
     Route::get('/historial-medico/detalle-paciente/{patient}',[EmergencyCaseController::class,'patientDetail']);
     Route::put('/historial-medico/detalle-paciente/{patient}',[EmergencyCaseController::class,'updatePatient']);
+
 
 
     
