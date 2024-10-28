@@ -25,7 +25,7 @@ class EmergencyCaseService
                           ])
                 ->orderBy('emergency_cases.id', 'DESC');
         })
-        ->paginate($params['rows'] ?? 25);
+        ->paginate($params['per_page'] ?? 25);
 
         $cases->getCollection()->transform(function ($case) {
             $case->cases = json_decode($case->cases, true);

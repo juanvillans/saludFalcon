@@ -27,7 +27,7 @@ class EmergencyCaseController extends Controller
         $this->params = [
             'search' => $request->input('search') ?? null,
             'page' => $request->input('page') ?? null,
-            'rows' => $request->input('rows') ?? null,
+            'per_page' => $request->input('per_page') ?? null,
             'patient_ci' => $request->input('ci') ?? null,
         ];
 
