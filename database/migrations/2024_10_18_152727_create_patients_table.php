@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string("phone_number",30)->nullable();
             $table->string('sex');
             $table->date('date_birth');
+            $table->string('search')->nullable();
             $table->timestamps();
         });
     }

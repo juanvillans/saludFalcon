@@ -17,10 +17,10 @@ class EmergencyCaseService
             $query->join('patients', 'emergency_cases.patient_id', 'patients.id')
                 ->select([
                           
-                          'emergency_cases.id', 'emergency_cases.cases', 'emergency_cases.current_status',
+                          'emergency_cases.id', 'emergency_cases.cases', 'emergency_cases.current_status', 'emergency_cases.search',
 
                           'patients.id as patient_id','patients.name as patient_name', 'patients.last_name as patient_last_name', 'patients.ci as patient_ci', 
-                          'patients.phone_number as patient_phone_number', 'patients.sex as patient_sex', 'patients.date_birth as patient_date_birth'
+                          'patients.phone_number as patient_phone_number', 'patients.sex as patient_sex', 'patients.date_birth as patient_date_birth', 'patients.search as patient_search'
                         
                           ])
                 ->orderBy('emergency_cases.id', 'DESC');
@@ -50,6 +50,7 @@ class EmergencyCaseService
         [
             'cases' => json_encode($data['cases']),
             'current_status' => $lastCase['status'] ?? null,
+            'search' => $lastCase['diagnosis'] . ' ' . $lastCase['treatment'] . ' ' . $lastCase['doctor']['name'] . ' ' . $lastCase['doctor']['last_name'] 
         ]);
 
         return 0;

@@ -18,6 +18,7 @@ class Patient extends Model
         'phone_number',
         'sex',
         'date_birth',
+        'search',
     ];
 
     public function emergencyCase(){

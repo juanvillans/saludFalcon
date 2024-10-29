@@ -16,6 +16,7 @@ class EmergencyCase extends Model
         'patient_id',
         'cases',
         'current_status',
+        'search',
     ];
 
     public function patient(){
@@ -28,6 +29,8 @@ class EmergencyCase extends Model
 
         return [
             'cases' => '',
+            'search' => '',
+            'patients.search' => '',
             'patients.name' => '',
             'patients.ci' => '',
             'patients.last_name' => '',
