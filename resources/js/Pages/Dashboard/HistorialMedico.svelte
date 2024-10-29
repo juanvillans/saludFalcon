@@ -11,7 +11,7 @@
     import { useForm, router, page } from "@inertiajs/svelte";
     export let data = {};
     // console.log(data.data[0].cases)
-
+    console.log($page)
     export let areas = [];
     // Update data based on the current state of `data.specialties`
     const today = new Date();
