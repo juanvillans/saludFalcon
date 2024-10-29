@@ -1,24 +1,21 @@
 <script>
     import Input from "../../components/Input.svelte";
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm, inertia, router, page } from "@inertiajs/svelte";
+    import { useForm, page } from "@inertiajs/svelte";
     import StatusColor from "../../components/StatusColor.svelte";
+    import Alert from "../../components/Alert.svelte";
     export let areas = [];
     export let patient = false;
     let countingCases;
-    let form;
+    let form = useForm(structuredClone(patient.data));;
     
     $: if (patient) {
-        if (patient?.data?.cases instanceof Array == false) {
-            patient.data.cases = JSON.parse(patient.data.cases);
-        }
-        console.log({ patient });
-        form = useForm(structuredClone(patient.data));
         countingCases = patient.data.cases.length;
     }
     let editStatus = false;
-
+    $: console.log(patient?.data)
     function convertTo12HourFormat(time24) {
+        console.log(time24)
         // Split the input into hours and minutes
         let [hours, minutes] = time24.split(":").map(Number);
 
@@ -52,7 +49,7 @@
     function updateClient(event) {
         event.preventDefault();
         $form.clearErrors();
-        $form.put("/admin/historial-medico/detalle-paciente", {
+        $form.put("/admin/historial-medico/detalle-paciente/"+$form.patient_id, {
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
@@ -67,7 +64,6 @@
         });
     }
     function submitCases(event) {
-        console.log('Editando')
         event.preventDefault();
         $form.clearErrors();
         $form.post("/admin/historial-medico", {
@@ -81,6 +77,7 @@
                     type: "success",
                     message: "Caso editado exitosamente!",
                 });
+                editStatus = false
             },
         });
     }
@@ -126,7 +123,7 @@
                     label={"C.I *"}
                     bind:value={$form.patient_ci}
                     on:input={() => ($form.cases = [])}
-                    error={$form.errors?.patient_ci}
+                    error={$form.errors.patient_ci}
                 />
             </div>
             <Input
@@ -207,7 +204,7 @@
                 {patient.data.patient_ci}</legend
             >
 
-            {#each patient.data.cases as single_case, i (i)}
+            {#each patient?.data?.cases as single_case, i (i)}
                 {#if i == 0}
                     <!-- svelte-ignore empty-block -->
                     {#if editStatus == false}
@@ -481,3 +478,4 @@
         </fieldset>
     </form>
 </div>
+<Alert />

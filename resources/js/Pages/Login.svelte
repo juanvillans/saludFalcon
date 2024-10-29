@@ -9,6 +9,11 @@
     import { displayAlert } from "../stores/alertStore";
     let showModal = true;
 
+    // const { lastUpdatedAt, isPrefetching, isPrefetched } = usePrefetch(
+    //     "/admin/historial-medico",
+    //     { method: "get"},
+    //     { cacheFor: "5s" },
+    // );
     let form = useForm({
         ci: null,
         password: null,
@@ -29,12 +34,9 @@
 
 <Alert />
 <section class="bg-gray-50 min-h-screen flex justify-center items-center">
-
-   <div class="w-11/12 max-w-sm">
-    <h1 class="text-center text-2xl">EMERGENCIAS FALCÓN</h1>
-        <legend class="text-center opacity-70"
-            >INICIAR SESIÓN</legend
-        >
+    <div class="w-11/12 max-w-sm">
+        <h1 class="text-center text-2xl">EMERGENCIAS FALCÓN</h1>
+        <legend class="text-center opacity-70">INICIAR SESIÓN</legend>
         <form on:submit={handleSubmit} class="min-w-[250px]">
             <div>
                 <Input
@@ -70,8 +72,6 @@
             />
         </form>
     </div>
-
-  
 </section>
 
 <style>

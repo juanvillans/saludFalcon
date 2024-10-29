@@ -27,7 +27,7 @@ class EmergencyCaseController extends Controller
         $this->params = [
             'search' => $request->input('search') ?? null,
             'page' => $request->input('page') ?? null,
-            'rows' => $request->input('rows') ?? null,
+            'per_page' => $request->input('per_page') ?? null,
             'patient_ci' => $request->input('ci') ?? null,
         ];
 
@@ -72,6 +72,8 @@ class EmergencyCaseController extends Controller
     public function patientDetail(Request $request, Patient $patient){
 
         $patient->load('emergencyCase');
+
+        $patient->emergencyCase->cases = json_decode($patient->emergencyCase->cases);
 
         return inertia('Dashboard/PatientDetail',[
             'patient' => new PatientResource($patient)

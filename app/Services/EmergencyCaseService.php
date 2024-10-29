@@ -12,17 +12,26 @@ class EmergencyCaseService
 {	
     public function getCases($params)
     {
-        $cases = EmergencyCase::query()
-        ->when($params['search'] ?? null, function($query, $search){
-            
-            $query->whereHas('patient', function ($query) use ($search){
-                
-                $query->where('search','like','%' . $search . '%');
-            });
+        $cases = EmergencyCase::search(trim($params['search'] ?? ''))
+        ->query(function ($query) {
+            $query->join('patients', 'emergency_cases.patient_id', 'patients.id')
+                ->select([
+                          
+                          'emergency_cases.id', 'emergency_cases.cases', 'emergency_cases.current_status', 'emergency_cases.search',
+
+                          'patients.id as patient_id','patients.name as patient_name', 'patients.last_name as patient_last_name', 'patients.ci as patient_ci', 
+                          'patients.phone_number as patient_phone_number', 'patients.sex as patient_sex', 'patients.date_birth as patient_date_birth', 'patients.search as patient_search'
+                        
+                          ])
+                ->orderBy('emergency_cases.id', 'DESC');
         })
-        ->with('patient')
-        ->paginate($params['rows'] ?? 25, ['*'], 'page', $params['page']);
-        
+        ->paginate($params['per_page'] ?? 25);
+
+        $cases->getCollection()->transform(function ($case) {
+            $case->cases = json_decode($case->cases, true);
+            return $case;
+        });
+
         return new CaseCollection($cases);
     }
 
@@ -41,6 +50,7 @@ class EmergencyCaseService
         [
             'cases' => json_encode($data['cases']),
             'current_status' => $lastCase['status'] ?? null,
+            'search' => $lastCase['diagnosis'] . ' ' . $lastCase['treatment'] . ' ' . $lastCase['doctor']['name'] . ' ' . $lastCase['doctor']['last_name'] 
         ]);
 
         return 0;
@@ -55,7 +65,7 @@ class EmergencyCaseService
             'phone_number' => $data['patient_phone_number'],
             'sex' => $data['patient_sex'],
             'date_birth' => $data['patient_date_birth'],
-            'search' => $this->generateSearch($data)
+            // 'search' => $this->generateSearch($data)
         ]);
 
         return 0;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
@@ -144,37 +145,32 @@ class UserController extends Controller
         return redirect()->route('login');
     }
 
-    // public function changePassword(UpdatePasswordRequest $request)
-    // {   
-    //     $data = [
-    //         'oldPassword' => $request->oldPassword,
-    //         'newPassword' => $request->newPassword,
-    //         'confirmPassword' => $request->confirmPassword
-    //     ];
+    public function changePasswordIndex(){
+        
+        return inertia('Dashboard/CambiarContraseña');
+    }
 
-    //     try {
-    //         $this->loginService->tryChangePassword($data);
+    public function changePassword(ChangePasswordRequest $request)
+    {   
+        $data = [
+            'currentPassword' => $request->current_password,
+            'newPassword' => $request->new_password,
+            'confirmPassword' => $request->confirm_password
+        ];
 
-    //         return response()->json([
-    //             'status' => true,
-    //             'message' => 'Contraseña cambiada',
-    //         ], 200);
+        try {
+
+            $this->userService->changePassword($data);
+
+            return redirect()->back()->with(['message' => 'Contraseña actualizada con éxito']);
             
-    //     } catch (GeneralExceptions $e) {
+        } catch (\Throwable $e) {
             
-    //         if ($e->getCustomCode() == 401) {
-    //             return response()->json([
-    //                 'status' => false,
-    //                 'message' => $e->getMessage()
-    //             ], 401);
-    //         }
+            DB::rollback();
             
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
+            return redirect('/admin/cambiar-contraseña')->withErrors(['data' => $e->getMessage()]);
+        }
+    }
 
     public function username()
     {

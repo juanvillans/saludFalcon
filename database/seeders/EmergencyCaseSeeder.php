@@ -25,13 +25,17 @@ class EmergencyCaseSeeder extends Seeder
 
         for ($i = 0; $i < 100; $i++) { 
             
+            $name = $names[rand(0,4)];
+            $lastName = $lastNames[rand(0,4)];
+
             $patient = Patient::create([
                 'ci' => '30847'.$i,
-                'name' => $names[rand(0,4)],
-                'last_name' => $lastNames[rand(0,4)],
+                'name' => $name,
+                'last_name' => $lastName,
                 'phone_number' => "+58412".$i,
                 'sex' => $sexs[rand(0,1)],
-                'date_birth' => Carbon::createFromDate(2000, 12, 25), 
+                'date_birth' => Carbon::createFromDate(2000, 12, 25),
+                'search' => $name . ' ' . $lastName, 
             ]);
 
             $doctorID = rand(1,2);
@@ -55,7 +59,8 @@ class EmergencyCaseSeeder extends Seeder
                             "treatment" => "Café con bastante cambul"
                         ]
                 ]),
-                'current_status' => "Alta",    
+                'current_status' => "Alta",
+                'search' => 'Diarrea Café con bastante cambul ' . $doctors[$doctorID]['name'] . ' ' . $doctors[$doctorID]['last_name'],    
             ]);
         }
     }

@@ -1,34 +1,33 @@
 <script>
     import { inertia } from "@inertiajs/svelte";
-    import { router } from "@inertiajs/svelte";
-    import { page } from "@inertiajs/svelte";
+    import { page, router } from "@inertiajs/svelte";
     import debounce from "lodash/debounce";
     import { createEventDispatcher } from "svelte";
-
+    import Pagination from "./Pagination.svelte";
+    import Search from "./Search.svelte";
     const dispatch = createEventDispatcher();
 
     export let filtersOptions = [];
     export let selectedRow;
     export let serverSideData = {};
     export let pagination = false;
+    export let allowSearch = true;
 
     let filterClientData = {
         ...serverSideData.filters,
     };
     // $: $form, handleFilters()
-    console.log(serverSideData)
+    console.log(serverSideData);
     const handleFilters = () => {
         router.get(`${$page.url}`, filterClientData);
     };
 
     const handleSearch = debounce((event) => {
-        router.get(`${$page.url}`, filterClientData);
+        
+        router.get(`${$page.url}`, {...filterClientData, page: "1"});
     }, 300);
-    let perPage = 0;
-    if (pagination) {
-        perPage = pagination.per_page
-    }
-    console.log(pagination);
+    
+    // console.log(filterClientData);
 </script>
 
 <section class="w-full">
@@ -69,34 +68,9 @@
             <slot name="filterBox"></slot>
         </div>
 
-        <div class="relative flex items-center mt-4 md:mt-0">
-            <span class="absolute">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-5 h-5 mx-3 text-gray-400"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                    />
-                </svg>
-            </span>
-
-            <input
-                type="search"
-                placeholder="Buscar"
-                bind:value={filterClientData.search}
-                on:input={() => {
-                    handleSearch();
-                }}
-                class="block w-full py-1.5 pr-5 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
-            />
-        </div>
+        {#if allowSearch}
+            <Search />
+        {/if}
         {#if selectedRow?.status}
             <div class="flex gap-5 relative items-end">
                 <button
@@ -128,10 +102,10 @@
         >
             <div class="inline-block w-full py-2 align-middle md:px-6 lg:px-8">
                 <div
-                    class="overflow-x-auto max-h-[500px] overflow-y-auto scroll-table border border-gray-200 md:rounded-lg"
+                    class="overflow-x-auto border border-gray-200 md:rounded-lg"
                 >
                     <table
-                        class="table overflow-scroll overflow-y-auto w-full divide-y divide-gray-200"
+                        class="relative table overflow-scroll overflow-y-auto w-full divide-y divide-gray-200"
                     >
                         <slot name="thead"></slot>
 
@@ -147,80 +121,7 @@
 
     {#if pagination}
         <!-- Pagination ---------------------------------------------------------------------------------------------- -->
-        <div class="mt-2 sm:flex sm:items-center sm:justify-between">
-            
-            <div class="text-sm text-gray-500">
-                Mostrando 
-                <select bind:value={perPage} name="" id="" on:change={(e) => console.log(e.target.value)}>
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                </select>
-                de  <b> {pagination.total}</b> Registros  y {pagination.last_page} páginas
-            </div>
-            <!-- pagination buttons -->
-            <div class="flex items-center mt-4 gap-x-4 sm:mt-0">
-                {#each pagination.links as link, i (link.label)}
-                    {#if i == 0}
-                        <a
-                            use:inertia
-                            href={pagination.prev}
-                            class={`flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 ${pagination.prev == null ? "opacity-50 cursor-not-allowed" : ""}`}
-                            disabled={pagination.prev == null}
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="w-5 h-5 rtl:-scale-x-100"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
-                                />
-                            </svg>
-
-                            <span> Anterior </span>
-                        </a>
-                    {:else if i == pagination.links.length - 1}
-                        <a
-                            use:inertia
-                            href={pagination.next}
-                            class={`flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 ${pagination.next == null ? "opacity-50 cursor-not-allowed" : ""}`}
-                            disabled={pagination.next == null}
-                        >
-                            <span> Siguiente </span>
-
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="w-5 h-5 rtl:-scale-x-100"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
-                                />
-                            </svg>
-                        </a>
-                    {:else}
-                        <a
-                            use:inertia
-                            class="aspect-square border p-1 bg-gray-50 px-4 flex items-center rounded cursor-pointer"
-                            href={link.url}
-                            class:active={link.active}>{link.label}</a
-                        >
-                    {/if}
-                {/each}
-            </div>
-        </div>
+        <Pagination pagination={{ ...pagination }} />
     {/if}
 </section>
 
@@ -250,5 +151,10 @@
     }
     a.active {
         background-color: #c9ebf2;
+    }
+    table tr:first-child th {
+        position: sticky !important;
+        top: 120px !important;
+        background: #333 !important;
     }
 </style>

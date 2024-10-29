@@ -1,11 +1,7 @@
 <?php
 
-use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\AppController;
-use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\EmergencyCaseController;
-use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +23,9 @@ Route::get('/admin/logout', [UserController::class, 'logout'])->middleware('auth
 Route::middleware(['auth'])->prefix('admin')->group(function () 
 {
     Route::get('/', [AppController::class, 'admin'])->name('admin');
+    Route::get('/cambiar-contraseña', [UserController::class, 'changePasswordIndex'])->name('change-password-index');
+    Route::post('/cambiar-contraseña', [UserController::class, 'changePassword'])->name('change-password');
+
     Route::resource('/usuarios', UserController::class)->middleware('role:admin');
 
     Route::get('/historial-medico',[EmergencyCaseController::class,'index']);
@@ -34,6 +33,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 
     Route::get('/historial-medico/detalle-paciente/{patient}',[EmergencyCaseController::class,'patientDetail']);
     Route::put('/historial-medico/detalle-paciente/{patient}',[EmergencyCaseController::class,'updatePatient']);
+
 
 
     

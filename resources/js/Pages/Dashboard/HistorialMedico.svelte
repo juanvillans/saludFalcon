@@ -3,23 +3,15 @@
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
     import StatusColor from "../../components/StatusColor.svelte";
-
-    // import Alert from "../../components/Alert.svelte";
-
+    import Pagination from "../../components/Pagination.svelte";
+    import { fade } from "svelte/transition";
+    import debounce from "lodash/debounce";
+    import Search from "../../components/Search.svelte";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router, page } from "@inertiajs/svelte";
     export let data = {};
-
     // console.log(data.data[0].cases)
-
-    $: if (data) {
-        if (data?.data?.[0]?.cases instanceof Array == false) {
-            data?.data?.forEach((patient) => {
-                patient.cases = JSON.parse(patient.cases);
-            });
-        }
-    }
-    console.log({ data });
+    console.log($page)
     export let areas = [];
     // Update data based on the current state of `data.specialties`
     const today = new Date();
@@ -63,7 +55,6 @@
     // console.log($form.newCase.diagnosis);
     let visulizateType = "table";
     let showModal = false;
- 
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -95,39 +86,34 @@
                 },
             });
         }
-
     }
 
- 
-    function searchPatient(ci) {
+    const searchPatient = debounce((ci) => {
+        showModal = true;
+
         router.get(
             "/admin/historial-medico",
             { ci },
             {
                 preserveState: true,
+                only: ["patient"],
                 onSuccess: (page) => {
-                    showModal = true;
+                    // showModal = true;
                     if (page.props.patient == null) {
-                        displayAlert({
-                            type: "error",
-                            message: "No se encontró,",
-                        });
-
                         return;
                     }
                     $form = {
                         ...$form,
                         ...page.props.patient.data,
-                        cases: JSON.parse(page.props.patient.data.cases),
+                        cases: page.props.patient.data.cases,
                     };
                 },
                 onFinish: (visit) => {
-                    console.log(visit);
                     prosecingSearchPatient = false;
                 },
             },
         );
-    }
+    }, 210);
 
     function goToDetailsPatientPage(id) {
         router.get("/admin/historial-medico/detalle-paciente/" + id);
@@ -164,6 +150,7 @@
             return `${diffInMinutes} Minuto${diffInMinutes > 1 ? "s" : ""}`;
         }
     }
+    $: console.log({ showModal });
 </script>
 
 <svelte:head>
@@ -180,21 +167,59 @@
                 class="text-center px-5 py-1 pt-1.5 rounded-sm bg-color2 text-gray-100"
                 >DATOS DEL PACIENTE</legend
             >
-            <div class="flex gap-1 items-end">
+            {#if $form?.patient_ci.toString().length >= 6}
+                <div class="w-full col-span-2 h-6 overflow-hidden text-center">
+                    {#if prosecingSearchPatient}
+                        <iconify-icon
+                            class="text-3xl"
+                            icon="eos-icons:three-dots-loading"
+                        ></iconify-icon>
+                    {:else if $form?.patient_id !== null}
+                        <span
+                            class="flex items-center gap-2 text-center mx-auto justify-center"
+                        >
+                            <iconify-icon
+                                class="text-2xl text-color1"
+                                icon="iconoir:settings-profiles"
+                            ></iconify-icon>
+                            <small>Paciente Registrado</small>
+                        </span>
+                    {:else}
+                        <span
+                            class="flex items-center gap-2 text-center mx-auto justify-center"
+                        >
+                            <iconify-icon
+                                class="text-3xl"
+                                icon="clarity:new-line"
+                            ></iconify-icon>
+                            <small>Nuevo paciente</small>
+                        </span>
+                    {/if}
+                </div>
+            {/if}
+            <div>
                 <Input
                     type="number"
                     required={true}
                     label={"C.I *"}
+                    min={100000}
+                    placeholder={"Minimo 6 números"}
                     bind:value={$form.patient_ci}
-                    on:input={() => ($form.cases = [])}
+                    on:input={() => {
+                        prosecingSearchPatient = true;
+                        $form.patient_id = null;
+                        $form.cases = [];
+                        if ($form.patient_ci.toString().length >= 6) {
+                            searchPatient($form.patient_ci);
+                        }
+                    }}
                     error={$form.errors?.patient_ci}
                 />
-                <button
+                <!-- <button
                     type="button"
                     title="Buscar si el paciente existe"
                     class="bg-color4 h-fit px-2 rounded hover:bg-color1 hover:text-white"
                     on:click={() => {
-                        prosecingSearchPatient = true;
                         searchPatient($form.patient_ci);
                     }}
                 >
@@ -209,20 +234,22 @@
                             icon="material-symbols:search"
                         ></iconify-icon>
                     {/if}
-                </button>
+                </button> -->
             </div>
             <Input
                 type="text"
                 required={true}
-                label={"Nombres del paciente *"}
+                label={"Nombres *"}
                 bind:value={$form.patient_name}
+                readOnly={$form.patient_id}
                 error={$form.errors?.patient_name}
             />
             <Input
                 type="text"
                 required={true}
-                label={"Apellidos del paciente *"}
+                label={"Apellidos *"}
                 bind:value={$form.patient_last_name}
+                readOnly={$form.patient_id}
                 error={$form.errors?.patient_last_name}
             />
 
@@ -231,6 +258,7 @@
                 required={true}
                 label={"Fecha de Nacimiento*"}
                 bind:value={$form.patient_date_birth}
+                readOnly={$form.patient_id}
                 error={$form.errors?.patient_date_birth}
             />
             <div class="flex flex-col mt-6">
@@ -264,6 +292,7 @@
             <Input
                 type="tel"
                 label={"Teléfono"}
+                readOnly={$form.patient_id}
                 bind:value={$form.patient_phone_number}
                 error={$form.errors?.patient_phone_number}
             />
@@ -313,7 +342,7 @@
                     error={$form.errors?.newCase?.area}
                 >
                     {#each areas as area (area.id)}
-                         <option value={area}>{area.name} </option>
+                        <option value={area}>{area.name} </option>
                     {/each}
                 </Input>
             {/if}
@@ -373,7 +402,6 @@
     <button
         class="btn_create inline-block p-1 px-2 md:p-2 md:px-3"
         on:click={(e) => {
-            
             e.preventDefault();
 
             showModal = true;
@@ -391,7 +419,7 @@
         <iconify-icon
             class="cursor-pointer"
             title="Vizualizar tipo Tabla"
-            on:click={() => (visulizateType = "table")}
+            on:click={() => visulizateType = "table"}
             icon="material-symbols:table-sharp"
             class:text-color1={visulizateType == "table"}
             class:bg-color4={visulizateType == "table"}
@@ -399,7 +427,7 @@
         <iconify-icon
             class="cursor-pointer"
             title="Vizualizar tipo lista"
-            on:click={() => (visulizateType = "card")}
+            on:click={() => visulizateType = "card"}
             icon="carbon:show-data-cards"
             class:text-color1={visulizateType == "card"}
             class:bg-color4={visulizateType == "card"}
@@ -407,10 +435,9 @@
     </div>
 </div>
 
+
 {#if visulizateType == "table"}
-    <Table
-        pagination={{ ...data?.meta, ...data?.links }}
-    >
+    <Table allowSearch={false}>
         <div slot="filterBox"></div>
         <thead slot="thead" class="sticky top-0 z-50">
             <tr>
@@ -445,14 +472,13 @@
 
                             <!-- {formatDateSpanish(row.cases[0].start_date)} -->
                         </td>
-                        
+
                         <td style="white-space: normal;">
                             <StatusColor status={row.cases?.[0]?.status} />
                             <p>
-                                {#if (row.cases?.[0]?.status == "Remitido")}
+                                {#if row.cases?.[0]?.status == "Remitido"}
                                     {row.cases?.[0]?.area?.name}
                                 {/if}
-
                             </p>
                         </td>
                         <td class="min-w-[120px]">
@@ -517,13 +543,14 @@
 {/if}
 
 {#if visulizateType == "card"}
-    <div class="grid gap-3 mt-3">
+    <div class="lg:grid lg:grid-cols-2 gap-3 mt-3">
         {#each data?.data as row, i (row.patient_id)}
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <article
                 on:click={(e) => {
                     goToDetailsPatientPage(row.patient_id);
                 }}
-                class={`relative w-full cursor-pointer bg-gray-50 p-2 md:p-5 rounded-md shadow-sm ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
+                class={`border mb-3 relative w-full cursor-pointer bg-gray-50 p-2 md:p-5 rounded-md shadow-sm hover:bg-gray-500 hover:bg-opacity-5`}
             >
                 <span
                     class="h-fit absolute right-0 top-0 text-center col-span-2 bg-gray-100 p-1 rounded-lg inline-block w-10 px-2"
@@ -541,7 +568,7 @@
                     </p>
                     |
                     <StatusColor status={row.cases?.[0]?.status} />
-                    {#if (row.cases?.[0]?.status == "Remitido")}
+                    {#if row.cases?.[0]?.status == "Remitido"}
                         a {row.cases?.[0]?.area?.name}
                     {/if}
                 </div>
@@ -609,8 +636,14 @@
                 </p>
             </article>
         {/each}
+
+        
     </div>
 {/if}
 
+<Search />
+<div class="col-span-2">
+    <Pagination pagination={{ ...data?.meta, ...data?.links }} />
+</div>
 <style>
 </style>
