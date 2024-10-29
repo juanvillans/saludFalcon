@@ -28,7 +28,7 @@
     //     }
     // };
     function updateFilters() {
-        router.get(`${window.location.pathname}`, urlProps);
+        router.get(`${$page.url}`, urlProps);
     }
     let urlProps = {};
     $: {
@@ -58,8 +58,8 @@
             {#if i == 0}
                 <a
                     on:click|preventDefault={() =>
-                        urlProps.page = link.label}
-                    class={`flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 ${pagination.prev == null ? "opacity-50 cursor-not-allowed" : ""}`}
+                    urlProps.page = link.url[link.url.length-1]}
+                    class={`cursor-pointer flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 ${pagination.prev == null ? "opacity-50 cursor-not-allowed" : ""}`}
                     disabled={pagination.prev == null}
                 >
                     <svg
@@ -80,8 +80,8 @@
             {:else if i == pagination.links.length - 1}
                 <a
                     on:click|preventDefault={() =>
-                        urlProps.page = link.label}
-                    class={`flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 ${pagination.next == null ? "opacity-50 cursor-not-allowed" : ""}`}
+                        urlProps.page =  link.url[link.url.length-1]}
+                    class={`cursor-pointer flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 ${pagination.next == null ? "opacity-50 cursor-not-allowed" : ""}`}
                     disabled={pagination.next == null}
                 >
                     <svg

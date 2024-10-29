@@ -7,19 +7,15 @@
     export let areas = [];
     export let patient = false;
     let countingCases;
-    let form;
+    let form = useForm(structuredClone(patient.data));;
     
     $: if (patient) {
-        if (patient?.data?.cases instanceof Array == false) {
-            patient.data.cases = JSON.parse(patient.data.cases);
-        }
-        console.log({ patient });
-        form = useForm(structuredClone(patient.data));
         countingCases = patient.data.cases.length;
     }
     let editStatus = false;
-
+    $: console.log(patient?.data)
     function convertTo12HourFormat(time24) {
+        console.log(time24)
         // Split the input into hours and minutes
         let [hours, minutes] = time24.split(":").map(Number);
 
@@ -127,7 +123,7 @@
                     label={"C.I *"}
                     bind:value={$form.patient_ci}
                     on:input={() => ($form.cases = [])}
-                    error={$form.errors?.patient_ci}
+                    error={$form.errors.patient_ci}
                 />
             </div>
             <Input
@@ -208,7 +204,7 @@
                 {patient.data.patient_ci}</legend
             >
 
-            {#each patient.data.cases as single_case, i (i)}
+            {#each patient?.data?.cases as single_case, i (i)}
                 {#if i == 0}
                     <!-- svelte-ignore empty-block -->
                     {#if editStatus == false}

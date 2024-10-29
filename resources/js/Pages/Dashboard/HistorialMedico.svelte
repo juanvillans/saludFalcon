@@ -5,22 +5,13 @@
     import StatusColor from "../../components/StatusColor.svelte";
     import Pagination from "../../components/Pagination.svelte";
     import { fade } from "svelte/transition";
-    // import Alert from "../../components/Alert.svelte";
     import debounce from "lodash/debounce";
-
+    import Search from "../../components/Search.svelte";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router, page } from "@inertiajs/svelte";
     export let data = {};
     // console.log(data.data[0].cases)
 
-    $: if (data) {
-        if (data?.data?.[0]?.cases instanceof Array == false) {
-            data?.data?.forEach((patient) => {
-                patient.cases = JSON.parse(patient.cases);
-            });
-        }
-    }
-    $: console.log({ $page });
     export let areas = [];
     // Update data based on the current state of `data.specialties`
     const today = new Date();
@@ -114,16 +105,15 @@
                     $form = {
                         ...$form,
                         ...page.props.patient.data,
-                        cases: JSON.parse(page.props.patient.data.cases),
+                        cases: page.props.patient.data.cases,
                     };
                 },
                 onFinish: (visit) => {
-
                     prosecingSearchPatient = false;
                 },
             },
         );
-    },210);
+    }, 210);
 
     function goToDetailsPatientPage(id) {
         router.get("/admin/historial-medico/detalle-paciente/" + id);
@@ -178,10 +168,7 @@
                 >DATOS DEL PACIENTE</legend
             >
             {#if $form?.patient_ci.toString().length >= 6}
-                <div
-                    class="w-full col-span-2 h-6 overflow-hidden text-center"
-                
-                >
+                <div class="w-full col-span-2 h-6 overflow-hidden text-center">
                     {#if prosecingSearchPatient}
                         <iconify-icon
                             class="text-3xl"
@@ -190,7 +177,6 @@
                     {:else if $form?.patient_id !== null}
                         <span
                             class="flex items-center gap-2 text-center mx-auto justify-center"
-                          
                         >
                             <iconify-icon
                                 class="text-2xl text-color1"
@@ -201,7 +187,6 @@
                     {:else}
                         <span
                             class="flex items-center gap-2 text-center mx-auto justify-center"
-                           
                         >
                             <iconify-icon
                                 class="text-3xl"
@@ -256,6 +241,7 @@
                 required={true}
                 label={"Nombres *"}
                 bind:value={$form.patient_name}
+                readOnly={$form.patient_id}
                 error={$form.errors?.patient_name}
             />
             <Input
@@ -263,6 +249,7 @@
                 required={true}
                 label={"Apellidos *"}
                 bind:value={$form.patient_last_name}
+                readOnly={$form.patient_id}
                 error={$form.errors?.patient_last_name}
             />
 
@@ -271,6 +258,7 @@
                 required={true}
                 label={"Fecha de Nacimiento*"}
                 bind:value={$form.patient_date_birth}
+                readOnly={$form.patient_id}
                 error={$form.errors?.patient_date_birth}
             />
             <div class="flex flex-col mt-6">
@@ -304,6 +292,7 @@
             <Input
                 type="tel"
                 label={"Teléfono"}
+                readOnly={$form.patient_id}
                 bind:value={$form.patient_phone_number}
                 error={$form.errors?.patient_phone_number}
             />
@@ -430,7 +419,7 @@
         <iconify-icon
             class="cursor-pointer"
             title="Vizualizar tipo Tabla"
-            on:click={() => (visulizateType = "table")}
+            on:click={() => visulizateType = "table"}
             icon="material-symbols:table-sharp"
             class:text-color1={visulizateType == "table"}
             class:bg-color4={visulizateType == "table"}
@@ -438,7 +427,7 @@
         <iconify-icon
             class="cursor-pointer"
             title="Vizualizar tipo lista"
-            on:click={() => (visulizateType = "card")}
+            on:click={() => visulizateType = "card"}
             icon="carbon:show-data-cards"
             class:text-color1={visulizateType == "card"}
             class:bg-color4={visulizateType == "card"}
@@ -446,9 +435,9 @@
     </div>
 </div>
 
+
 {#if visulizateType == "table"}
-    <Table pagination={{ ...data?.meta, ...data?.links }}
-    >
+    <Table allowSearch={false}>
         <div slot="filterBox"></div>
         <thead slot="thead" class="sticky top-0 z-50">
             <tr>
@@ -554,7 +543,7 @@
 {/if}
 
 {#if visulizateType == "card"}
-    <div class="lg:grid  lg:grid-cols-2 gap-3 mt-3">
+    <div class="lg:grid lg:grid-cols-2 gap-3 mt-3">
         {#each data?.data as row, i (row.patient_id)}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <article
@@ -648,11 +637,13 @@
             </article>
         {/each}
 
-        <div class="col-span-2">
-            <Pagination pagination={{ ...data?.meta, ...data?.links }} />
-        </div>
+        
     </div>
 {/if}
 
+<Search />
+<div class="col-span-2">
+    <Pagination pagination={{ ...data?.meta, ...data?.links }} />
+</div>
 <style>
 </style>

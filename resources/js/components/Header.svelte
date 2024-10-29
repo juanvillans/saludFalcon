@@ -91,6 +91,11 @@
                     class="absolute rounded-md min-w-[120px] flex items-center flex-col bg-color1 w-full z-50 px-3 top-10 -right-0 rounded-tr-none text-gray-100"
                 >
                     <a
+                        href="/admin/"
+                        class="p-2 w-full cursor-pointer hover:underline hover:text-gray-50 inline-block whitespace-nowrap"
+                        >Cambiar contraseña</a
+                    >
+                    <a
                         href="/admin/logout"
                         class="p-2 w-full cursor-pointer hover:underline hover:text-gray-50 inline-block whitespace-nowrap"
                         >Cerrar sesión</a
