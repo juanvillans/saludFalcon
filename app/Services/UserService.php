@@ -93,6 +93,22 @@ class UserService
         return 0;
     }
 
+    public function changePassword($data){
+        $user = auth()->user();
+
+        if (!Hash::check($data['currentPassword'], $user->password))
+            throw new Exception("La contraseña actual es incorrecta", 403);
+
+        if ($data['newPassword'] != $data['confirmPassword'])
+            throw new Exception("La nueva contraseña no coincide con la confirmación", 403);
+
+        $user->password = Hash::make($data['newPassword']);
+        $user->save();
+
+        return 0;
+        
+    }
+
     private function assignSpecialties($user, $data)
     {
 
@@ -104,7 +120,7 @@ class UserService
         return 0;
             
     }
-
+    
     private function generateSearch($data)
     {
         $search = $data['ci'] . " "

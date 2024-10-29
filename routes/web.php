@@ -23,6 +23,9 @@ Route::get('/admin/logout', [UserController::class, 'logout'])->middleware('auth
 Route::middleware(['auth'])->prefix('admin')->group(function () 
 {
     Route::get('/', [AppController::class, 'admin'])->name('admin');
+    Route::get('/cambiar-contraseña', [UserController::class, 'changePasswordIndex'])->name('change-password-index');
+    Route::post('/cambiar-contraseña', [UserController::class, 'changePassword'])->name('change-password');
+
     Route::resource('/usuarios', UserController::class)->middleware('role:admin');
 
     Route::get('/historial-medico',[EmergencyCaseController::class,'index']);
