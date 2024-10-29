@@ -73,6 +73,8 @@ class EmergencyCaseController extends Controller
 
         $patient->load('emergencyCase');
 
+        $patient->emergencyCase->cases = json_decode($patient->emergencyCase->cases);
+
         return inertia('Dashboard/PatientDetail',[
             'patient' => new PatientResource($patient)
         ]);
