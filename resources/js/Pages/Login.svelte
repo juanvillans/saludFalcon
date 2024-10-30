@@ -4,7 +4,7 @@
     // import secretariaLogo from '$lib/images/logo_secretaria-circle-main.png';
     import Input from "../components/Input.svelte";
     import Modal from "../components/Modal.svelte";
-
+    import { onMount } from 'svelte';
     import Alert from "../components/Alert.svelte";
     import { displayAlert } from "../stores/alertStore";
     let showModal = true;
@@ -17,6 +17,12 @@
     let form = useForm({
         ci: null,
         password: null,
+    });
+    function focusInput() {
+            document.querySelector("input[name='ci']").focus();
+    }
+    onMount(() => {
+        focusInput();
     });
 
     function handleSubmit(event) {
@@ -43,7 +49,7 @@
                     type="text"
                     name="ci"
                     required={true}
-                    label={"Cédula *"}
+                    label={"Cédula"}
                     bind:value={$form.ci}
                     error={$form.errors?.ci}
                 />

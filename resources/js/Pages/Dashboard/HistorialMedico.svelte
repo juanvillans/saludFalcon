@@ -134,7 +134,6 @@
         const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
         const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
         const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-        console.log(diffInHours)
         if (diffInDays > 0) {
             if (diffInHours > 0) {
                 return `${diffInDays} Dia${diffInDays > 1 ? "s" : ""}, ${diffInHours -24} Hr${diffInHours > 1 ? "s" : ""}`;
@@ -146,6 +145,17 @@
         } else {
             return `${diffInMinutes} Min${diffInMinutes > 1 ? "s" : ""}`;
         }
+    }
+
+    $: if (showModal) {
+        setTimeout(() => {
+            if (showModal == true) {
+                document.querySelector("input[name='ci']")?.focus()
+    
+            }
+            
+        }, 100);
+
     }
 </script>
 
@@ -198,6 +208,7 @@
                     type="number"
                     required={true}
                     label={"C.I *"}
+                    name={"ci"}
                     min={100000}
                     placeholder={"Minimo 6 números"}
                     bind:value={$form.patient_ci}

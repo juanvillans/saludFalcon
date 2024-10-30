@@ -13,7 +13,7 @@
     $: if (data) {
         UpdateData();
     }
-
+    console.log($page.props.auth.permissions);
     // Update data based on the current state of `data.specialties`
     function UpdateData() {
         instituteSpecialities = [];
@@ -95,7 +95,6 @@
             });
         }
     }
-
 
     function handleDelete(id) {
         $formCreate.delete(`/admin/usuarios/${id}`, {
@@ -275,33 +274,36 @@
 </Modal>
 
 <div class="flex justify-between items-center">
-    <button
-    class="btn_create inline-block p-2 px-3 "
-    on:click={(e) => {
-        if (submitStatus == "Editar") {
-            selectedRow = {
-                status: false,
-                id: 0,
-                title: "",
-            };
+    {#if $page.props.auth.permissions.find((p) => p == "create-users")}
+        <button
+            class="btn_create inline-block p-2 px-3"
+            on:click={(e) => {
+                if (submitStatus == "Editar") {
+                    selectedRow = {
+                        status: false,
+                        id: 0,
+                        title: "",
+                    };
 
-            $formCreate.defaults({
-                ...emptyDataForm,
-            });
-            setTimeout(() => {
-                $formCreate.reset();
-            }, 100);
-        }
-        e.preventDefault();
+                    $formCreate.defaults({
+                        ...emptyDataForm,
+                    });
+                    setTimeout(() => {
+                        $formCreate.reset();
+                    }, 100);
+                }
+                e.preventDefault();
 
-        showModal = true;
-        submitStatus = "Crear";
-    }}>
-    <span class="md:hidden text-4xl relative top-1 font-bold "><iconify-icon icon="ic:round-add"></iconify-icon></span>
-    <span class="hidden md:block">
-        Nuevo Usuario
-    </span>
-</button>
+                showModal = true;
+                submitStatus = "Crear";
+            }}
+        >
+            <span class="md:hidden text-4xl relative top-1 font-bold"
+                ><iconify-icon icon="ic:round-add"></iconify-icon></span
+            >
+            <span class="hidden md:block"> Nuevo Usuario </span>
+        </button>
+    {/if}
     <!-- svelte-ignore missing-declaration -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <a
