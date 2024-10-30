@@ -8,6 +8,7 @@ bootstrap/compiled.php
 app/storage/
 storage/
 public/build
+storage/logs/laravel.log
 
 
 # Laravel 5 & Lumen specific
