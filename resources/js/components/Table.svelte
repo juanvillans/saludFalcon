@@ -1,7 +1,6 @@
 <script>
     import { inertia } from "@inertiajs/svelte";
     import { page, router } from "@inertiajs/svelte";
-    import debounce from "lodash/debounce";
     import { createEventDispatcher } from "svelte";
     import Pagination from "./Pagination.svelte";
     import Search from "./Search.svelte";
@@ -17,17 +16,11 @@
         ...serverSideData.filters,
     };
     // $: $form, handleFilters()
-    console.log(serverSideData);
     const handleFilters = () => {
         router.get(`${$page.url}`, filterClientData);
     };
 
-    const handleSearch = debounce((event) => {
-        
-        router.get(`${$page.url}`, {...filterClientData, page: "1"});
-    }, 300);
     
-    // console.log(filterClientData);
 </script>
 
 <section class="w-full">

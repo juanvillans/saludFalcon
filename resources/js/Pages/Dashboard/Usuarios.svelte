@@ -2,18 +2,13 @@
     import Table from "../../components/Table.svelte";
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
-    import axios from "axios";
-    import debounce from "lodash/debounce";
-
-    // import Alert from "../../components/Alert.svelte";
     import Especialidades from "../../components/Especialidades.svelte";
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm, inertia } from "@inertiajs/svelte";
+    import { useForm, page } from "@inertiajs/svelte";
     export let data = [];
 
     let instituteSpecialities = [];
     let specialities = [];
-    $: console.log(data);
 
     $: if (data) {
         UpdateData();
@@ -289,7 +284,6 @@
                 id: 0,
                 title: "",
             };
-            // console.log(emptyDataForm)
 
             $formCreate.defaults({
                 ...emptyDataForm,

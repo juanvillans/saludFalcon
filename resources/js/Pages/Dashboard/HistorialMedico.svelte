@@ -4,13 +4,11 @@
     import Input from "../../components/Input.svelte";
     import StatusColor from "../../components/StatusColor.svelte";
     import Pagination from "../../components/Pagination.svelte";
-    import { fade } from "svelte/transition";
     import debounce from "lodash/debounce";
     import Search from "../../components/Search.svelte";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router, page } from "@inertiajs/svelte";
     export let data = {};
-    // console.log(data.data[0].cases)
     export let areas = [];
     // Update data based on the current state of `data.specialties`
     const today = new Date();
@@ -48,9 +46,7 @@
         },
     };
     let form = useForm(structuredClone(emptyDataForm));
-     $: console.log(data.meta);
 
-    // console.log($form.newCase.diagnosis);
     let visulizateType = "table";
     let showModal = false;
 
@@ -59,7 +55,6 @@
         if ($form.cases.length == 0) {
             $form.cases = [$form.newCase];
         } else {
-            console.log($form.cases);
             $form.cases = [$form.newCase, ...$form.cases];
         }
         $form.clearErrors();
@@ -139,16 +134,19 @@
         const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
         const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
         const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
+        console.log(diffInHours)
         if (diffInDays > 0) {
-            return `${diffInDays} Dia${diffInDays > 1 ? "s" : ""}`;
+            if (diffInHours > 0) {
+                return `${diffInDays} Dia${diffInDays > 1 ? "s" : ""}, ${diffInHours -24} Hr${diffInHours > 1 ? "s" : ""}`;
+            } else {
+                return `${diffInDays} Dia${diffInDays > 1 ? "s" : ""}`
+            }
         } else if (diffInHours > 0) {
-            return `${diffInHours} Hora${diffInHours > 1 ? "s" : ""}`;
+            return `${diffInHours} Hr${diffInHours > 1 ? "s" : ""}`;
         } else {
-            return `${diffInMinutes} Minuto${diffInMinutes > 1 ? "s" : ""}`;
+            return `${diffInMinutes} Min${diffInMinutes > 1 ? "s" : ""}`;
         }
     }
-    $: console.log({ showModal });
 </script>
 
 <svelte:head>

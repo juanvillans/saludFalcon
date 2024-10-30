@@ -6,7 +6,6 @@
     if (pagination) {
         perPage = pagination.per_page;
     }
-    console.log({ pagination });
 
     // const screenZise = window.innerWidth;
     // let maxNroLinkPages = 7;
@@ -17,7 +16,6 @@
     //         // pagination.links.pop()
     //         if (pagination.current_page == 1) {
     //             let maxNroLinkPages = 7;
-    //             console.log({ transformedPagination });
     //             return pagination.links.slice(
     //                 pagination.current_page,
     //                 maxNroLinkPages,
