@@ -14,6 +14,7 @@
     export let disabled=false
     export let readOnly=false
     export let error = false;
+    export let name = ""
 
 </script>
 
@@ -93,6 +94,7 @@
                 disabled={disabled}
                 defaultValue={'xxx'}
                 max={max}
+                name={name}
                 min={min}
                 on:input
                 on:change

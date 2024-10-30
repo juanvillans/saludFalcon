@@ -33,40 +33,36 @@
     }
 
     let submitStatus = "Cambiar";
-
 </script>
 
-<form
-    id="a-form"
-    on:submit={handleSubmit}
-    action=""
-    class=""
->
-    <Input
-        type={"password"}
-        required={true}
-        label={"Contraseña actual"}
-        bind:value={$form.current_password}
-        error={$form.errors?.current_password}
+<div class="w-fit mx-auto min-w-[310px]">
+    <form id="a-form" on:submit={handleSubmit} action="">
+        <Input
+            type={"password"}
+            required={true}
+            label={"Contraseña actual"}
+            bind:value={$form.current_password}
+            error={$form.errors?.current_password}
+        />
+        <Input
+            type={"password"}
+            required={true}
+            label={"Contraseña nueva"}
+            bind:value={$form.new_password}
+            error={$form.errors?.new_password}
+        />
+        <Input
+            type={"password"}
+            required={true}
+            label={"Repetir contraseña nueva"}
+            bind:value={$form.confirm_password}
+            error={$form.errors?.confirm_password}
+        />
+    </form>
+    <input
+        form="a-form"
+        type="submit"
+        value={$form.processing ? "Cargando..." : submitStatus}
+        class="mt-8 hover:bg-color3 hover:text-white duration-200 w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
     />
-    <Input
-        type={"password"}
-        required={true}
-        label={"Contraseña nueva"}
-        bind:value={$form.new_password}
-        error={$form.errors?.new_password}
-    />
-    <Input
-        type={"password"}
-        required={true}
-        label={"Repetir contraseña nueva"}
-        bind:value={$form.confirm_password}
-        error={$form.errors?.confirm_password}
-    />
-</form>
-<input
-    form="a-form"
-    type="submit"
-    value={$form.processing ? "Cargando..." : submitStatus}
-    class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
-/>
+</div>

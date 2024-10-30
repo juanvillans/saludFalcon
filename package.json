@@ -21,6 +21,7 @@
         "consulta-dolar-venezuela": "^1.1.0",
         "iconify-icon": "^2.1.0",
         "lodash": "^4.17.21",
-        "siema": "^1.5.1"
+        "siema": "^1.5.1",
+        "workbox-window": "^7.1.0"
     }
 }

@@ -7,11 +7,9 @@
 
     function toggleNavUser() {
         userNav = !userNav;
-        console.log(userNav);
     }
 
     function clickOutside(element, callbackFunction) {
-        // console.log('click')
         function onClick(event) {
             if (!element.contains(event.target)) {
                 callbackFunction();

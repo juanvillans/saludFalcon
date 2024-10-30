@@ -2,23 +2,18 @@
     import Table from "../../components/Table.svelte";
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
-    import axios from "axios";
-    import debounce from "lodash/debounce";
-
-    // import Alert from "../../components/Alert.svelte";
     import Especialidades from "../../components/Especialidades.svelte";
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm, inertia } from "@inertiajs/svelte";
+    import { useForm, page } from "@inertiajs/svelte";
     export let data = [];
 
     let instituteSpecialities = [];
     let specialities = [];
-    $: console.log(data);
 
     $: if (data) {
         UpdateData();
     }
-
+    console.log($page.props.auth.permissions);
     // Update data based on the current state of `data.specialties`
     function UpdateData() {
         instituteSpecialities = [];
@@ -100,7 +95,6 @@
             });
         }
     }
-
 
     function handleDelete(id) {
         $formCreate.delete(`/admin/usuarios/${id}`, {
@@ -280,34 +274,36 @@
 </Modal>
 
 <div class="flex justify-between items-center">
-    <button
-    class="btn_create inline-block p-2 px-3 "
-    on:click={(e) => {
-        if (submitStatus == "Editar") {
-            selectedRow = {
-                status: false,
-                id: 0,
-                title: "",
-            };
-            // console.log(emptyDataForm)
+    {#if $page.props.auth.permissions.find((p) => p == "create-users")}
+        <button
+            class="btn_create inline-block p-2 px-3"
+            on:click={(e) => {
+                if (submitStatus == "Editar") {
+                    selectedRow = {
+                        status: false,
+                        id: 0,
+                        title: "",
+                    };
 
-            $formCreate.defaults({
-                ...emptyDataForm,
-            });
-            setTimeout(() => {
-                $formCreate.reset();
-            }, 100);
-        }
-        e.preventDefault();
+                    $formCreate.defaults({
+                        ...emptyDataForm,
+                    });
+                    setTimeout(() => {
+                        $formCreate.reset();
+                    }, 100);
+                }
+                e.preventDefault();
 
-        showModal = true;
-        submitStatus = "Crear";
-    }}>
-    <span class="md:hidden text-4xl relative top-1 font-bold "><iconify-icon icon="ic:round-add"></iconify-icon></span>
-    <span class="hidden md:block">
-        Nuevo Usuario
-    </span>
-</button>
+                showModal = true;
+                submitStatus = "Crear";
+            }}
+        >
+            <span class="md:hidden text-4xl relative top-1 font-bold"
+                ><iconify-icon icon="ic:round-add"></iconify-icon></span
+            >
+            <span class="hidden md:block"> Nuevo Usuario </span>
+        </button>
+    {/if}
     <!-- svelte-ignore missing-declaration -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <a
@@ -327,7 +323,6 @@
     <div slot="filterBox"></div>
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
-            <th>N°</th>
             <th>Nombres</th>
             <th>Apellidos</th>
             <th>C.I</th>
@@ -368,7 +363,6 @@
                 }}
                 class={`cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
             >
-                <td>{i + 1}</td>
                 <td>{row.name}</td>
                 <td>{row.last_name}</td>
                 <td>{row.ci}</td>

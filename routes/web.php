@@ -15,9 +15,12 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::group(['middleware' => ['guest']], function () {
+    Route::get('/', [AppController::class, 'loginForm'])->name('login');
+    Route::post('/admin/login', [UserController::class, 'login']);
 
-Route::get('/', [AppController::class, 'loginForm'])->name('login');
-Route::post('/admin/login', [UserController::class, 'login']);
+});
+
 Route::get('/admin/logout', [UserController::class, 'logout'])->middleware('auth')->name('logout');  
 
 Route::middleware(['auth'])->prefix('admin')->group(function () 
