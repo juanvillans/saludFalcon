@@ -11,11 +11,9 @@
     import { useForm, router, page } from "@inertiajs/svelte";
     export let data = {};
     // console.log(data.data[0].cases)
-    console.log($page)
     export let areas = [];
     // Update data based on the current state of `data.specialties`
     const today = new Date();
-
     // Format the date to YYYY-MM-DD
     const formattedDate = today.toISOString().split("T")[0];
 
@@ -50,7 +48,7 @@
         },
     };
     let form = useForm(structuredClone(emptyDataForm));
-    // $: console.log({ $form });
+     $: console.log(data.meta);
 
     // console.log($form.newCase.diagnosis);
     let visulizateType = "table";
@@ -400,7 +398,7 @@
 
 <div class="flex justify-between items-center">
     <button
-        class="btn_create inline-block p-1 px-2 md:p-2 md:px-3"
+        class="btn_create inline-block p-2 px-3"
         on:click={(e) => {
             e.preventDefault();
 
@@ -408,8 +406,8 @@
             submitStatus = "Crear";
         }}
     >
-        <span class="md:hidden relative top-1 font-bold"
-            ><iconify-icon icon="ic:round-add" style="font-size: 20px;"
+        <span class="md:hidden text-4xl relative top-1 font-bold"
+            ><iconify-icon icon="ic:round-add" 
             ></iconify-icon></span
         >
         <span class="hidden md:block"> Nuevo caso </span>
@@ -417,7 +415,7 @@
 
     <div class="text-gray-600 text-xl md:text-2xl">
         <iconify-icon
-            class="cursor-pointer"
+            class="cursor-pointer mr-2"
             title="Vizualizar tipo Tabla"
             on:click={() => visulizateType = "table"}
             icon="material-symbols:table-sharp"
@@ -441,7 +439,7 @@
         <div slot="filterBox"></div>
         <thead slot="thead" class="sticky top-0 z-50">
             <tr>
-                <th>N°</th>
+                <th style="font-size: 12px;">N°</th>
                 <th>Duración</th>
                 <th>Estado</th>
                 <th>Paciente</th>
@@ -460,7 +458,7 @@
                         }}
                         class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5`}
                     >
-                        <td>{i + 1}</td>
+                        <td style="font-size: 12px;">{data.meta.total - ((data.meta.current_page - 1) * data.meta.per_page ) - i}</td>
                         <td>
                             {timeBetweenDateAndTime(
                                 row.cases?.[0]?.start_date,

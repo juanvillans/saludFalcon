@@ -327,7 +327,6 @@
     <div slot="filterBox"></div>
     <thead slot="thead" class="sticky top-0 z-50">
         <tr>
-            <th>N°</th>
             <th>Nombres</th>
             <th>Apellidos</th>
             <th>C.I</th>
@@ -368,7 +367,6 @@
                 }}
                 class={`cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
             >
-                <td>{i + 1}</td>
                 <td>{row.name}</td>
                 <td>{row.last_name}</td>
                 <td>{row.ci}</td>

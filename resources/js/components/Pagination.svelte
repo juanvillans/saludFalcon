@@ -53,7 +53,7 @@
         de <b> {pagination.total}</b> Registros y {pagination.last_page} páginas
     </div>
     <!-- pagination buttons -->
-    <div class="flex items-center mt-4 gap-x-4 sm:mt-0">
+    <div class="flex items-center mt-4 gap-x-4 sm:mt-0 overflow-x-auto ">
         {#each pagination.links as link, i (link.label)}
             {#if i == 0}
                 <a
