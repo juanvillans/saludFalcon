@@ -76,7 +76,7 @@
                     showModal = false;
                 },
             });
-        } else if (submitStatus == "Editar" && $page.props.auth.permissions.find((p) => p == "edit-users")) {
+        } else if (submitStatus == "Editar" && $page.props.auth.permissions.find((p) => p == "update-users")) {
             $formCreate.put(`/admin/usuarios/${$formCreate.id}`, {
                 onError: (errors) => {
                     if (errors.data) {
@@ -97,7 +97,7 @@
     }
 
     function handleDelete(id) {
-        if ($page.props.auth.permissions.find((p) => p == "edit-users")) {
+        if ($page.props.auth.permissions.find((p) => p == "update-users")) {
             $formCreate.delete(`/admin/usuarios/${id}`, {
                 onBefore: () => confirm(`¿Está seguro de eliminar a este usuario?`),
                 onError: (errors) => {
