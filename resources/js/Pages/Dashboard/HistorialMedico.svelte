@@ -414,6 +414,7 @@
             showModal = true;
             submitStatus = "Crear";
         }}
+        title="Crear un nuevo caso"
     >
         <span class="md:hidden text-4xl relative top-1 font-bold"
             ><iconify-icon icon="ic:round-add" 
@@ -446,7 +447,7 @@
 {#if visulizateType == "table"}
     <Table allowSearch={false}>
         <div slot="filterBox"></div>
-        <thead slot="thead" class="sticky top-0 z-50">
+        <thead slot="thead" class="sticky top-0 ">
             <tr>
                 <th style="font-size: 12px;">N°</th>
                 <th>Duración</th>

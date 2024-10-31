@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'name' => 'EmergenciaFalcon',
+    'name' => 'SaludFalcón',
     'manifest' => [
-        'name' => 'EmergenciaFalcon',
+        'name' => 'SaludFalcón',
         'short_name' => 'Emergencia',
         'start_url' => '/',
         'background_color' => '#ffffff',

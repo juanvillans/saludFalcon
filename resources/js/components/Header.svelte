@@ -86,17 +86,18 @@
             </div>
             {#if userNav}
                 <div
-                    class="absolute rounded-md min-w-[120px] flex items-center flex-col bg-color1 w-full z-50 px-3 top-10 -right-0 rounded-tr-none text-gray-100"
+                    class="absolute  w-fit rounded-lg flex items-center flex-col bg-color1 overflow-hidden  z-50 top-10 right-3 rounded-tr-none text-gray-100 shadow-xl"
                 >
                     <a
                         href="/admin/cambiar-contraseña"
-                        class="p-2 w-full cursor-pointer hover:underline hover:text-gray-50 inline-block whitespace-nowrap"
+                        use:inertia
+                        class="p-2 py-3 px-4  w-full cursor-pointer hover:underline hover:text-gray-50 block whitespace-nowrap"
                         >Cambiar contraseña</a
                     >
                     <a
                         href="/admin/logout"
-                        class="p-2 w-full cursor-pointer hover:underline hover:text-gray-50 inline-block whitespace-nowrap"
-                        >Cerrar sesión</a
+                        class="p-3 pt-1 mt-2 bg-gray-300 text-dark  w-full cursor-pointer hover:underline hover:text-gray-500 block whitespace-nowrap"
+                        > <iconify-icon class="text-2xl  relative top-1.5" icon="solar:logout-line-duotone"></iconify-icon> Cerrar sesión</a
                     >
                     <!-- <button on:click={authHandlers.logout} class="p-4 flex items-center text-rigth w-full justify-end hover:text-green4 gap-2 hover:font-bold hover:underline" >Cerrar sesión <iconify-icon icon="solar:logout-line-duotone" class="text-xl"></iconify-icon></button> -->
                 </div>
