@@ -44,6 +44,7 @@
                 <a
                     href={navPage.href}
                     use:inertia
+                    name={navPage.name}
                     class="hover:text-color4 whitespace-nowrap z-10 rounded-md flex gap-1 md:gap-2 items-center p-2 max-h-9 h-9"
                     class:active={$page.url.startsWith(navPage.href)}
                     ><iconify-icon

@@ -9,7 +9,7 @@
     }, 300);
 </script>
 
-<div class="fixed top-3 lg right-20 md:right-60 flex items-center">
+<div class="fixed top-3 lg right-20 md:right-64 flex items-center">
     <span class="absolute">
         <svg
             xmlns="http://www.w3.org/2000/svg"
