@@ -45,6 +45,7 @@ class RoleSeeder extends Seeder
         ];
 
         $doctorPermissions = [
+	   $readUserPermission,
             $readSpecialtyPermission, $createSpecialtyPermission, $updateSpecialtyPermission, $deleteSpecialtyPermission,
             $readServicePermission, $createServicePermission, $updateServicePermission, $deleteServicePermission,
         ];

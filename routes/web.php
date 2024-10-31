@@ -29,7 +29,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::get('/cambiar-contraseña', [UserController::class, 'changePasswordIndex'])->name('change-password-index');
     Route::post('/cambiar-contraseña', [UserController::class, 'changePassword'])->name('change-password');
 
-    Route::resource('/usuarios', UserController::class)->middleware('role:admin');
+    Route::resource('/usuarios', UserController::class)->middleware('role_or_permission:admin|read-users');
 
     Route::get('/historial-medico',[EmergencyCaseController::class,'index']);
     Route::post('/historial-medico',[EmergencyCaseController::class,'store']);
