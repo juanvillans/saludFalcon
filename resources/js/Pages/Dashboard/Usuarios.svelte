@@ -60,7 +60,7 @@
     function handleSubmit(event) {
         event.preventDefault();
         $formCreate.clearErrors();
-        if (submitStatus == "Crear") {
+        if (submitStatus == "Crear" &&  $page.props.auth.permissions.find((p) => p == "create-users")) {
             $formCreate.post("/admin/usuarios", {
                 onError: (errors) => {
                     if (errors.data) {
@@ -76,7 +76,7 @@
                     showModal = false;
                 },
             });
-        } else if (submitStatus == "Editar") {
+        } else if (submitStatus == "Editar" && $page.props.auth.permissions.find((p) => p == "edit-users")) {
             $formCreate.put(`/admin/usuarios/${$formCreate.id}`, {
                 onError: (errors) => {
                     if (errors.data) {
@@ -97,21 +97,24 @@
     }
 
     function handleDelete(id) {
-        $formCreate.delete(`/admin/usuarios/${id}`, {
-            onBefore: () => confirm(`¿Está seguro de eliminar a este usuario?`),
-            onError: (errors) => {
-                if (errors.data) {
-                    displayAlert({ type: "error", message: errors.data });
-                }
-            },
-            onSuccess: (mensaje) => {
-                displayAlert({
-                    type: "success",
-                    message: "Usuario Eliminado",
-                });
-                selectedRow = { status: false, id: 0, row: {} };
-            },
-        });
+        if ($page.props.auth.permissions.find((p) => p == "edit-users")) {
+            $formCreate.delete(`/admin/usuarios/${id}`, {
+                onBefore: () => confirm(`¿Está seguro de eliminar a este usuario?`),
+                onError: (errors) => {
+                    if (errors.data) {
+                        displayAlert({ type: "error", message: errors.data });
+                    }
+                },
+                onSuccess: (mensaje) => {
+                    displayAlert({
+                        type: "success",
+                        message: "Usuario Eliminado",
+                    });
+                    selectedRow = { status: false, id: 0, row: {} };
+                },
+            });
+
+        }
     }
 
     function fillFormToEdit() {
@@ -336,30 +339,33 @@
         {#each data.users.data as row, i}
             <tr
                 on:click={(e) => {
-                    // let newSelectedRowStatus = !selectedRow.status;
-                    if (row.id != selectedRow.id) {
-                        selectedRow = {
-                            status: true,
-                            id: row.id,
-                            title: row.title,
-                        };
-                        $formCreate.defaults({
-                            ...row,
-                            specialties_ids: row.specialties.map(
-                                (obj) => obj.id,
-                            ),
-                        });
-                        $formCreate.clearErrors();
-                    } else {
-                        selectedRow = {
-                            status: false,
-                            id: 0,
-                            title: "",
-                        };
-                        $formCreate.defaults({
-                            ...emptyDataForm,
-                        });
-                    }
+
+                  if ($page.props.auth.permissions.find((p) => p == "create-users")) {
+                      if (row.id != selectedRow.id) {
+                          selectedRow = {
+                              status: true,
+                              id: row.id,
+                              title: row.title,
+                          };
+                          $formCreate.defaults({
+                              ...row,
+                              specialties_ids: row.specialties.map(
+                                  (obj) => obj.id,
+                              ),
+                          });
+                          $formCreate.clearErrors();
+                      } else {
+                          selectedRow = {
+                              status: false,
+                              id: 0,
+                              title: "",
+                          };
+                          $formCreate.defaults({
+                              ...emptyDataForm,
+                          });
+                      }
+
+                  }
                 }}
                 class={`cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
             >
