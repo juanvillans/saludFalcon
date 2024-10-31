@@ -162,119 +162,122 @@
         {/each}
     </ul>
 </Modal>
-
-<Modal bind:showModal modalClasses={"max-w-[560px]"}>
-    <form
-        id="a-form"
-        on:submit={handleSubmit}
-        action=""
-        class="w-full px-5 mt-2 md:grid md:grid-cols-2 gap-x-5 p-6 pt-0 rounded-md"
-    >
-        <div class="mt-4 col-span-2">
-            <div class="flex justify-between items-center">
-                <span>Especialidades:</span>
-                <button
-                    type="button"
-                    on:click={() => {
-                        selectSpecialityModal = true;
-                    }}
-                    for="date1"
-                    class="ml-2 inline-block cursor-pointer text-color2 font-bold py-2 px-3 rounded bg-color2 bg-opacity-10 hover:bg-opacity-20 mt-3"
-                    ><iconify-icon class="mr-1 relative top-0.5" icon="gala:add"
-                    ></iconify-icon>Añadir Especialidad</button
-                >
-            </div>
-            <ul class="flex flex-wrap gap-x-2">
-                {#each $formCreate.specialties as speciality (speciality.id)}
-                    <li>
-                        <span
-                            class="rounded-full text-black inline-block px-3 py-2 mt-2 bg-color4"
-                        >
-                            {speciality.name}
-                            <button
-                                on:click={(e) => {
-                                    $formCreate.specialties =
-                                        $formCreate.specialties.filter(
-                                            (v, i) => v.id != speciality.id,
-                                        );
-                                    $formCreate.specialties_ids =
-                                        $formCreate.specialties_ids.filter(
-                                            (v, i) => v != speciality.id,
-                                        );
-                                }}
-                                type="button"
-                                class="cursor-pointer hover:font-bold ml-1 hover:text-white aspect-square w-5 hover:bg-color1 rounded-full"
-                                title="Quitar especialidad"
-                            >
-                                <iconify-icon
-                                    class="relative top-1"
-                                    icon="ic:outline-close"
-                                ></iconify-icon>
-                            </button>
-                        </span>
-                    </li>
-                {/each}
-            </ul>
-        </div>
-        <Input
-            type="text"
-            required={true}
-            label={"Nombres"}
-            bind:value={$formCreate.name}
-            error={$formCreate.errors?.name}
-        />
-        <Input
-            type="text"
-            required={true}
-            label={"Apellidos"}
-            bind:value={$formCreate.last_name}
-            error={$formCreate.errors?.last_name}
-        />
-        <Input
-            type="email"
-            label="correo"
-            bind:value={$formCreate.email}
-            error={$formCreate.errors?.email}
-        />
-        <Input
-            type="number"
-            required={true}
-            label={"Cédula"}
-            bind:value={$formCreate.ci}
-            error={$formCreate.errors?.ci}
-        />
-        <Input
-            type="tel"
-            label={"Teléfono"}
-            bind:value={$formCreate.phone_number}
-            error={$formCreate.errors?.phone_number}
-        />
-        <Input
-            type="select"
-            required={true}
-            label={"Tipo de Usuario"}
-            bind:value={$formCreate.role_name}
-            error={$formCreate.errors?.role_name}
+{#if $page.props.auth.permissions.find((p) => p == "create-users")}
+    <Modal bind:showModal modalClasses={"max-w-[560px]"}>
+        <form
+            id="a-form"
+            on:submit={handleSubmit}
+            action=""
+            class="w-full px-5 mt-2 md:grid md:grid-cols-2 gap-x-5 p-6 pt-0 rounded-md"
         >
-            <option value="doctor">Doctor</option>
-            <option value="admin">Admin</option>
-        </Input>
-    </form>
-    <input
-        form="a-form"
-        slot="btn_footer"
-        type="submit"
-        value={$formCreate.processing ? "Cargando..." : submitStatus}
-        class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
-    />
-</Modal>
+            <div class="mt-4 col-span-2">
+                <div class="flex justify-between items-center">
+                    <span>Especialidades:</span>
+                    <button
+                        type="button"
+                        on:click={() => {
+                            selectSpecialityModal = true;
+                        }}
+                        for="date1"
+                        class="ml-2 inline-block cursor-pointer text-color2 font-bold py-2 px-3 rounded bg-color2 bg-opacity-10 hover:bg-opacity-20 mt-3"
+                        ><iconify-icon
+                            class="mr-1 relative top-0.5"
+                            icon="gala:add"
+                        ></iconify-icon>Añadir Especialidad</button
+                    >
+                </div>
+                <ul class="flex flex-wrap gap-x-2">
+                    {#each $formCreate.specialties as speciality (speciality.id)}
+                        <li>
+                            <span
+                                class="rounded-full text-black inline-block px-3 py-2 mt-2 bg-color4"
+                            >
+                                {speciality.name}
+                                <button
+                                    on:click={(e) => {
+                                        $formCreate.specialties =
+                                            $formCreate.specialties.filter(
+                                                (v, i) => v.id != speciality.id,
+                                            );
+                                        $formCreate.specialties_ids =
+                                            $formCreate.specialties_ids.filter(
+                                                (v, i) => v != speciality.id,
+                                            );
+                                    }}
+                                    type="button"
+                                    class="cursor-pointer hover:font-bold ml-1 hover:text-white aspect-square w-5 hover:bg-color1 rounded-full"
+                                    title="Quitar especialidad"
+                                >
+                                    <iconify-icon
+                                        class="relative top-1"
+                                        icon="ic:outline-close"
+                                    ></iconify-icon>
+                                </button>
+                            </span>
+                        </li>
+                    {/each}
+                </ul>
+            </div>
+            <Input
+                type="text"
+                required={true}
+                label={"Nombres"}
+                bind:value={$formCreate.name}
+                error={$formCreate.errors?.name}
+            />
+            <Input
+                type="text"
+                required={true}
+                label={"Apellidos"}
+                bind:value={$formCreate.last_name}
+                error={$formCreate.errors?.last_name}
+            />
+            <Input
+                type="email"
+                label="correo"
+                bind:value={$formCreate.email}
+                error={$formCreate.errors?.email}
+            />
+            <Input
+                type="number"
+                required={true}
+                label={"Cédula"}
+                bind:value={$formCreate.ci}
+                error={$formCreate.errors?.ci}
+            />
+            <Input
+                type="tel"
+                label={"Teléfono"}
+                bind:value={$formCreate.phone_number}
+                error={$formCreate.errors?.phone_number}
+            />
+            <Input
+                type="select"
+                required={true}
+                label={"Tipo de Usuario"}
+                bind:value={$formCreate.role_name}
+                error={$formCreate.errors?.role_name}
+            >
+                <option value="doctor">Doctor</option>
+                <option value="admin">Admin</option>
+            </Input>
+        </form>
+        <input
+            form="a-form"
+            slot="btn_footer"
+            type="submit"
+            value={$formCreate.processing ? "Cargando..." : submitStatus}
+            class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
+        />
+    </Modal>
 
-<Modal bind:showModal={showModalCreateSpecialties}>
-    <Especialidades {instituteSpecialities} {specialities} {data} />
-</Modal>
+    <Modal bind:showModal={showModalCreateSpecialties}>
+        <Especialidades {instituteSpecialities} {specialities} {data} />
+    </Modal>
+{/if}
 
-<div class="flex justify-between items-center">
-    {#if $page.props.auth.permissions.find((p) => p == "create-users")}
+{#if $page.props.auth.permissions.find((p) => p == "create-users")}
+    <div class="flex justify-between items-center">
         <button
             class="btn_create inline-block p-2 px-3"
             on:click={(e) => {
@@ -303,15 +306,16 @@
             >
             <span class="hidden md:block"> Nuevo Usuario </span>
         </button>
-    {/if}
-    <!-- svelte-ignore missing-declaration -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <a
-        class="cursor-pointer border-b py-2 px-3 hover:bg-color4"
-        on:click={() => (showModalCreateSpecialties = true)}
-        >Especialidades de la institución</a
-    >
-</div>
+        <!-- svelte-ignore missing-declaration -->
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <a
+            class="cursor-pointer border-b py-2 px-3 hover:bg-color4"
+            on:click={() => (showModalCreateSpecialties = true)}
+            >Especialidades de la institución</a
+        >
+    </div>
+{/if}
+
 <Table
     {selectedRow}
     on:fillFormToEdit={fillFormToEdit}
@@ -321,7 +325,7 @@
     pagination={false}
 >
     <div slot="filterBox"></div>
-    <thead slot="thead" class="sticky top-0 z-50">
+    <thead slot="thead">
         <tr>
             <th>Nombres</th>
             <th>Apellidos</th>
