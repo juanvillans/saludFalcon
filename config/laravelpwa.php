@@ -4,7 +4,7 @@ return [
     'name' => 'EmergenciaFalcon',
     'manifest' => [
         'name' => 'EmergenciaFalcon',
-        'short_name' => 'EF',
+        'short_name' => 'Emergencia',
         'start_url' => '/',
         'background_color' => '#ffffff',
         'theme_color' => '#000000',

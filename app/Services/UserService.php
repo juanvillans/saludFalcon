@@ -84,7 +84,6 @@ class UserService
         $authUserId = auth()->id();
         $usuario->id == $authUserId ? throw new Exception("No puedes eliminar tu propio usuario", 401) : null;
 
-        $usuario->services()->delete();
         $usuario->specialties()->detach();
         $usuario->roles()->detach();
 
