@@ -13,7 +13,7 @@ class EmergencyCaseService
     public function getCases($params)
     {
         $cases = EmergencyCase::search(trim($params['search'] ?? ''))
-        ->query(function ($query) {
+        ->query(function ($query) use ($params) {
             $query->join('patients', 'emergency_cases.patient_id', 'patients.id')
                 ->select([
                           
@@ -23,6 +23,9 @@ class EmergencyCaseService
                           'patients.phone_number as patient_phone_number', 'patients.sex as patient_sex', 'patients.date_birth as patient_date_birth', 'patients.search as patient_search'
                         
                           ])
+                ->when($params['status'],function($query) use ($params){
+                    $query->where('current_status', $params['status']);
+                })
                 ->orderBy('emergency_cases.id', 'DESC');
         })
         ->paginate($params['per_page'] ?? 25);
@@ -76,11 +79,13 @@ class EmergencyCaseService
         
         $patient = Patient::where('ci',$param['patient_ci'])->with('emergencyCase')->first();
         
+        if(!isset($patient->id))
+            return null;
         
-        if(isset($patient->id))
-            return new PatientResource($patient);
+        $patient->emergencyCase->cases = json_decode($patient->emergencyCase->cases,true);
+    
+        return new PatientResource($patient);
         
-        return null;
     }
 
     private function createPatient($data){
