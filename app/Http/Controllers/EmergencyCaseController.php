@@ -32,12 +32,13 @@ class EmergencyCaseController extends Controller
         ];
 
         $emergencyCases = $this->emergencyCaseService->getCases($this->params);
-        $patient = $this->emergencyCaseService->getPatientByCI($this->params);
+        if($this->params['patient_ci'] != null)
+            $patient = $this->emergencyCaseService->getPatientByCI($this->params);
         $areas = Area::all();
         
         return inertia('Dashboard/HistorialMedico',[
             'data' => $emergencyCases,
-            'patient' => $patient,
+            'patient' => $patient ?? null,
             'areas' => $areas,
         ]);
 

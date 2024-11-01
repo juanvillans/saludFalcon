@@ -76,11 +76,13 @@ class EmergencyCaseService
         
         $patient = Patient::where('ci',$param['patient_ci'])->with('emergencyCase')->first();
         
+        if(!isset($patient->id))
+            return null;
         
-        if(isset($patient->id))
-            return new PatientResource($patient);
+        $patient->emergencyCase->cases = json_decode($patient->emergencyCase->cases,true);
+    
+        return new PatientResource($patient);
         
-        return null;
     }
 
     private function createPatient($data){
