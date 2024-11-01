@@ -1,6 +1,6 @@
 <script>
     import { useForm } from "@inertiajs/svelte";
-
+    // import loginImages from 'img/loginImages.webp'
     // import secretariaLogo from '$lib/images/logo_secretaria-circle-main.png';
     import Input from "../components/Input.svelte";
     import Modal from "../components/Modal.svelte";
@@ -41,6 +41,7 @@
 <Alert />
 <section class="bg-gray-50 min-h-screen flex justify-center items-center">
     <div class="w-11/12 max-w-sm">
+        <!-- <img src={loginImages} alt="" srcset=""> -->
         <h1 class="text-center text-2xl">EMERGENCIAS FALCÓN</h1>
         <legend class="text-center opacity-70">INICIAR SESIÓN</legend>
         <form on:submit={handleSubmit} class="min-w-[250px]">
