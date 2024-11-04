@@ -41,6 +41,8 @@
 <Alert />
 <section class="bg-gray-50 min-h-screen flex justify-center items-center">
     <div class="w-11/12 max-w-sm">
+        <img class="block h-10 w-auto m-auto" src="/img/loginImages.webp" alt="Logo" />
+
         <h1 class="text-center text-2xl">EMERGENCIAS FALCÓN</h1>
         <legend class="text-center opacity-70">INICIAR SESIÓN</legend>
         <form on:submit={handleSubmit} class="min-w-[250px]">
