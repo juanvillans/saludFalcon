@@ -8,50 +8,50 @@
 
     export let filtersOptions = [];
     export let selectedRow;
-    export let serverSideData = {};
     export let pagination = false;
     export let allowSearch = true;
+    let firstTime = true;
 
     let filterClientData = {
-        ...serverSideData.filters,
     };
     // $: $form, handleFilters()
     const handleFilters = () => {
+        firstTime = false
         router.get(`${$page.url}`, filterClientData);
-    };
+        searchParams = new URLSearchParams(window.location.search)
 
-    
+    };
+    let searchParams = new URLSearchParams(window.location.search);
+
+
 </script>
 
 <section class="w-full">
-    <div class=" md:flex md:items-center md:justify-between">
-        <div class="flex gap-2 md:gap-7">
+    <div class=" md:flex md:items-center md:justify-between lg:justify-end">
+        <div class="flex ">
             <div
                 class="inline-flex overflow-hidden bg-gray-200 border border-dark border-opacity-30 divide-x divide-gray-300 rounded-lg rtl:flex-row-reverse"
             >
-                <!-- <button
+                <button
                     on:click={(e) => {
                         filterClientData["status"] = "";
                         handleFilters();
                     }}
                     class="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm bg-gray-200 hover:bg-gray-100"
-                    class:bg-gray-200={filterClientData["status"] == "" ||
-                        !filterClientData["status"]}
+                    class:bg-gray-50={filterClientData["status"] == "" ||
+                        !searchParams.has("status") || searchParams.get("status") == ""}
                 >
                     Todos
-                </button> -->
-                {#each Object.entries(filtersOptions) as [filterKey, filterOption]}
-                    {#each filterOption as filter, i}
+                </button>
+                {#each Object.entries(filtersOptions) as [filterKey, filterOption] (filterKey)}
+                    {#each filterOption as filter, i (filter.id)}
                         <button
                             on:click={(e) => {
                                 filterClientData[filterKey] = filter.id;
                                 handleFilters();
                             }}
                             class="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-100"
-                            class:bg-gray-50={serverSideData.filters[
-                                filterKey
-                            ] == filter.id ||
-                                (i == 0 && !filterClientData[filterKey])}
+                            class:bg-gray-50={filterClientData[filterKey] == filter.id }
                         >
                             {filter.name}
                         </button>

@@ -80,6 +80,7 @@
             });
         }
     }
+    $: console.log($form);
 
     const searchPatient = debounce((ci) => {
         showModal = true;
@@ -136,9 +137,9 @@
         const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
         if (diffInDays > 0) {
             if (diffInHours > 0) {
-                return `${diffInDays} Dia${diffInDays > 1 ? "s" : ""}, ${diffInHours -24} Hr${diffInHours > 1 ? "s" : ""}`;
+                return `${diffInDays} Dia${diffInDays > 1 ? "s" : ""}, ${diffInHours - 24} Hr${diffInHours > 1 ? "s" : ""}`;
             } else {
-                return `${diffInDays} Dia${diffInDays > 1 ? "s" : ""}`
+                return `${diffInDays} Dia${diffInDays > 1 ? "s" : ""}`;
             }
         } else if (diffInHours > 0) {
             return `${diffInHours} Hr${diffInHours > 1 ? "s" : ""}`;
@@ -150,12 +151,9 @@
     $: if (showModal) {
         setTimeout(() => {
             if (showModal == true) {
-                document.querySelector("input[name='ci']")?.focus()
-    
+                document.querySelector("input[name='ci']")?.focus();
             }
-            
         }, 100);
-
     }
 </script>
 
@@ -417,8 +415,7 @@
         title="Crear un nuevo caso"
     >
         <span class="md:hidden text-4xl relative top-1 font-bold"
-            ><iconify-icon icon="ic:round-add" 
-            ></iconify-icon></span
+            ><iconify-icon icon="ic:round-add"></iconify-icon></span
         >
         <span class="hidden md:block"> Nuevo caso </span>
     </button>
@@ -427,7 +424,7 @@
         <iconify-icon
             class="cursor-pointer mr-2"
             title="Vizualizar tipo Tabla"
-            on:click={() => visulizateType = "table"}
+            on:click={() => (visulizateType = "table")}
             icon="material-symbols:table-sharp"
             class:text-color1={visulizateType == "table"}
             class:bg-color4={visulizateType == "table"}
@@ -435,7 +432,7 @@
         <iconify-icon
             class="cursor-pointer"
             title="Vizualizar tipo lista"
-            on:click={() => visulizateType = "card"}
+            on:click={() => (visulizateType = "card")}
             icon="carbon:show-data-cards"
             class:text-color1={visulizateType == "card"}
             class:bg-color4={visulizateType == "card"}
@@ -443,11 +440,17 @@
     </div>
 </div>
 
-
 {#if visulizateType == "table"}
-    <Table allowSearch={false}>
+    <Table
+        filtersOptions={{ status: [{ name: "Alta", id: "Alta" },
+            { name: "Remitido", id: "Remitido" },
+            { name: "Permanencia", id: "Permanencia" },
+            { name: "Fallecido", id: "Fallecido" },
+        ] }}
+        allowSearch={false}
+    >
         <div slot="filterBox"></div>
-        <thead slot="thead" class="sticky top-0 ">
+        <thead slot="thead" class="sticky top-0">
             <tr>
                 <th style="font-size: 12px;">N°</th>
                 <th>Duración</th>
@@ -468,7 +471,12 @@
                         }}
                         class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5`}
                     >
-                        <td style="font-size: 12px;">{data.meta.total - ((data.meta.current_page - 1) * data.meta.per_page ) - i}</td>
+                        <td style="font-size: 12px;"
+                            >{data.meta.total -
+                                (data.meta.current_page - 1) *
+                                    data.meta.per_page -
+                                i}</td
+                        >
                         <td>
                             {timeBetweenDateAndTime(
                                 row.cases?.[0]?.start_date,
@@ -644,8 +652,6 @@
                 </p>
             </article>
         {/each}
-
-        
     </div>
 {/if}
 
@@ -653,5 +659,6 @@
 <div class="col-span-2">
     <Pagination pagination={{ ...data?.meta, ...data?.links }} />
 </div>
+
 <style>
 </style>
