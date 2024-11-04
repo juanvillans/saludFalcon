@@ -1,7 +1,7 @@
 <script>
     import { inertia } from "@inertiajs/svelte";
     import { page, router } from "@inertiajs/svelte";
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
     import Pagination from "./Pagination.svelte";
     import Search from "./Search.svelte";
     const dispatch = createEventDispatcher();
@@ -11,47 +11,42 @@
     export let pagination = false;
     export let allowSearch = true;
     let firstTime = true;
-
-    let filterClientData = {
-    };
+    $: filterClientData = {...$page.props.filters}
+    $: console.log(filterClientData, $page.props.filters)
     // $: $form, handleFilters()
     const handleFilters = () => {
-        firstTime = false
+        firstTime = false;
         router.get(`${$page.url}`, filterClientData);
-        searchParams = new URLSearchParams(window.location.search)
-
     };
-    let searchParams = new URLSearchParams(window.location.search);
-
 
 </script>
 
 <section class="w-full">
     <div class=" md:flex md:items-center md:justify-between lg:justify-end">
-        <div class="flex ">
+        <div class="flex">
             <div
-                class="inline-flex overflow-hidden bg-gray-200 border border-dark border-opacity-30 divide-x divide-gray-300 rounded-lg rtl:flex-row-reverse"
+                class="inline-flex overflow-hidden border border-dark border-opacity-30 divide-x divide-gray-300 rounded-lg rtl:flex-row-reverse"
             >
                 <button
                     on:click={(e) => {
                         filterClientData["status"] = "";
                         handleFilters();
                     }}
-                    class="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm bg-gray-200 hover:bg-gray-100"
-                    class:bg-gray-50={filterClientData["status"] == "" ||
-                        !searchParams.has("status") || searchParams.get("status") == ""}
+                    class="filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
+                    class:bg-gray-200={filterClientData["status"] == ""}
                 >
                     Todos
                 </button>
                 {#each Object.entries(filtersOptions) as [filterKey, filterOption] (filterKey)}
                     {#each filterOption as filter, i (filter.id)}
                         <button
+                            class=" filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
+                            class:bg-gray-200={filterClientData?.[filterKey] ==
+                                filter.id}
                             on:click={(e) => {
                                 filterClientData[filterKey] = filter.id;
                                 handleFilters();
                             }}
-                            class="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-100"
-                            class:bg-gray-50={filterClientData[filterKey] == filter.id }
                         >
                             {filter.name}
                         </button>

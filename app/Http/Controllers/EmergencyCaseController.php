@@ -41,6 +41,7 @@ class EmergencyCaseController extends Controller
             'data' => $emergencyCases,
             'patient' => $patient ?? null,
             'areas' => $areas,
+            'filters' => ['status' => $request->input('status') ?? ''],
         ]);
 
     }
