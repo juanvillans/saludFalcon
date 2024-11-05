@@ -165,10 +165,10 @@
     <p slot="header" class="opacity-60">Registrar un nuevo caso</p>
     <form id="a-form" on:submit={handleSubmit} action="">
         <fieldset
-            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-red rounded-md"
         >
             <legend
-                class="text-center px-5 py-1 pt-1.5 rounded-sm bg-color2 text-gray-100"
+                class="text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DATOS DEL PACIENTE</legend
             >
             {#if $form?.patient_ci.toString().length >= 6}
@@ -304,10 +304,10 @@
         </fieldset>
 
         <fieldset
-            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-red rounded-md"
         >
             <legend
-                class="text-center px-5 py-1 pt-1.5 rounded-sm bg-color2 text-gray-100"
+                class="text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DATOS DE LA EMERGENCIA</legend
             >
             <Input
@@ -369,10 +369,10 @@
         </fieldset>
 
         <fieldset
-            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color2 rounded-md"
+            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-red rounded-md"
         >
             <legend
-                class="text-center px-5 py-1 pt-1.5 rounded-sm bg-color2 text-gray-100"
+                class="text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DIAGNÓSTICO Y TRATAMIENTO</legend
             >
             <Input

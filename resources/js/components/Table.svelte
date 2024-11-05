@@ -6,7 +6,7 @@
     import Search from "./Search.svelte";
     const dispatch = createEventDispatcher();
 
-    export let filtersOptions = [];
+    export let filtersOptions = false;
     export let selectedRow;
     export let pagination = false;
     export let allowSearch = true;
@@ -23,6 +23,7 @@
 
 <section class="w-full">
     <div class=" md:flex md:items-center md:justify-between lg:justify-end">
+        {#if filtersOptions}
         <div class="flex">
             <div
                 class="inline-flex overflow-hidden border border-dark border-opacity-30 divide-x divide-gray-300 rounded-lg rtl:flex-row-reverse"
@@ -55,6 +56,7 @@
             </div>
             <slot name="filterBox"></slot>
         </div>
+        {/if}
 
         {#if allowSearch}
             <Search />
