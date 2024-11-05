@@ -41,7 +41,7 @@
 <Alert />
 <section class="bg-gray-50 min-h-screen flex justify-center items-center">
     <div class="w-11/12 max-w-sm">
-        <!-- <img src={loginImages} alt="" srcset=""> -->
+        <img src="/img/group.webp" alt="" srcset="">
         <h1 class="text-center text-2xl">Hospital Doctor Alfredo Van Grieken</h1>
         <legend class="text-center opacity-70">INICIAR SESIÓN</legend>
         <form on:submit={handleSubmit} class="min-w-[250px]">
