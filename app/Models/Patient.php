@@ -21,6 +21,20 @@ class Patient extends Model
         'search',
     ];
 
+    public function toSearchableArray()
+    {   
+
+        return [
+            'search' => $this->search,
+            'name' => $this->name,
+            'ci' => $this->ci ,
+            'last_name' => $this->last_name ,
+            'phone_number' => $this->phone_number ,
+            'sex' => $this->sex ,
+            'date_birth' => $this->date_birth ,
+        ];
+    }
+
     public function emergencyCase(){
         return $this->hasOne(EmergencyCase::class);
     }
