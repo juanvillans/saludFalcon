@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\EmergencyCaseController;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,9 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::post('/cambiar-contraseña', [UserController::class, 'changePassword'])->name('change-password');
 
     Route::resource('/usuarios', UserController::class)->middleware('role_or_permission:admin|read-users');
+
+    Route::get('/pacientes',[PatientController::class,'index']);
+
 
     Route::get('/historial-medico',[EmergencyCaseController::class,'index']);
     Route::post('/historial-medico',[EmergencyCaseController::class,'store']);
