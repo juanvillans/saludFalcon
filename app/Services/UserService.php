@@ -44,13 +44,11 @@ class UserService
             "email" => $data['email'],
             "password" => Hash::make($data['ci']),
             "phone_number" => $data['phone_number'],
+            "specialty_id" => $data['specialty_id'],
             "search" => $this->generateSearch($data),
         ]);
 
         $newUser->assignRole($data['role_name']);
-
-        if($newUser->hasRole('doctor'))
-            $this->assignSpecialties($newUser,$data);
 
         return 0;
 

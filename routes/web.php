@@ -35,6 +35,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::post('/cambiar-contraseña', [UserController::class, 'changePassword'])->name('change-password');
 
     Route::resource('/usuarios', UserController::class)->middleware('role_or_permission:admin|read-users');
+    Route::post('/usuarios/solicitudes/aceptar/{requestID}', [RequestUserController::class, 'accept'])->name('requestUser.accept');
+    Route::post('/usuarios/solicitudes/rechazar/{requestID}', [RequestUserController::class, 'reject'])->name('requestUser.reject');
+
+
 
     Route::get('/pacientes',[EmergencyCaseController::class,'index']);
 

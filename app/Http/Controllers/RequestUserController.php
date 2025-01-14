@@ -13,13 +13,6 @@ use Illuminate\Support\Facades\DB;
 class RequestUserController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-    }
-
-    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -58,6 +51,44 @@ class RequestUserController extends Controller
             
             DB::rollback();
             
+            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+        }
+    }
+
+    public function accept($requestID){
+
+        DB::beginTransaction();
+        try 
+        {
+            $requestUserService = new RequestUserService();
+            $requestUserService->accept($requestID);
+
+            return redirect('/admin/usuarios?requests=true')->with(['message' => 'Solicitud aceptada con éxito']);
+        }
+        catch (\Throwable $e)
+        {   
+            
+            DB::rollback();
+            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+        }
+
+    }
+
+    public function reject($requestID){
+
+        DB::beginTransaction();
+        try 
+        {
+
+            $requestUserService = new RequestUserService();
+            $requestUserService->reject($requestID);
+
+            return redirect('/admin/usuarios?requests=true')->with(['message' => 'Solicitud rechazada con éxito']);
+        }
+        catch (\Throwable $e)
+        {   
+            
+            DB::rollback();
             return redirect()->back()->withErrors(['data' => $e->getMessage()]);
         }
     }
