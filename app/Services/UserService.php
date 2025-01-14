@@ -28,7 +28,7 @@ class UserService
             
             $query->where('id',$userID);
         })
-        ->with('specialties', 'roles')
+        ->with('specialty', 'roles')
         ->get();
 
         return new UserCollection($users);

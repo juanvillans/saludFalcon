@@ -17,7 +17,6 @@ class RequestUserController extends Controller
      */
     public function index()
     {
-        
     }
 
     /**
