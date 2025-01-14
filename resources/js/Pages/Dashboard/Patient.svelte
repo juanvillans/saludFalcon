@@ -8,8 +8,11 @@
     import Search from "../../components/Search.svelte";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router, page } from "@inertiajs/svelte";
+    import { construct_svelte_component } from "svelte/internal";
     export let data = {};
     export let areas = [];
+
+    $: console.log(areas);
     // Update data based on the current state of `data.specialties`
     const today = new Date();
     // Format the date to YYYY-MM-DD
@@ -20,14 +23,22 @@
     const formattedTime = `${hours}:${minutes}`;
 
     const emptyDataForm = {
-        patient_id: null,
-        patient_name: "",
-        patient_last_name: "",
-        patient_ci: "",
-        patient_sex: "",
-        patient_date_birth: "",
-        patient_phone_number: "",
-
+        id: null,
+        name: "",
+        last_name: "",
+        ci: "",
+        sex: "",
+        date_birth: "",
+        phone_number: "",
+        history_number: "",
+        marital_status: "",
+        current_address: "",
+        economic_classification: "",
+        nationality: "",
+        place_of_birth: "",
+        notify_in_case_of_emergency: "",
+        relationship: "",
+        profession: "",
         cases: [],
         newCase: {
             doctor: {
@@ -41,7 +52,7 @@
             end_time: formattedTime,
             treatment: "",
             diagnosis: "",
-            status: "Alta",
+            status: "Altamedica",
             area: "",
         },
     };
@@ -112,6 +123,20 @@
     function goToDetailsPatientPage(id) {
         router.get("/admin/historial-medico/detalle-paciente/" + id);
     }
+    let selectingText = false;
+
+    function handleMouseDown() {
+        selectingText = false; // Reset before mouse down
+    }
+
+    function handleMouseUp(event, patientId) {
+        const selection = window.getSelection();
+
+        // Check if there is any selected text
+        if (selection.toString().length === 0) {
+            goToDetailsPatientPage(patientId);
+        }
+    }
     let submitStatus = "Crear";
     let prosecingSearchPatient = false;
 
@@ -123,7 +148,7 @@
         status,
     ) {
         // Combine date and time strings into a single Date object
-        if (status == "Permanencia") {
+        if (status == "Observación") {
             const now = new Date(); // Get the current date and time
             endDate = now.toISOString().split("T")[0]; // Format to YYYY-MM-DD
             endTime = now.toTimeString().split(" ")[0].substring(0, 5); // Format to HH:mm
@@ -165,28 +190,28 @@
     <p slot="header" class="opacity-60">Registrar un nuevo caso</p>
     <form id="a-form" on:submit={handleSubmit} action="">
         <fieldset
-            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-red rounded-md"
+            class=" px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color3 rounded-md"
         >
             <legend
-                class="text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
+                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DATOS DEL PACIENTE</legend
             >
-            {#if $form?.patient_ci.toString().length >= 6}
+            {#if $form?.ci.toString().length >= 6}
                 <div class="w-full col-span-2 h-6 overflow-hidden text-center">
                     {#if prosecingSearchPatient}
                         <iconify-icon
                             class="text-3xl"
                             icon="eos-icons:three-dots-loading"
                         ></iconify-icon>
-                    {:else if $form?.patient_id !== null}
+                    {:else if $form?.id !== null}
                         <span
                             class="flex items-center gap-2 text-center mx-auto justify-center"
                         >
                             <iconify-icon
-                                class="text-2xl text-color1"
+                                class="text-2xl text-color3"
                                 icon="iconoir:settings-profiles"
                             ></iconify-icon>
-                            <small>Paciente Registrado</small>
+                            <small>Paciente Registrado con historia</small>
                         </span>
                     {:else}
                         <span
@@ -196,36 +221,37 @@
                                 class="text-3xl"
                                 icon="clarity:new-line"
                             ></iconify-icon>
-                            <small>Nuevo paciente</small>
+                            <small>Nuevo paciente sin historia</small>
                         </span>
                     {/if}
                 </div>
             {/if}
             <div>
                 <Input
-                    type="number"
                     required={true}
+                    type={"number"}
                     label={"C.I *"}
                     name={"ci"}
                     min={100000}
                     placeholder={"Minimo 6 números"}
-                    bind:value={$form.patient_ci}
-                    on:input={() => {
+                    on:wheel={(e) => document.activeElement.blur()}
+                    bind:value={$form.ci}
+                    on:input={(e) => {
                         prosecingSearchPatient = true;
-                        $form.patient_id = null;
+                        $form.id = null;
                         $form.cases = [];
-                        if ($form.patient_ci.toString().length >= 6) {
-                            searchPatient($form.patient_ci);
+                        if ($form.ci.toString().length >= 6) {
+                            searchPatient($form.ci);
                         }
                     }}
-                    error={$form.errors?.patient_ci}
+                    error={$form.errors?.ci}
                 />
                 <!-- <button
                     type="button"
                     title="Buscar si el paciente existe"
                     class="bg-color4 h-fit px-2 rounded hover:bg-color1 hover:text-white"
                     on:click={() => {
-                        searchPatient($form.patient_ci);
+                        searchPatient($form.ci);
                     }}
                 >
                     {#if prosecingSearchPatient == true}
@@ -245,37 +271,37 @@
                 type="text"
                 required={true}
                 label={"Nombres *"}
-                bind:value={$form.patient_name}
-                readOnly={$form.patient_id}
-                error={$form.errors?.patient_name}
+                bind:value={$form.name}
+                readOnly={$form.id}
+                error={$form.errors?.name}
             />
             <Input
                 type="text"
                 required={true}
                 label={"Apellidos *"}
-                bind:value={$form.patient_last_name}
-                readOnly={$form.patient_id}
-                error={$form.errors?.patient_last_name}
+                bind:value={$form.last_name}
+                readOnly={$form.id}
+                error={$form.errors?.last_name}
             />
 
             <Input
                 type="date"
                 required={true}
                 label={"Fecha de Nacimiento*"}
-                bind:value={$form.patient_date_birth}
-                readOnly={$form.patient_id}
-                error={$form.errors?.patient_date_birth}
+                bind:value={$form.date_birth}
+                readOnly={$form.id}
+                error={$form.errors?.date_birth}
             />
             <div class="flex flex-col mt-6">
                 <label class="py-1 cursor-pointer hover:bg-gray-100">
                     <input
                         class="mr-3 inline-block"
                         type="radio"
-                        bind:group={$form.patient_sex}
+                        bind:group={$form.sex}
                         value="Masculino"
                         name="sex"
                         id=""
-                    /><span class:font-bold={$form.patient_sex == "Masculino"}
+                    /><span class:font-bold={$form.sex == "Masculino"}
                         >Masculino</span
                     >
                 </label>
@@ -284,11 +310,11 @@
                     <input
                         class="mr-3 inline-block"
                         type="radio"
-                        bind:group={$form.patient_sex}
+                        bind:group={$form.sex}
                         value="Femenino"
                         name="sex"
                         id=""
-                    /><span class:font-bold={$form.patient_sex == "Femenino"}
+                    /><span class:font-bold={$form.sex == "Femenino"}
                         >Femenino</span
                     >
                 </label>
@@ -297,19 +323,33 @@
             <Input
                 type="tel"
                 label={"Teléfono"}
-                readOnly={$form.patient_id}
-                bind:value={$form.patient_phone_number}
-                error={$form.errors?.patient_phone_number}
+                readOnly={$form.id}
+                bind:value={$form.phone_number}
+                error={$form.errors?.phone_number}
             />
         </fieldset>
 
         <fieldset
-            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-red rounded-md"
+            class=" px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color3 rounded-md"
         >
             <legend
-                class="text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
+                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DATOS DE LA EMERGENCIA</legend
             >
+
+            <Input
+                type="select"
+                required={true}
+                label={"Servicio Tratante *"}
+                bind:value={$form.newCase.treatingService}
+                error={$form.errors?.newCase?.treatingService}
+            >
+                {#each areas as area (area.id)}
+                    {#if area.type_zone_id == 1}
+                        <option value={area}>{area.name}</option>
+                    {/if}
+                {/each}
+            </Input>
             <Input
                 type="date"
                 required={true}
@@ -333,25 +373,54 @@
                 bind:value={$form.newCase.status}
                 error={$form.errors?.newCase?.status}
             >
-                <option value="Alta"> Alta </option>
-                <option value="Permanencia">Permanencia </option>
-                <option value="Remitido">Remitido </option>
-                <option value="Fallecido">Fallecido </option>
+                <option value="Altamedica"> Egreso: Alta médica </option>
+                <option value="Altacontraindicacion"> Egreso: Alta contraindicación </option>
+                <option value="Observación">Ingreso </option>
+                <option value="Admitido">Admitido </option>
+                <option value="Fallecido">Defución </option>
             </Input>
-            {#if $form.newCase.status == "Remitido"}
+            {#if $form.newCase.status == "Admitido"}
                 <Input
                     type="select"
                     required={true}
-                    label={"Area remitida *"}
+                    label={"Area admitida *"}
                     bind:value={$form.newCase.area}
                     error={$form.errors?.newCase?.area}
                 >
                     {#each areas as area (area.id)}
-                        <option value={area}>{area.name} </option>
+                        {#if area.type_zone_id == 2}
+                            <option value={area}>{area.name}</option>
+                        {/if}
                     {/each}
                 </Input>
             {/if}
-            {#if $form.newCase.status !== "Permanencia"}
+            {#if $form.newCase.status == "Admitido" && $form.newCase.area.id == "10" }
+            <Input
+                type="text"
+                required={true}
+                label={"Hospital o ambulatorio *"}
+                bind:value={$form.newCase.placeOfAmbulatory}
+                error={$form.errors?.newCase?.placeOfAmbulatory}
+            />
+        
+        {/if}
+            {#if $form.newCase.status == "Observación"}
+                <Input
+                    type="select"
+                    required={true}
+                    label={"Area de observación *"}
+                    bind:value={$form.newCase.observationArea}
+                    error={$form.errors?.newCase?.observationArea}
+                >
+                    {#each areas as area (area.id)}
+                        {#if area.type_zone_id == 1}
+                            <option value={area}>{area.name} </option>
+                        {/if}
+                    {/each}
+                </Input>
+            {/if}
+          
+            {#if $form.newCase.status !== "Observación"}
                 <Input
                     type="date"
                     label={"Fecha de salida "}
@@ -369,12 +438,20 @@
         </fieldset>
 
         <fieldset
-            class="px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-red rounded-md"
+            class=" px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color3 rounded-md"
         >
             <legend
-                class="text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
+                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DIAGNÓSTICO Y TRATAMIENTO</legend
             >
+            <Input
+                type="textarea"
+                required={true}
+                classes={"col-span-2"}
+                label={"Motivo de consulta *"}
+                bind:value={$form.newCase.reasonForConsultation}
+                error={$form?.errors?.newCase?.reasonForConsultation}
+            />
             <Input
                 type="textarea"
                 required={true}
@@ -388,7 +465,7 @@
                 type="textarea"
                 required={true}
                 classes={"col-span-2"}
-                label={"Tratamiento *"}
+                label={"Orden médica de ingreso *"}
                 bind:value={$form.newCase.treatment}
                 error={$form.errors?.newCase?.treatment}
             />
@@ -417,7 +494,7 @@
         <span class="md:hidden text-4xl relative top-1 font-bold"
             ><iconify-icon icon="ic:round-add"></iconify-icon></span
         >
-        <span class="hidden md:block"> Nuevo caso </span>
+        <span class="hidden md:block"> Nuevo caso</span>
     </button>
 
     <div class="text-gray-600 text-xl md:text-2xl">
@@ -442,11 +519,14 @@
 
 {#if visulizateType == "table"}
     <Table
-        filtersOptions={{ status: [{ name: "Alta", id: "Alta" },
-            { name: "Remitido", id: "Remitido" },
-            { name: "Permanencia", id: "Permanencia" },
-            { name: "Fallecido", id: "Fallecido" },
-        ] }}
+        filtersOptions={{
+            status: [
+                { name: "Alta", id: "Alta" },
+                { name: "Admitido", id: "Admitido" },
+                { name: "Observación", id: "Observación" },
+                { name: "Fallecido", id: "Fallecido" },
+            ],
+        }}
         allowSearch={false}
     >
         <div slot="filterBox"></div>
@@ -464,11 +544,10 @@
 
         <tbody slot="tbody">
             {#if data?.data?.length > 0 && data?.data?.[0].cases.length > 0}
-                {#each data?.data as row, i (row.patient_id)}
+                {#each data?.data as row, i (row.id)}
                     <tr
-                        on:click={(e) => {
-                            goToDetailsPatientPage(row.patient_id);
-                        }}
+                        on:mousedown={handleMouseDown}
+                        on:mouseup={(e) => handleMouseUp(e, row.id)}
                         class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5`}
                     >
                         <td style="font-size: 12px;"
@@ -492,14 +571,14 @@
                         <td style="white-space: normal;">
                             <StatusColor status={row.cases?.[0]?.status} />
                             <p>
-                                {#if row.cases?.[0]?.status == "Remitido"}
+                                {#if row.cases?.[0]?.status == "Admitido"}
                                     {row.cases?.[0]?.area?.name}
                                 {/if}
                             </p>
                         </td>
                         <td class="min-w-[120px]">
                             <div class="flex items-center gap-2">
-                                {#if row.patient_sex == "Femenino"}
+                                {#if row.sex == "Femenino"}
                                     <span class="text-pink text-2xl">
                                         <iconify-icon icon="fa-solid:female"
                                         ></iconify-icon>
@@ -511,9 +590,9 @@
                                     </span>
                                 {/if}
                                 <span class="whitespace-normal"
-                                    >{row.patient_name}
-                                    {row.patient_last_name}
-                                    - {row.patient_ci}
+                                    >{row.name}
+                                    {row.last_name}
+                                    - {row.ci}
                                 </span>
                             </div>
                         </td>
@@ -560,12 +639,11 @@
 
 {#if visulizateType == "card"}
     <div class="lg:grid lg:grid-cols-2 gap-3 mt-3">
-        {#each data?.data as row, i (row.patient_id)}
+        {#each data?.data as row, i (row.id)}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <article
-                on:click={(e) => {
-                    goToDetailsPatientPage(row.patient_id);
-                }}
+                on:mousedown={handleMouseDown}
+                on:mouseup={(e) => handleMouseUp(e, row.id)}
                 class={`border mb-3 relative w-full cursor-pointer bg-gray-50 p-2 md:p-5 rounded-md shadow-sm hover:bg-gray-500 hover:bg-opacity-5`}
             >
                 <span
@@ -584,13 +662,13 @@
                     </p>
                     |
                     <StatusColor status={row.cases?.[0]?.status} />
-                    {#if row.cases?.[0]?.status == "Remitido"}
+                    {#if row.cases?.[0]?.status == "Admitido"}
                         a {row.cases?.[0]?.area?.name}
                     {/if}
                 </div>
 
                 <div class="flex items-center gap-2 mt-1">
-                    {#if row.patient_sex == "Femenino"}
+                    {#if row.sex == "Femenino"}
                         <span class="text-pink text-lg sm:text-2xl">
                             <iconify-icon icon="fa-solid:female"></iconify-icon>
                         </span>
@@ -600,9 +678,9 @@
                         </span>
                     {/if}
                     <span
-                        >{row.patient_name}
-                        {row.patient_last_name}
-                        - {row.patient_ci}
+                        >{row.name}
+                        {row.last_name}
+                        - {row.ci}
                     </span>
                 </div>
 
@@ -661,4 +739,28 @@
 </div>
 
 <style>
+    legend::after {
+        content: " ";
+        position: absolute;
+        background-color: hsl(208, 41%, 57%, 0.4);
+        left: -10px;
+        bottom: 8.5px;
+        height: 18px;
+        width: 10px;
+        border-radius: 10px 0 0 10px;
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+    }
+    legend::before {
+        content: " ";
+        position: absolute;
+        background-color: hsl(208, 41%, 57%, 0.4);
+        right: -10px;
+        bottom: 8.5px;
+        height: 18px;
+        width: 10px;
+        border-radius: 0 10px 10px 0;
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+    }
 </style>

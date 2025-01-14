@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 const colors = require("tailwindcss/colors");
 const colorClasses = {
-    color1: "#2a2275",
+    color1: "#011140",
     color2: "#397373",
     color3: "#6595BF",
     color4: "#C9EBF2",
@@ -32,7 +32,7 @@ module.exports = {
     ],
     theme: {
         colors: {
-            color1: "#2a2275",
+            color1: "#011140",
             color2: "#397373",
             color3: "#6595BF",
             color4: "#C9EBF2",
