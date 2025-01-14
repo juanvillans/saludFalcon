@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('request_users', function (Blueprint $table) {
             $table->id();
+            $table->string('ci');
+            $table->string('name');
+            $table->string('last_name');
+            $table->string('email');
+            $table->string('phone_number');
+            $table->json('specialties_requested');
+            $table->string('search');
             $table->timestamps();
         });
     }
