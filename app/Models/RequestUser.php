@@ -9,7 +9,7 @@ class RequestUser extends Model
 {
     use HasFactory;
 
-    protected $filable = [
+    protected $fillable = [
         'ci',
         'name',
         'last_name',
