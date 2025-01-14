@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RequestUserRequest;
 use App\Models\RequestUser;
 use App\Services\RequestUserService;
 use App\Services\SpecialtyService;
@@ -37,7 +38,7 @@ class RequestUserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RequestUserRequest $request)
     {
         DB::beginTransaction();
 
