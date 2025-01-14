@@ -4,18 +4,23 @@
     import { useForm, page } from "@inertiajs/svelte";
     import StatusColor from "../../components/StatusColor.svelte";
     import Alert from "../../components/Alert.svelte";
+    import Editor from "cl-editor/src/Editor.svelte";
+
     export let areas = [];
     export let patient = false;
     let countingCases;
-    let form = useForm(structuredClone(patient.data));;
-    
+    let form = useForm(structuredClone(patient.data));
+
     $: if (patient) {
         countingCases = patient.data.cases.length;
     }
+    let editor;
+    let descriptionLength = 0;
+    let openAccordeon = -1;
     let editStatus = false;
-    $: console.log(patient?.data)
+    $: console.log(patient?.data);
     function convertTo12HourFormat(time24) {
-        console.log(time24)
+        console.log(time24);
         // Split the input into hours and minutes
         let [hours, minutes] = time24.split(":").map(Number);
 
@@ -45,23 +50,26 @@
         return formattedDate;
     }
     let showAllCases = window.screen.width > 700 ? true : false;
-
+    let isOpenCreateEvolution = false;
     function updateClient(event) {
         event.preventDefault();
         $form.clearErrors();
-        $form.put("/admin/historial-medico/detalle-paciente/"+$form.patient_id, {
-            onError: (errors) => {
-                if (errors.data) {
-                    displayAlert({ type: "error", message: errors.data });
-                }
+        $form.put(
+            "/admin/historial-medico/detalle-paciente/" + $form.patient_id,
+            {
+                onError: (errors) => {
+                    if (errors.data) {
+                        displayAlert({ type: "error", message: errors.data });
+                    }
+                },
+                onSuccess: (mensaje) => {
+                    displayAlert({
+                        type: "success",
+                        message: "Paciente editado exitosamente!",
+                    });
+                },
             },
-            onSuccess: (mensaje) => {
-                displayAlert({
-                    type: "success",
-                    message: "Paciente editado exitosamente!",
-                });
-            },
-        });
+        );
     }
     function submitCases(event) {
         event.preventDefault();
@@ -77,7 +85,7 @@
                     type: "success",
                     message: "Caso editado exitosamente!",
                 });
-                editStatus = false
+                editStatus = false;
             },
         });
     }
@@ -208,8 +216,10 @@
                 {#if i == 0}
                     <!-- svelte-ignore empty-block -->
                     {#if editStatus == false}
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <div
-                            class="bg-background p-3 h-fit col-span-2 rounded border-dark gap-x-5 w-full md:border md:p-6 pb-2 md:pb-3 pt-2 mt-3"
+                            on:click={()=> openAccordeon == i ?   openAccordeon = -1:  openAccordeon = i}
+                            class="bg-white p-3 h-fit col-span-2 rounded gap-x-5 w-full md:border md:p-6 pb-2 md:pb-3 pt-2 mt-3"
                         >
                             <div class="flex gap-3">
                                 <span
@@ -233,7 +243,9 @@
 
                                     {#if single_case.status != "Permanencia"}
                                         el
-                                        {formatDateSpanish(single_case.end_date)}
+                                        {formatDateSpanish(
+                                            single_case.end_date,
+                                        )}
                                         <span class="opacity-60">-</span>
                                         {convertTo12HourFormat(
                                             single_case.end_time,
@@ -306,6 +318,235 @@
                                         ></iconify-icon>
                                     </span>
                                 </p>
+                            </div>
+
+                            <div>
+                                <h2>Evoluciones:</h2>
+
+                                {#if openAccordeon == i}
+                                <div>
+
+
+                                    {#if openAccordeon}
+                                        <div></div>
+                                    {/if}
+                                    {#if isOpenCreateEvolution}
+                                        <div class="mb-5">
+                                            <Editor
+                                                actions={[
+                                                    "b",
+                                                    "i",
+                                                    "u",
+                                                    "ol",
+                                                    "ul",
+                                                    "left",
+                                                    "center",
+                                                    "justify",
+                                                ]}
+                                                html={$form.description}
+                                                on:change={(evt) => {
+                                                    descriptionLength =
+                                                        evt.detail.length;
+                                                    if (descriptionLength >= 300) {
+                                                        $form.setError(
+                                                            "description",
+                                                            "No puede tener más de 300 caracteres",
+                                                        );
+                                                    } else {
+                                                        $form.clearErrors(
+                                                            "description",
+                                                        );
+                                                    }
+                                                    $form.description = evt.detail;
+                                                }}
+                                                contentId="notes-content"
+                                                bind:this={editor}
+                                            />
+                                            <div
+                                                class="flex justify-between items-center"
+                                            >
+                                                <button
+                                                    type="button"
+                                                    class=""
+                                                    on:click={() =>
+                                                        (isOpenCreateEvolution = false)}
+                                                    >Cancelar</button
+                                                >
+                                                <input
+                                                    type="submit"
+                                                    value={$form.processing
+                                                        ? "Cargando..."
+                                                        : "Guardar"}
+                                                    class="hover:bg-color3 hover:text-white duration-200 mt-3 px-4 bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
+                                                />
+                                            </div>
+                                        </div>
+                                    {:else}
+                                        <button
+                                            on:click={(e) =>
+                                                (isOpenCreateEvolution = true)}
+                                            class="p-1 px-3 bg-color3 text-white mb-3"
+                                            >Crear nueva evolución +</button
+                                        >
+                                    {/if}
+                                    <ul>
+                                        <li
+                                            class="bg-gray-50 mb-3 rounded overflow-hidden shadow"
+                                        >
+                                            <span
+                                                class="flex items-center gap-2 p-1"
+                                            >
+                                                #1
+                                                <iconify-icon
+                                                    icon="fluent-mdl2:date-time-12"
+                                                ></iconify-icon>
+                                                <p>16 jun 2024, 3:00pm</p>
+                                            </span>
+    
+                                            <div class="bg-white p-1">
+                                                <p>
+                                                    Lorem ipsum dolor sit amet
+                                                    consectetur adipisicing elit.
+                                                    Eius enim accusantium explicabo
+                                                    repellendus id commodi, nulla
+                                                    minima, suscipit distinctio
+                                                    quibusdam rerum nihil, modi
+                                                    soluta cum nemo. Adipisci itaque
+                                                    ipsa enim!
+                                                </p>
+                                                Lorem ipsum dolor sit amet consectetur
+                                                adipisicing elit. voluptatum odio culpa
+                                                delectus quis, maiores, accusamus iure
+                                                eos
+                                            </div>
+                                        </li>
+    
+                                        <li
+                                            class="bg-gray-50 mb-3 border rounded overflow-hidden"
+                                        >
+                                            <span
+                                                class="flex items-center gap-2 p-1"
+                                            >
+                                                #1
+                                                <iconify-icon
+                                                    icon="fluent-mdl2:date-time-12"
+                                                ></iconify-icon>
+                                                <p>16 jun 2024, 3:00pm</p>
+                                            </span>
+    
+                                            <div class="bg-white p-1">
+                                                <p>
+                                                    Lorem ipsum dolor sit amet
+                                                    consectetur adipisicing elit.
+                                                    Eius enim accusantium explicabo
+                                                    repellendus id commodi, nulla
+                                                    minima, suscipit distinctio
+                                                    quibusdam rerum nihil, modi
+                                                    soluta cum nemo. Adipisci itaque
+                                                    ipsa enim!
+                                                </p>
+                                                Lorem ipsum dolor sit amet consectetur
+                                                adipisicing elit. voluptatum odio culpa
+                                                delectus quis, maiores, accusamus iure
+                                                eos
+                                            </div>
+                                        </li>
+    
+                                        <li
+                                            class="bg-gray-50 mb-3 border rounded overflow-hidden"
+                                        >
+                                            <span
+                                                class="flex items-center gap-2 p-1"
+                                            >
+                                                #1
+                                                <iconify-icon
+                                                    icon="fluent-mdl2:date-time-12"
+                                                ></iconify-icon>
+                                                <p>16 jun 2024, 3:00pm</p>
+                                            </span>
+    
+                                            <div class="bg-white p-1">
+                                                <p>
+                                                    Lorem ipsum dolor sit amet
+                                                    consectetur adipisicing elit.
+                                                    Eius enim accusantium explicabo
+                                                    repellendus id commodi, nulla
+                                                    minima, suscipit distinctio
+                                                    quibusdam rerum nihil, modi
+                                                    soluta cum nemo. Adipisci itaque
+                                                    ipsa enim!
+                                                </p>
+                                                Lorem ipsum dolor sit amet consectetur
+                                                adipisicing elit. voluptatum odio culpa
+                                                delectus quis, maiores, accusamus iure
+                                                eos
+                                            </div>
+                                        </li>
+    
+                                        <li
+                                            class="bg-gray-50 mb-3 border rounded overflow-hidden"
+                                        >
+                                            <span
+                                                class="flex items-center gap-2 p-1"
+                                            >
+                                                #1
+                                                <iconify-icon
+                                                    icon="fluent-mdl2:date-time-12"
+                                                ></iconify-icon>
+                                                <p>16 jun 2024, 3:00pm</p>
+                                            </span>
+    
+                                            <div class="bg-white p-1">
+                                                <p>
+                                                    Lorem ipsum dolor sit amet
+                                                    consectetur adipisicing elit.
+                                                    Eius enim accusantium explicabo
+                                                    repellendus id commodi, nulla
+                                                    minima, suscipit distinctio
+                                                    quibusdam rerum nihil, modi
+                                                    soluta cum nemo. Adipisci itaque
+                                                    ipsa enim!
+                                                </p>
+                                                Lorem ipsum dolor sit amet consectetur
+                                                adipisicing elit. voluptatum odio culpa
+                                                delectus quis, maiores, accusamus iure
+                                                eos
+                                            </div>
+                                        </li>
+    
+                                        <li
+                                            class="bg-gray-50 mb-3 border rounded overflow-hidden"
+                                        >
+                                            <span
+                                                class="flex items-center gap-2 p-1"
+                                            >
+                                                #1
+                                                <iconify-icon
+                                                    icon="fluent-mdl2:date-time-12"
+                                                ></iconify-icon>
+                                                <p>16 jun 2024, 3:00pm</p>
+                                            </span>
+    
+                                            <div class="bg-white p-1">
+                                                <p>
+                                                    Lorem ipsum dolor sit amet
+                                                    consectetur adipisicing elit.
+                                                    Eius enim accusantium explicabo
+                                                    repellendus id commodi, nulla
+                                                    minima, suscipit distinctio
+                                                    quibusdam rerum nihil, modi
+                                                    soluta cum nemo. Adipisci itaque
+                                                    ipsa enim!
+                                                </p>
+                                                Lorem ipsum dolor sit amet consectetur
+                                                adipisicing elit. voluptatum odio culpa
+                                                delectus quis, maiores, accusamus iure
+                                                eos
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                {/if}
                             </div>
                         </div>
                     {:else if $page.props.auth.user_id == single_case.doctor.id}

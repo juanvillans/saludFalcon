@@ -32,7 +32,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 
     Route::resource('/usuarios', UserController::class)->middleware('role_or_permission:admin|read-users');
 
-    Route::get('/pacientes',[PatientController::class,'index']);
+    Route::get('/pacientes',[EmergencyCaseController::class,'index']);
 
 
     Route::get('/historial-medico',[EmergencyCaseController::class,'index']);

@@ -13,10 +13,11 @@
             name: "Usuarios",
         },
         {
-            icon: "icon-park-outline:history-query",
-            href: "/admin/historial-medico",
-            name: "Historial Médico",
+            icon: "mdi:patient-outline",
+            href: "/admin/pacientes",
+            name: "Pacientes",
         },
+    
         
     ];
 
@@ -48,7 +49,7 @@
                     class="hover:text-color4 whitespace-nowrap z-10 rounded-md flex gap-1 md:gap-2 items-center p-2 max-h-9 h-9"
                     class:active={$page.url.startsWith(navPage.href)}
                     ><iconify-icon
-                        class="text-xl md:text-lg"
+                        class="text-xl md:text-2lg"
                         icon={navPage.icon}
                     /><span class:hidden={!$page.url.startsWith(navPage.href)} class="label_link text-xs md:text-base md:block"
                         >{navPage.name}
@@ -62,9 +63,15 @@
 
 <style>
     .active {
-        background-color: #6595bf;
-        border-radius: 6px;
+        background: linear-gradient(128deg, rgba(255, 255, 255, 0.24) 1%, rgba(255, 255, 255, 0.082) 100%);
+        position: relative;
+        left: -2px;
+        border-radius: 0  6px 6px 0;
         font-weight: bold;
-        color: white;
+        color: #C9EBF2;
+        border-left: 4px solid #BF0404;
+    }
+    .burger_icon {
+        
     }
 </style>

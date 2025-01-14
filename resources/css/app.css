@@ -14,7 +14,7 @@
 :root {
     --black: #000000;
     --dark: #161616;
-    --color1: #2a2275;
+    --color1: #011140;
     --color2: #397373;
     --color3: #6595bf;
     --color4: #c9ebf2;
@@ -53,9 +53,9 @@
 .cl-content {
     /* resize: both; */
     box-shadow: none !important;
-    background-color: rgb(231, 231, 231) !important;
+    /* background-color: rgb(231, 231, 231) !important; */
     height: 200px !important;
-    width: 382px !important;
+    /* width: 382px !important; */
 }
 .main_and_footer_container {
     display: grid;

@@ -19,6 +19,7 @@
 </script>
 
 <style>
+    
     input,
     textarea,
     select {
@@ -96,6 +97,7 @@
                 max={max}
                 name={name}
                 min={min}
+                on:wheel
                 on:input
                 on:change
             />
