@@ -25,8 +25,7 @@ class RequestUserController extends Controller
     public function create()
     {
         $specialtyService = new SpecialtyService();
-        $specialties = $specialtyService->getSpecialties(['status' => 1]);
-
+        $specialties = $specialtyService->getSpecialties(["status" => 1]);
         return inertia('Register',[
 
             'data' => [
