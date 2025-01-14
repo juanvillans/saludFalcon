@@ -1,5 +1,5 @@
 <script>
-    import { useForm } from "@inertiajs/svelte";
+    import { useForm,inertia } from "@inertiajs/svelte";
     // import loginImages from 'img/loginImages.webp'
     // import secretariaLogo from '$lib/images/logo_secretaria-circle-main.png';
     import Input from "../components/Input.svelte";
@@ -8,6 +8,7 @@
     import Alert from "../components/Alert.svelte";
     import { displayAlert } from "../stores/alertStore";
     let showModal = true;
+
 
     // const { lastUpdatedAt, isPrefetching, isPrefetched } = usePrefetch(
     //     "/admin/historial-medico",
@@ -77,6 +78,7 @@
                 value={$form.processing ? "Cargando..." : "ENTRAR"}
                 class="bg-color3 text-white duration-200 mt-5 w-full hover:bg-color4 hover:text-black font-bold py-3 rounded-md cursor-pointer"
             />
+            <a href="/registrarse" class="mt-2 inline-block text-xl underline text-color1" use:inertia>Registrarme</a>
         </form>
     </div>
 </section>
