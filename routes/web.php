@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\RequestUserController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['guest']], function () {
     Route::get('/', [AppController::class, 'loginForm'])->name('login');
     Route::post('/admin/login', [UserController::class, 'login']);
+    Route::get('/registrarse', [RequestUserController::class, 'create'])->name('requestUser.create');
 
 });
 
