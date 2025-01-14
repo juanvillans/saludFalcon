@@ -25,7 +25,7 @@ class RequestUserController extends Controller
         $specialtyService = new SpecialtyService();
         $specialties = $specialtyService->getSpecialties([]);
 
-        return inertia('Dashboard/Usuarios',[
+        return inertia('Register',[
 
             'data' => [
                 'specialties' => $specialties,
