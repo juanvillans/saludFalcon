@@ -43,7 +43,7 @@ class RequestUserService
             "name" => $data['name'],
             "last_name" => $data['last_name'],
             "email" => $data['email'],
-            "specialties_requested" => json_encode($data['specialties']),
+            "specialty_id" => $data['specialty_id'],
             "phone_number" => $data['phone_number'],
             "search" => $this->generateSearch($data),
         ]);

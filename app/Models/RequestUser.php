@@ -15,7 +15,11 @@ class RequestUser extends Model
         'last_name',
         'email',
         'phone_number',
-        'specialties_requested',
+        'specialty_id',
         'search',
     ];
+
+    public function specialty(){
+        return $this->belongsTo(Specialty::class);
+    }
 }

@@ -24,6 +24,7 @@ class UserSeeder extends Seeder
             "email" => "juandonquis07@gmail.com",
             "password" => Hash::make('admin'),
             "phone_number" => "04125800610",
+            "specialty_id" => 1,
             "search" => "Juan Donquis juandonquis07@gmail.com 30847627 04125800610"
         ]);
 
@@ -35,6 +36,7 @@ class UserSeeder extends Seeder
             "email" => "juanvillans16@gmail.com",
             "password" => Hash::make('admin'),
             "phone_number" => "04124393123",
+            "specialty_id" => 1,
             "search" => "Juan Villasmil juanvillans16@gmail.com 27253194 04124393123"
         ]);
 
@@ -46,17 +48,13 @@ class UserSeeder extends Seeder
             "email" => "joserodriguez@gmail.com",
             "password" => Hash::make('doctor'),
             "phone_number" => "04143672200",
+            "specialty_id" => 2,
             "search" => "Juan Rodriguez joserodriguez@gmail.com 27253194 04143672200"
         ]);
 
         $user1->assignRole('admin');
         $user2->assignRole('admin');
         $user3->assignRole('doctor');
-
-        $user3->specialties()->sync([ 1, 2 ]);
-
-
-
 
     }
 }
