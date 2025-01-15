@@ -4,16 +4,24 @@
     import Input from "../../components/Input.svelte";
     import Especialidades from "../../components/Especialidades.svelte";
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm, page } from "@inertiajs/svelte";
+    import { useForm, page, router } from "@inertiajs/svelte";
     export let data = [];
 
     let instituteSpecialities = [];
     let specialities = [];
-
+    let dataTable = []
     $: if (data) {
-        UpdateData();
+        if (data.requests) {
+            dataTable = data.requests
+        } else {
+            
+            dataTable = data.users.data
+        }
+
+        // UpdateData();
+
     }
-    console.log($page.props.auth.permissions);
+    $: console.log(data);
     // Update data based on the current state of `data.specialties`
     function UpdateData() {
         instituteSpecialities = [];
@@ -108,7 +116,7 @@
                 onSuccess: (mensaje) => {
                     displayAlert({
                         type: "success",
-                        message: "Usuario Eliminado",
+                        message: mensaje.props.flash.message,
                     });
                     selectedRow = { status: false, id: 0, row: {} };
                 },
@@ -121,6 +129,26 @@
         submitStatus = "Editar";
         $formCreate.reset();
         showModal = true;
+    }
+    function acept(id) {
+        if ($page.props.auth.permissions.find((p) => p == "update-users")) {
+            $formCreate.post(`/admin/usuarios/solicitudes/aceptar/${selectedRow.id}`, {
+                onBefore: () => confirm(`¿Está seguro de aceptar a este usuario?`),
+                onError: (errors) => {
+                    if (errors.data) {
+                        displayAlert({ type: "error", message: errors.data });
+                    }
+                },
+                onSuccess: (mensaje) => {
+                    displayAlert({
+                        type: "success",
+                        message:mensaje.props.flash.message,
+                    });
+                    selectedRow = { status: false, id: 0, row: {} };
+                },
+            });
+
+        }
     }
 
     let submitStatus = "Crear";
@@ -168,103 +196,69 @@
 {#if $page.props.auth.permissions.find((p) => p == "create-users")}
     <Modal bind:showModal modalClasses={"max-w-[560px]"}>
         <form
-            id="a-form"
-            on:submit={handleSubmit}
-            action=""
-            class="w-full px-5 mt-2 md:grid md:grid-cols-2 gap-x-5 p-6 pt-0 rounded-md"
+        id="a-form"
+        on:submit={handleSubmit}
+        action=""
+        class="w-full px-5 mt-2 md:grid md:grid-cols-2 gap-x-5 p-6 pt-0 rounded-md"
+    >
+        <div class="mt-4 col-span-2"></div>
+        <Input
+            type="text"
+            required={true}
+            label={"Nombres"}
+            bind:value={$formCreate.name}
+            error={$formCreate.errors?.name}
+        />
+        <Input
+            type="text"
+            required={true}
+            label={"Apellidos"}
+            bind:value={$formCreate.last_name}
+            error={$formCreate.errors?.last_name}
+        />
+        <Input
+            type="email"
+            label="correo"
+            bind:value={$formCreate.email}
+            error={$formCreate.errors?.email}
+        />
+        <Input
+            type="number"
+            required={true}
+            label={"Cédula"}
+            bind:value={$formCreate.ci}
+            error={$formCreate.errors?.ci}
+        />
+        <Input
+            type="tel"
+            label={"Teléfono"}
+            bind:value={$formCreate.phone_number}
+            error={$formCreate.errors?.phone_number}
+        />
+        <Input
+            type="select"
+            required={true}
+            label={"Tipo de Usuario"}
+            bind:value={$formCreate.role_name}
+            error={$formCreate.errors?.role_name}
         >
-            <div class="mt-4 col-span-2">
-                <div class="flex justify-between items-center">
-                    <span>Especialidades:</span>
-                    <button
-                        type="button"
-                        on:click={() => {
-                            selectSpecialityModal = true;
-                        }}
-                        for="date1"
-                        class="ml-2 inline-block cursor-pointer text-color2 font-bold py-2 px-3 rounded bg-color2 bg-opacity-10 hover:bg-opacity-20 mt-3"
-                        ><iconify-icon
-                            class="mr-1 relative top-0.5"
-                            icon="gala:add"
-                        ></iconify-icon>Añadir Especialidad</button
-                    >
-                </div>
-                <ul class="flex flex-wrap gap-x-2">
-                    {#each $formCreate.specialties as speciality (speciality.id)}
-                        <li>
-                            <span
-                                class="rounded-full text-black inline-block px-3 py-2 mt-2 bg-color4"
-                            >
-                                {speciality.name}
-                                <button
-                                    on:click={(e) => {
-                                        $formCreate.specialties =
-                                            $formCreate.specialties.filter(
-                                                (v, i) => v.id != speciality.id,
-                                            );
-                                        $formCreate.specialties_ids =
-                                            $formCreate.specialties_ids.filter(
-                                                (v, i) => v != speciality.id,
-                                            );
-                                    }}
-                                    type="button"
-                                    class="cursor-pointer hover:font-bold ml-1 hover:text-white aspect-square w-5 hover:bg-color1 rounded-full"
-                                    title="Quitar especialidad"
-                                >
-                                    <iconify-icon
-                                        class="relative top-1"
-                                        icon="ic:outline-close"
-                                    ></iconify-icon>
-                                </button>
-                            </span>
-                        </li>
-                    {/each}
-                </ul>
-            </div>
-            <Input
-                type="text"
-                required={true}
-                label={"Nombres"}
-                bind:value={$formCreate.name}
-                error={$formCreate.errors?.name}
-            />
-            <Input
-                type="text"
-                required={true}
-                label={"Apellidos"}
-                bind:value={$formCreate.last_name}
-                error={$formCreate.errors?.last_name}
-            />
-            <Input
-                type="email"
-                label="correo"
-                bind:value={$formCreate.email}
-                error={$formCreate.errors?.email}
-            />
-            <Input
-                type="number"
-                required={true}
-                label={"Cédula"}
-                bind:value={$formCreate.ci}
-                error={$formCreate.errors?.ci}
-            />
-            <Input
-                type="tel"
-                label={"Teléfono"}
-                bind:value={$formCreate.phone_number}
-                error={$formCreate.errors?.phone_number}
-            />
+            <option value="doctor">Doctor</option>
+            <option value="admin">Admin</option>
+        </Input>
+        {#if $formCreate.role_name == "doctor"}
             <Input
                 type="select"
                 required={true}
-                label={"Tipo de Usuario"}
-                bind:value={$formCreate.role_name}
-                error={$formCreate.errors?.role_name}
+                label={"Servicio tratante"}
+                bind:value={$formCreate.specialty_id}
+                error={$formCreate.errors?.specialty_id}
             >
-                <option value="doctor">Doctor</option>
-                <option value="admin">Admin</option>
+                {#each data.specialties as speci (speci.id)}
+                    <option value={speci.id}>{speci.name}</option>
+                {/each}
             </Input>
-        </form>
+        {/if}
+    </form>
         <input
             form="a-form"
             slot="btn_footer"
@@ -319,11 +313,40 @@
     </div>
 {/if}
 
+
+<div class="flex">
+    <div
+        class="mt-2 inline-flex overflow-hidden border border-dark border-opacity-30 divide-x divide-gray-300 rounded-lg rtl:flex-row-reverse"
+    >
+        <button
+            on:click={(e) => {
+                router.get(`/admin/usuarios`, {});
+            }}
+            class="filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
+            class:bg-gray-200={!data.requests}
+        >
+            Usuarios aceptados
+        </button>
+        <button
+        on:click={(e) => {
+            router.get(`${$page.url}`, {requests: true});
+        }}
+        class="filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
+        class:bg-gray-200={data.requests}
+    >
+        Solicitudes
+    </button>
+    </div>
+</div>
 <Table
     {selectedRow}
     on:fillFormToEdit={fillFormToEdit}
+    on:acept={acept}
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.id);
+    }}
+    selectedRowOptions={{"editar": !data.requests ? true : false, "eliminar": !data.requests ? true : false,
+        "aceptar": data.requests ? true : false, "rechazar": data.requests ? true : false,
     }}
     pagination={false}
 >
@@ -340,7 +363,7 @@
     </thead>
 
     <tbody slot="tbody">
-        {#each data.users.data as row, i}
+        {#each dataTable as row, i}
             <tr
                 on:click={(e) => {
 
@@ -381,12 +404,10 @@
                 <td>{row.phone_number}</td>
                 <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
                 <td class="flex gap-3"
-                    >{#if row.specialties.length != 0}
-                        {#each row.specialties as specialty (specialty.id)}
+                    >{#if row.specialty.name}
                             <span class="px-3 py-1 rounded-full bg-gray-100">
-                                {specialty.name + " "}
+                                {row.specialty.name + " "}
                             </span>
-                        {/each}
                     {:else}
                         <span class="opacity-60">No tiene</span>
                     {/if}
