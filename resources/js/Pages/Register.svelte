@@ -21,7 +21,7 @@
         email: "",
         phone_number: "",
         role_name: "",
-        specialty: {},
+        specialty_id: '',
         specialties_ids: [],
     };
 
@@ -228,10 +228,6 @@
         </button>
         <!-- svelte-ignore missing-declaration -->
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <a
-            class="cursor-pointer border-b py-2 px-3 hover:bg-color4"
-            on:click={() => (showModalCreateSpecialties = true)}
-            >Especialidades de la institución</a
-        >
+       
     </div>
 {/if}
