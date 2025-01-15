@@ -9,13 +9,17 @@ class RequestUser extends Model
 {
     use HasFactory;
 
-    protected $filable = [
+    protected $fillable = [
         'ci',
         'name',
         'last_name',
         'email',
         'phone_number',
-        'specialties_requested',
+        'specialty_id',
         'search',
     ];
+
+    public function specialty(){
+        return $this->belongsTo(Specialty::class);
+    }
 }

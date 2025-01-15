@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email');
             $table->string('phone_number');
-            $table->json('specialties_requested');
+            $table->foreignId('specialty_id');
             $table->string('search');
             $table->timestamps();
         });

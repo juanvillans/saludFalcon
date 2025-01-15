@@ -21,6 +21,8 @@ Route::group(['middleware' => ['guest']], function () {
     Route::get('/', [AppController::class, 'loginForm'])->name('login');
     Route::post('/admin/login', [UserController::class, 'login']);
     Route::get('/registrarse', [RequestUserController::class, 'create'])->name('requestUser.create');
+    Route::post('/registrarse', [RequestUserController::class, 'store'])->name('requestUser.store');
+
 
 });
 
@@ -33,6 +35,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::post('/cambiar-contraseña', [UserController::class, 'changePassword'])->name('change-password');
 
     Route::resource('/usuarios', UserController::class)->middleware('role_or_permission:admin|read-users');
+    Route::post('/usuarios/solicitudes/aceptar/{requestID}', [RequestUserController::class, 'accept'])->name('requestUser.accept');
+    Route::post('/usuarios/solicitudes/rechazar/{requestID}', [RequestUserController::class, 'reject'])->name('requestUser.reject');
+
+
 
     Route::get('/pacientes',[EmergencyCaseController::class,'index']);
 

@@ -14,6 +14,7 @@ class SpecialtySeeder extends Seeder
     {
         DB::table('specialties')->insert([
 
+            ["name" => "No aplica" , "status" => true],
             ["name" => "Medicina General" , "status" => true],
             ["name" => "Pediatría" , "status" => true],
             ["name" => "Ginecología y Obstetricia" , "status" => false],

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RequestUserRequest;
 use App\Models\RequestUser;
 use App\Services\RequestUserService;
 use App\Services\SpecialtyService;
@@ -11,14 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 class RequestUserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        
-    }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -37,7 +30,7 @@ class RequestUserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RequestUserRequest $request)
     {
         DB::beginTransaction();
 
@@ -58,6 +51,45 @@ class RequestUserController extends Controller
             
             DB::rollback();
             
+            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+        }
+    }
+
+    public function accept($requestID){
+
+        DB::beginTransaction();
+        try 
+        {
+            $requestUserService = new RequestUserService();
+            $requestUserService->accept($requestID);
+
+            DB::commit();
+            return redirect('/admin/usuarios?requests=true')->with(['message' => 'Solicitud aceptada con éxito']);
+        }
+        catch (\Throwable $e)
+        {   
+            
+            DB::rollback();
+            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+        }
+
+    }
+
+    public function reject($requestID){
+
+        DB::beginTransaction();
+        try 
+        {
+
+            $requestUserService = new RequestUserService();
+            $requestUserService->reject($requestID);
+            DB::commit();
+            return redirect('/admin/usuarios?requests=true')->with(['message' => 'Solicitud rechazada con éxito']);
+        }
+        catch (\Throwable $e)
+        {   
+            
+            DB::rollback();
             return redirect()->back()->withErrors(['data' => $e->getMessage()]);
         }
     }

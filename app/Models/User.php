@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'phone_number',
+        'specialty_id',
         'search',
     ];
 
@@ -35,15 +36,15 @@ class User extends Authenticatable
         'search',
     ];
 
-    public function specialties()
+    public function specialty()
     {
-        return $this->belongsToMany(Specialty::class);
+        return $this->belongsTo(Specialty::class);
     }
 
-    public function services()
-    {
-        return $this->hasMany(Service::class);
-    }
+    // public function services()
+    // {
+    //     return $this->hasMany(Service::class);
+    // }
     
 
 }

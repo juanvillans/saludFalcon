@@ -8,7 +8,7 @@
 </script>
 
 <div style="z-index: 100;"
-	class={` fixed top-16  duration-300 bg-opacity-90 z-50 text-white ${
+	class={` fixed top-16  duration-300 bg-opacity-90 z-50 text-white max-w-[400px] ${
 		clasesByTypeAlert[$alertInfo.type]
 	} ${$alertInfo.isOpen ? 'opacity-1 px-4 py-2 right-10 rounded-md ' : 'opacity-0 -right-20 '}`}
 >

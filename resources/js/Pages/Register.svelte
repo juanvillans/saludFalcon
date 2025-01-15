@@ -1,10 +1,9 @@
 <script>
-    import Table from "../components/Table.svelte";
-    import Modal from "../components/Modal.svelte";
     import Input from "../components/Input.svelte";
-    import Especialidades from "../components/Especialidades.svelte";
     import { displayAlert } from "../stores/alertStore";
-    import { useForm, page } from "@inertiajs/svelte";
+    import { useForm, page, inertia } from "@inertiajs/svelte";
+    import Alert from "../components/Alert.svelte";
+
     export let data = [];
 
     let instituteSpecialities = [];
@@ -21,8 +20,12 @@
         email: "",
         phone_number: "",
         role_name: "",
+<<<<<<< HEAD
         specialty_id: '',
         specialties_ids: [],
+=======
+        specialty_id: "",
+>>>>>>> 7d4b12651e47af7e948dcd8d96943ee9d4194017
     };
 
     let formCreate = useForm({
@@ -33,8 +36,6 @@
         ...emptyDataForm,
     });
 
-    let showModal = false;
-    $: showModalCreateSpecialties = false;
     let selectedRow = { status: false, id: 0 };
 
     document.addEventListener("keydown", ({ key }) => {
@@ -46,76 +47,31 @@
     function handleSubmit(event) {
         event.preventDefault();
         $formCreate.clearErrors();
-        if (
-            submitStatus == "Envir solicitud" &&
-            $page.props.auth.permissions.find((p) => p == "create-users")
-        ) {
-            $formCreate.post("/admin/usuarios", {
+      
+            $formCreate.post("/registrarse", {
                 onError: (errors) => {
+                    console.log(errors);
+                    
                     if (errors.data) {
                         displayAlert({ type: "error", message: errors.data });
                     }
                 },
                 onSuccess: (mensaje) => {
+                    console.log(mensaje);
+                    
                     $formCreate.reset();
                     displayAlert({
                         type: "success",
-                        message: "Ok todo salió bien",
+                        message: mensaje.props.flash.message,
                     });
-                    showModal = false;
                 },
             });
-        } else if (
-            submitStatus == "Editar" &&
-            $page.props.auth.permissions.find((p) => p == "update-users")
-        ) {
-            $formCreate.put(`/admin/usuarios/${$formCreate.id}`, {
-                onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
-                },
-                onSuccess: (mensaje) => {
-                    $formCreate.reset();
-                    displayAlert({
-                        type: "success",
-                        message: "Ok todo salió bien",
-                    });
-                    showModal = false;
-                    selectedRow = { status: false, id: 0, row: {} };
-                },
-            });
-        }
+       
     }
 
-    function handleDelete(id) {
-        if ($page.props.auth.permissions.find((p) => p == "update-users")) {
-            $formCreate.delete(`/admin/usuarios/${id}`, {
-                onBefore: () =>
-                    confirm(`¿Está seguro de eliminar a este usuario?`),
-                onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
-                },
-                onSuccess: (mensaje) => {
-                    displayAlert({
-                        type: "success",
-                        message: "Usuario Eliminado",
-                    });
-                    selectedRow = { status: false, id: 0, row: {} };
-                },
-            });
-        }
-    }
+  
 
-    function fillFormToEdit() {
-        submitStatus = "Editar";
-        $formCreate.reset();
-        showModal = true;
-    }
-
-    let submitStatus = "Envir solicitud";
+    let submitStatus = "Enviar solicitud";
 </script>
 
 <svelte:head>
@@ -129,9 +85,7 @@
         action=""
         class="w-full px-5 mt-2 md:grid md:grid-cols-2 gap-x-5 p-6 pt-0 rounded-md"
     >
-        <div class="mt-4 col-span-2">
- 
-        </div>
+        <div class="mt-4 col-span-2"></div>
         <Input
             type="text"
             required={true}
@@ -175,17 +129,19 @@
             <option value="doctor">Doctor</option>
             <option value="admin">Admin</option>
         </Input>
-        <Input
-            type="select"
-            required={true}
-            label={"Servicio tratante"}
-            bind:value={$formCreate.speciality}
-            error={$formCreate.errors?.speciality}
-        >
-            {#each data.specialties as speci (speci.id)}
-                <option value={speci}>{speci.name}</option>
-            {/each}
-        </Input>
+        {#if $formCreate.role_name == "doctor"}
+            <Input
+                type="select"
+                required={true}
+                label={"Servicio tratante"}
+                bind:value={$formCreate.specialty_id}
+                error={$formCreate.errors?.specialty_id}
+            >
+                {#each data.specialties as speci (speci.id)}
+                    <option value={speci.id}>{speci.name}</option>
+                {/each}
+            </Input>
+        {/if}
     </form>
     <input
         form="a-form"
@@ -194,8 +150,11 @@
         class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
     />
 
+    <a href="/" class="mt-2 inline-block text-xl underline text-color1" use:inertia>Ya tengo cuenta, iniciar sesión</a>
+
 </div>
 
+<<<<<<< HEAD
 {#if $page.props.auth.permissions.find((p) => p == "create-users")}
     <div class="flex justify-between items-center">
         <button
@@ -231,3 +190,5 @@
        
     </div>
 {/if}
+=======
+>>>>>>> 7d4b12651e47af7e948dcd8d96943ee9d4194017

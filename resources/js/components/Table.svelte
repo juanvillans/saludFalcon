@@ -8,54 +8,54 @@
 
     export let filtersOptions = false;
     export let selectedRow;
+    export let selectedRowOptions = {};
     export let pagination = false;
     export let allowSearch = true;
     let firstTime = true;
-    $: filterClientData = {...$page.props.filters}
-    $: console.log(filterClientData, $page.props.filters)
+    $: filterClientData = { ...$page.props.filters };
     // $: $form, handleFilters()
     const handleFilters = () => {
         firstTime = false;
         router.get(`${$page.url}`, filterClientData);
     };
-
 </script>
 
 <section class="w-full">
     <div class=" md:flex md:items-center md:justify-between lg:justify-end">
         {#if filtersOptions}
-        <div class="flex">
-            <div
-                class="inline-flex overflow-hidden border border-dark border-opacity-30 divide-x divide-gray-300 rounded-lg rtl:flex-row-reverse"
-            >
-                <button
-                    on:click={(e) => {
-                        filterClientData["status"] = "";
-                        handleFilters();
-                    }}
-                    class="filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
-                    class:bg-gray-200={filterClientData["status"] == ""}
+            <div class="flex">
+                <div
+                    class="inline-flex overflow-hidden border border-dark border-opacity-30 divide-x divide-gray-300 rounded-lg rtl:flex-row-reverse"
                 >
-                    Todos
-                </button>
-                {#each Object.entries(filtersOptions) as [filterKey, filterOption] (filterKey)}
-                    {#each filterOption as filter, i (filter.id)}
-                        <button
-                            class=" filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
-                            class:bg-gray-200={filterClientData?.[filterKey] ==
-                                filter.id}
-                            on:click={(e) => {
-                                filterClientData[filterKey] = filter.id;
-                                handleFilters();
-                            }}
-                        >
-                            {filter.name}
-                        </button>
+                    <button
+                        on:click={(e) => {
+                            filterClientData["status"] = "";
+                            handleFilters();
+                        }}
+                        class="filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
+                        class:bg-gray-200={filterClientData["status"] == ""}
+                    >
+                        Todos
+                    </button>
+                    {#each Object.entries(filtersOptions) as [filterKey, filterOption] (filterKey)}
+                        {#each filterOption as filter, i (filter.id)}
+                            <button
+                                class=" filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
+                                class:bg-gray-200={filterClientData?.[
+                                    filterKey
+                                ] == filter.id}
+                                on:click={(e) => {
+                                    filterClientData[filterKey] = filter.id;
+                                    handleFilters();
+                                }}
+                            >
+                                {filter.name}
+                            </button>
+                        {/each}
                     {/each}
-                {/each}
+                </div>
+                <slot name="filterBox"></slot>
             </div>
-            <slot name="filterBox"></slot>
-        </div>
         {/if}
 
         {#if allowSearch}
@@ -63,25 +63,51 @@
         {/if}
         {#if selectedRow?.status}
             <div class="flex gap-5 relative items-end">
-                <button
-                    on:click={() => dispatch("fillFormToEdit")}
-                    class="bg-color3 bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-2xl rounded border border-color3 px-4 py-1"
-                    title="Editar"
-                >
-                    <iconify-icon class="relative -bottom-1" icon="line-md:edit"
-                    ></iconify-icon>
-                </button>
+                {#if selectedRowOptions.editar}
+                    <button
+                        on:click={() => dispatch("fillFormToEdit")}
+                        class="bg-color3 bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-2xl rounded border border-color3 px-4 py-1"
+                        title="Editar"
+                    >
+                        <iconify-icon
+                            class="relative -bottom-1"
+                            icon="line-md:edit"
+                        ></iconify-icon>
+                    </button>
+                {/if}
 
-                <button
-                    on:click={() => dispatch("clickDeleteIcon")}
-                    class="bg-red bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-2xl rounded border border-red px-4 py-1"
-                    title="Eliminar"
-                >
-                    <iconify-icon
-                        class="relative -bottom-1"
-                        icon="material-symbols:delete-outline"
-                    ></iconify-icon>
-                </button>
+                {#if selectedRowOptions.eliminar}
+                    <button
+                        on:click={() => dispatch("clickDeleteIcon")}
+                        class="bg-red bg-opacity-10 hover:bg-opacity-20 cursor-pointer text-2xl rounded border border-red px-4 py-1"
+                        title="Eliminar"
+                    >
+                        <iconify-icon
+                            class="relative -bottom-1"
+                            icon="material-symbols:delete-outline"
+                        ></iconify-icon>
+                    </button>
+                {/if}
+
+                {#if selectedRowOptions.aceptar}
+                    <button
+                        on:click={() => dispatch("acept")}
+                        class="bg-color3 bg-opacity-10 hover:bg-opacity-20 cursor-pointer  rounded border border-color3 px-4 py-1"
+                        title="Editar"
+                    >
+                        Aceptar
+                    </button>
+                {/if}
+
+                {#if selectedRowOptions.rechazar}
+                    <button
+                        on:click={() => dispatch("reject")}
+                        class="bg-red bg-opacity-10 hover:bg-opacity-20 cursor-pointer  rounded border border-red px-4 py-1"
+                        title="Editar"
+                    >
+                        Rechazar
+                    </button>
+                {/if}
             </div>
         {/if}
     </div>

@@ -6,6 +6,7 @@ use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
+use App\Models\RequestUser;
 use App\Models\Specialty;
 use App\Models\User;
 use App\Services\LoginService;
@@ -33,18 +34,21 @@ class UserController extends Controller
         $this->params = [
             'search' => $request->input('search'),
             'role' => $request->input('role'),
-
         ];     
         $specialtyService = new SpecialtyService();
 
         $users = $this->userService->getUsers($this->params);
-
-        $specialties = $specialtyService->getSpecialties([]);
+        $specialties = $specialtyService->getSpecialties(['status' => 1]);
+        $requests = null;
+        if($request->has('requests'))
+            $requests = RequestUser::with('specialty')->get(); 
+        
 
         return inertia('Dashboard/Usuarios',[
 
             'data' => [
                 'users' => $users,
+                'requests' => $requests,
                 'specialties' => $specialties,
             ]
         ]);

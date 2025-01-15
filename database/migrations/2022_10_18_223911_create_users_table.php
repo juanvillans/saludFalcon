@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->string("email",100)->unique();
             $table->string("password",100);
             $table->string("phone_number",30);
+            $table->foreignId('specialty_id');
             $table->string('search');
             $table->timestamps();
         });

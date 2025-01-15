@@ -43,13 +43,34 @@ class RequestUserService
             "name" => $data['name'],
             "last_name" => $data['last_name'],
             "email" => $data['email'],
-            "specialties_requested" => json_encode($data['specialties']),
+            "specialty_id" => $data['specialty_id'],
             "phone_number" => $data['phone_number'],
             "search" => $this->generateSearch($data),
         ]);
 
         return $newRequest;
 
+    }
+
+    public function accept($requestID){
+    
+        $request = RequestUser::find($requestID);
+        $dataToCreate = $request->toArray();
+        $dataToCreate['role_name'] = 'Doctor';
+        
+        $userService = new UserService;
+        $userService->createUser($dataToCreate);
+
+        $request->delete();
+
+        // Enviar Correo
+        return 0;
+
+    }
+
+    public function reject($requestID){
+        RequestUser::find($requestID)->delete();
+        return 0;
     }
 
     public function updateUser($data, $user)
