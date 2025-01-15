@@ -35,7 +35,7 @@
         email: "",
         phone_number: "",
         role_name: "",
-        specialties: [],
+        specialti: [],
         specialties_ids: [],
     };
 
