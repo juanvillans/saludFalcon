@@ -83,7 +83,7 @@ class RequestUserController extends Controller
 
             $requestUserService = new RequestUserService();
             $requestUserService->reject($requestID);
-
+            DB::commit();
             return redirect('/admin/usuarios?requests=true')->with(['message' => 'Solicitud rechazada con éxito']);
         }
         catch (\Throwable $e)
