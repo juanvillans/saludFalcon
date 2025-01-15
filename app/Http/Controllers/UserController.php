@@ -38,7 +38,7 @@ class UserController extends Controller
         $specialtyService = new SpecialtyService();
 
         $users = $this->userService->getUsers($this->params);
-        $specialties = $specialtyService->getSpecialties([]);
+        $specialties = $specialtyService->getSpecialties(['status' => 1]);
         $requests = null;
         if($request->has('requests'))
             $requests = RequestUser::with('specialty')->get(); 
