@@ -43,8 +43,7 @@
         email: "",
         phone_number: "",
         role_name: "",
-        specialties: [],
-        specialties_ids: [],
+        specialty_id: "",
     };
 
     let formCreate = useForm({
@@ -130,6 +129,7 @@
         $formCreate.reset();
         showModal = true;
     }
+
     function acept(id) {
         if ($page.props.auth.permissions.find((p) => p == "update-users")) {
             $formCreate.post(`/admin/usuarios/solicitudes/aceptar/${selectedRow.id}`, {
@@ -167,32 +167,7 @@
     <title>Usuarios</title>
 </svelte:head>
 
-<Modal
-    showModal={selectSpecialityModal}
-    onClose={() => {
-        selectSpecialityModal = false;
-    }}
->
-    <ul>
-        {#each filteredSpecialities as speciality (speciality.id)}
-            <li>
-                <button
-                    class="rounded-full mb-1 px-3 py-1 hover:bg-color3 bg-color4"
-                    on:click={() => {
-                        $formCreate.specialties = [
-                            ...$formCreate.specialties,
-                            speciality,
-                        ];
-                        $formCreate.specialties_ids = [
-                            ...$formCreate.specialties_ids,
-                            speciality.id,
-                        ];
-                    }}>{speciality.name}</button
-                >
-            </li>
-        {/each}
-    </ul>
-</Modal>
+ 
 {#if $page.props.auth.permissions.find((p) => p == "create-users")}
     <Modal bind:showModal modalClasses={"max-w-[560px]"}>
         <form
