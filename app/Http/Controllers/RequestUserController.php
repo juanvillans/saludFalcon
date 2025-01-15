@@ -63,6 +63,7 @@ class RequestUserController extends Controller
             $requestUserService = new RequestUserService();
             $requestUserService->accept($requestID);
 
+            DB::commit();
             return redirect('/admin/usuarios?requests=true')->with(['message' => 'Solicitud aceptada con éxito']);
         }
         catch (\Throwable $e)
