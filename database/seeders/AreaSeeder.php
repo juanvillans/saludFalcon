@@ -14,15 +14,69 @@ class AreaSeeder extends Seeder
     public function run(): void
     {
         Area::create([
-            'name' => 'Quirófano',            
+            'name' => 'Quirófano', 
+            'division_id' => 1,            
         ]);
 
         Area::create([
             'name' => 'Cardiovascular',
+            'division_id' => 1,            
         ]);
 
         Area::create([
-            'name' => 'Sala de parto',
+            'name' => '5to Piso',
+            'division_id' => 1,            
         ]);
+
+        Area::create([
+            'name' => '6to Piso',
+            'division_id' => 1,            
+        ]);
+
+        Area::create([
+            'name' => 'Nefrologia',
+            'division_id' => 1,            
+        ]);
+
+        Area::create([
+            'name' => 'Nefrología',
+            'division_id' => 1,            
+        ]);
+
+        Area::create([
+            'name' => 'Psiquiatría',
+            'division_id' => 1,            
+        ]);
+
+        Area::create([
+            'name' => 'Red de salud',
+            'division_id' => 1,            
+        ]);
+
+        Area::create([
+            'name' => 'UCE',
+            'division_id' => 2,            
+        ]);
+
+        Area::create([
+            'name' => 'Sala de Shock',
+            'division_id' => 2,            
+        ]);
+
+        Area::create([
+            'name' => 'Pabellón',
+            'division_id' => 2,            
+        ]);
+
+        Area::create([
+            'name' => 'Tratamiento',
+            'division_id' => 2,            
+        ]);
+
+        Area::create([
+            'name' => 'Sala de Yeso',
+            'division_id' => 2,            
+        ]);
+        
     }
 }

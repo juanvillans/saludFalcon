@@ -35,7 +35,8 @@ class EmergencyCaseController extends Controller
         $emergencyCases = $this->emergencyCaseService->getCases($this->params);
         if($this->params['patient_ci'] != null)
             $patient = $this->emergencyCaseService->getPatientByCI($this->params);
-        $areas = Area::all();
+        
+        $areas = Area::where('division_id',2)->get();
         
         return inertia('Dashboard/Patient',[
             'data' => $emergencyCases,

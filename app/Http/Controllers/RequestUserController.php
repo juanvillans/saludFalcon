@@ -9,6 +9,7 @@ use App\Services\SpecialtyService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class RequestUserController extends Controller
 {
@@ -68,7 +69,8 @@ class RequestUserController extends Controller
         }
         catch (\Throwable $e)
         {   
-            
+            Log::info("ERROR AL ACEPTAR");
+            Log::error($e->getMessage());
             DB::rollback();
             return redirect()->back()->withErrors(['data' => $e->getMessage()]);
         }
