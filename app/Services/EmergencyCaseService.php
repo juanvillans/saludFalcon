@@ -19,7 +19,6 @@ class EmergencyCaseService
                 ->orderBy('id', 'DESC')
                 ->paginate($params['per_page'] ?? 25);
 
-
         return new CaseCollection($cases);
     }
 

@@ -9,7 +9,13 @@ class Municipality extends Model
 {
     use HasFactory;
 
+    protected $table = 'municipalities';
+
     protected $fillable = [
         'name',
     ];
+
+    public function patients(){
+        return $this->hasMany(Patient::class);
+    }
 }
