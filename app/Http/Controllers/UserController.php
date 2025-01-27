@@ -6,6 +6,7 @@ use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\DoctorResource;
 use App\Models\RequestUser;
 use App\Models\Specialty;
 use App\Models\User;
@@ -184,5 +185,20 @@ class UserController extends Controller
     public function failLogin()
     {
         return 'No tiene los permisos para ingresar a esta url';
+    }
+
+    public function searchDoctor(Request $request){
+
+        $doctor = User::where('ci',$request->ci)->with('specialty')->first();
+
+        if(!isset($doctor->id) || !$doctor->hasRole('doctor') )
+            $doctor = null;
+        else
+            $doctor = new DoctorResource($doctor);    
+
+        
+        
+
+        return response()->json(['doctor' => $doctor]);
     }
 }
