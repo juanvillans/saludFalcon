@@ -252,7 +252,7 @@
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DATOS DEL PACIENTE</legend
             >
-            {#if $form?.ci.toString().length >= 6}
+            {#if $form?.patient_ci.toString().length >= 6}
                 <div class="w-full col-span-2 h-6 overflow-hidden text-center">
                     {#if prosecingSearchPatient}
                         <iconify-icon
@@ -291,13 +291,13 @@
                     min={100000}
                     placeholder={"Minimo 6 números"}
                     on:wheel={(e) => document.activeElement.blur()}
-                    bind:value={$form.ci}
+                    bind:value={$form.patient_ci}
                     on:input={(e) => {
                         prosecingSearchPatient = true;
                         $form.id = null;
                         $form.cases = [];
-                        if ($form.ci.toString().length >= 6) {
-                            searchPatient($form.ci);
+                        if ($form.patient_ci.toString().length >= 6) {
+                            searchPatient($form.patient_ci);
                         }
                     }}
                     error={$form.errors?.ci}
@@ -307,7 +307,7 @@
                     title="Buscar si el paciente existe"
                     class="bg-color4 h-fit px-2 rounded hover:bg-color1 hover:text-white"
                     on:click={() => {
-                        searchPatient($form.ci);
+                        searchPatient($form.patient_ci);
                     }}
                 >
                     {#if prosecingSearchPatient == true}
