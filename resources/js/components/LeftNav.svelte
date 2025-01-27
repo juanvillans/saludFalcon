@@ -15,7 +15,7 @@
         {
             icon: "mdi:patient-outline",
             href: "/admin/casos",
-            name: "Pacientes",
+            name: "casos",
         },
     
         

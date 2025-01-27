@@ -42,7 +42,7 @@
         user_id: $page.props.auth.user_id,
         user_name: $page.props.auth.name,
         user_last_name: $page.props.auth.last_name,
-        user_CI: $page.props.auth.last_name,
+        user_ci: $page.props.auth.last_name,
         // history_number: "",
         // marital_status: "",
         // current_address: "",
@@ -63,11 +63,10 @@
         departure_date: formattedDate,
         entry_hour: formattedTime,
         departure_hour: formattedTime,
-        newCase: {
-            doctor: {},
+        area_id: "",
+        area_name: "",
 
-            area: "",
-        },
+        admitted_area_id: 0,
     };
     let form = useForm(structuredClone(emptyDataForm));
 
@@ -106,22 +105,24 @@
     }
     $: console.log(municipalities[$form?.municipality_id - 1]?.parishes);
     const searchPatient = debounce(async (ci) => {
-        showModal = true;
         prosecingSearchPatient = true; // Cambiar a verdadero antes de la búsqueda
 
         try {
             const res = await axios.get(`/admin/historial-medico`, {
                 params: { ci },
             });
-            if (res.patient == null) {
-                return;
+            
+            if (res.data.patient == null) {
+               $form.patient_id = null
+                return
+            } else {
+                $form = {
+                    ...$form,
+                    ...res.data.patient,
+                };
+                
+                console.log(res.data.patient);
             }
-            $form = {
-                ...$form,
-                ...page.props.patient.data,
-                cases: page.props.patient.data.cases,
-            };
-            console.log({ res });
         } catch (err) {
             console.log(err);
         } finally {
@@ -129,6 +130,7 @@
         }
     }, 280);
 
+    $: console.log($form)
     const searchDoctor = debounce(async (ci) => {
         showModal = true;
         prosecingSearchPatient = true; // Cambiar a verdadero antes de la búsqueda
@@ -294,7 +296,7 @@
                     bind:value={$form.patient_ci}
                     on:input={(e) => {
                         prosecingSearchPatient = true;
-                        $form.id = null;
+                        $form.patient_id = null;
                         $form.cases = [];
                         if ($form.patient_ci.toString().length >= 6) {
                             searchPatient($form.patient_ci);
@@ -327,26 +329,26 @@
                 type="text"
                 required={true}
                 label={"Nombres *"}
-                bind:value={$form.name}
-                readOnly={$form.id}
-                error={$form.errors?.name}
+                bind:value={$form.patient_name}
+                readOnly={$form.patient_id}
+                error={$form.errors?.patient_name}
             />
             <Input
                 type="text"
                 required={true}
                 label={"Apellidos *"}
-                bind:value={$form.last_name}
-                readOnly={$form.id}
-                error={$form.errors?.last_name}
+                bind:value={$form.patient_last_name}
+                readOnly={$form.patient_id}
+                error={$form.errors?.patient_last_name}
             />
 
             <Input
                 type="date"
                 required={true}
                 label={"Fecha de Nacimiento*"}
-                bind:value={$form.date_birth}
-                readOnly={$form.id}
-                error={$form.errors?.date_birth}
+                bind:value={$form.patient_date_birth}
+                readOnly={$form.patient_id}
+                error={$form.errors?.patient_date_birth}
             />
 
             <Input
@@ -378,28 +380,28 @@
                 type="text"
                 required={true}
                 label={"Dirección"}
-                bind:value={$form.name}
-                readOnly={$form.id}
-                error={$form.errors?.name}
+                bind:value={$form.patient_address}
+                readOnly={$form.patient_id}
+                error={$form.errors?.patient_address}
             />
 
             <Input
                 type="tel"
                 label={"Teléfono"}
-                readOnly={$form.id}
-                bind:value={$form.phone_number}
-                error={$form.errors?.phone_number}
+                readOnly={$form.patient_id}
+                bind:value={$form.patient_phone_number}
+                error={$form.errors?.patient_phone_number}
             />
             <div class="flex flex-col mt-6">
                 <label class="py-1 cursor-pointer hover:bg-gray-100">
                     <input
                         class="mr-3 inline-block"
                         type="radio"
-                        bind:group={$form.sex}
+                        bind:group={$form.patient_sex}
                         value="Masculino"
                         name="sex"
                         id=""
-                    /><span class:font-bold={$form.sex == "Masculino"}
+                    /><span class:font-bold={$form.patient_sex == "Masculino"}
                         >Masculino</span
                     >
                 </label>
@@ -408,11 +410,11 @@
                     <input
                         class="mr-3 inline-block"
                         type="radio"
-                        bind:group={$form.sex}
+                        bind:group={$form.patient_sex}
                         value="Femenino"
                         name="sex"
                         id=""
-                    /><span class:font-bold={$form.sex == "Femenino"}
+                    /><span class:font-bold={$form.patient_sex == "Femenino"}
                         >Femenino</span
                     >
                 </label>
@@ -469,8 +471,8 @@
                 type="select"
                 required={true}
                 label={"Servicio Tratante *"}
-                bind:value={$form.treatingService}
-                error={$form.errors?.treatingService}
+                bind:value={$form.area_id}
+                error={$form.errors?.area_id}
                 on:change={(e) => {
                     console.log(e.target.value);
                     $form.area = e.target.value;
@@ -516,8 +518,8 @@
                     type="select"
                     required={true}
                     label={"Area admitida *"}
-                    bind:value={$form.area}
-                    error={$form.errors?.area}
+                    bind:value={$form.admitted_area_id}
+                    error={$form.errors?.admitted_area_id}
                 >
                     {#each areas as area (area.id)}
                         {#if area.division_id == 1}
@@ -535,7 +537,7 @@
                     error={$form.errors?.placeOfAmbulatory}
                 />
             {/if}
-            {#if $form.status == "3"}
+            <!-- {#if $form.status == "3"}
                 <Input
                     type="select"
                     required={true}
@@ -549,7 +551,7 @@
                         {/if}
                     {/each}
                 </Input>
-            {/if}
+            {/if} -->
 
             {#if $form.status !== "3"}
                 <Input
