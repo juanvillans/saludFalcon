@@ -49,6 +49,9 @@ class CaseResource extends JsonResource
             
             'area_id' => $this->area_id,
             'area_name' => $this->area->name,
+
+            'current_patient_condition_id' => $this->current_patient_condition_id,
+            'current_patient_condition_name' => $this->condition->name,
             
             'evolutions' => new EvolutionCollection($this->whenLoaded('evolutions')),
         ];

@@ -23,6 +23,13 @@ return new class extends Migration
                   ->onDelete('restrict')
                   ->onUpdate('cascade');
 
+            $table->foreignId('current_patient_condition_id')
+                  ->nullable()
+                  ->constrained('patient_conditions')
+                  ->onDelete('restrict')
+                  ->onUpdate('cascade');
+
+
             $table->date('entry_date');
             $table->string('entry_hour');
             $table->foreignId('current_status')

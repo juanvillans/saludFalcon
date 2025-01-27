@@ -12,7 +12,7 @@ class EmergencyCaseService
 {	
     public function getCases($params)
     {
-        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase')
+        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase','condition')
                 ->when($params['status'],function($query) use ($params){
                     $query->where('current_status', $params['status']);
                 })
@@ -32,8 +32,10 @@ class EmergencyCaseService
         EmergencyCase::create([
 
             'patient_id' => $patientID,
+            'current_patient_condition_id' => $data['current_patient_condition_id'],
             'user_id' => $data['user_id'],
             'area_id' => $data['area_id'],
+            'admitted_area_id' => $data['admitted_area_id'],
             'entry_date' => $data['entry_date'],
             'entry_hour' => $data['entry_hour'],
             'current_status' => $data['status'],

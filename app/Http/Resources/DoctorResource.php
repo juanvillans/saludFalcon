@@ -16,10 +16,10 @@ class DoctorResource extends JsonResource
     {
         return [
             'user_id' => $this->id,
+            'user_ci' => $this->ci,
             'user_name' => $this->name,
             'user_last_name' => $this->last_name,
             'user_email' => $this->email,
-            'user_password' => $this->password,
             'user_phone_number' => $this->phone_number,
             'user_specialty_id' => $this->specialty_id,
             'user_specialty_name' => $this->specialty->name,
