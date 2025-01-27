@@ -11,9 +11,13 @@
     import { construct_svelte_component } from "svelte/internal";
     export let data = {};
     export let areas = [];
+    export let statutes = [];
+
 
     $: console.log(areas);
     $: console.log(data);
+    $: console.log(statutes);
+
     // Update data based on the current state of `data.specialties`
     const today = new Date();
     // Format the date to YYYY-MM-DD

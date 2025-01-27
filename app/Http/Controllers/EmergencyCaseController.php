@@ -9,6 +9,7 @@ use App\Models\Area;
 use App\Models\EmergencyCase;
 use App\Models\Municipality;
 use App\Models\Patient;
+use App\Models\StatusCase;
 use App\Services\EmergencyCaseService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -41,12 +42,14 @@ class EmergencyCaseController extends Controller
         
         $areas = Area::where('division_id',2)->get();
         $muncipalities = Municipality::with('parishes')->get();
+        $statutes = StatusCase::get();
         
         return inertia('Dashboard/Patient',[
             'data' => $emergencyCases,
             'patient' => $patient ?? null,
             'areas' => $areas,
             'municipalities' => $muncipalities,
+            'statutes' => $statutes,
             'filters' => ['status' => $request->input('status') ?? ''],
         ]);
 
@@ -111,18 +114,14 @@ class EmergencyCaseController extends Controller
         }
     }
 
-    public function patient(Request $request){
+    public function searchPatient(Request $request){
         
         $this->params = [
             'ci' => $request->input('ci') ?? null,
         ];
 
         $patient = $this->emergencyCaseService->getPatientByCI($this->params);
-        return inertia('Dashboard/Patient',[
-            'patient' => $patient,
-        ]);
-
-
+        return response()->json(['patient' => $patient]);
     }
 
 }

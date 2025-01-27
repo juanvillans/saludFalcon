@@ -45,6 +45,10 @@ class EmergencyCase extends Model
         return $this->hasMany(Evolution::class);
     }
 
+    public function statusCase(){
+        return $this->belongsTo(StatusCase::class,'current_status','id');
+    }
+
     public function toSearchableArray()
     {   
 

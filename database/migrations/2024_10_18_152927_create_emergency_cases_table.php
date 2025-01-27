@@ -18,7 +18,10 @@ return new class extends Migration
             $table->foreignId('area_id');
             $table->date('entry_date');
             $table->string('entry_hour');
-            $table->string('current_status');
+            $table->foreignId('current_status')
+                  ->constrained('status_cases') 
+                  ->onDelete('restrict')     
+                  ->onUpdate('cascade');
             $table->date('departure_date')->nullable();
             $table->string('departure_hour')->nullable();
             $table->text('reason')->nullable();

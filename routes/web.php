@@ -57,7 +57,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::get('/casos',[EmergencyCaseController::class,'index']);
 
 
-    Route::get('/historial-medico',[EmergencyCaseController::class,'index']);
+    Route::get('/historial-medico',[EmergencyCaseController::class,'searchPatient']);
     Route::post('/historial-medico',[EmergencyCaseController::class,'store']);
 
     Route::get('/historial-medico/detalle-paciente/{case}',[EmergencyCaseController::class,'caseDetail']);
