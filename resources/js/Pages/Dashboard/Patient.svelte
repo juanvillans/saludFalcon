@@ -13,9 +13,11 @@
 
     export let data = {};
     export let areas = [];
+    export let municipalities = [];
     let showModalDoctor = false;
 
-    $: console.log(data);
+    $: console.log(data.data);
+    $: console.log(municipalities);
     // Update data based on the current state of `data.specialties`
     const today = new Date();
     // Format the date to YYYY-MM-DD
@@ -26,16 +28,21 @@
     const formattedTime = `${hours}:${minutes}`;
 
     const emptyDataForm = {
-        id: null,
-        name: "",
-        last_name: "",
-        ci: "",
-        sex: "",
-        date_birth: "",
-        phone_number: "",
-        address: "",
-        minicipality_id: "",
-        parish_id: "",
+        patient_id: null,
+        patient_name: "",
+        patient_last_name: "",
+        patient_ci: "",
+        patient_sex: "",
+        patient_date_birth: "",
+        patient_phone_number: "",
+        patient_address: "",
+        municipality_id: 14,
+        parish_id: 0,
+
+        user_id: $page.props.auth.user_id,
+        user_name: $page.props.auth.name,
+        user_last_name: $page.props.auth.last_name,
+        user_CI: $page.props.auth.last_name,
         // history_number: "",
         // marital_status: "",
         // current_address: "",
@@ -45,21 +52,20 @@
         // notify_in_case_of_emergency: "",
         // relationship: "",
         // profession: "",
+
+        treatment: "",
+        diagnosis: "",
+        current_status: "1",
+
         condition: "Inconcluso",
         cases: [],
+        entry_date: formattedDate,
+        departure_date: formattedDate,
+        entry_hour: formattedTime,
+        departure_hour: formattedTime,
         newCase: {
-            doctor: {
-                id: $page.props.auth.user_id,
-                name: $page.props.auth.name,
-                last_name: $page.props.auth.last_name,
-            },
-            entry_date: formattedDate,
-            departure_date: formattedDate,
-            entry_hour: formattedTime,
-            departure_hour: formattedTime,
-            treatment: "",
-            diagnosis: "",
-            status: "1",
+            doctor: {},
+
             area: "",
         },
     };
@@ -98,14 +104,13 @@
             });
         }
     }
-    $: console.log($form);
+    $: console.log(municipalities[$form?.municipality_id - 1]?.parishes);
     const searchPatient = debounce(async (ci) => {
         showModal = true;
         prosecingSearchPatient = true; // Cambiar a verdadero antes de la búsqueda
 
         try {
             const res = await axios.get(`/admin/historial-medico`, {
-                headers: {},
                 params: { ci },
             });
             if (res.patient == null) {
@@ -351,8 +356,8 @@
                 bind:value={$form.municipality_id}
                 error={$form.errors?.municipality_id}
             >
-                {#each areas as area (area.id)}
-                    <option value={area.id}>{area.name}</option>
+                {#each municipalities as micipality (micipality.id)}
+                    <option value={micipality.id}>{micipality.name}</option>
                 {/each}
             </Input>
 
@@ -363,9 +368,11 @@
                 bind:value={$form.parish_id}
                 error={$form.errors?.parish_id}
             >
-                {#each areas as area (area.id)}
-                    <option value={area.id}>{area.name}</option>
-                {/each}
+                {#if municipalities[$form.municipality_id - 1]}
+                    {#each municipalities[$form.municipality_id - 1].parishes as parish (parish.id)}
+                        <option value={parish.id}>{parish.name}</option>
+                    {/each}
+                {/if}
             </Input>
             <Input
                 type="text"
@@ -425,7 +432,7 @@
                     on:click={() => {
                         showModalDoctor = true;
                         setTimeout(() => {
-                            document.querySelector("#searchDoctor").focus()
+                            document.querySelector("#searchDoctor").focus();
                         }, 150);
                     }}
                 >
@@ -666,7 +673,7 @@
 </Modal>
 
 <Modal bind:showModal={showModalDoctor}>
-    <div class=" top-3  flex items-center">
+    <div class=" top-3 flex items-center">
         <span class="absolute">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -683,7 +690,7 @@
                 />
             </svg>
         </span>
-    
+
         <input
             type="search"
             placeholder="Buscar por nombre o CI"
@@ -700,7 +707,7 @@
                 class="flex gap-3 border rounded cursor-pointer hover:bg-gray-100 hover:border-dark p-4"
                 on:click={() => {
                     $form.doctor_id = doctor.id;
-                    ($form.doctor_name = doctor.name),
+                    ($form.doctor_name = user),
                         ($form.doctor_last_name = doctor.last_name);
                     $form.specialty_id = doctor.specialties[0].id;
                     showModalDoctor = false;
@@ -714,7 +721,7 @@
 
                 <div class="mt-1">
                     <p>
-                        <b> {doctor.name} {doctor.last_name}</b> - {doctor.ci}
+                        <b> {user} {doctor.last_name}</b> - {doctor.ci}
                     </p>
                     <p class="mt-2 flex gap-2">
                         {#each doctor.specialties as specialty}
@@ -791,7 +798,7 @@
         </thead>
 
         <tbody slot="tbody">
-            {#if data?.data?.length > 0 && data?.data?.[0].cases.length > 0}
+            {#if data?.data?.length > 0}
                 {#each data?.data as row, i (row.id)}
                     <tr
                         on:mousedown={handleMouseDown}
@@ -806,21 +813,21 @@
                         >
                         <td>
                             {timeBetweenDateAndTime(
-                                row.cases?.[0]?.entry_date,
-                                row.cases?.[0]?.entry_hour,
-                                row.cases?.[0]?.departure_date,
-                                row.cases?.[0]?.departure_hour,
-                                row.cases?.[0]?.status,
+                                row?.entry_date,
+                                row?.entry_hour,
+                                row?.departure_date,
+                                row?.departure_hour,
+                                row?.status,
                             )}
 
                             <!-- {formatDateSpanish(row.cases[0].entry_date)} -->
                         </td>
 
                         <td style="white-space: normal;">
-                            <StatusColor status={row.cases?.[0]?.status} />
+                            <StatusColor status={row?.status} />
                             <p>
-                                {#if row.cases?.[0]?.status == "Admitido"}
-                                    {row.cases?.[0]?.area?.name}
+                                {#if row?.status == "Admitido"}
+                                    {row?.area?.name}
                                 {/if}
                             </p>
                         </td>
@@ -848,14 +855,14 @@
                             class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
                             style="white-space: normal;"
                         >
-                            {#if row.cases?.[0]?.diagnosis.length > 240}
-                                {row.cases?.[0]?.diagnosis.slice(0, 240)}
+                            {#if row?.diagnosis.length > 240}
+                                {row?.diagnosis.slice(0, 240)}
                                 <span
                                     class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                     >...</span
                                 >
                             {:else}
-                                {row.cases?.[0]?.diagnosis}
+                                {row?.diagnosis}
                             {/if}
                         </td>
                         <!-- <td>{row.sex}</td> -->
@@ -863,20 +870,19 @@
                             class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
                             style="white-space: normal;"
                         >
-                            {#if row.cases?.[0]?.treatment.length > 240}
-                                {row.cases?.[0]?.treatment.slice(0, 240)}
+                            {#if row?.treatment.length > 240}
+                                {row?.treatment.slice(0, 240)}
                                 <span
                                     class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                     >...</span
                                 >
                             {:else}
-                                {row.cases?.[0]?.treatment}
+                                {row?.treatment}
                             {/if}
                         </td>
                         <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
                         <td>
-                            {row.cases?.[0]?.doctor.name}
-                            {row.cases?.[0]?.doctor.last_name}
+                            {row?.user}
                         </td>
                     </tr>
                 {/each}
@@ -901,17 +907,17 @@
                 <div class="flex gap-2 items-center">
                     <p>
                         {timeBetweenDateAndTime(
-                            row.cases?.[0]?.entry_date,
-                            row.cases?.[0]?.entry_hour,
-                            row.cases?.[0]?.departure_date,
-                            row.cases?.[0]?.departure_hour,
-                            row.cases?.[0]?.status,
+                            row?.entry_date,
+                            row?.entry_hour,
+                            row?.departure_date,
+                            row?.departure_hour,
+                            row?.status,
                         )}
                     </p>
                     |
-                    <StatusColor status={row.cases?.[0]?.status} />
-                    {#if row.cases?.[0]?.status == "4"}
-                        a {row.cases?.[0]?.area?.name}
+                    <StatusColor status={row?.status} />
+                    {#if row?.status == "4"}
+                        a {row?.area?.name}
                     {/if}
                 </div>
 
@@ -971,7 +977,7 @@
                 <p
                     class="text-right justify-end w-full flex items-center gap-2"
                 >
-                    {row.cases[0].doctor.name}
+                    {row.cases[0].user}
                     {row.cases[0].doctor.last_name}
                     <iconify-icon icon="mdi:doctor" style="font-size: 20px;"
                     ></iconify-icon>
