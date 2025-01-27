@@ -18,8 +18,13 @@ class Patient extends Model
         'phone_number',
         'sex',
         'date_birth',
+        'municipality_id',
+        'parish_id',
+        'address',
         'search',
     ];
+
+
 
     public function toSearchableArray()
     {   
@@ -35,7 +40,15 @@ class Patient extends Model
         ];
     }
 
+    public function municipality(){
+        return $this->belongsTo(Municipality::class);
+    }
+
+    public function parish(){
+        return $this->belongsTo(Parish::class);
+    }
+
     public function emergencyCase(){
-        return $this->hasOne(EmergencyCase::class);
+        return $this->hasMany(EmergencyCase::class);
     }
 }

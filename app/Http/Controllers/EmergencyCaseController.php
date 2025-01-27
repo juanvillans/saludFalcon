@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PatientRequest;
+use App\Http\Resources\CaseResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Area;
+use App\Models\EmergencyCase;
+use App\Models\Municipality;
 use App\Models\Patient;
 use App\Services\EmergencyCaseService;
 use Illuminate\Http\Request;
@@ -36,12 +39,18 @@ class EmergencyCaseController extends Controller
         if($this->params['patient_ci'] != null)
             $patient = $this->emergencyCaseService->getPatientByCI($this->params);
         
+<<<<<<< HEAD
         $areas = Area::all();
+=======
+        $areas = Area::where('division_id',2)->get();
+        $muncipalities = Municipality::with('parishes')->get();
+>>>>>>> aedfb43753830a64bc2ba1df7ed755ed83335156
         
         return inertia('Dashboard/Patient',[
             'data' => $emergencyCases,
             'patient' => $patient ?? null,
             'areas' => $areas,
+            'municipalities' => $muncipalities,
             'filters' => ['status' => $request->input('status') ?? ''],
         ]);
 
@@ -73,14 +82,12 @@ class EmergencyCaseController extends Controller
         }
     }
 
-    public function patientDetail(Request $request, Patient $patient){
+    public function caseDetail(Request $request, EmergencyCase $case){
 
-        $patient->load('emergencyCase');
-
-        $patient->emergencyCase->cases = json_decode($patient->emergencyCase->cases);
-
+        $case->load('patient.municipality','patient.parish','user.specialty','area', 'evolutions');
+        
         return inertia('Dashboard/PatientDetail',[
-            'patient' => new PatientResource($patient)
+            'case' => new CaseResource($case)
         ]);
     }
 

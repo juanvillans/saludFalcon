@@ -14,9 +14,16 @@ return new class extends Migration
         Schema::create('emergency_cases', function (Blueprint $table) {
             $table->id();
             $table->foreignId('patient_id');
-            $table->json('cases');
+            $table->foreignId('user_id');
+            $table->foreignId('area_id');
+            $table->date('entry_date');
+            $table->string('entry_hour');
             $table->string('current_status');
-            $table->string('search')->nullable();
+            $table->date('departure_date')->nullable();
+            $table->string('departure_hour')->nullable();
+            $table->text('reason')->nullable();
+            $table->text('diagnosis')->nullable();
+            $table->text('treatment')->nullable();
             $table->timestamps();
         });
     }

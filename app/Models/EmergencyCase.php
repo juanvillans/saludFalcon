@@ -13,30 +13,49 @@ class EmergencyCase extends Model
     use Searchable;
 
     protected $fillable = [
+        
         'patient_id',
-        'cases',
+        'user_id',
+        'area_id',
+        'entry_date',
+        'entry_hour',
         'current_status',
-        'search',
+        'departure_date',
+        'departure_hour',
+        'reason',
+        'diagnosis',
+        'treatment',
+
     ];
+
+    public function area(){
+        return $this->belongsTo(Area::class);
+    }
 
     public function patient(){
 
         return $this->belongsTo(Patient::class);
     }
 
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
+    public function evolutions(){
+        return $this->hasMany(Evolution::class);
+    }
+
     public function toSearchableArray()
     {   
 
         return [
-            'cases' => '',
-            'search' => '',
+
+            'treatment',
+            'diagnosis',
+            'reason',
+            'users.search',
+            'areas.name',
             'patients.search' => '',
-            'patients.name' => '',
-            'patients.ci' => '',
-            'patients.last_name' => '',
-            'patients.phone_number' => '',
-            'patients.sex' => '',
-            'patients.date_birth' => '',
         ];
     }
 }
