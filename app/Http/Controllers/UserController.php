@@ -6,6 +6,7 @@ use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\DoctorCollection;
 use App\Http\Resources\DoctorResource;
 use App\Models\RequestUser;
 use App\Models\Specialty;
@@ -189,16 +190,16 @@ class UserController extends Controller
 
     public function searchDoctor(Request $request){
 
-        $doctor = User::where('ci',$request->ci)->with('specialty')->first();
+        $doctors = User::whereHas('roles',function ($query){
+            $query->where('name','doctor');
+        })
+        ->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($request->search) . '%'])->get();
 
-        if(!isset($doctor->id) || !$doctor->hasRole('doctor') )
-            $doctor = null;
-        else
-            $doctor = new DoctorResource($doctor);    
+        $doctors = new DoctorCollection($doctors);    
 
         
         
 
-        return response()->json(['doctor' => $doctor]);
+        return response()->json(['doctors' => $doctors]);
     }
 }

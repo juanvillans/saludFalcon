@@ -15,6 +15,7 @@ class EmergencyCase extends Model
     protected $fillable = [
         
         'patient_id',
+        'current_patient_condition_id',
         'user_id',
         'area_id',
         'admitted_area_id',
@@ -36,6 +37,11 @@ class EmergencyCase extends Model
     public function admittedArea(){
         return $this->belongsTo(Area::class,'admitted_area_id','id');
     }
+
+    public function condition(){
+        return $this->belongsTo(PatientCondition::class,'current_patient_condition_id','id');
+    }
+
 
     public function patient(){
 
