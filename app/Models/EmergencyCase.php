@@ -17,6 +17,7 @@ class EmergencyCase extends Model
         'patient_id',
         'user_id',
         'area_id',
+        'admitted_area_id',
         'entry_date',
         'entry_hour',
         'current_status',
@@ -30,6 +31,10 @@ class EmergencyCase extends Model
 
     public function area(){
         return $this->belongsTo(Area::class);
+    }
+
+    public function admittedArea(){
+        return $this->belongsTo(Area::class,'admitted_area_id','id');
     }
 
     public function patient(){
