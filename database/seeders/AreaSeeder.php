@@ -34,11 +34,6 @@ class AreaSeeder extends Seeder
         ]);
 
         Area::create([
-            'name' => 'Nefrologia',
-            'division_id' => 1,            
-        ]);
-
-        Area::create([
             'name' => 'Nefrología',
             'division_id' => 1,            
         ]);
