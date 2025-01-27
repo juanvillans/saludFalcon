@@ -6,7 +6,7 @@
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, page, router } from "@inertiajs/svelte";
     export let data = [];
-
+    
     let instituteSpecialities = [];
     let specialities = [];
     let dataTable = []
@@ -21,7 +21,6 @@
         // UpdateData();
 
     }
-    $: console.log(data);
     // Update data based on the current state of `data.specialties`
     function UpdateData() {
         instituteSpecialities = [];

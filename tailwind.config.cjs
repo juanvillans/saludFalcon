@@ -19,6 +19,7 @@ const colorClasses = {
     transparent: "transparent",
     zelle: "#6a1ccd",
     binance: "#F3BA2F",
+    orange: "#be5c00",
 };
 module.exports = {
     content: [
@@ -50,6 +51,7 @@ module.exports = {
             transparent: "transparent",
             zelle: "#6a1ccd",
             binance: "#F3BA2F",
+            orange: "#be5c00",
         },
         extend: {},
     },

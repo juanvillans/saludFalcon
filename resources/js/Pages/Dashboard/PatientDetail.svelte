@@ -218,9 +218,11 @@
                     {#if editStatus == false}
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <div
-                            on:click={()=> openAccordeon == i ?   openAccordeon = -1:  openAccordeon = i}
+                            
                             class="bg-white p-3 h-fit col-span-2 rounded gap-x-5 w-full md:border md:p-6 pb-2 md:pb-3 pt-2 mt-3"
                         >
+                        <div on:click={()=> openAccordeon == i ?   openAccordeon = -1:  openAccordeon = i}>
+
                             <div class="flex gap-3">
                                 <span
                                     class="h-fit text-center col-span-2 font-bold bg-color4 p-1 rounded-lg inline-block w-10 px-2"
@@ -319,9 +321,9 @@
                                     </span>
                                 </p>
                             </div>
+                            <h2>Evoluciones:</h2>
+                        </div>
 
-                            <div>
-                                <h2>Evoluciones:</h2>
 
                                 {#if openAccordeon == i}
                                 <div>
@@ -331,7 +333,48 @@
                                         <div></div>
                                     {/if}
                                     {#if isOpenCreateEvolution}
-                                        <div class="mb-5">
+                                    <div class="flex gap-4">
+                                        <label class={`py-1 px-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Estable" ?  "bg-gray-200 font-bold" : " " }`} >
+                                            <div class={`w-2 aspect-square rounded-full bg-green `}></div>
+                                            <input
+                                                class="mr-3 hidden"
+                                                type="radio"
+                                                bind:group={$form.condition}
+                                                value="Estable"
+                                                name="condition"
+                                                id=""
+                                            /><span  
+                                                >Estable</span
+                                            >
+                                        </label>
+                                        <label class={`py-1 px-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Inestable" ?  "bg-gray-200 font-bold" : " " }`} >
+                                            <div class={`w-2 aspect-square rounded-full bg-orange `}></div>
+                                            <input
+                                                class="mr-3 hidden"
+                                                type="radio"
+                                                bind:group={$form.condition}
+                                                value="Inestable"
+                                                name="condition"
+                                                id=""
+                                            /><span 
+                                                >Inestable</span
+                                            >
+                                        </label>
+                                        <label class={`py-1 px-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Crítico" ?  "bg-gray-200 font-bold" : " " }`} >
+                                            <div class={`w-2 aspect-square rounded-full bg-red `}></div>
+                                            <input
+                                                class="mr-3 hidden"
+                                                type="radio"
+                                                bind:group={$form.condition}
+                                                value="Crítico"
+                                                name="condition"
+                                                id=""
+                                            /><span 
+                                                >Crítico</span
+                                            >
+                                        </label>
+                                    </div>
+                                        <div class="mb-5 text-editor">
                                             <Editor
                                                 actions={[
                                                     "b",
@@ -391,6 +434,38 @@
                                     {/if}
                                     <ul>
                                         <li
+                                        class="bg-gray-50 mb-3 border rounded overflow-hidden"
+                                    >
+                                        <span
+                                            class="flex items-center gap-2 p-1"
+                                        >
+                                            #1
+                                            <iconify-icon
+                                                icon="fluent-mdl2:date-time-12"
+                                            ></iconify-icon>
+                                            <p>16 jun 2024, 3:00pm</p>
+                                            <div class={`w-2 aspect-square rounded-full bg-green`}></div>
+                                            <p>Estable</p>
+                                        </span>
+
+                                        <div class="bg-white p-1">
+                                            <p>
+                                                Lorem ipsum dolor sit amet
+                                                consectetur adipisicing elit.
+                                                Eius enim accusantium explicabo
+                                                repellendus id commodi, nulla
+                                                minima, suscipit distinctio
+                                                quibusdam rerum nihil, modi
+                                                soluta cum nemo. Adipisci itaque
+                                                ipsa enim!
+                                            </p>
+                                            Lorem ipsum dolor sit amet consectetur
+                                            adipisicing elit. voluptatum odio culpa
+                                            delectus quis, maiores, accusamus iure
+                                            eos
+                                        </div>
+                                    </li>
+                                        <li
                                             class="bg-gray-50 mb-3 rounded overflow-hidden shadow"
                                         >
                                             <span
@@ -421,36 +496,7 @@
                                             </div>
                                         </li>
     
-                                        <li
-                                            class="bg-gray-50 mb-3 border rounded overflow-hidden"
-                                        >
-                                            <span
-                                                class="flex items-center gap-2 p-1"
-                                            >
-                                                #1
-                                                <iconify-icon
-                                                    icon="fluent-mdl2:date-time-12"
-                                                ></iconify-icon>
-                                                <p>16 jun 2024, 3:00pm</p>
-                                            </span>
-    
-                                            <div class="bg-white p-1">
-                                                <p>
-                                                    Lorem ipsum dolor sit amet
-                                                    consectetur adipisicing elit.
-                                                    Eius enim accusantium explicabo
-                                                    repellendus id commodi, nulla
-                                                    minima, suscipit distinctio
-                                                    quibusdam rerum nihil, modi
-                                                    soluta cum nemo. Adipisci itaque
-                                                    ipsa enim!
-                                                </p>
-                                                Lorem ipsum dolor sit amet consectetur
-                                                adipisicing elit. voluptatum odio culpa
-                                                delectus quis, maiores, accusamus iure
-                                                eos
-                                            </div>
-                                        </li>
+                                       
     
                                         <li
                                             class="bg-gray-50 mb-3 border rounded overflow-hidden"
@@ -547,7 +593,7 @@
                                     </ul>
                                 </div>
                                 {/if}
-                            </div>
+                            
                         </div>
                     {:else if $page.props.auth.user_id == single_case.doctor.id}
                         <span

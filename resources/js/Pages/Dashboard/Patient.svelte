@@ -9,10 +9,13 @@
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router, page } from "@inertiajs/svelte";
     import { construct_svelte_component } from "svelte/internal";
+    import axios from "axios";
+
     export let data = {};
     export let areas = [];
+    let showModalDoctor = false;
 
-    $: console.log(areas);
+    $: console.log(data);
     // Update data based on the current state of `data.specialties`
     const today = new Date();
     // Format the date to YYYY-MM-DD
@@ -30,15 +33,19 @@
         sex: "",
         date_birth: "",
         phone_number: "",
-        history_number: "",
-        marital_status: "",
-        current_address: "",
-        economic_classification: "",
-        nationality: "",
-        place_of_birth: "",
-        notify_in_case_of_emergency: "",
-        relationship: "",
-        profession: "",
+        address: "",
+        minicipality_id: "",
+        parish_id: "",
+        // history_number: "",
+        // marital_status: "",
+        // current_address: "",
+        // economic_classification: "",
+        // nationality: "",
+        // place_of_birth: "",
+        // notify_in_case_of_emergency: "",
+        // relationship: "",
+        // profession: "",
+        condition: "Inconcluso",
         cases: [],
         newCase: {
             doctor: {
@@ -46,13 +53,13 @@
                 name: $page.props.auth.name,
                 last_name: $page.props.auth.last_name,
             },
-            start_date: formattedDate,
-            end_date: formattedDate,
-            start_time: formattedTime,
-            end_time: formattedTime,
+            entry_date: formattedDate,
+            departure_date: formattedDate,
+            entry_hour: formattedTime,
+            departure_hour: formattedTime,
             treatment: "",
             diagnosis: "",
-            status: "Altamedica",
+            status: "1",
             area: "",
         },
     };
@@ -92,33 +99,77 @@
         }
     }
     $: console.log($form);
-
-    const searchPatient = debounce((ci) => {
+    const searchPatient = debounce(async (ci) => {
         showModal = true;
+        prosecingSearchPatient = true; // Cambiar a verdadero antes de la búsqueda
 
-        router.get(
-            "/admin/historial-medico",
-            { ci },
-            {
-                preserveState: true,
-                only: ["patient"],
-                onSuccess: (page) => {
-                    // showModal = true;
-                    if (page.props.patient == null) {
-                        return;
-                    }
-                    $form = {
-                        ...$form,
-                        ...page.props.patient.data,
-                        cases: page.props.patient.data.cases,
-                    };
-                },
-                onFinish: (visit) => {
-                    prosecingSearchPatient = false;
-                },
-            },
-        );
-    }, 210);
+        try {
+            const res = await axios.get(`/admin/historial-medico`, {
+                headers: {},
+                params: { ci },
+            });
+            if (res.patient == null) {
+                return;
+            }
+            $form = {
+                ...$form,
+                ...page.props.patient.data,
+                cases: page.props.patient.data.cases,
+            };
+            console.log({ res });
+        } catch (err) {
+            console.log(err);
+        } finally {
+            prosecingSearchPatient = false; // Cambiar a falso después de la búsqueda
+        }
+    }, 280);
+
+    const searchDoctor = debounce(async (ci) => {
+        showModal = true;
+        prosecingSearchPatient = true; // Cambiar a verdadero antes de la búsqueda
+
+        try {
+            const res = await axios.get(`/admin/historial-medico`, {
+                headers: {},
+                params: { ci },
+            });
+            if (res.patient == null) {
+                return;
+            }
+            $form = {
+                ...$form,
+                ...page.props.patient.data,
+                cases: page.props.patient.data.cases,
+            };
+            console.log({ res });
+        } catch (err) {
+            console.log(err);
+        } finally {
+            prosecingSearchPatient = false; // Cambiar a falso después de la búsqueda
+        }
+    }, 280);
+    // router.get(
+    //     "",
+    //     { ci },
+    //     {
+    //         preserveState: true,
+    //         only: ["patient"],
+    //         onSuccess: (page) => {
+    //             // showModal = true;
+    //             if (page.props.patient == null) {
+    //                 return;
+    //             }
+    //             $form = {
+    //                 ...$form,
+    //                 ...page.props.patient.data,
+    //                 cases: page.props.patient.data.cases,
+    //             };
+    //         },
+    //         onFinish: (visit) => {
+    //             prosecingSearchPatient = false;
+    //         },
+    //     },
+    // );
 
     function goToDetailsPatientPage(id) {
         router.get("/admin/historial-medico/detalle-paciente/" + id);
@@ -148,7 +199,7 @@
         status,
     ) {
         // Combine date and time strings into a single Date object
-        if (status == "Observación") {
+        if (status == "3") {
             const now = new Date(); // Get the current date and time
             endDate = now.toISOString().split("T")[0]; // Format to YYYY-MM-DD
             endTime = now.toTimeString().split(" ")[0].substring(0, 5); // Format to HH:mm
@@ -292,6 +343,46 @@
                 readOnly={$form.id}
                 error={$form.errors?.date_birth}
             />
+
+            <Input
+                type="select"
+                required={true}
+                label={"Municipio"}
+                bind:value={$form.municipality_id}
+                error={$form.errors?.municipality_id}
+            >
+                {#each areas as area (area.id)}
+                    <option value={area.id}>{area.name}</option>
+                {/each}
+            </Input>
+
+            <Input
+                type="select"
+                required={true}
+                label={"Parroquia"}
+                bind:value={$form.parish_id}
+                error={$form.errors?.parish_id}
+            >
+                {#each areas as area (area.id)}
+                    <option value={area.id}>{area.name}</option>
+                {/each}
+            </Input>
+            <Input
+                type="text"
+                required={true}
+                label={"Dirección"}
+                bind:value={$form.name}
+                readOnly={$form.id}
+                error={$form.errors?.name}
+            />
+
+            <Input
+                type="tel"
+                label={"Teléfono"}
+                readOnly={$form.id}
+                bind:value={$form.phone_number}
+                error={$form.errors?.phone_number}
+            />
             <div class="flex flex-col mt-6">
                 <label class="py-1 cursor-pointer hover:bg-gray-100">
                     <input
@@ -319,14 +410,6 @@
                     >
                 </label>
             </div>
-
-            <Input
-                type="tel"
-                label={"Teléfono"}
-                readOnly={$form.id}
-                bind:value={$form.phone_number}
-                error={$form.errors?.phone_number}
-            />
         </fieldset>
 
         <fieldset
@@ -336,17 +419,59 @@
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DATOS DE LA EMERGENCIA</legend
             >
-
+            <div class="flex justify-between">
+                <button
+                    type="button"
+                    on:click={() => {
+                        showModalDoctor = true;
+                        setTimeout(() => {
+                            document.querySelector("#searchDoctor").focus()
+                        }, 150);
+                    }}
+                >
+                    <div class="mt-3 text-left">
+                        <span class="text-left">Médico</span>
+                    </div>
+                    <div
+                        class="flex gap-2 items-center bg-gray-200 rounded-full hover:bg-gray-300 max-w-fit"
+                    >
+                        <span
+                            class="rounded-full overflow-hidden bg-color4 w-7 h-7 justify-center items-center flex"
+                        >
+                            <iconify-icon icon="fa6-solid:user-doctor"
+                            ></iconify-icon>
+                        </span>
+                        {#if $form.doctor_id > 0}
+                            <p
+                                class="bg-gray-200 font-bold rounded-full text-left px-2"
+                            >
+                                <b>
+                                    {$form?.doctor_name}
+                                    {$form?.doctor_last_name}</b
+                                >
+                            </p>
+                        {:else}
+                            <p class="text-sm">Selecciona un médico</p>
+                        {/if}
+                        <iconify-icon icon="iconamoon:arrow-down-2-duotone"
+                        ></iconify-icon>
+                    </div>
+                </button>
+            </div>
             <Input
                 type="select"
                 required={true}
                 label={"Servicio Tratante *"}
-                bind:value={$form.newCase.treatingService}
-                error={$form.errors?.newCase?.treatingService}
+                bind:value={$form.treatingService}
+                error={$form.errors?.treatingService}
+                on:change={(e) => {
+                    console.log(e.target.value);
+                    $form.area = e.target.value;
+                }}
             >
                 {#each areas as area (area.id)}
-                    {#if area.type_zone_id == 1}
-                        <option value={area}>{area.name}</option>
+                    {#if area.division_id == 2}
+                        <option value={area.id}>{area.name}</option>
                     {/if}
                 {/each}
             </Input>
@@ -354,85 +479,84 @@
                 type="date"
                 required={true}
                 label={"Fecha de entrada *"}
-                bind:value={$form.newCase.start_date}
-                error={$form.errors?.newCase?.start_date}
+                bind:value={$form.entry_date}
+                error={$form.errors?.entry_date}
             />
 
             <Input
                 type="time"
                 required={true}
                 label={"Hora de entrada *"}
-                bind:value={$form.newCase.start_time}
-                error={$form.errors?.newCase?.start_time}
+                bind:value={$form.entry_hour}
+                error={$form.errors?.entry_hour}
             />
 
             <Input
                 type="select"
                 required={true}
                 label={"Estado *"}
-                bind:value={$form.newCase.status}
-                error={$form.errors?.newCase?.status}
+                bind:value={$form.status}
+                error={$form.errors?.status}
             >
-                <option value="Altamedica"> Egreso: Alta médica </option>
-                <option value="Altacontraindicacion"> Egreso: Alta contraindicación </option>
-                <option value="Observación">Ingreso </option>
-                <option value="Admitido">Admitido </option>
-                <option value="Fallecido">Defución </option>
+                <option value="1"> Egreso: Alta médica </option>
+                <option value="2"> Egreso: Alta contraindicación </option>
+                <option value="3">Ingreso </option>
+                <option value="4">Admitido </option>
+                <option value="5">Defución </option>
             </Input>
-            {#if $form.newCase.status == "Admitido"}
+            {#if $form.status == "4"}
                 <Input
                     type="select"
                     required={true}
                     label={"Area admitida *"}
-                    bind:value={$form.newCase.area}
-                    error={$form.errors?.newCase?.area}
+                    bind:value={$form.area}
+                    error={$form.errors?.area}
                 >
                     {#each areas as area (area.id)}
-                        {#if area.type_zone_id == 2}
-                            <option value={area}>{area.name}</option>
+                        {#if area.division_id == 1}
+                            <option value={area.id}>{area.name}</option>
                         {/if}
                     {/each}
                 </Input>
             {/if}
-            {#if $form.newCase.status == "Admitido" && $form.newCase.area.id == "10" }
-            <Input
-                type="text"
-                required={true}
-                label={"Hospital o ambulatorio *"}
-                bind:value={$form.newCase.placeOfAmbulatory}
-                error={$form.errors?.newCase?.placeOfAmbulatory}
-            />
-        
-        {/if}
-            {#if $form.newCase.status == "Observación"}
+            {#if $form.status == "4" && $form.area.id == "10"}
+                <Input
+                    type="text"
+                    required={true}
+                    label={"Hospital o ambulatorio *"}
+                    bind:value={$form.placeOfAmbulatory}
+                    error={$form.errors?.placeOfAmbulatory}
+                />
+            {/if}
+            {#if $form.status == "3"}
                 <Input
                     type="select"
                     required={true}
                     label={"Area de observación *"}
-                    bind:value={$form.newCase.observationArea}
-                    error={$form.errors?.newCase?.observationArea}
+                    bind:value={$form.observationArea}
+                    error={$form.errors?.observationArea}
                 >
                     {#each areas as area (area.id)}
-                        {#if area.type_zone_id == 1}
-                            <option value={area}>{area.name} </option>
+                        {#if area.division_id == 2}
+                            <option value={area.id}>{area.name} </option>
                         {/if}
                     {/each}
                 </Input>
             {/if}
-          
-            {#if $form.newCase.status !== "Observación"}
+
+            {#if $form.status !== "3"}
                 <Input
                     type="date"
                     label={"Fecha de salida "}
-                    bind:value={$form.newCase.end_date}
-                    error={$form.errors?.newCase?.end_date}
+                    bind:value={$form.departure_date}
+                    error={$form.errors?.departure_date}
                 />
                 <Input
                     type="time"
                     required={true}
                     label={"Hora de salida *"}
-                    bind:value={$form.newCase.end_time}
-                    error={$form.errors?.newCase?.end_time}
+                    bind:value={$form.departure_hour}
+                    error={$form.errors?.departure_hour}
                 />
             {/if}
         </fieldset>
@@ -444,21 +568,82 @@
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DIAGNÓSTICO Y TRATAMIENTO</legend
             >
+            <p class="col-span-2 mt-1">Condición:</p>
+            <div class="flex gap-4 mb-3">
+                <label
+                    class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Inconcluso" ? "bg-gray-200 font-bold" : " "}`}
+                >
+                    <div
+                        class={`w-2 aspect-square rounded-full bg-gray-500 `}
+                    ></div>
+                    <input
+                        class="mr-3 hidden"
+                        type="radio"
+                        bind:group={$form.condition}
+                        value="Inconcluso"
+                        name="condition"
+                        id=""
+                    /><span>Inconcluso</span>
+                </label>
+                <label
+                    class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Estable" ? "bg-gray-200 font-bold" : " "}`}
+                >
+                    <div
+                        class={`w-2 aspect-square rounded-full bg-green `}
+                    ></div>
+                    <input
+                        class="mr-3 hidden"
+                        type="radio"
+                        bind:group={$form.condition}
+                        value="Estable"
+                        name="condition"
+                        id=""
+                    /><span>Estable</span>
+                </label>
+                <label
+                    class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Inestable" ? "bg-gray-200 font-bold" : " "}`}
+                >
+                    <div
+                        class={`w-2 aspect-square rounded-full bg-orange `}
+                    ></div>
+                    <input
+                        class="mr-3 hidden"
+                        type="radio"
+                        bind:group={$form.condition}
+                        value="Inestable"
+                        name="condition"
+                        id=""
+                    /><span>Inestable</span>
+                </label>
+                <label
+                    class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Crítico" ? "bg-gray-200 font-bold" : " "}`}
+                >
+                    <div class={`w-2 aspect-square rounded-full bg-red `}></div>
+                    <input
+                        class="mr-3 hidden"
+                        type="radio"
+                        bind:group={$form.condition}
+                        value="Crítico"
+                        name="condition"
+                        id=""
+                    /><span>Crítico</span>
+                </label>
+            </div>
             <Input
                 type="textarea"
                 required={true}
                 classes={"col-span-2"}
                 label={"Motivo de consulta *"}
-                bind:value={$form.newCase.reasonForConsultation}
-                error={$form?.errors?.newCase?.reasonForConsultation}
+                bind:value={$form.reason}
+                error={$form?.errors?.reason}
             />
             <Input
                 type="textarea"
                 required={true}
                 classes={"col-span-2"}
                 label={"Diagnóstico *"}
-                bind:value={$form.newCase.diagnosis}
-                error={$form?.errors?.newCase?.diagnosis}
+                bind:value={$form.diagnosis}
+                error={$form?.errors?.diagnosis}
             />
 
             <Input
@@ -466,8 +651,8 @@
                 required={true}
                 classes={"col-span-2"}
                 label={"Orden médica de ingreso *"}
-                bind:value={$form.newCase.treatment}
-                error={$form.errors?.newCase?.treatment}
+                bind:value={$form.treatment}
+                error={$form.errors?.treatment}
             />
         </fieldset>
     </form>
@@ -480,6 +665,69 @@
     />
 </Modal>
 
+<Modal bind:showModal={showModalDoctor}>
+    <div class=" top-3  flex items-center">
+        <span class="absolute">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5 mx-3 text-gray-400"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
+            </svg>
+        </span>
+    
+        <input
+            type="search"
+            placeholder="Buscar por nombre o CI"
+            on:input={(e) => {
+                searchDoctor(e.target.value);
+            }}
+            id="searchDoctor"
+            class=" block w-full py-1.5 pr-5 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+        />
+    </div>
+    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        <!-- {#each data.dataToCreateService.doctors.data as doctor}
+            <li
+                class="flex gap-3 border rounded cursor-pointer hover:bg-gray-100 hover:border-dark p-4"
+                on:click={() => {
+                    $form.doctor_id = doctor.id;
+                    ($form.doctor_name = doctor.name),
+                        ($form.doctor_last_name = doctor.last_name);
+                    $form.specialty_id = doctor.specialties[0].id;
+                    showModalDoctor = false;
+                }}
+            >
+                <span
+                    class="rounded-full overflow-hidden bg-color4 w-9 h-9 justify-center items-center flex"
+                >
+                    <iconify-icon icon="fa6-solid:user-doctor"></iconify-icon>
+                </span>
+
+                <div class="mt-1">
+                    <p>
+                        <b> {doctor.name} {doctor.last_name}</b> - {doctor.ci}
+                    </p>
+                    <p class="mt-2 flex gap-2">
+                        {#each doctor.specialties as specialty}
+                            <span class="bg-gray-200 rounded-full px-2 py-1"
+                                >{specialty.name}</span
+                            >
+                        {/each}
+                    </p>
+                </div>
+            </li>
+        {/each} -->
+    </ul>
+</Modal>
 <div class="flex justify-between items-center">
     <button
         class="btn_create inline-block p-2 px-3"
@@ -521,10 +769,10 @@
     <Table
         filtersOptions={{
             status: [
-                { name: "Alta", id: "Alta" },
-                { name: "Admitido", id: "Admitido" },
-                { name: "Observación", id: "Observación" },
-                { name: "Fallecido", id: "Fallecido" },
+                { name: "Egreso: Alta médica", id: "Alta" },
+                { name: "Egreso: Alta contraindicación", id: "3" },
+                { name: "Admitido", id: "4" },
+                { name: "Defución", id: "5" },
             ],
         }}
         allowSearch={false}
@@ -558,14 +806,14 @@
                         >
                         <td>
                             {timeBetweenDateAndTime(
-                                row.cases?.[0]?.start_date,
-                                row.cases?.[0]?.start_time,
-                                row.cases?.[0]?.end_date,
-                                row.cases?.[0]?.end_time,
+                                row.cases?.[0]?.entry_date,
+                                row.cases?.[0]?.entry_hour,
+                                row.cases?.[0]?.departure_date,
+                                row.cases?.[0]?.departure_hour,
                                 row.cases?.[0]?.status,
                             )}
 
-                            <!-- {formatDateSpanish(row.cases[0].start_date)} -->
+                            <!-- {formatDateSpanish(row.cases[0].entry_date)} -->
                         </td>
 
                         <td style="white-space: normal;">
@@ -653,16 +901,16 @@
                 <div class="flex gap-2 items-center">
                     <p>
                         {timeBetweenDateAndTime(
-                            row.cases?.[0]?.start_date,
-                            row.cases?.[0]?.start_time,
-                            row.cases?.[0]?.end_date,
-                            row.cases?.[0]?.end_time,
+                            row.cases?.[0]?.entry_date,
+                            row.cases?.[0]?.entry_hour,
+                            row.cases?.[0]?.departure_date,
+                            row.cases?.[0]?.departure_hour,
                             row.cases?.[0]?.status,
                         )}
                     </p>
                     |
                     <StatusColor status={row.cases?.[0]?.status} />
-                    {#if row.cases?.[0]?.status == "Admitido"}
+                    {#if row.cases?.[0]?.status == "4"}
                         a {row.cases?.[0]?.area?.name}
                     {/if}
                 </div>
