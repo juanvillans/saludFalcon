@@ -12,28 +12,13 @@ class EmergencyCaseService
 {	
     public function getCases($params)
     {
-        $cases = EmergencyCase::search(trim($params['search'] ?? ''))
-        ->query(function ($query) use ($params) {
-            $query->join('patients', 'emergency_cases.patient_id', 'patients.id')
-                ->select([
-                          
-                          'emergency_cases.id', 'emergency_cases.cases', 'emergency_cases.current_status', 'emergency_cases.search',
-
-                          'patients.id as patient_id','patients.name as patient_name', 'patients.last_name as patient_last_name', 'patients.ci as patient_ci', 
-                          'patients.phone_number as patient_phone_number', 'patients.sex as patient_sex', 'patients.date_birth as patient_date_birth', 'patients.search as patient_search'
-                        
-                          ])
+        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions')
                 ->when($params['status'],function($query) use ($params){
                     $query->where('current_status', $params['status']);
                 })
-                ->orderBy('emergency_cases.id', 'DESC');
-        })
-        ->paginate($params['per_page'] ?? 25);
+                ->orderBy('id', 'DESC')
+                ->paginate($params['per_page'] ?? 25);
 
-        $cases->getCollection()->transform(function ($case) {
-            $case->cases = json_decode($case->cases, true);
-            return $case;
-        });
 
         return new CaseCollection($cases);
     }
@@ -45,16 +30,21 @@ class EmergencyCaseService
         if($patientID == null)
             $patientID = $this->createPatient($data);
 
-        $lastCase = $data['cases'][0] ?? null;
+        EmergencyCase::create([
 
-        EmergencyCase::updateOrCreate([
-            'patient_id' => $patientID
-        ],
-        [
-            'cases' => json_encode($data['cases']),
-            'current_status' => $lastCase['status'] ?? null,
-            'search' => $lastCase['diagnosis'] . ' ' . $lastCase['treatment'] . ' ' . $lastCase['doctor']['name'] . ' ' . $lastCase['doctor']['last_name'] 
+            'patient_id' => $patientID,
+            'user_id' => $data['user_id'],
+            'area_id' => $data['area_id'],
+            'entry_date' => $data['entry_date'],
+            'entry_hour' => $data['entry_hour'],
+            'current_status' => $data['status'],
+            'departure_date' => $data['departure_date'] ?? null,
+            'departure_hour' => $data['departure_hour'] ?? null,
+            'reason' => $data['reason'],
+            'diagnosis' => $data['diagnosis'],
+            'treatment' => $data['treatment'],
         ]);
+
 
         return 0;
 
@@ -115,8 +105,6 @@ class EmergencyCaseService
         return 0;
     }
     
-   private function validateCasesJSON($cases){
-    
-    }
+   
 
 }

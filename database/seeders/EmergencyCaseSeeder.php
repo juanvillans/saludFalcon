@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\EmergencyCase;
 use App\Models\Patient;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,10 +19,7 @@ class EmergencyCaseSeeder extends Seeder
         $names = ['Jose', 'Daniel', 'Juan', 'Marcos', 'Carlos'];
         $lastNames = ['Diaz', 'Rodriguez', 'Villasmil', 'Donquis', 'Tovar'];
         $sexs = ['Masculino', 'Femenino'];
-        $doctors = [
-            1 => ['name' => 'Juan', 'last_name' => 'Donquis'],
-            2 => ['name' => 'Juan', 'last_name' => 'Villasmil'],
-        ];
+        $doctor = User::where('id',3)->first();
 
         for ($i = 0; $i < 100; $i++) { 
             
@@ -35,33 +33,28 @@ class EmergencyCaseSeeder extends Seeder
                 'phone_number' => "+58412".$i,
                 'sex' => $sexs[rand(0,1)],
                 'date_birth' => Carbon::createFromDate(2000, 12, 25),
-                'search' => $name . ' ' . $lastName, 
+                'municipality_id' => 14,
+                'parish_id' => 37,
+                'address' => 'San José',
+                'search' => $name . ' ' . $lastName . ' 30847' . $i , 
             ]);
 
-            $doctorID = rand(1,2);
 
             EmergencyCase::create([
+
                 'patient_id' => $patient->id,
-                'cases' => json_encode([
-                        [
-                            "area" => null,
-                            "diagnosis" => "Diarrea",
-                            "doctor" => [
-                                "id" => $doctorID,
-                                "last_name" => $doctors[$doctorID]['last_name'],
-                                "name" => $doctors[$doctorID]['name']
-                            ],
-                            "end_date" => "2024-10-25",
-                            "end_time" => "14:40",
-                            "start_date" => "2024-10-25",
-                            "start_time" => "14:40",
-                            "status" => "Alta",
-                            "treatment" => "Café con bastante cambul"
-                        ]
-                ]),
-                'current_status' => "Alta",
-                'search' => 'Diarrea Café con bastante cambul ' . $doctors[$doctorID]['name'] . ' ' . $doctors[$doctorID]['last_name'],    
+                'user_id' => $doctor->id,
+                'area_id' => 1,
+                'entry_date' => Carbon::now(),
+                'entry_hour' => Carbon::now()->format('H:i:s'),
+                'current_status' => 1,
+                'departure_date' => Carbon::now(),
+                'departure_hour' => Carbon::now()->format('H:i:s'),
+                'reason' => 'Diarrea',
+                'diagnosis' => 'Efectivamente tiene diarrea',
+                'treatment' => 'Café con bastante cambul',
             ]);
+            
         }
     }
 }

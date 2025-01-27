@@ -13,6 +13,7 @@
     export let areas = [];
 
     $: console.log(areas);
+    $: console.log(data);
     // Update data based on the current state of `data.specialties`
     const today = new Date();
     // Format the date to YYYY-MM-DD
