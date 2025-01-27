@@ -57,7 +57,6 @@ class EmergencyCaseService
             'phone_number' => $data['patient_phone_number'],
             'sex' => $data['patient_sex'],
             'date_birth' => $data['patient_date_birth'],
-            // 'search' => $this->generateSearch($data)
         ]);
 
         return 0;

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PatientRequest;
+use App\Http\Resources\CaseResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Area;
+use App\Models\EmergencyCase;
 use App\Models\Patient;
 use App\Services\EmergencyCaseService;
 use Illuminate\Http\Request;
@@ -73,14 +75,12 @@ class EmergencyCaseController extends Controller
         }
     }
 
-    public function patientDetail(Request $request, Patient $patient){
+    public function caseDetail(Request $request, EmergencyCase $case){
 
-        $patient->load('emergencyCase');
-
-        $patient->emergencyCase->cases = json_decode($patient->emergencyCase->cases);
-
+        $case->load('patient.municipality','patient.parish','user.specialty','area', 'evolutions');
+        
         return inertia('Dashboard/PatientDetail',[
-            'patient' => new PatientResource($patient)
+            'case' => new CaseResource($case)
         ]);
     }
 
