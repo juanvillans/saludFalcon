@@ -9,6 +9,7 @@ use App\Models\Area;
 use App\Models\EmergencyCase;
 use App\Models\Municipality;
 use App\Models\Patient;
+use App\Models\PatientCondition;
 use App\Models\StatusCase;
 use App\Services\EmergencyCaseService;
 use Illuminate\Http\Request;
@@ -43,6 +44,7 @@ class EmergencyCaseController extends Controller
         $areas = Area::get();
         $muncipalities = Municipality::with('parishes')->get();
         $statutes = StatusCase::get();
+        $conditions = PatientCondition::get();
         
         return inertia('Dashboard/Patient',[
             'data' => $emergencyCases,
@@ -50,6 +52,7 @@ class EmergencyCaseController extends Controller
             'areas' => $areas,
             'municipalities' => $muncipalities,
             'statutes' => $statutes,
+            'conditions' => $conditions,
             'filters' => ['status' => $request->input('status') ?? ''],
         ]);
 
