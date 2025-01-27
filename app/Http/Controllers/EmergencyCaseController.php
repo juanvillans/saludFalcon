@@ -7,6 +7,7 @@ use App\Http\Resources\CaseResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Area;
 use App\Models\EmergencyCase;
+use App\Models\Municipality;
 use App\Models\Patient;
 use App\Services\EmergencyCaseService;
 use Illuminate\Http\Request;
@@ -39,11 +40,13 @@ class EmergencyCaseController extends Controller
             $patient = $this->emergencyCaseService->getPatientByCI($this->params);
         
         $areas = Area::where('division_id',2)->get();
+        $muncipalities = Municipality::with('parishes')->get();
         
         return inertia('Dashboard/Patient',[
             'data' => $emergencyCases,
             'patient' => $patient ?? null,
             'areas' => $areas,
+            'municipalities' => $muncipalities,
             'filters' => ['status' => $request->input('status') ?? ''],
         ]);
 

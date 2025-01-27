@@ -18,4 +18,8 @@ class Municipality extends Model
     public function patients(){
         return $this->hasMany(Patient::class);
     }
+
+    public function parishes(){
+        return $this->hasMany(Parish::class);
+    }
 }
