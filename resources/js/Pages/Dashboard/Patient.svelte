@@ -134,14 +134,14 @@
     }, 280);
 
     $: console.log($form);
-    const searchDoctor = debounce(async (ci) => {
+    const searchDoctor = debounce(async (search) => {
         showModal = true;
         prosecingSearchPatient = true; // Cambiar a verdadero antes de la búsqueda
 
         try {
             const res = await axios.get(`/admin/historial-medico/doctor`, {
                 headers: {},
-                params: { ci },
+                params: { search },
             });
             searchedDoctors = res.data.doctors;
         } catch (err) {
@@ -499,14 +499,14 @@
                 type="select"
                 required={true}
                 label={"Estado *"}
-                bind:value={$form.status}
-                error={$form.errors?.status}
+                bind:value={$form.current_status}
+                error={$form.errors?.current_status}
             >
                 {#each statutes as status (status.id)}
                     <option value={status.id}>{status.name}</option>
                 {/each}
             </Input>
-            {#if $form.status == "4"}
+            {#if $form.current_status == "4"}
                 <Input
                     type="select"
                     required={true}
@@ -521,7 +521,7 @@
                     {/each}
                 </Input>
             {/if}
-            {#if $form.status == "4" && $form.area.id == "10"}
+            {#if $form.current_status == "4" && $form.area.id == "10"}
                 <Input
                     type="text"
                     required={true}
@@ -530,7 +530,7 @@
                     error={$form.errors?.placeOfAmbulatory}
                 />
             {/if}
-            <!-- {#if $form.status == "3"}
+            <!-- {#if $form.current_status == "3"}
                 <Input
                     type="select"
                     required={true}
@@ -546,7 +546,7 @@
                 </Input>
             {/if} -->
 
-            {#if $form.status !== "3"}
+            {#if $form.current_status !== "3"}
                 <Input
                     type="date"
                     label={"Fecha de salida "}
@@ -576,7 +576,7 @@
                     class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Inconcluso" ? "bg-gray-200 font-bold" : " "}`}
                 >
                     <div
-                        class={`w-2 aspect-square rounded-full bg-gray-500 `}
+                        class={`w-2 aspect-square rounded-full bg-gray-500 condition`}
                     ></div>
                     <input
                         class="mr-3 hidden"
@@ -785,10 +785,11 @@
                 <th style="font-size: 12px;">N°</th>
                 <th>Duración</th>
                 <th>Estado</th>
+                <th>Condición</th>
                 <th>Paciente</th>
                 <th>Diagnóstico</th>
                 <th>Tratamiento</th>
-                <th>Doctor</th>
+                <!-- <th>Doctor</th> -->
             </tr>
         </thead>
 
@@ -812,19 +813,22 @@
                                 row?.entry_hour,
                                 row?.departure_date,
                                 row?.departure_hour,
-                                row?.status,
+                                row?.current_status,
                             )}
 
                             <!-- {formatDateSpanish(row.cases[0].entry_date)} -->
                         </td>
 
                         <td style="white-space: normal;">
-                            <StatusColor status={row?.status} />
+                            <StatusColor status={row?.current_status} />
                             <p>
-                                {#if row?.status == "Admitido"}
+                                {#if row?.current_status == "Admitido"}
                                     {row?.area?.name}
                                 {/if}
                             </p>
+                        </td>
+                        <td>
+                            {row?.condition_name}
                         </td>
                         <td class="min-w-[120px]">
                             <div class="flex items-center gap-2">
@@ -876,9 +880,7 @@
                             {/if}
                         </td>
                         <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
-                        <td>
-                            {row?.user}
-                        </td>
+                       
                     </tr>
                 {/each}
             {/if}
@@ -906,12 +908,12 @@
                             row?.entry_hour,
                             row?.departure_date,
                             row?.departure_hour,
-                            row?.status,
+                            row?.current_status,
                         )}
                     </p>
                     |
-                    <StatusColor status={row?.status} />
-                    {#if row?.status == "4"}
+                    <StatusColor status={row?.current_status} />
+                    {#if row?.current_status == "4"}
                         a {row?.area?.name}
                     {/if}
                 </div>
