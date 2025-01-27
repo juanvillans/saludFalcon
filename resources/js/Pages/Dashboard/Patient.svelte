@@ -14,6 +14,7 @@
     export let data = {};
     export let areas = [];
     export let municipalities = [];
+    export let statutes = [];
     let showModalDoctor = false;
 
     $: console.log(data.data);
@@ -26,6 +27,8 @@
     const hours = String(today.getHours()).padStart(2, "0");
     const minutes = String(today.getMinutes()).padStart(2, "0");
     const formattedTime = `${hours}:${minutes}`;
+
+    let searchedDoctors = [];
 
     const emptyDataForm = {
         patient_id: null,
@@ -111,16 +114,16 @@
             const res = await axios.get(`/admin/historial-medico`, {
                 params: { ci },
             });
-            
+
             if (res.data.patient == null) {
-               $form.patient_id = null
-                return
+                $form.patient_id = null;
+                return;
             } else {
                 $form = {
                     ...$form,
                     ...res.data.patient,
                 };
-                
+
                 console.log(res.data.patient);
             }
         } catch (err) {
@@ -130,25 +133,17 @@
         }
     }, 280);
 
-    $: console.log($form)
+    $: console.log($form);
     const searchDoctor = debounce(async (ci) => {
         showModal = true;
         prosecingSearchPatient = true; // Cambiar a verdadero antes de la búsqueda
 
         try {
-            const res = await axios.get(`/admin/historial-medico`, {
+            const res = await axios.get(`/admin/historial-medico/doctor`, {
                 headers: {},
                 params: { ci },
             });
-            if (res.patient == null) {
-                return;
-            }
-            $form = {
-                ...$form,
-                ...page.props.patient.data,
-                cases: page.props.patient.data.cases,
-            };
-            console.log({ res });
+            searchedDoctors = res.data.doctors;
         } catch (err) {
             console.log(err);
         } finally {
@@ -261,7 +256,7 @@
                             class="text-3xl"
                             icon="eos-icons:three-dots-loading"
                         ></iconify-icon>
-                    {:else if $form?.id !== null}
+                    {:else if $form?.patient_id !== null}
                         <span
                             class="flex items-center gap-2 text-center mx-auto justify-center"
                         >
@@ -507,11 +502,9 @@
                 bind:value={$form.status}
                 error={$form.errors?.status}
             >
-                <option value="1"> Egreso: Alta médica </option>
-                <option value="2"> Egreso: Alta contraindicación </option>
-                <option value="3">Ingreso </option>
-                <option value="4">Admitido </option>
-                <option value="5">Defución </option>
+                {#each statutes as status (status.id)}
+                    <option value={status.id}>{status.name}</option>
+                {/each}
             </Input>
             {#if $form.status == "4"}
                 <Input
@@ -704,7 +697,7 @@
         />
     </div>
     <ul class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        <!-- {#each data.dataToCreateService.doctors.data as doctor}
+        <!-- {#each searchedDoctors as doctor (doctor.user_id)}
             <li
                 class="flex gap-3 border rounded cursor-pointer hover:bg-gray-100 hover:border-dark p-4"
                 on:click={() => {
