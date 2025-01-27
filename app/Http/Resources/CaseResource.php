@@ -25,6 +25,7 @@ class CaseResource extends JsonResource
             'diagnosis' => $this->diagnosis,
             'treatment' => $this->treatment,
             'current_status' => $this->current_status,
+            'current_status_name' => $this->statusCase->name,
 
             'municipality_id' => $this->patient->municipality_id,
             'municipality_name' => $this->patient->municipality->name,
@@ -43,6 +44,8 @@ class CaseResource extends JsonResource
             "patient_phone_number" => $this->patient->phone_number,
             "patient_sex" => $this->patient->sex,
             "patient_date_birth" => $this->patient->date_birth,
+            "patient_address" => $this->patient->address,
+
             
             'area_id' => $this->area_id,
             'area_name' => $this->area->name,

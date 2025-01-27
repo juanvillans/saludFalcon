@@ -12,7 +12,7 @@ class EmergencyCaseService
 {	
     public function getCases($params)
     {
-        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions')
+        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase')
                 ->when($params['status'],function($query) use ($params){
                     $query->where('current_status', $params['status']);
                 })
@@ -65,12 +65,10 @@ class EmergencyCaseService
     public function getPatientByCI($param){
         
         
-        $patient = Patient::where('ci',$param['patient_ci'])->with('emergencyCase')->first();
+        $patient = Patient::where('ci',$param['patient_ci'])->with('patient.municipality','patient.parish')->first();
         
         if(!isset($patient->id))
             return null;
-        
-        $patient->emergencyCase->cases = json_decode($patient->emergencyCase->cases,true);
     
         return new PatientResource($patient);
         
@@ -87,6 +85,8 @@ class EmergencyCaseService
                 'phone_number' => $data['patient_phone_number'] ?? null,
                 'sex' => $data['patient_sex'],
                 'date_birth' => $data['patient_date_birth'],
+                'municipality_id' => $data['municipality_id'],
+                'parish_id' => $data['parish_id'],
             ]);
 
 
