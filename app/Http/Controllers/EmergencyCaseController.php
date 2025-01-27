@@ -40,7 +40,7 @@ class EmergencyCaseController extends Controller
         if($this->params['patient_ci'] != null)
             $patient = $this->emergencyCaseService->getPatientByCI($this->params);
         
-        $areas = Area::where('division_id',2)->get();
+        $areas = Area::get();
         $muncipalities = Municipality::with('parishes')->get();
         $statutes = StatusCase::get();
         
