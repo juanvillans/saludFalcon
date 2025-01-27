@@ -17,7 +17,7 @@
     export let statutes = [];
     let showModalDoctor = false;
 
-    $: console.log(data.data);
+    $: console.log($page.props.auth);
     $: console.log(municipalities);
     // Update data based on the current state of `data.specialties`
     const today = new Date();
@@ -42,10 +42,10 @@
         municipality_id: 14,
         parish_id: 0,
 
-        user_id: $page.props.auth.user_id,
-        user_name: $page.props.auth.name,
-        user_last_name: $page.props.auth.last_name,
-        user_ci: $page.props.auth.last_name,
+        user_id: $page.props.auth.rol[0] == "admin" ? -1 : $page.props.auth.user_id,
+        user_name: $page.props.auth.rol[0] == "admin" ? -1 : $page.props.auth.name,
+        user_last_name: $page.props.auth.rol[0] == "admin" ? -1 : $page.props.auth.last_name,
+        // user_ci: $page.props.auth.last_name,
         // history_number: "",
         // marital_status: "",
         // current_address: "",
@@ -143,6 +143,7 @@
                 headers: {},
                 params: { search },
             });
+            console.log(res)
             searchedDoctors = res.data.doctors;
         } catch (err) {
             console.log(err);
@@ -427,10 +428,12 @@
                 <button
                     type="button"
                     on:click={() => {
-                        showModalDoctor = true;
-                        setTimeout(() => {
-                            document.querySelector("#searchDoctor").focus();
-                        }, 150);
+                        if ($page.props.auth.rol[0] == "admin" ) {
+                            showModalDoctor = true;
+                            setTimeout(() => {
+                                document.querySelector("#searchDoctor").focus();
+                            }, 150);
+                        }
                     }}
                 >
                     <div class="mt-3 text-left">
@@ -445,13 +448,13 @@
                             <iconify-icon icon="fa6-solid:user-doctor"
                             ></iconify-icon>
                         </span>
-                        {#if $form.doctor_id > 0}
+                        {#if $form.user_id > 0}
                             <p
                                 class="bg-gray-200 font-bold rounded-full text-left px-2"
                             >
                                 <b>
-                                    {$form?.doctor_name}
-                                    {$form?.doctor_last_name}</b
+                                    {$form?.user_name}
+                                    {$form?.user_last_name}</b
                                 >
                             </p>
                         {:else}
@@ -696,16 +699,17 @@
             class=" block w-full py-1.5 pr-5 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
         />
     </div>
-    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        <!-- {#each searchedDoctors as doctor (doctor.user_id)}
+    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-3">
+        {#each searchedDoctors as doctor (doctor.user_id)} 
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <li
                 class="flex gap-3 border rounded cursor-pointer hover:bg-gray-100 hover:border-dark p-4"
                 on:click={() => {
-                    $form.doctor_id = doctor.id;
-                    ($form.doctor_name = user),
-                        ($form.doctor_last_name = doctor.last_name);
-                    $form.specialty_id = doctor.specialties[0].id;
-                    showModalDoctor = false;
+                    if ($page.props.auth.rol[0] == "admin" ) {
+
+                        $form = {...$form, ...doctor}
+                        showModalDoctor= false
+                    }
                 }}
             >
                 <span
@@ -716,18 +720,14 @@
 
                 <div class="mt-1">
                     <p>
-                        <b> {user} {doctor.last_name}</b> - {doctor.ci}
+                        <b> {doctor.user_name} {doctor.user_last_name}</b> - {doctor.user_ci}
                     </p>
-                    <p class="mt-2 flex gap-2">
-                        {#each doctor.specialties as specialty}
-                            <span class="bg-gray-200 rounded-full px-2 py-1"
-                                >{specialty.name}</span
+                            <span class="bg-gray-200 rounded-full px-2 py-1 text-sm"
+                                >{doctor.user_specialty_name}</span
                             >
-                        {/each}
-                    </p>
                 </div>
             </li>
-        {/each} -->
+        {/each}
     </ul>
 </Modal>
 <div class="flex justify-between items-center">
