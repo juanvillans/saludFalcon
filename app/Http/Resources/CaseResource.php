@@ -27,10 +27,10 @@ class CaseResource extends JsonResource
             'current_status' => $this->current_status,
             'current_status_name' => $this->statusCase->name,
 
-            'municipality_id' => $this->patient->municipality_id,
-            'municipality_name' => $this->patient->municipality->name,
-            'parish_id' => $this->patient->parish_id,
-            'parish_name' => $this->patient->parish->name,
+            'municipality_id' => $this->patient->municipality_id ?? null,
+            'municipality_name' => $this->patient->municipality->name ?? null,
+            'parish_id' => $this->patient->parish_id ?? null,
+            'parish_name' => $this->patient->parish->name ?? null,
 
             'user_id' => $this->user->id,
             'user_name' => $this->user->name,
@@ -41,10 +41,10 @@ class CaseResource extends JsonResource
             "patient_name" => $this->patient->name,
             "patient_last_name" => $this->patient->last_name,
             "patient_ci" => $this->patient->ci,
-            "patient_phone_number" => $this->patient->phone_number,
+            "patient_phone_number" => $this->patient->phone_number ?? null,
             "patient_sex" => $this->patient->sex,
-            "patient_date_birth" => $this->patient->date_birth,
-            "patient_address" => $this->patient->address,
+            "patient_date_birth" => $this->patient->date_birth ,
+            "patient_address" => $this->patient->address ?? null,
 
             
             'area_id' => $this->area_id,
