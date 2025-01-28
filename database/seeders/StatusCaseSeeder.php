@@ -22,10 +22,6 @@ class StatusCaseSeeder extends Seeder
         ]);
 
         StatusCase::create([
-            'name' => 'Ingreso',
-        ]);
-
-        StatusCase::create([
             'name' => 'Admitido',
         ]);
 
