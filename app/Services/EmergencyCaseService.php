@@ -44,6 +44,7 @@ class EmergencyCaseService
             'reason' => $data['reason'],
             'diagnosis' => $data['diagnosis'],
             'treatment' => $data['treatment'],
+            'destiny' => $data['destiny'],
         ]);
 
 
