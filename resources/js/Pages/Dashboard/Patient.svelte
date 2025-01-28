@@ -524,7 +524,7 @@
                     {/each}
                 </Input>
             {/if}
-            {#if $form.current_status == "4" && $form.area.id == "10"}
+            {#if $form.current_status == "4" && $form.admitted_area_id == "8"}
                 <Input
                     type="text"
                     required={true}
