@@ -26,8 +26,8 @@ class PatientResource extends JsonResource
             'patient_address' => $this->address,
             'municipality_id' => $this->municipality->id,
             'municipality_name' => $this->municipality->name,
-            'parish_id' => $this->parish->id,
-            'parish_name' => $this->parish->name,
+            'parish_id' => $this->parish->id ?? null,
+            'parish_name' => $this->parish->name ?? null,
         ];
     }
 }
