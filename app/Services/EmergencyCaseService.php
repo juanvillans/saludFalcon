@@ -90,7 +90,7 @@ class EmergencyCaseService
                 'date_birth' => $data['patient_date_birth'],
                 'municipality_id' => $data['municipality_id'],
                 'parish_id' => $data['parish_id'],
-                'address' => $data['address'],
+                'address' => $data['patient_address'],
             ]);
 
 
