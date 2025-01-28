@@ -139,7 +139,7 @@ class UserController extends Controller
     			return redirect('/')->withErrors(['data' => 'Datos incorrectos, intente nuevamente']);
 
 
-            return Inertia::location('/admin/historial-medico');
+            return Inertia::location('/admin/casos');
 
 
     }

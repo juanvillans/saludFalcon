@@ -36,6 +36,8 @@ return new class extends Migration
                   ->constrained('status_cases') 
                   ->onDelete('restrict')     
                   ->onUpdate('cascade');
+
+            $table->string('destiny')->nullable();
             
             $table->date('departure_date')->nullable();
             $table->string('departure_hour')->nullable();

@@ -27,6 +27,7 @@ class EmergencyCase extends Model
         'reason',
         'diagnosis',
         'treatment',
+        'destiny',
 
     ];
 
