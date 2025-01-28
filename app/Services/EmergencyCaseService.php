@@ -38,7 +38,7 @@ class EmergencyCaseService
             'admitted_area_id' => $data['admitted_area_id'],
             'entry_date' => $data['entry_date'],
             'entry_hour' => $data['entry_hour'],
-            'current_status' => $data['status'],
+            'current_status' => $data['current_status'],
             'departure_date' => $data['departure_date'] ?? null,
             'departure_hour' => $data['departure_hour'] ?? null,
             'reason' => $data['reason'],
