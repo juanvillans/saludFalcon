@@ -31,7 +31,7 @@ class AppController
     public function generalData(){
 
         $areas = Area::get();
-        $muncipalities = Municipality::with('parishes')->get();
+        $municipalities = Municipality::with('parishes')->get();
         $statutes = StatusCase::get();
         $conditions = PatientCondition::get();
 
