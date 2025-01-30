@@ -16,6 +16,9 @@ class EmergencyCaseService
                 ->when($params['status'],function($query) use ($params){
                     $query->where('current_status', $params['status']);
                 })
+                ->when($params['search'],function($query) use ($params){
+                    $query->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($params['search']) . '%']);
+                })
                 ->orderBy('id', 'DESC')
                 ->paginate($params['per_page'] ?? 25);
 

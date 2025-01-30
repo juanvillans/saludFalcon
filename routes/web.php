@@ -60,6 +60,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 
     Route::get('/historial-medico',[EmergencyCaseController::class,'searchPatient']);
     Route::get('/historial-medico/doctor',[UserController::class,'searchDoctor']);
+    Route::get('/general-data',[AppController::class,'generalData']);
+
 
     Route::post('/historial-medico',[EmergencyCaseController::class,'store']);
 
