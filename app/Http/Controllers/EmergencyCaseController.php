@@ -89,7 +89,7 @@ class EmergencyCaseController extends Controller
         $case->load('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase','condition', 'admittedArea');
         
         return inertia('Dashboard/CaseDetail',[
-            'case' => new CaseResource($case)
+            'caseDetail' => new CaseResource($case)
         ]);
     }
 
