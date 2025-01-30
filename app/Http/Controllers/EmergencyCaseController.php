@@ -46,10 +46,6 @@ class EmergencyCaseController extends Controller
         return inertia('Dashboard/Patient',[
             'data' => $emergencyCases,
             'patient' => $patient ?? null,
-            'areas' => $areas,
-            'municipalities' => $muncipalities,
-            'statutes' => $statutes,
-            'conditions' => $conditions,
             'filters' => ['status' => $request->input('status') ?? ''],
         ]);
 
