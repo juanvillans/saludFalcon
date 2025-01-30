@@ -55,6 +55,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 
     // Pacients 
     Route::get('/casos',[EmergencyCaseController::class,'index']);
+    Route::get('/casos/detalle-caso/{case}',[EmergencyCaseController::class,'caseDetail']);
 
 
     Route::get('/historial-medico',[EmergencyCaseController::class,'searchPatient']);
@@ -62,7 +63,6 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 
     Route::post('/historial-medico',[EmergencyCaseController::class,'store']);
 
-    Route::get('/historial-medico/detalle-paciente/{case}',[EmergencyCaseController::class,'caseDetail']);
     Route::put('/historial-medico/detalle-paciente/{patient}',[EmergencyCaseController::class,'updatePatient']);
 
 
