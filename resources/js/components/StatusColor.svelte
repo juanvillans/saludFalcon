@@ -1,16 +1,19 @@
 <script>
        function getStatusColor(status) {
         switch (status) {
-            case "Permanencia":
+            case 3: // admitido
                 return "#F3BA2F";
                 break;
-            case "Alta":
+            case 1: // Egreso: alta médica
                 return "#397373";
                 break;
-            case "Fallecido":
+            case 2:
+                return "#818f8f"
+                break;
+            case 6: // fallecido
                 return "#BF0404";
                 break;
-            case "Remitido":
+            case 4:
                 return "#6a1ccd";
                 break;
             default:
@@ -18,10 +21,13 @@
         }
     }
  export let status;
+ console.log(status);
+ 
 </script>
 <span
-    class={`inline-block px-1 py-0.5 rounded-md text-white`}
-    style={`background-color: ${getStatusColor(status)}; `}
+    class={`inline-block px-1 py-0.5  border-l-4`}
+    style={`border-color: ${getStatusColor(status.id)}; `}
 >
-    {status}
+    <div ></div>
+    {status.name}
 </span>

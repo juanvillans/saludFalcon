@@ -15,10 +15,11 @@
     export let areas = [];
     export let municipalities = [];
     export let statutes = [];
+    export let conditions = [];
     let showModalDoctor = false;
 
     $: console.log($page.props.auth);
-    $: console.log(municipalities);
+    $: console.log(data);
     // Update data based on the current state of `data.specialties`
     const today = new Date();
     // Format the date to YYYY-MM-DD
@@ -32,19 +33,24 @@
 
     const emptyDataForm = {
         patient_id: null,
-        patient_name: "",
-        patient_last_name: "",
-        patient_ci: "",
-        patient_sex: "",
+        patient_name: "Juan Francisco",
+        patient_last_name: "Villasmil Tovar",
+        patient_ci: "27253194",
+        patient_sex: "Masculino",
         patient_date_birth: "",
         patient_phone_number: "",
         patient_address: "",
         municipality_id: 14,
         parish_id: 0,
 
-        user_id: $page.props.auth.rol[0] == "admin" ? -1 : $page.props.auth.user_id,
-        user_name: $page.props.auth.rol[0] == "admin" ? -1 : $page.props.auth.name,
-        user_last_name: $page.props.auth.rol[0] == "admin" ? -1 : $page.props.auth.last_name,
+        user_id:
+            $page.props.auth.rol[0] == "admin" ? -1 : $page.props.auth.user_id,
+        user_name:
+            $page.props.auth.rol[0] == "admin" ? -1 : $page.props.auth.name,
+        user_last_name:
+            $page.props.auth.rol[0] == "admin"
+                ? -1
+                : $page.props.auth.last_name,
         // user_ci: $page.props.auth.last_name,
         // history_number: "",
         // marital_status: "",
@@ -55,11 +61,11 @@
         // notify_in_case_of_emergency: "",
         // relationship: "",
         // profession: "",
-
-        treatment: "",
-        diagnosis: "",
+        reason: "al paciente le duele la barriga",
+        diagnosis: "tiene parasitos",
+        treatment: "semillas de auyama y ajo crudo",
         current_status: "1",
-
+        current_patient_condition_id: 1,
         condition: "Inconcluso",
         cases: [],
         entry_date: formattedDate,
@@ -68,8 +74,8 @@
         departure_hour: formattedTime,
         area_id: "",
         area_name: "",
-
-        admitted_area_id: 0,
+        destiny: "",
+        admitted_area_id: null,
     };
     let form = useForm(structuredClone(emptyDataForm));
 
@@ -143,7 +149,7 @@
                 headers: {},
                 params: { search },
             });
-            console.log(res)
+            console.log(res);
             searchedDoctors = res.data.doctors;
         } catch (err) {
             console.log(err);
@@ -340,7 +346,6 @@
 
             <Input
                 type="date"
-                required={true}
                 label={"Fecha de Nacimiento*"}
                 bind:value={$form.patient_date_birth}
                 readOnly={$form.patient_id}
@@ -374,7 +379,6 @@
             </Input>
             <Input
                 type="text"
-                required={true}
                 label={"Dirección"}
                 bind:value={$form.patient_address}
                 readOnly={$form.patient_id}
@@ -428,7 +432,7 @@
                 <button
                     type="button"
                     on:click={() => {
-                        if ($page.props.auth.rol[0] == "admin" ) {
+                        if ($page.props.auth.rol[0] == "admin") {
                             showModalDoctor = true;
                             setTimeout(() => {
                                 document.querySelector("#searchDoctor").focus();
@@ -509,7 +513,7 @@
                     <option value={status.id}>{status.name}</option>
                 {/each}
             </Input>
-            {#if $form.current_status == "4"}
+            {#if $form.current_status == "3"}
                 <Input
                     type="select"
                     required={true}
@@ -524,13 +528,13 @@
                     {/each}
                 </Input>
             {/if}
-            {#if $form.current_status == "4" && $form.admitted_area_id == "8"}
+            {#if $form.current_status == "3" && $form.admitted_area_id == "7"}
                 <Input
                     type="text"
                     required={true}
                     label={"Hospital o ambulatorio *"}
-                    bind:value={$form.placeOfAmbulatory}
-                    error={$form.errors?.placeOfAmbulatory}
+                    bind:value={$form.destiny}
+                    error={$form.errors?.destiny}
                 />
             {/if}
             <!-- {#if $form.current_status == "3"}
@@ -549,10 +553,11 @@
                 </Input>
             {/if} -->
 
-            {#if $form.current_status !== "3"}
+            {#if $form.current_status != "4"}
                 <Input
                     type="date"
                     label={"Fecha de salida "}
+                    required={true}
                     bind:value={$form.departure_date}
                     error={$form.errors?.departure_date}
                 />
@@ -575,21 +580,23 @@
             >
             <p class="col-span-2 mt-1">Condición:</p>
             <div class="flex gap-4 mb-3">
-                <label
-                    class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Inconcluso" ? "bg-gray-200 font-bold" : " "}`}
-                >
-                    <div
-                        class={`w-2 aspect-square rounded-full bg-gray-500 condition`}
-                    ></div>
-                    <input
-                        class="mr-3 hidden"
-                        type="radio"
-                        bind:group={$form.condition}
-                        value="Inconcluso"
-                        name="condition"
-                        id=""
-                    /><span>Inconcluso</span>
-                </label>
+                {#each conditions as condition (condition.id)}
+                    <label
+                        class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.current_patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
+                    >
+                        <div
+                            class={`w-2 aspect-square rounded-full  condition${condition.id}`}
+                        ></div>
+                        <input
+                            class="mr-3 hidden"
+                            type="radio"
+                            bind:group={$form.current_patient_condition_id}
+                            value={condition.id}
+                            name="condition"
+                            id=""
+                        /><span>{condition.name}</span>
+                    </label>
+                    <!-- </label> 
                 <label
                     class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Estable" ? "bg-gray-200 font-bold" : " "}`}
                 >
@@ -632,7 +639,8 @@
                         name="condition"
                         id=""
                     /><span>Crítico</span>
-                </label>
+                </label>  -->
+                {/each}
             </div>
             <Input
                 type="textarea"
@@ -700,15 +708,14 @@
         />
     </div>
     <ul class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-3">
-        {#each searchedDoctors as doctor (doctor.user_id)} 
+        {#each searchedDoctors as doctor (doctor.user_id)}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <li
                 class="flex gap-3 border rounded cursor-pointer hover:bg-gray-100 hover:border-dark p-4"
                 on:click={() => {
-                    if ($page.props.auth.rol[0] == "admin" ) {
-
-                        $form = {...$form, ...doctor}
-                        showModalDoctor= false
+                    if ($page.props.auth.rol[0] == "admin") {
+                        $form = { ...$form, ...doctor };
+                        showModalDoctor = false;
                     }
                 }}
             >
@@ -722,9 +729,9 @@
                     <p>
                         <b> {doctor.user_name} {doctor.user_last_name}</b> - {doctor.user_ci}
                     </p>
-                            <span class="bg-gray-200 rounded-full px-2 py-1 text-sm"
-                                >{doctor.user_specialty_name}</span
-                            >
+                    <span class="bg-gray-200 rounded-full px-2 py-1 text-sm"
+                        >{doctor.user_specialty_name}</span
+                    >
                 </div>
             </li>
         {/each}
@@ -770,12 +777,7 @@
 {#if visulizateType == "table"}
     <Table
         filtersOptions={{
-            status: [
-                { name: "Egreso: Alta médica", id: "Alta" },
-                { name: "Egreso: Alta contraindicación", id: "3" },
-                { name: "Admitido", id: "4" },
-                { name: "Defución", id: "5" },
-            ],
+            status: [...statutes],
         }}
         allowSearch={false}
     >
@@ -785,11 +787,11 @@
                 <th style="font-size: 12px;">N°</th>
                 <th>Duración</th>
                 <th>Estado</th>
-                <th>Condición</th>
+                <!-- <th>Condición</th> -->
                 <th>Paciente</th>
-                <th>Diagnóstico</th>
-                <th>Tratamiento</th>
-                <!-- <th>Doctor</th> -->
+                <th>Motivo de consulta</th>
+                <th>Condición y Diagnóstico</th>
+                <th>Orden médica de ingreso</th>
             </tr>
         </thead>
 
@@ -816,21 +818,24 @@
                                 row?.current_status,
                             )}
 
-                            <!-- {formatDateSpanish(row.cases[0].entry_date)} -->
+                            <!-- {formatDateSpanish(row.entry_date)} -->
                         </td>
 
                         <td style="white-space: normal;">
-                            <StatusColor status={row?.current_status} />
+                            <StatusColor
+                                status={{
+                                    name: row?.current_status_name,
+                                    id: row?.current_status,
+                                }}
+                            />
                             <p>
-                                {#if row?.current_status == "Admitido"}
-                                    {row?.area?.name}
+                                {#if row?.current_status == "3"}
+                                    a {row?.admitted_area_name}
                                 {/if}
                             </p>
                         </td>
-                        <td>
-                            {row?.condition_name}
-                        </td>
-                        <td class="min-w-[120px]">
+
+                        <td class="min-w-[180px]">
                             <div class="flex items-center gap-2">
                                 {#if row.sex == "Femenino"}
                                     <span class="text-pink text-2xl">
@@ -844,9 +849,9 @@
                                     </span>
                                 {/if}
                                 <span class="whitespace-normal"
-                                    >{row.name}
-                                    {row.last_name}
-                                    - {row.ci}
+                                    >{row?.patient_name}
+                                    {row?.patient_last_name}
+                                    - {row?.patient_ci}
                                 </span>
                             </div>
                         </td>
@@ -854,6 +859,25 @@
                             class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
                             style="white-space: normal;"
                         >
+                            {#if row?.reason.length > 240}
+                                {row?.reason.slice(0, 240)}
+                                <span
+                                    class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                    >...</span
+                                >
+                            {:else}
+                                {row?.reason}
+                            {/if}
+                        </td>
+                        <td
+                            title={row?.current_patient_condition_name}
+                            class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
+                            style="white-space: normal;"
+                        >
+                            <div
+                                class={`inline-block w-2 h-2 mr-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
+                            ></div>
+                            <!-- {row?.current_patient_condition_name} -->
                             {#if row?.diagnosis.length > 240}
                                 {row?.diagnosis.slice(0, 240)}
                                 <span
@@ -880,7 +904,6 @@
                             {/if}
                         </td>
                         <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
-                       
                     </tr>
                 {/each}
             {/if}
@@ -902,20 +925,31 @@
                     >{i + 1}°</span
                 >
                 <div class="flex gap-2 items-center">
-                    <p>
-                        {timeBetweenDateAndTime(
-                            row?.entry_date,
-                            row?.entry_hour,
-                            row?.departure_date,
-                            row?.departure_hour,
-                            row?.current_status,
-                        )}
-                    </p>
-                    |
-                    <StatusColor status={row?.current_status} />
-                    {#if row?.current_status == "4"}
-                        a {row?.area?.name}
+                    <StatusColor
+                        status={{
+                            id: row?.current_status,
+                            name: row?.current_status_name,
+                        }}
+                    />
+                    {#if row?.current_status == "3"}
+                        a {row?.admitted_area_name}
                     {/if}
+                    <div class="flex items-cenenter gap-1">
+                        <iconify-icon
+                            class="text-sm text-gray-600 relative top-1"
+                            icon="feather:clock"
+                        ></iconify-icon>
+
+                        <p>
+                            {timeBetweenDateAndTime(
+                                row?.entry_date,
+                                row?.entry_hour,
+                                row?.departure_date,
+                                row?.departure_hour,
+                                row?.current_status,
+                            )}
+                        </p>
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-2 mt-1">
@@ -929,28 +963,40 @@
                         </span>
                     {/if}
                     <span
-                        >{row.name}
-                        {row.last_name}
-                        - {row.ci}
+                        >{row.user_name}
+                        {row.user_last_name}
+                        - {row.user_ci}
                     </span>
                 </div>
-
                 <div class="mt-2">
-                    <p>
-                        <iconify-icon
-                            class="text-lg sm:text-2xl relative top-1.5 text-red"
-                            icon="material-symbols:diagnosis"
-                        ></iconify-icon>
-                        {#if row.cases[0].diagnosis.length > 240}
-                            {row.cases[0].diagnosis.slice(0, 240)}
-                            <span
-                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                                >...</span
-                            >
-                        {:else}
-                            {row.cases[0].diagnosis}
-                        {/if}
-                    </p>
+                    {#if row?.reason.length > 240}
+                        {row?.reason.slice(0, 240)}
+                        <span
+                            class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                            >...</span
+                        >
+                    {:else}
+                        {row?.reason}
+                    {/if}
+
+                   
+                </div>
+                <div class="mt-2 flex items-center">
+                        <div
+                        class={`inline-block w-2 h-2 mr-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
+                        ></div>
+                        <p class="flex">
+
+                            {#if row.diagnosis.length > 240}
+                                {row.diagnosis.slice(0, 240)}
+                                <span
+                                    class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                    >...</span
+                                >
+                            {:else}
+                                {row.diagnosis}
+                            {/if}
+                        </p>
                 </div>
                 <div class="mt-2">
                     <p>
@@ -958,27 +1004,27 @@
                             class="text-lg sm:text-2xl relative top-1.5 text-color1"
                             icon="mdi:medicine-bottle"
                         ></iconify-icon>
-                        {#if row.cases[0].treatment.length > 240}
-                            {row.cases[0].treatment.slice(0, 240)}
+                        {#if row.treatment.length > 240}
+                            {row.treatment.slice(0, 240)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
                         {:else}
-                            {row.cases[0].treatment}
+                            {row.treatment}
                         {/if}
                     </p>
                 </div>
 
                 <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
-                <p
+                <!-- <p
                     class="text-right justify-end w-full flex items-center gap-2"
                 >
-                    {row.cases[0].user}
-                    {row.cases[0].doctor.last_name}
+                    {row.user_name}
+                    {row.user_last_name}
                     <iconify-icon icon="mdi:doctor" style="font-size: 20px;"
                     ></iconify-icon>
-                </p>
+                </p> -->
             </article>
         {/each}
     </div>
