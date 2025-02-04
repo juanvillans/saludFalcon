@@ -20,12 +20,7 @@
         email: "",
         phone_number: "",
         role_name: "",
-<<<<<<< HEAD
-        specialty_id: '',
-        specialties_ids: [],
-=======
         specialty_id: "",
->>>>>>> 7d4b12651e47af7e948dcd8d96943ee9d4194017
     };
 
     let formCreate = useForm({
@@ -154,41 +149,4 @@
 
 </div>
 
-<<<<<<< HEAD
-{#if $page.props.auth.permissions.find((p) => p == "create-users")}
-    <div class="flex justify-between items-center">
-        <button
-            class="btn_create inline-block p-2 px-3"
-            on:click={(e) => {
-                if (submitStatus == "Editar") {
-                    selectedRow = {
-                        status: false,
-                        id: 0,
-                        title: "",
-                    };
 
-                    $formCreate.defaults({
-                        ...emptyDataForm,
-                    });
-                    setTimeout(() => {
-                        $formCreate.reset();
-                    }, 100);
-                }
-                e.preventDefault();
-
-                showModal = true;
-                submitStatus = "Envir solicitud";
-            }}
-        >
-            <span class="md:hidden text-4xl relative top-1 font-bold"
-                ><iconify-icon icon="ic:round-add"></iconify-icon></span
-            >
-            <span class="hidden md:block"> Nuevo Usuario </span>
-        </button>
-        <!-- svelte-ignore missing-declaration -->
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-       
-    </div>
-{/if}
-=======
->>>>>>> 7d4b12651e47af7e948dcd8d96943ee9d4194017

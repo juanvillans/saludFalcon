@@ -218,334 +218,420 @@
                     {#if editStatus == false}
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <div
-                            on:click={()=> openAccordeon == i ?   openAccordeon = -1:  openAccordeon = i}
                             class="bg-white p-3 h-fit col-span-2 rounded gap-x-5 w-full md:border md:p-6 pb-2 md:pb-3 pt-2 mt-3"
                         >
-                            <div class="flex gap-3">
-                                <span
-                                    class="h-fit text-center col-span-2 font-bold bg-color4 p-1 rounded-lg inline-block w-10 px-2"
-                                >
-                                    {countingCases--}
-                                </span>
-                                <p class="h-fit">
-                                    Del {formatDateSpanish(
-                                        single_case.start_date,
-                                    )}
-                                    <span class="opacity-60">-</span>
-                                    {convertTo12HourFormat(
-                                        single_case.start_time,
-                                    )}
-                                    <span class="mx-1"> | </span>
-                                    <StatusColor status={single_case.status} />
-                                    {#if single_case.status == "Remitido"}
-                                        a {single_case.area?.name}
-                                    {/if}
-
-                                    {#if single_case.status != "Permanencia"}
-                                        el
-                                        {formatDateSpanish(
-                                            single_case.end_date,
+                            <span
+                                on:click={() =>
+                                    openAccordeon == i
+                                        ? (openAccordeon = -1)
+                                        : (openAccordeon = i)}
+                            >
+                                <div class="flex gap-3">
+                                    <span
+                                        class="h-fit text-center col-span-2 font-bold bg-color4 p-1 rounded-lg inline-block w-10 px-2"
+                                    >
+                                        {countingCases--}
+                                    </span>
+                                    <p class="h-fit">
+                                        Del {formatDateSpanish(
+                                            single_case.start_date,
                                         )}
                                         <span class="opacity-60">-</span>
                                         {convertTo12HourFormat(
-                                            single_case.end_time,
+                                            single_case.start_time,
                                         )}
-                                    {/if}
-                                </p>
-                                {#if $page.props.auth.user_id == single_case.doctor.id}
-                                    <div
-                                        class=" ml-auto h-fit flex gap-2 flex-col sm:flex-row rounded-md"
-                                    >
-                                        <button
-                                            title="Editar"
-                                            class="p-1 bg-gray-200 px-2 hover:bg-color3 text-gray-700 hover:text-white"
-                                            on:click={() =>
-                                                (editStatus = !editStatus)}
+                                        <span class="mx-1"> | </span>
+                                        <StatusColor
+                                            status={single_case.status}
+                                        />
+                                        {#if single_case.status == "Remitido"}
+                                            a {single_case.area?.name}
+                                        {/if}
+
+                                        {#if single_case.status != "Permanencia"}
+                                            el
+                                            {formatDateSpanish(
+                                                single_case.end_date,
+                                            )}
+                                            <span class="opacity-60">-</span>
+                                            {convertTo12HourFormat(
+                                                single_case.end_time,
+                                            )}
+                                        {/if}
+                                    </p>
+                                    {#if $page.props.auth.user_id == single_case.doctor.id}
+                                        <div
+                                            class=" ml-auto h-fit flex gap-2 flex-col sm:flex-row rounded-md"
                                         >
-                                            <iconify-icon
-                                                icon="ic:baseline-edit"
-                                                class="relative top-0.5"
-                                            ></iconify-icon>
-                                        </button>
-
-                                        <button
-                                            title="Eliminar"
-                                            class="p-1 bg-gray-200 px-2 hover:bg-red text-gray-700 hover:text-white"
-                                            on:click={() => handleDelete()}
-                                        >
-                                            <iconify-icon
-                                                icon="mdi:trash-outline"
-                                                class="relative top-0.5"
-                                            ></iconify-icon>
-                                        </button>
-                                    </div>
-                                {/if}
-                            </div>
-
-                            <div></div>
-
-                            <div class="mt-2">
-                                <p>
-                                    <iconify-icon
-                                        class="text-2xl relative top-1.5 text-red"
-                                        icon="material-symbols:diagnosis"
-                                    ></iconify-icon>
-                                    {single_case.diagnosis}
-                                </p>
-                            </div>
-                            <div class="mt-2">
-                                <p>
-                                    <iconify-icon
-                                        class="text-2xl relative top-1.5 text-color1"
-                                        icon="mdi:medicine-bottle"
-                                    ></iconify-icon>
-                                    {single_case.treatment}
-                                </p>
-                            </div>
-
-                            <div>
-                                <p
-                                    class=" gap-x-2 flex items-center justify-end"
-                                >
-                                    <span
-                                        class="bg-gray-50 rounded-full px-2 py-1 flex items-center justify-end"
-                                    >
-                                        {single_case.doctor.name}
-                                        {single_case.doctor.last_name}
-                                        <iconify-icon
-                                            icon="mdi:doctor"
-                                            style="font-size: 20px;"
-                                        ></iconify-icon>
-                                    </span>
-                                </p>
-                            </div>
-
-                            <div>
-                                <h2>Evoluciones:</h2>
-
-                                {#if openAccordeon == i}
-                                <div>
-
-
-                                    {#if openAccordeon}
-                                        <div></div>
-                                    {/if}
-                                    {#if isOpenCreateEvolution}
-                                        <div class="mb-5">
-                                            <Editor
-                                                actions={[
-                                                    "b",
-                                                    "i",
-                                                    "u",
-                                                    "ol",
-                                                    "ul",
-                                                    "left",
-                                                    "center",
-                                                    "justify",
-                                                ]}
-                                                html={$form.description}
-                                                on:change={(evt) => {
-                                                    descriptionLength =
-                                                        evt.detail.length;
-                                                    if (descriptionLength >= 300) {
-                                                        $form.setError(
-                                                            "description",
-                                                            "No puede tener más de 300 caracteres",
-                                                        );
-                                                    } else {
-                                                        $form.clearErrors(
-                                                            "description",
-                                                        );
-                                                    }
-                                                    $form.description = evt.detail;
-                                                }}
-                                                contentId="notes-content"
-                                                bind:this={editor}
-                                            />
-                                            <div
-                                                class="flex justify-between items-center"
+                                            <button
+                                                title="Editar"
+                                                class="p-1 bg-gray-200 px-2 hover:bg-color3 text-gray-700 hover:text-white"
+                                                on:click={() =>
+                                                    (editStatus = !editStatus)}
                                             >
-                                                <button
-                                                    type="button"
-                                                    class=""
-                                                    on:click={() =>
-                                                        (isOpenCreateEvolution = false)}
-                                                    >Cancelar</button
-                                                >
-                                                <input
-                                                    type="submit"
-                                                    value={$form.processing
-                                                        ? "Cargando..."
-                                                        : "Guardar"}
-                                                    class="hover:bg-color3 hover:text-white duration-200 mt-3 px-4 bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
-                                                />
-                                            </div>
+                                                <iconify-icon
+                                                    icon="ic:baseline-edit"
+                                                    class="relative top-0.5"
+                                                ></iconify-icon>
+                                            </button>
+
+                                            <button
+                                                title="Eliminar"
+                                                class="p-1 bg-gray-200 px-2 hover:bg-red text-gray-700 hover:text-white"
+                                                on:click={() => handleDelete()}
+                                            >
+                                                <iconify-icon
+                                                    icon="mdi:trash-outline"
+                                                    class="relative top-0.5"
+                                                ></iconify-icon>
+                                            </button>
                                         </div>
-                                    {:else}
-                                        <button
-                                            on:click={(e) =>
-                                                (isOpenCreateEvolution = true)}
-                                            class="p-1 px-3 bg-color3 text-white mb-3"
-                                            >Crear nueva evolución +</button
-                                        >
                                     {/if}
-                                    <ul>
-                                        <li
-                                            class="bg-gray-50 mb-3 rounded overflow-hidden shadow"
-                                        >
-                                            <span
-                                                class="flex items-center gap-2 p-1"
-                                            >
-                                                #1
-                                                <iconify-icon
-                                                    icon="fluent-mdl2:date-time-12"
-                                                ></iconify-icon>
-                                                <p>16 jun 2024, 3:00pm</p>
-                                            </span>
-    
-                                            <div class="bg-white p-1">
-                                                <p>
-                                                    Lorem ipsum dolor sit amet
-                                                    consectetur adipisicing elit.
-                                                    Eius enim accusantium explicabo
-                                                    repellendus id commodi, nulla
-                                                    minima, suscipit distinctio
-                                                    quibusdam rerum nihil, modi
-                                                    soluta cum nemo. Adipisci itaque
-                                                    ipsa enim!
-                                                </p>
-                                                Lorem ipsum dolor sit amet consectetur
-                                                adipisicing elit. voluptatum odio culpa
-                                                delectus quis, maiores, accusamus iure
-                                                eos
-                                            </div>
-                                        </li>
-    
-                                        <li
-                                            class="bg-gray-50 mb-3 border rounded overflow-hidden"
-                                        >
-                                            <span
-                                                class="flex items-center gap-2 p-1"
-                                            >
-                                                #1
-                                                <iconify-icon
-                                                    icon="fluent-mdl2:date-time-12"
-                                                ></iconify-icon>
-                                                <p>16 jun 2024, 3:00pm</p>
-                                            </span>
-    
-                                            <div class="bg-white p-1">
-                                                <p>
-                                                    Lorem ipsum dolor sit amet
-                                                    consectetur adipisicing elit.
-                                                    Eius enim accusantium explicabo
-                                                    repellendus id commodi, nulla
-                                                    minima, suscipit distinctio
-                                                    quibusdam rerum nihil, modi
-                                                    soluta cum nemo. Adipisci itaque
-                                                    ipsa enim!
-                                                </p>
-                                                Lorem ipsum dolor sit amet consectetur
-                                                adipisicing elit. voluptatum odio culpa
-                                                delectus quis, maiores, accusamus iure
-                                                eos
-                                            </div>
-                                        </li>
-    
-                                        <li
-                                            class="bg-gray-50 mb-3 border rounded overflow-hidden"
-                                        >
-                                            <span
-                                                class="flex items-center gap-2 p-1"
-                                            >
-                                                #1
-                                                <iconify-icon
-                                                    icon="fluent-mdl2:date-time-12"
-                                                ></iconify-icon>
-                                                <p>16 jun 2024, 3:00pm</p>
-                                            </span>
-    
-                                            <div class="bg-white p-1">
-                                                <p>
-                                                    Lorem ipsum dolor sit amet
-                                                    consectetur adipisicing elit.
-                                                    Eius enim accusantium explicabo
-                                                    repellendus id commodi, nulla
-                                                    minima, suscipit distinctio
-                                                    quibusdam rerum nihil, modi
-                                                    soluta cum nemo. Adipisci itaque
-                                                    ipsa enim!
-                                                </p>
-                                                Lorem ipsum dolor sit amet consectetur
-                                                adipisicing elit. voluptatum odio culpa
-                                                delectus quis, maiores, accusamus iure
-                                                eos
-                                            </div>
-                                        </li>
-    
-                                        <li
-                                            class="bg-gray-50 mb-3 border rounded overflow-hidden"
-                                        >
-                                            <span
-                                                class="flex items-center gap-2 p-1"
-                                            >
-                                                #1
-                                                <iconify-icon
-                                                    icon="fluent-mdl2:date-time-12"
-                                                ></iconify-icon>
-                                                <p>16 jun 2024, 3:00pm</p>
-                                            </span>
-    
-                                            <div class="bg-white p-1">
-                                                <p>
-                                                    Lorem ipsum dolor sit amet
-                                                    consectetur adipisicing elit.
-                                                    Eius enim accusantium explicabo
-                                                    repellendus id commodi, nulla
-                                                    minima, suscipit distinctio
-                                                    quibusdam rerum nihil, modi
-                                                    soluta cum nemo. Adipisci itaque
-                                                    ipsa enim!
-                                                </p>
-                                                Lorem ipsum dolor sit amet consectetur
-                                                adipisicing elit. voluptatum odio culpa
-                                                delectus quis, maiores, accusamus iure
-                                                eos
-                                            </div>
-                                        </li>
-    
-                                        <li
-                                            class="bg-gray-50 mb-3 border rounded overflow-hidden"
-                                        >
-                                            <span
-                                                class="flex items-center gap-2 p-1"
-                                            >
-                                                #1
-                                                <iconify-icon
-                                                    icon="fluent-mdl2:date-time-12"
-                                                ></iconify-icon>
-                                                <p>16 jun 2024, 3:00pm</p>
-                                            </span>
-    
-                                            <div class="bg-white p-1">
-                                                <p>
-                                                    Lorem ipsum dolor sit amet
-                                                    consectetur adipisicing elit.
-                                                    Eius enim accusantium explicabo
-                                                    repellendus id commodi, nulla
-                                                    minima, suscipit distinctio
-                                                    quibusdam rerum nihil, modi
-                                                    soluta cum nemo. Adipisci itaque
-                                                    ipsa enim!
-                                                </p>
-                                                Lorem ipsum dolor sit amet consectetur
-                                                adipisicing elit. voluptatum odio culpa
-                                                delectus quis, maiores, accusamus iure
-                                                eos
-                                            </div>
-                                        </li>
-                                    </ul>
                                 </div>
+
+                                <div></div>
+
+                                <div class="mt-2">
+                                    <p>
+                                        <iconify-icon
+                                            class="text-2xl relative top-1.5 text-red"
+                                            icon="material-symbols:diagnosis"
+                                        ></iconify-icon>
+                                        {single_case.diagnosis}
+                                    </p>
+                                </div>
+                                <div class="mt-2">
+                                    <p>
+                                        <iconify-icon
+                                            class="text-2xl relative top-1.5 text-color1"
+                                            icon="mdi:medicine-bottle"
+                                        ></iconify-icon>
+                                        {single_case.treatment}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p
+                                        class=" gap-x-2 flex items-center justify-end"
+                                    >
+                                        <span
+                                            class="bg-gray-50 rounded-full px-2 py-1 flex items-center justify-end"
+                                        >
+                                            {single_case.doctor.name}
+                                            {single_case.doctor.last_name}
+                                            <iconify-icon
+                                                icon="mdi:doctor"
+                                                style="font-size: 20px;"
+                                            ></iconify-icon>
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <h2>Evoluciones:</h2>
+                            </span>
+                            
+                            <div>
+                                {#if openAccordeon == i}
+                                    <div>
+                                        {#if openAccordeon}
+                                            <div></div>
+                                        {/if}
+                                        {#if isOpenCreateEvolution}
+                                            <div class="mb-5">
+                                                <div class="flex gap-10 mt-3 items-center mb-3">
+                                                    <label
+                                                    class:bg-green={$form.condition == "Estable"}
+                                                     class:text-white={$form.condition == "Estable"}    
+                                                    class="text-green px-2 font-bold py-1 hover:shadow-xl cursor-pointer border-green border rounded-full"
+                                                    >
+                                                        <input
+                                                            class="mr-3 inline-block hidden"
+                                                            type="radio"
+                                                            bind:group={$form.condition}
+                                                            value="Estable"
+                                                            name="condition"
+                                                            id=""
+                                                            
+                                                        /><span
+                                                            >Estable</span
+                                                        >
+                                                    </label>
+
+                                                    <label
+                                                    class:bg-orange={$form.condition == "Inestable"}
+                                                     class:text-white={$form.condition == "Inestable"}    
+                                                    class="text-orange px-2 font-bold py-1 hover:shadow-xl cursor-pointer  border-orange border rounded-full"
+                                                    >
+                                                        <input
+                                                            class="mr-3 inline-block hidden"
+                                                            type="radio"
+                                                            bind:group={$form.condition}
+                                                            value="Inestable"
+                                                            name="condition"
+                                                            id=""
+                                                            
+                                                        /><span
+                                                          
+                                                            >Inestable</span
+                                                        >
+                                                    </label>
+                                                    <label
+                                                    class:bg-red={$form.condition == "Crítica"}
+                                                     class:text-white={$form.condition == "Crítica"}    
+                                                    class="text-red px-2 font-bold py-1 hover:shadow-xl cursor-pointer border-red rounded-full border "
+                                                    >
+                                                        <input
+                                                            class="mr-3 inline-block hidden"
+                                                            type="radio"
+                                                            bind:group={$form.condition}
+                                                            value="Crítica"
+                                                            name="condition"
+                                                            id=""
+                                                        /><span
+                                                            >Crítica</span
+                                                        >
+                                                    </label>
+                                                </div>
+                                                <Editor
+                                                    actions={[
+                                                        "b",
+                                                        "i",
+                                                        "u",
+                                                        "ol",
+                                                        "ul",
+                                                        "left",
+                                                        "center",
+                                                        "justify",
+                                                    ]}
+                                                    html={$form.description}
+                                                    on:change={(evt) => {
+                                                        descriptionLength =
+                                                            evt.detail.length;
+                                                        if (
+                                                            descriptionLength >=
+                                                            300
+                                                        ) {
+                                                            $form.setError(
+                                                                "description",
+                                                                "No puede tener más de 300 caracteres",
+                                                            );
+                                                        } else {
+                                                            $form.clearErrors(
+                                                                "description",
+                                                            );
+                                                        }
+                                                        $form.description =
+                                                            evt.detail;
+                                                    }}
+                                                    contentId="notes-content"
+                                                    bind:this={editor}
+                                                />
+                                              
+                                                <div
+                                                    class="flex justify-between items-center"
+                                                >
+                                                    <button
+                                                        type="button"
+                                                        class=""
+                                                        on:click={() =>
+                                                            (isOpenCreateEvolution = false)}
+                                                        >Cancelar</button
+                                                    >
+                                                    <input
+                                                        type="submit"
+                                                        
+                                                        value={$form.processing
+                                                            ? "Cargando..."
+                                                            : "Guardar"}
+                                                        class="hover:bg-color3 hover:text-white duration-200 mt-3 px-4 bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
+                                                    />
+                                                </div>
+                                            </div>
+                                        {:else}
+                                            <button
+                                                on:click={(e) =>
+                                                    (isOpenCreateEvolution = true)}
+                                                class="p-1 px-3 bg-color3 text-white mb-3"
+                                                >Crear nueva evolución +</button
+                                            >
+                                        {/if}
+                                        <ul>
+                                            <li
+                                                class="bg-gray-50 mb-3 rounded overflow-hidden shadow"
+                                            >
+                                                <span
+                                                    class="flex items-center gap-2 p-1"
+                                                >
+                                                    #1
+                                                    <iconify-icon
+                                                        icon="fluent-mdl2:date-time-12"
+                                                    ></iconify-icon>
+                                                    <p>16 jun 2024, 3:00pm</p>
+
+                                                    
+                                                    <span  class="text-orange px-2 text-sm font-bold py-1 hover:shadow-xl cursor-pointer  border-orange border rounded-full">
+                                                        Inestable
+                                                    </span>
+                                                </span>
+
+                                                <div class="bg-white p-1">
+                                                    <p>
+                                                        Lorem ipsum dolor sit
+                                                        amet consectetur
+                                                        adipisicing elit. Eius
+                                                        enim accusantium
+                                                        explicabo repellendus id
+                                                        commodi, nulla minima,
+                                                        suscipit distinctio
+                                                        quibusdam rerum nihil,
+                                                        modi soluta cum nemo.
+                                                        Adipisci itaque ipsa
+                                                        enim!
+                                                    </p>
+                                                    Lorem ipsum dolor sit amet consectetur
+                                                    adipisicing elit. voluptatum
+                                                    odio culpa delectus quis, maiores,
+                                                    accusamus iure eos
+                                                </div>
+                                            </li>
+
+                                            <li
+                                                class="bg-gray-50 mb-3 border rounded overflow-hidden"
+                                            >
+                                                <span
+                                                    class="flex items-center gap-2 p-1"
+                                                >
+                                                    #1
+                                                    <iconify-icon
+                                                        icon="fluent-mdl2:date-time-12"
+                                                    ></iconify-icon>
+                                                    <p>16 jun 2024, 3:00pm</p>
+                                                </span>
+
+                                                <div class="bg-white p-1">
+                                                    <p>
+                                                        Lorem ipsum dolor sit
+                                                        amet consectetur
+                                                        adipisicing elit. Eius
+                                                        enim accusantium
+                                                        explicabo repellendus id
+                                                        commodi, nulla minima,
+                                                        suscipit distinctio
+                                                        quibusdam rerum nihil,
+                                                        modi soluta cum nemo.
+                                                        Adipisci itaque ipsa
+                                                        enim!
+                                                    </p>
+                                                    Lorem ipsum dolor sit amet consectetur
+                                                    adipisicing elit. voluptatum
+                                                    odio culpa delectus quis, maiores,
+                                                    accusamus iure eos
+                                                </div>
+                                            </li>
+
+                                            <li
+                                                class="bg-gray-50 mb-3 border rounded overflow-hidden"
+                                            >
+                                                <span
+                                                    class="flex items-center gap-2 p-1"
+                                                >
+                                                    #1
+                                                    <iconify-icon
+                                                        icon="fluent-mdl2:date-time-12"
+                                                    ></iconify-icon>
+                                                    <p>16 jun 2024, 3:00pm</p>
+                                                </span>
+
+                                                <div class="bg-white p-1">
+                                                    <p>
+                                                        Lorem ipsum dolor sit
+                                                        amet consectetur
+                                                        adipisicing elit. Eius
+                                                        enim accusantium
+                                                        explicabo repellendus id
+                                                        commodi, nulla minima,
+                                                        suscipit distinctio
+                                                        quibusdam rerum nihil,
+                                                        modi soluta cum nemo.
+                                                        Adipisci itaque ipsa
+                                                        enim!
+                                                    </p>
+                                                    Lorem ipsum dolor sit amet consectetur
+                                                    adipisicing elit. voluptatum
+                                                    odio culpa delectus quis, maiores,
+                                                    accusamus iure eos
+                                                </div>
+                                            </li>
+
+                                            <li
+                                                class="bg-gray-50 mb-3 border rounded overflow-hidden"
+                                            >
+                                                <span
+                                                    class="flex items-center gap-2 p-1"
+                                                >
+                                                    #1
+                                                    <iconify-icon
+                                                        icon="fluent-mdl2:date-time-12"
+                                                    ></iconify-icon>
+                                                    <p>16 jun 2024, 3:00pm</p>
+                                                </span>
+
+                                                <div class="bg-white p-1">
+                                                    <p>
+                                                        Lorem ipsum dolor sit
+                                                        amet consectetur
+                                                        adipisicing elit. Eius
+                                                        enim accusantium
+                                                        explicabo repellendus id
+                                                        commodi, nulla minima,
+                                                        suscipit distinctio
+                                                        quibusdam rerum nihil,
+                                                        modi soluta cum nemo.
+                                                        Adipisci itaque ipsa
+                                                        enim!
+                                                    </p>
+                                                    Lorem ipsum dolor sit amet consectetur
+                                                    adipisicing elit. voluptatum
+                                                    odio culpa delectus quis, maiores,
+                                                    accusamus iure eos
+                                                </div>
+                                            </li>
+
+                                            <li
+                                                class="bg-gray-50 mb-3 border rounded overflow-hidden"
+                                            >
+                                                <span
+                                                    class="flex items-center gap-2 p-1"
+                                                >
+                                                    #1
+                                                    <iconify-icon
+                                                        icon="fluent-mdl2:date-time-12"
+                                                    ></iconify-icon>
+                                                    <p>16 jun 2024, 3:00pm</p>
+                                                </span>
+
+                                                <div class="bg-white p-1">
+                                                    <p>
+                                                        Lorem ipsum dolor sit
+                                                        amet consectetur
+                                                        adipisicing elit. Eius
+                                                        enim accusantium
+                                                        explicabo repellendus id
+                                                        commodi, nulla minima,
+                                                        suscipit distinctio
+                                                        quibusdam rerum nihil,
+                                                        modi soluta cum nemo.
+                                                        Adipisci itaque ipsa
+                                                        enim!
+                                                    </p>
+                                                    Lorem ipsum dolor sit amet consectetur
+                                                    adipisicing elit. voluptatum
+                                                    odio culpa delectus quis, maiores,
+                                                    accusamus iure eos
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 {/if}
                             </div>
                         </div>
@@ -720,3 +806,7 @@
     </form>
 </div>
 <Alert />
+
+
+<style>
+</style>

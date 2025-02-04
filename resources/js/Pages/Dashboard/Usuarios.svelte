@@ -2,7 +2,6 @@
     import Table from "../../components/Table.svelte";
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
-    import Especialidades from "../../components/Especialidades.svelte";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, page, router } from "@inertiajs/svelte";
     export let data = [];
@@ -23,19 +22,6 @@
     }
     $: console.log(data);
     // Update data based on the current state of `data.specialties`
-    function UpdateData() {
-        instituteSpecialities = [];
-        specialities = [];
-
-        for (let i = 0; i < data.specialties.length; i++) {
-            const speciality = data.specialties[i];
-            if (speciality.status == 1) {
-                instituteSpecialities.push(speciality);
-            } else {
-                specialities.push(speciality);
-            }
-        }
-    }
     const emptyDataForm = {
         ci: "",
         name: "",
@@ -43,12 +29,7 @@
         email: "",
         phone_number: "",
         role_name: "",
-<<<<<<< HEAD
-        specialti: [],
-        specialties_ids: [],
-=======
         specialty_id: "",
->>>>>>> 7d4b12651e47af7e948dcd8d96943ee9d4194017
     };
 
     let formCreate = useForm({
@@ -60,7 +41,6 @@
     });
 
     let showModal = false;
-    $: showModalCreateSpecialties = false;
     let selectedRow = { status: false, id: 0 };
 
     document.addEventListener("keydown", ({ key }) => {
@@ -160,12 +140,7 @@
     let selectSpecialityModal = false;
     let filteredSpecialities = [];
 
-    $: if ($formCreate.specialties) {
-        filteredSpecialities = instituteSpecialities.filter(
-            (obj) =>
-                !$formCreate.specialties.some((speci) => speci.id == obj.id),
-        );
-    }
+
 </script>
 
 <svelte:head>
@@ -248,9 +223,6 @@
         />
     </Modal>
 
-    <Modal bind:showModal={showModalCreateSpecialties}>
-        <Especialidades {instituteSpecialities} {specialities} {data} />
-    </Modal>
 {/if}
 
 {#if $page.props.auth.permissions.find((p) => p == "create-users")}
@@ -285,11 +257,7 @@
         </button>
         <!-- svelte-ignore missing-declaration -->
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <a
-            class="cursor-pointer border-b py-2 px-3 hover:bg-color4"
-            on:click={() => (showModalCreateSpecialties = true)}
-            >Especialidades de la institución</a
-        >
+       
     </div>
 {/if}
 
@@ -384,7 +352,7 @@
                 <td>{row.phone_number}</td>
                 <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
                 <td class="flex gap-3"
-                    >{#if row.specialty.name}
+                    >{#if row.specialty}
                             <span class="px-3 py-1 rounded-full bg-gray-100">
                                 {row.specialty.name + " "}
                             </span>

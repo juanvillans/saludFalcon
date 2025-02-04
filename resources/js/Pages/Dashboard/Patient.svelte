@@ -444,6 +444,78 @@
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DIAGNÓSTICO Y TRATAMIENTO</legend
             >
+
+            <p>Condición:</p>
+            <div class="flex gap-4 mt-3 items-center mb-3">
+                <label
+                    class:bg-gray-300={$form.condition == "Inconcluso"}
+                    class:text-dark={$form.condition == "Inconcluso"}    
+                    class="text-gray-600 px-2 font-bold py-1 hover:shadow-xl cursor-pointer border-gray-600 rounded-full border "
+                >
+                    <input
+                        class="mr-3 inline-block hidden"
+                        type="radio"
+                        bind:group={$form.condition}
+                        value="Inconcluso"
+                        name="condition"
+                        id=""
+                    /><span
+                        >Inconcluso</span
+                    >
+                </label>
+                <label
+                class:bg-green={$form.condition == "Estable"}
+                 class:text-white={$form.condition == "Estable"}    
+                class="text-green px-2 font-bold py-1 hover:shadow-xl cursor-pointer border-green border rounded-full"
+                >
+                    <input
+                        class="mr-3 inline-block hidden"
+                        type="radio"
+                        bind:group={$form.condition}
+                        value="Estable"
+                        name="condition"
+                        id=""
+                        
+                    /><span
+                        >Estable</span
+                    >
+                </label>
+
+                <label
+                class:bg-orange={$form.condition == "Inestable"}
+                 class:text-white={$form.condition == "Inestable"}    
+                class="text-orange px-2 font-bold py-1 hover:shadow-xl cursor-pointer  border-orange border rounded-full"
+                >
+                    <input
+                        class="mr-3 inline-block hidden"
+                        type="radio"
+                        bind:group={$form.condition}
+                        value="Inestable"
+                        name="condition"
+                        id=""
+                        
+                    /><span
+                      
+                        >Inestable</span
+                    >
+                </label>
+                <label
+                class:bg-red={$form.condition == "Crítica"}
+                 class:text-white={$form.condition == "Crítica"}    
+                class="text-red px-2 font-bold py-1 hover:shadow-xl cursor-pointer border-red rounded-full border "
+                >
+                    <input
+                        class="mr-3 inline-block hidden"
+                        type="radio"
+                        bind:group={$form.condition}
+                        value="Crítica"
+                        name="condition"
+                        id=""
+                    /><span
+                        >Crítica</span
+                    >
+                </label>
+            </div>
             <Input
                 type="textarea"
                 required={true}
