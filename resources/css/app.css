@@ -12,10 +12,9 @@
 }
 
 :root {
-    --black: #000000;
-    --dark: #161616;
     --color1: #011140;
     --color2: #397373;
+<<<<<<< HEAD
     --color3: #6595bf;
     --color4: #c9ebf2;
     --white: #ffffff;
@@ -23,8 +22,23 @@
     --green: #f38f04;
     --grayBlue: #b2bdc4;
     --gray: colors.gray;
+=======
+    --color3: #6595BF;
+    --color4: #C9EBF2;
+    --pink: #ffb4b4;
+    --black: #000000;
+    --dark: #161616;
+    --white: #FFFFFF;
+    --red: #BF0404;
+    --green: #02731E;
+    --grayBlue: #c7d2da;
+>>>>>>> ce26a355f8e6b9e91753fcf1301e86f55bda2977
     --ligthGreen: #54ffaf;
-    --background: rgb(245, 245, 245);
+    --redLight: #ff6464;
+    --background: #ececec;
+    --zelle: #6a1ccd;
+    --binance: #F3BA2F;
+    --orange: #be5c00;
 }
 .text-editor ul,
 .description ul {
@@ -278,4 +292,19 @@ progress::-webkit-progress-value {
     h1 {
         font-size: 28px;
     }
+}
+
+.condition1 {
+    background: rgb(107 114 128);
+}
+.condition2 {
+    background: var(--green);
+}
+.condition3 {
+    background: var(--orange);
+    
+}
+.condition4  {
+    background: var(--red);
+    
 }

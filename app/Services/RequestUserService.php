@@ -4,10 +4,12 @@ namespace App\Services;
 
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
+use App\Mail\RequestUserResponse;
 use App\Models\RequestUser;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class RequestUserService
 {	
@@ -63,6 +65,7 @@ class RequestUserService
 
         $request->delete();
 
+        // Mail::to($dataToCreate['email'])->send(new RequestUserResponse());  
         // Enviar Correo
         return 0;
 

@@ -12,6 +12,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/scout": "^10.11",
         "laravel/tinker": "^2.8",
+        "mailersend/laravel-driver": "^2.7",
         "silviolleite/laravelpwa": "^2.0",
         "spatie/laravel-permission": "^6.9"
     },

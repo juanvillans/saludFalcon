@@ -14,9 +14,36 @@ return new class extends Migration
         Schema::create('emergency_cases', function (Blueprint $table) {
             $table->id();
             $table->foreignId('patient_id');
-            $table->json('cases');
-            $table->string('current_status');
-            $table->string('search')->nullable();
+            $table->foreignId('user_id');
+            $table->foreignId('area_id');
+            
+            $table->foreignId('admitted_area_id')
+                  ->nullable()
+                  ->constrained('areas')
+                  ->onDelete('restrict')
+                  ->onUpdate('cascade');
+
+            $table->foreignId('current_patient_condition_id')
+                  ->nullable()
+                  ->constrained('patient_conditions')
+                  ->onDelete('restrict')
+                  ->onUpdate('cascade');
+
+
+            $table->date('entry_date');
+            $table->string('entry_hour');
+            $table->foreignId('current_status')
+                  ->constrained('status_cases') 
+                  ->onDelete('restrict')     
+                  ->onUpdate('cascade');
+
+            $table->string('destiny')->nullable();
+            
+            $table->date('departure_date')->nullable();
+            $table->string('departure_hour')->nullable();
+            $table->text('reason')->nullable();
+            $table->text('diagnosis')->nullable();
+            $table->text('treatment')->nullable();
             $table->timestamps();
         });
     }

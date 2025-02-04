@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PatientRequest;
+use App\Http\Resources\CaseResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Area;
+use App\Models\EmergencyCase;
+use App\Models\Municipality;
 use App\Models\Patient;
+use App\Models\PatientCondition;
+use App\Models\StatusCase;
 use App\Services\EmergencyCaseService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -35,12 +40,19 @@ class EmergencyCaseController extends Controller
         $emergencyCases = $this->emergencyCaseService->getCases($this->params);
         if($this->params['patient_ci'] != null)
             $patient = $this->emergencyCaseService->getPatientByCI($this->params);
-        $areas = Area::all();
+        
+        $areas = Area::get();
+        $muncipalities = Municipality::with('parishes')->get();
+        $statutes = StatusCase::get();
+        $conditions = PatientCondition::get();
         
         return inertia('Dashboard/Patient',[
             'data' => $emergencyCases,
             'patient' => $patient ?? null,
             'areas' => $areas,
+            'municipalities' => $muncipalities,
+            'statutes' => $statutes,
+            'conditions' => $conditions,
             'filters' => ['status' => $request->input('status') ?? ''],
         ]);
 
@@ -72,14 +84,12 @@ class EmergencyCaseController extends Controller
         }
     }
 
-    public function patientDetail(Request $request, Patient $patient){
+    public function caseDetail(Request $request, EmergencyCase $case){
 
-        $patient->load('emergencyCase');
-
-        $patient->emergencyCase->cases = json_decode($patient->emergencyCase->cases);
-
-        return inertia('Dashboard/PatientDetail',[
-            'patient' => new PatientResource($patient)
+        $case->load('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase','condition', 'admittedArea');
+        
+        return inertia('Dashboard/CaseDetail',[
+            'caseDetail' => new CaseResource($case)
         ]);
     }
 
@@ -107,18 +117,14 @@ class EmergencyCaseController extends Controller
         }
     }
 
-    public function patient(Request $request){
+    public function searchPatient(Request $request){
         
         $this->params = [
             'ci' => $request->input('ci') ?? null,
         ];
 
         $patient = $this->emergencyCaseService->getPatientByCI($this->params);
-        return inertia('Dashboard/Patient',[
-            'patient' => $patient,
-        ]);
-
-
+        return response()->json(['patient' => $patient]);
     }
 
 }

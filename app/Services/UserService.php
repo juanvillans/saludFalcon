@@ -63,15 +63,13 @@ class UserService
             "name" => $data['name'],
             "last_name" => $data['last_name'],
             "email" => $data['email'],
+            "specialty_id" => $data['specialty_id'],
             "search" => $this->generateSearch($data),
         ]);
 
         method_exists($user, 'revokeRoles') ? $user->revokeRoles(): null;
         
         $user->assignRole($data['role_name']);
-
-        if($user->hasRole('doctor'))
-            $this->assignSpecialties($user,$data);
 
         return 0;
 
@@ -82,9 +80,7 @@ class UserService
         $authUserId = auth()->id();
         $usuario->id == $authUserId ? throw new Exception("No puedes eliminar tu propio usuario", 401) : null;
 
-        $usuario->specialties()->detach();
         $usuario->roles()->detach();
-
         $usuario->delete();
 
         return 0;
@@ -104,18 +100,6 @@ class UserService
 
         return 0;
         
-    }
-
-    private function assignSpecialties($user, $data)
-    {
-
-        if(!isset($data['specialties_ids']) || count($data['specialties_ids']) == 0 )
-            throw new Exception("El doctor debe tener alguna especialidad seleccionada", 401);
-        
-        $user->specialties()->sync($data['specialties_ids']);
-
-        return 0;
-            
     }
     
     private function generateSearch($data)

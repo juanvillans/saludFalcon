@@ -6,6 +6,8 @@ use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\DoctorCollection;
+use App\Http\Resources\DoctorResource;
 use App\Models\RequestUser;
 use App\Models\Specialty;
 use App\Models\User;
@@ -137,7 +139,7 @@ class UserController extends Controller
     			return redirect('/')->withErrors(['data' => 'Datos incorrectos, intente nuevamente']);
 
 
-            return Inertia::location('/admin/historial-medico');
+            return Inertia::location('/admin/casos');
 
 
     }
@@ -184,5 +186,20 @@ class UserController extends Controller
     public function failLogin()
     {
         return 'No tiene los permisos para ingresar a esta url';
+    }
+
+    public function searchDoctor(Request $request){
+
+        $doctors = User::whereHas('roles',function ($query){
+            $query->where('name','doctor');
+        })
+        ->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($request->search) . '%'])->get();
+
+        $doctors = new DoctorCollection($doctors);    
+
+        
+        
+
+        return response()->json(['doctors' => $doctors]);
     }
 }

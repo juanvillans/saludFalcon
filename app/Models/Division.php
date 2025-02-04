@@ -5,16 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Area extends Model
+class Division extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        "division_id",
+        "name",
     ];
-    
-    public function division(){
-        return $this->belongsTo(Division::class);
-    }
 }

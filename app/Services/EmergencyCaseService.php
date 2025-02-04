@@ -12,28 +12,18 @@ class EmergencyCaseService
 {	
     public function getCases($params)
     {
-        $cases = EmergencyCase::search(trim($params['search'] ?? ''))
-        ->query(function ($query) use ($params) {
-            $query->join('patients', 'emergency_cases.patient_id', 'patients.id')
-                ->select([
-                          
-                          'emergency_cases.id', 'emergency_cases.cases', 'emergency_cases.current_status', 'emergency_cases.search',
-
-                          'patients.id as patient_id','patients.name as patient_name', 'patients.last_name as patient_last_name', 'patients.ci as patient_ci', 
-                          'patients.phone_number as patient_phone_number', 'patients.sex as patient_sex', 'patients.date_birth as patient_date_birth', 'patients.search as patient_search'
-                        
-                          ])
+        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase','condition', 'admittedArea')
                 ->when($params['status'],function($query) use ($params){
                     $query->where('current_status', $params['status']);
                 })
-                ->orderBy('emergency_cases.id', 'DESC');
-        })
-        ->paginate($params['per_page'] ?? 25);
+                ->when($params['search'],function($query) use ($params){
 
-        $cases->getCollection()->transform(function ($case) {
-            $case->cases = json_decode($case->cases, true);
-            return $case;
-        });
+                    $query->whereHas('patient',function($query2) use ($params){
+                        $query2->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($params['search']) . '%']);
+                    });
+                })
+                ->orderBy('id', 'DESC')
+                ->paginate($params['per_page'] ?? 25);
 
         return new CaseCollection($cases);
     }
@@ -45,16 +35,24 @@ class EmergencyCaseService
         if($patientID == null)
             $patientID = $this->createPatient($data);
 
-        $lastCase = $data['cases'][0] ?? null;
+        EmergencyCase::create([
 
-        EmergencyCase::updateOrCreate([
-            'patient_id' => $patientID
-        ],
-        [
-            'cases' => json_encode($data['cases']),
-            'current_status' => $lastCase['status'] ?? null,
-            'search' => $lastCase['diagnosis'] . ' ' . $lastCase['treatment'] . ' ' . $lastCase['doctor']['name'] . ' ' . $lastCase['doctor']['last_name'] 
+            'patient_id' => $patientID,
+            'current_patient_condition_id' => $data['current_patient_condition_id'],
+            'user_id' => $data['user_id'],
+            'area_id' => $data['area_id'],
+            'admitted_area_id' => $data['admitted_area_id'],
+            'entry_date' => $data['entry_date'],
+            'entry_hour' => $data['entry_hour'],
+            'current_status' => $data['current_status'],
+            'departure_date' => $data['departure_date'] ?? null,
+            'departure_hour' => $data['departure_hour'] ?? null,
+            'reason' => $data['reason'],
+            'diagnosis' => $data['diagnosis'],
+            'treatment' => $data['treatment'],
+            'destiny' => $data['destiny'],
         ]);
+
 
         return 0;
 
@@ -68,7 +66,6 @@ class EmergencyCaseService
             'phone_number' => $data['patient_phone_number'],
             'sex' => $data['patient_sex'],
             'date_birth' => $data['patient_date_birth'],
-            // 'search' => $this->generateSearch($data)
         ]);
 
         return 0;
@@ -77,12 +74,10 @@ class EmergencyCaseService
     public function getPatientByCI($param){
         
         
-        $patient = Patient::where('ci',$param['patient_ci'])->with('emergencyCase')->first();
+        $patient = Patient::where('ci',$param['ci'])->with('municipality','parish')->first();
         
         if(!isset($patient->id))
             return null;
-        
-        $patient->emergencyCase->cases = json_decode($patient->emergencyCase->cases,true);
     
         return new PatientResource($patient);
         
@@ -99,6 +94,9 @@ class EmergencyCaseService
                 'phone_number' => $data['patient_phone_number'] ?? null,
                 'sex' => $data['patient_sex'],
                 'date_birth' => $data['patient_date_birth'],
+                'municipality_id' => $data['municipality_id'],
+                'parish_id' => $data['parish_id'],
+                'address' => $data['patient_address'],
             ]);
 
 
@@ -115,8 +113,6 @@ class EmergencyCaseService
         return 0;
     }
     
-   private function validateCasesJSON($cases){
-    
-    }
+   
 
 }
