@@ -1,14 +1,13 @@
 <script>
-    import { useForm,inertia } from "@inertiajs/svelte";
+    import { useForm, inertia } from "@inertiajs/svelte";
     // import loginImages from 'img/loginImages.webp'
     // import secretariaLogo from '$lib/images/logo_secretaria-circle-main.png';
     import Input from "../components/Input.svelte";
     import Modal from "../components/Modal.svelte";
-    import { onMount } from 'svelte';
+    import { onMount } from "svelte";
     import Alert from "../components/Alert.svelte";
     import { displayAlert } from "../stores/alertStore";
     let showModal = true;
-
 
     // const { lastUpdatedAt, isPrefetching, isPrefetched } = usePrefetch(
     //     "/admin/historial-medico",
@@ -20,7 +19,7 @@
         password: null,
     });
     function focusInput() {
-            document.querySelector("input[name='ci']").focus();
+        document.querySelector("input[name='ci']").focus();
     }
     onMount(() => {
         focusInput();
@@ -35,6 +34,7 @@
                     displayAlert({ type: "error", message: errors.data });
                 }
             },
+        
         });
     }
 </script>
@@ -42,8 +42,10 @@
 <Alert />
 <section class="bg-gray-50 min-h-screen flex justify-center items-center">
     <div class="w-11/12 max-w-sm">
-        <img src="/img/group.webp" alt="" srcset="">
-        <h1 class="text-center text-2xl">Hospital Doctor Alfredo Van Grieken</h1>
+        <img src="/img/group.webp" alt="" srcset="" />
+        <h1 class="text-center text-2xl">
+            Hospital Doctor Alfredo Van Grieken
+        </h1>
         <legend class="text-center opacity-70">INICIAR SESIÓN</legend>
         <form on:submit={handleSubmit} class="min-w-[250px]">
             <div>
@@ -78,7 +80,11 @@
                 value={$form.processing ? "Cargando..." : "ENTRAR"}
                 class="bg-color3 text-white duration-200 mt-5 w-full hover:bg-color4 hover:text-black font-bold py-3 rounded-md cursor-pointer"
             />
-            <a href="/registrarse" class="mt-2 inline-block text-xl underline text-color1" use:inertia>Registrarme</a>
+            <a
+                href="/registrarse"
+                class="mt-2 inline-block text-xl underline text-color1"
+                use:inertia>Registrarme</a
+            >
         </form>
     </div>
 </section>

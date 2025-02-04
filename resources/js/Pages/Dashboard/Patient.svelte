@@ -10,6 +10,7 @@
     import { useForm, router, page } from "@inertiajs/svelte";
     import { construct_svelte_component } from "svelte/internal";
     import axios from "axios";
+    import { onMount } from 'svelte';
 
     export let data = {};
     export let areas = [];
@@ -17,6 +18,34 @@
     export let statutes = [];
     export let conditions = [];
     let showModalDoctor = false;
+
+
+    let localData;
+
+    onMount(async () => {
+        const localStorageKey = 'localData'; // Replace with your key
+
+        // Check if the variable exists in local storage
+        const storedData = localStorage.getItem(localStorageKey);
+        
+        if (!storedData) {
+            // If it doesn't exist, make an Axios request
+            try {
+                const response = await axios.get('/admin/general-data',{}); // Replace with your API endpoint
+                localData = response.data;
+
+                // Set the response data to local storage
+                localStorage.setItem(localStorageKey, JSON.stringify(localData));
+                console.log('Data stored in local storage:', localData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        } else {
+            localData = JSON.parse(storedData);
+            console.log('Data retrieved from local storage:', localData);
+        }
+    });
+
 
     $: console.log($page.props.auth);
     $: console.log(data);
@@ -181,7 +210,7 @@
     // );
 
     function goToDetailsPatientPage(id) {
-        router.get("/admin/historial-medico/detalle-paciente/" + id);
+        router.get("/admin/casos/detalle-caso/" + id);
     }
     let selectingText = false;
 
