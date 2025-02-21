@@ -6,6 +6,7 @@
     import Pagination from "../../components/Pagination.svelte";
     import debounce from "lodash/debounce";
     import Search from "../../components/Search.svelte";
+    import fetchLocalData  from "../../components/localData"
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router, page } from "@inertiajs/svelte";
     import { construct_svelte_component } from "svelte/internal";
@@ -13,42 +14,23 @@
     import { onMount } from 'svelte';
 
     export let data = {};
-    export let areas = [];
-    export let municipalities = [];
-    export let statutes = [];
-    export let conditions = [];
+    export let statutes = {};
     let showModalDoctor = false;
 
 
     let localData;
 
     onMount(async () => {
-        const localStorageKey = 'localData'; // Replace with your key
-
-        // Check if the variable exists in local storage
-        const storedData = localStorage.getItem(localStorageKey);
-        
-        if (!storedData) {
-            // If it doesn't exist, make an Axios request
-            try {
-                const response = await axios.get('/admin/general-data',{}); // Replace with your API endpoint
-                localData = response.data;
-
-                // Set the response data to local storage
-                localStorage.setItem(localStorageKey, JSON.stringify(localData));
-                console.log('Data stored in local storage:', localData);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        } else {
-            localData = JSON.parse(storedData);
-            console.log('Data retrieved from local storage:', localData);
+        try {
+            localData = await fetchLocalData();
+        } catch (error) {
+            console.error('Error loading data:', error);
         }
     });
 
 
-    $: console.log($page.props.auth);
-    $: console.log(data);
+    // $: console.log($page.props.auth);
+    $: console.log(localData, statutes);
     // Update data based on the current state of `data.specialties`
     const today = new Date();
     // Format the date to YYYY-MM-DD
@@ -141,7 +123,7 @@
             });
         }
     }
-    $: console.log(municipalities[$form?.municipality_id - 1]?.parishes);
+    // $: console.log(municipalities[$form?.municipality_id - 1]?.parishes);
     const searchPatient = debounce(async (ci) => {
         prosecingSearchPatient = true; // Cambiar a verdadero antes de la búsqueda
 
@@ -388,7 +370,7 @@
                 bind:value={$form.municipality_id}
                 error={$form.errors?.municipality_id}
             >
-                {#each municipalities as micipality (micipality.id)}
+                {#each localData.municipalities as micipality (micipality.id)}
                     <option value={micipality.id}>{micipality.name}</option>
                 {/each}
             </Input>
@@ -400,8 +382,8 @@
                 bind:value={$form.parish_id}
                 error={$form.errors?.parish_id}
             >
-                {#if municipalities[$form.municipality_id - 1]}
-                    {#each municipalities[$form.municipality_id - 1].parishes as parish (parish.id)}
+                {#if localData.municipalities[$form.municipality_id - 1]}
+                    {#each localData.municipalities[$form.municipality_id - 1].parishes as parish (parish.id)}
                         <option value={parish.id}>{parish.name}</option>
                     {/each}
                 {/if}
@@ -509,7 +491,7 @@
                     $form.area = e.target.value;
                 }}
             >
-                {#each areas as area (area.id)}
+                {#each localData.areas as area (area.id)}
                     {#if area.division_id == 2}
                         <option value={area.id}>{area.name}</option>
                     {/if}
@@ -538,7 +520,7 @@
                 bind:value={$form.current_status}
                 error={$form.errors?.current_status}
             >
-                {#each statutes as status (status.id)}
+                {#each localData.statutes as status (status.id)}
                     <option value={status.id}>{status.name}</option>
                 {/each}
             </Input>
@@ -550,7 +532,7 @@
                     bind:value={$form.admitted_area_id}
                     error={$form.errors?.admitted_area_id}
                 >
-                    {#each areas as area (area.id)}
+                    {#each localData.areas as area (area.id)}
                         {#if area.division_id == 1}
                             <option value={area.id}>{area.name}</option>
                         {/if}
@@ -607,70 +589,7 @@
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DIAGNÓSTICO Y TRATAMIENTO</legend
             >
-            <p class="col-span-2 mt-1">Condición:</p>
-            <div class="flex gap-4 mb-3">
-                {#each conditions as condition (condition.id)}
-                    <label
-                        class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.current_patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
-                    >
-                        <div
-                            class={`w-2 aspect-square rounded-full  condition${condition.id}`}
-                        ></div>
-                        <input
-                            class="mr-3 hidden"
-                            type="radio"
-                            bind:group={$form.current_patient_condition_id}
-                            value={condition.id}
-                            name="condition"
-                            id=""
-                        /><span>{condition.name}</span>
-                    </label>
-                    <!-- </label> 
-                <label
-                    class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Estable" ? "bg-gray-200 font-bold" : " "}`}
-                >
-                    <div
-                        class={`w-2 aspect-square rounded-full bg-green `}
-                    ></div>
-                    <input
-                        class="mr-3 hidden"
-                        type="radio"
-                        bind:group={$form.condition}
-                        value="Estable"
-                        name="condition"
-                        id=""
-                    /><span>Estable</span>
-                </label>
-                <label
-                    class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Inestable" ? "bg-gray-200 font-bold" : " "}`}
-                >
-                    <div
-                        class={`w-2 aspect-square rounded-full bg-orange `}
-                    ></div>
-                    <input
-                        class="mr-3 hidden"
-                        type="radio"
-                        bind:group={$form.condition}
-                        value="Inestable"
-                        name="condition"
-                        id=""
-                    /><span>Inestable</span>
-                </label>
-                <label
-                    class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Crítico" ? "bg-gray-200 font-bold" : " "}`}
-                >
-                    <div class={`w-2 aspect-square rounded-full bg-red `}></div>
-                    <input
-                        class="mr-3 hidden"
-                        type="radio"
-                        bind:group={$form.condition}
-                        value="Crítico"
-                        name="condition"
-                        id=""
-                    /><span>Crítico</span>
-                </label>  -->
-                {/each}
-            </div>
+           
             <Input
                 type="textarea"
                 required={true}
@@ -679,15 +598,37 @@
                 bind:value={$form.reason}
                 error={$form?.errors?.reason}
             />
-            <Input
-                type="textarea"
-                required={true}
-                classes={"col-span-2"}
-                label={"Diagnóstico *"}
-                bind:value={$form.diagnosis}
-                error={$form?.errors?.diagnosis}
-            />
-
+            <div class="col-span-2">
+                <span>Diagnóstico *</span>
+                <div class="flex gap-4 mb-3">
+                    {#each localData.conditions as condition (condition.id)}
+                        <label
+                            class={`py-1 pb-0 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.current_patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
+                        >
+                            <div
+                                class={`w-2 aspect-square rounded-full  condition${condition.id}`}
+                            ></div>
+                            <input
+                                class="mr-3 hidden"
+                                type="radio"
+                                bind:group={$form.current_patient_condition_id}
+                                value={condition.id}
+                                name="condition"
+                                id=""
+                            /><span>{condition.name}</span>
+                        </label>
+                      
+                    {/each}
+                </div>
+                <Input
+                    type="textarea"
+                    required={true}
+                    classes={"col-span-2"}
+                    bind:value={$form.diagnosis}
+                    error={$form?.errors?.diagnosis}
+                />
+            </div>
+           
             <Input
                 type="textarea"
                 required={true}
@@ -806,7 +747,7 @@
 {#if visulizateType == "table"}
     <Table
         filtersOptions={{
-            status: [...statutes],
+            status: localData?.statutes || [],
         }}
         allowSearch={false}
     >
@@ -819,7 +760,7 @@
                 <!-- <th>Condición</th> -->
                 <th>Paciente</th>
                 <th>Motivo de consulta</th>
-                <th>Condición y Diagnóstico</th>
+                <th>Diagnóstico</th>
                 <th>Orden médica de ingreso</th>
             </tr>
         </thead>

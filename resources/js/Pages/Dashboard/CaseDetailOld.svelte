@@ -8,8 +8,9 @@
 
     export let areas = [];
     export let patient = false;
+    export let caseDetail = {};
     let countingCases;
-    let form = useForm(structuredClone(patient.data));
+    let form = useForm(structuredClone(caseDetail.data));
 
     $: if (patient) {
         countingCases = patient.data.cases.length;
@@ -18,7 +19,7 @@
     let descriptionLength = 0;
     let openAccordeon = -1;
     let editStatus = false;
-    $: console.log(patient?.data);
+    $: console.log(patient);
     function convertTo12HourFormat(time24) {
         console.log(time24);
         // Split the input into hours and minutes
@@ -207,173 +208,180 @@
         >
             <legend
                 class="text-center px-5 py-1 uppercase pt-1.5 rounded-sm bg-color2 text-gray-100"
-                >HISTORIAL DE {patient.data.patient_name}
-                {patient.data.patient_last_name}
-                {patient.data.patient_ci}</legend
+                >HISTORIAL DE {caseDetail.data.patient_name}
+                {caseDetail.data.patient_last_name}
+                {caseDetail.data.patient_ci}</legend
             >
-
             {#each patient?.data?.cases as single_case, i (i)}
                 {#if i == 0}
                     <!-- svelte-ignore empty-block -->
                     {#if editStatus == false}
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <div
-                            
                             class="bg-white p-3 h-fit col-span-2 rounded gap-x-5 w-full md:border md:p-6 pb-2 md:pb-3 pt-2 mt-3"
                         >
-                        <div on:click={()=> openAccordeon == i ?   openAccordeon = -1:  openAccordeon = i}>
-
-                            <div class="flex gap-3">
-                                <span
-                                    class="h-fit text-center col-span-2 font-bold bg-color4 p-1 rounded-lg inline-block w-10 px-2"
-                                >
-                                    {countingCases--}
-                                </span>
-                                <p class="h-fit">
-                                    Del {formatDateSpanish(
-                                        single_case.start_date,
-                                    )}
-                                    <span class="opacity-60">-</span>
-                                    {convertTo12HourFormat(
-                                        single_case.start_time,
-                                    )}
-                                    <span class="mx-1"> | </span>
-                                    <StatusColor status={single_case.status} />
-                                    {#if single_case.status == "Remitido"}
-                                        a {single_case.area?.name}
-                                    {/if}
-
-                                    {#if single_case.status != "Permanencia"}
-                                        el
-                                        {formatDateSpanish(
-                                            single_case.end_date,
+                            <div
+                                on:click={() =>
+                                    openAccordeon == i
+                                        ? (openAccordeon = -1)
+                                        : (openAccordeon = i)}
+                            >
+                                <div class="flex gap-3">
+                                    <span
+                                        class="h-fit text-center col-span-2 font-bold bg-color4 p-1 rounded-lg inline-block w-10 px-2"
+                                    >
+                                        {countingCases--}
+                                    </span>
+                                    <p class="h-fit">
+                                        Del {formatDateSpanish(
+                                            single_case.start_date,
                                         )}
                                         <span class="opacity-60">-</span>
                                         {convertTo12HourFormat(
-                                            single_case.end_time,
+                                            single_case.start_time,
                                         )}
+                                        <span class="mx-1"> | </span>
+                                        <StatusColor
+                                            status={single_case.status}
+                                        />
+                                        {#if single_case.status == "Remitido"}
+                                            a {single_case.area?.name}
+                                        {/if}
+
+                                        {#if single_case.status != "Permanencia"}
+                                            el
+                                            {formatDateSpanish(
+                                                single_case.end_date,
+                                            )}
+                                            <span class="opacity-60">-</span>
+                                            {convertTo12HourFormat(
+                                                single_case.end_time,
+                                            )}
+                                        {/if}
+                                    </p>
+                                    {#if $page.props.auth.user_id == single_case.doctor.id}
+                                        <div
+                                            class=" ml-auto h-fit flex gap-2 flex-col sm:flex-row rounded-md"
+                                        >
+                                            <button
+                                                title="Editar"
+                                                class="p-1 bg-gray-200 px-2 hover:bg-color3 text-gray-700 hover:text-white"
+                                                on:click={() =>
+                                                    (editStatus = !editStatus)}
+                                            >
+                                                <iconify-icon
+                                                    icon="ic:baseline-edit"
+                                                    class="relative top-0.5"
+                                                ></iconify-icon>
+                                            </button>
+
+                                            <button
+                                                title="Eliminar"
+                                                class="p-1 bg-gray-200 px-2 hover:bg-red text-gray-700 hover:text-white"
+                                                on:click={() => handleDelete()}
+                                            >
+                                                <iconify-icon
+                                                    icon="mdi:trash-outline"
+                                                    class="relative top-0.5"
+                                                ></iconify-icon>
+                                            </button>
+                                        </div>
                                     {/if}
-                                </p>
-                                {#if $page.props.auth.user_id == single_case.doctor.id}
-                                    <div
-                                        class=" ml-auto h-fit flex gap-2 flex-col sm:flex-row rounded-md"
-                                    >
-                                        <button
-                                            title="Editar"
-                                            class="p-1 bg-gray-200 px-2 hover:bg-color3 text-gray-700 hover:text-white"
-                                            on:click={() =>
-                                                (editStatus = !editStatus)}
-                                        >
-                                            <iconify-icon
-                                                icon="ic:baseline-edit"
-                                                class="relative top-0.5"
-                                            ></iconify-icon>
-                                        </button>
+                                </div>
 
-                                        <button
-                                            title="Eliminar"
-                                            class="p-1 bg-gray-200 px-2 hover:bg-red text-gray-700 hover:text-white"
-                                            on:click={() => handleDelete()}
-                                        >
-                                            <iconify-icon
-                                                icon="mdi:trash-outline"
-                                                class="relative top-0.5"
-                                            ></iconify-icon>
-                                        </button>
-                                    </div>
-                                {/if}
-                            </div>
+                                <div></div>
 
-                            <div></div>
-
-                            <div class="mt-2">
-                                <p>
-                                    <iconify-icon
-                                        class="text-2xl relative top-1.5 text-red"
-                                        icon="material-symbols:diagnosis"
-                                    ></iconify-icon>
-                                    {single_case.diagnosis}
-                                </p>
-                            </div>
-                            <div class="mt-2">
-                                <p>
-                                    <iconify-icon
-                                        class="text-2xl relative top-1.5 text-color1"
-                                        icon="mdi:medicine-bottle"
-                                    ></iconify-icon>
-                                    {single_case.treatment}
-                                </p>
-                            </div>
-
-                            <div>
-                                <p
-                                    class=" gap-x-2 flex items-center justify-end"
-                                >
-                                    <span
-                                        class="bg-gray-50 rounded-full px-2 py-1 flex items-center justify-end"
-                                    >
-                                        {single_case.doctor.name}
-                                        {single_case.doctor.last_name}
+                                <div class="mt-2">
+                                    <p>
                                         <iconify-icon
-                                            icon="mdi:doctor"
-                                            style="font-size: 20px;"
+                                            class="text-2xl relative top-1.5 text-red"
+                                            icon="material-symbols:diagnosis"
                                         ></iconify-icon>
-                                    </span>
-                                </p>
-                            </div>
-                            <h2>Evoluciones:</h2>
-                        </div>
+                                        {single_case.diagnosis}
+                                    </p>
+                                </div>
+                                <div class="mt-2">
+                                    <p>
+                                        <iconify-icon
+                                            class="text-2xl relative top-1.5 text-color1"
+                                            icon="mdi:medicine-bottle"
+                                        ></iconify-icon>
+                                        {single_case.treatment}
+                                    </p>
+                                </div>
 
-
-                                {#if openAccordeon == i}
                                 <div>
+                                    <p
+                                        class=" gap-x-2 flex items-center justify-end"
+                                    >
+                                        <span
+                                            class="bg-gray-50 rounded-full px-2 py-1 flex items-center justify-end"
+                                        >
+                                            {single_case.doctor.name}
+                                            {single_case.doctor.last_name}
+                                            <iconify-icon
+                                                icon="mdi:doctor"
+                                                style="font-size: 20px;"
+                                            ></iconify-icon>
+                                        </span>
+                                    </p>
+                                </div>
+                                <h2>Evoluciones:</h2>
+                            </div>
 
-
+                            {#if openAccordeon == i}
+                                <div>
                                     {#if openAccordeon}
                                         <div></div>
                                     {/if}
                                     {#if isOpenCreateEvolution}
-                                    <div class="flex gap-4">
-                                        <label class={`py-1 px-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Estable" ?  "bg-gray-200 font-bold" : " " }`} >
-                                            <div class={`w-2 aspect-square rounded-full bg-green `}></div>
-                                            <input
-                                                class="mr-3 hidden"
-                                                type="radio"
-                                                bind:group={$form.condition}
-                                                value="Estable"
-                                                name="condition"
-                                                id=""
-                                            /><span  
-                                                >Estable</span
+                                        <div class="flex gap-4">
+                                            <label
+                                                class={`py-1 px-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Estable" ? "bg-gray-200 font-bold" : " "}`}
                                             >
-                                        </label>
-                                        <label class={`py-1 px-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Inestable" ?  "bg-gray-200 font-bold" : " " }`} >
-                                            <div class={`w-2 aspect-square rounded-full bg-orange `}></div>
-                                            <input
-                                                class="mr-3 hidden"
-                                                type="radio"
-                                                bind:group={$form.condition}
-                                                value="Inestable"
-                                                name="condition"
-                                                id=""
-                                            /><span 
-                                                >Inestable</span
+                                                <div
+                                                    class={`w-2 aspect-square rounded-full bg-green `}
+                                                ></div>
+                                                <input
+                                                    class="mr-3 hidden"
+                                                    type="radio"
+                                                    bind:group={$form.condition}
+                                                    value="Estable"
+                                                    name="condition"
+                                                    id=""
+                                                /><span>Estable</span>
+                                            </label>
+                                            <label
+                                                class={`py-1 px-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Inestable" ? "bg-gray-200 font-bold" : " "}`}
                                             >
-                                        </label>
-                                        <label class={`py-1 px-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Crítico" ?  "bg-gray-200 font-bold" : " " }`} >
-                                            <div class={`w-2 aspect-square rounded-full bg-red `}></div>
-                                            <input
-                                                class="mr-3 hidden"
-                                                type="radio"
-                                                bind:group={$form.condition}
-                                                value="Crítico"
-                                                name="condition"
-                                                id=""
-                                            /><span 
-                                                >Crítico</span
+                                                <div
+                                                    class={`w-2 aspect-square rounded-full bg-orange `}
+                                                ></div>
+                                                <input
+                                                    class="mr-3 hidden"
+                                                    type="radio"
+                                                    bind:group={$form.condition}
+                                                    value="Inestable"
+                                                    name="condition"
+                                                    id=""
+                                                /><span>Inestable</span>
+                                            </label>
+                                            <label
+                                                class={`py-1 px-2 cursor-pointer hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Crítico" ? "bg-gray-200 font-bold" : " "}`}
                                             >
-                                        </label>
-                                    </div>
+                                                <div
+                                                    class={`w-2 aspect-square rounded-full bg-red `}
+                                                ></div>
+                                                <input
+                                                    class="mr-3 hidden"
+                                                    type="radio"
+                                                    bind:group={$form.condition}
+                                                    value="Crítico"
+                                                    name="condition"
+                                                    id=""
+                                                /><span>Crítico</span>
+                                            </label>
+                                        </div>
                                         <div class="mb-5 text-editor">
                                             <Editor
                                                 actions={[
@@ -390,7 +398,9 @@
                                                 on:change={(evt) => {
                                                     descriptionLength =
                                                         evt.detail.length;
-                                                    if (descriptionLength >= 300) {
+                                                    if (
+                                                        descriptionLength >= 300
+                                                    ) {
                                                         $form.setError(
                                                             "description",
                                                             "No puede tener más de 300 caracteres",
@@ -400,7 +410,8 @@
                                                             "description",
                                                         );
                                                     }
-                                                    $form.description = evt.detail;
+                                                    $form.description =
+                                                        evt.detail;
                                                 }}
                                                 contentId="notes-content"
                                                 bind:this={editor}
@@ -434,37 +445,40 @@
                                     {/if}
                                     <ul>
                                         <li
-                                        class="bg-gray-50 mb-3 border rounded overflow-hidden"
-                                    >
-                                        <span
-                                            class="flex items-center gap-2 p-1"
+                                            class="bg-gray-50 mb-3 border rounded overflow-hidden"
                                         >
-                                            #1
-                                            <iconify-icon
-                                                icon="fluent-mdl2:date-time-12"
-                                            ></iconify-icon>
-                                            <p>16 jun 2024, 3:00pm</p>
-                                            <div class={`w-2 aspect-square rounded-full bg-green`}></div>
-                                            <p>Estable</p>
-                                        </span>
+                                            <span
+                                                class="flex items-center gap-2 p-1"
+                                            >
+                                                #1
+                                                <iconify-icon
+                                                    icon="fluent-mdl2:date-time-12"
+                                                ></iconify-icon>
+                                                <p>16 jun 2024, 3:00pm</p>
+                                                <div
+                                                    class={`w-2 aspect-square rounded-full bg-green`}
+                                                ></div>
+                                                <p>Estable</p>
+                                            </span>
 
-                                        <div class="bg-white p-1">
-                                            <p>
-                                                Lorem ipsum dolor sit amet
-                                                consectetur adipisicing elit.
-                                                Eius enim accusantium explicabo
-                                                repellendus id commodi, nulla
-                                                minima, suscipit distinctio
-                                                quibusdam rerum nihil, modi
-                                                soluta cum nemo. Adipisci itaque
-                                                ipsa enim!
-                                            </p>
-                                            Lorem ipsum dolor sit amet consectetur
-                                            adipisicing elit. voluptatum odio culpa
-                                            delectus quis, maiores, accusamus iure
-                                            eos
-                                        </div>
-                                    </li>
+                                            <div class="bg-white p-1">
+                                                <p>
+                                                    Lorem ipsum dolor sit amet
+                                                    consectetur adipisicing
+                                                    elit. Eius enim accusantium
+                                                    explicabo repellendus id
+                                                    commodi, nulla minima,
+                                                    suscipit distinctio
+                                                    quibusdam rerum nihil, modi
+                                                    soluta cum nemo. Adipisci
+                                                    itaque ipsa enim!
+                                                </p>
+                                                Lorem ipsum dolor sit amet consectetur
+                                                adipisicing elit. voluptatum odio
+                                                culpa delectus quis, maiores, accusamus
+                                                iure eos
+                                            </div>
+                                        </li>
                                         <li
                                             class="bg-gray-50 mb-3 rounded overflow-hidden shadow"
                                         >
@@ -477,27 +491,26 @@
                                                 ></iconify-icon>
                                                 <p>16 jun 2024, 3:00pm</p>
                                             </span>
-    
+
                                             <div class="bg-white p-1">
                                                 <p>
                                                     Lorem ipsum dolor sit amet
-                                                    consectetur adipisicing elit.
-                                                    Eius enim accusantium explicabo
-                                                    repellendus id commodi, nulla
-                                                    minima, suscipit distinctio
+                                                    consectetur adipisicing
+                                                    elit. Eius enim accusantium
+                                                    explicabo repellendus id
+                                                    commodi, nulla minima,
+                                                    suscipit distinctio
                                                     quibusdam rerum nihil, modi
-                                                    soluta cum nemo. Adipisci itaque
-                                                    ipsa enim!
+                                                    soluta cum nemo. Adipisci
+                                                    itaque ipsa enim!
                                                 </p>
                                                 Lorem ipsum dolor sit amet consectetur
-                                                adipisicing elit. voluptatum odio culpa
-                                                delectus quis, maiores, accusamus iure
-                                                eos
+                                                adipisicing elit. voluptatum odio
+                                                culpa delectus quis, maiores, accusamus
+                                                iure eos
                                             </div>
                                         </li>
-    
-                                       
-    
+
                                         <li
                                             class="bg-gray-50 mb-3 border rounded overflow-hidden"
                                         >
@@ -510,25 +523,26 @@
                                                 ></iconify-icon>
                                                 <p>16 jun 2024, 3:00pm</p>
                                             </span>
-    
+
                                             <div class="bg-white p-1">
                                                 <p>
                                                     Lorem ipsum dolor sit amet
-                                                    consectetur adipisicing elit.
-                                                    Eius enim accusantium explicabo
-                                                    repellendus id commodi, nulla
-                                                    minima, suscipit distinctio
+                                                    consectetur adipisicing
+                                                    elit. Eius enim accusantium
+                                                    explicabo repellendus id
+                                                    commodi, nulla minima,
+                                                    suscipit distinctio
                                                     quibusdam rerum nihil, modi
-                                                    soluta cum nemo. Adipisci itaque
-                                                    ipsa enim!
+                                                    soluta cum nemo. Adipisci
+                                                    itaque ipsa enim!
                                                 </p>
                                                 Lorem ipsum dolor sit amet consectetur
-                                                adipisicing elit. voluptatum odio culpa
-                                                delectus quis, maiores, accusamus iure
-                                                eos
+                                                adipisicing elit. voluptatum odio
+                                                culpa delectus quis, maiores, accusamus
+                                                iure eos
                                             </div>
                                         </li>
-    
+
                                         <li
                                             class="bg-gray-50 mb-3 border rounded overflow-hidden"
                                         >
@@ -541,25 +555,26 @@
                                                 ></iconify-icon>
                                                 <p>16 jun 2024, 3:00pm</p>
                                             </span>
-    
+
                                             <div class="bg-white p-1">
                                                 <p>
                                                     Lorem ipsum dolor sit amet
-                                                    consectetur adipisicing elit.
-                                                    Eius enim accusantium explicabo
-                                                    repellendus id commodi, nulla
-                                                    minima, suscipit distinctio
+                                                    consectetur adipisicing
+                                                    elit. Eius enim accusantium
+                                                    explicabo repellendus id
+                                                    commodi, nulla minima,
+                                                    suscipit distinctio
                                                     quibusdam rerum nihil, modi
-                                                    soluta cum nemo. Adipisci itaque
-                                                    ipsa enim!
+                                                    soluta cum nemo. Adipisci
+                                                    itaque ipsa enim!
                                                 </p>
                                                 Lorem ipsum dolor sit amet consectetur
-                                                adipisicing elit. voluptatum odio culpa
-                                                delectus quis, maiores, accusamus iure
-                                                eos
+                                                adipisicing elit. voluptatum odio
+                                                culpa delectus quis, maiores, accusamus
+                                                iure eos
                                             </div>
                                         </li>
-    
+
                                         <li
                                             class="bg-gray-50 mb-3 border rounded overflow-hidden"
                                         >
@@ -572,28 +587,28 @@
                                                 ></iconify-icon>
                                                 <p>16 jun 2024, 3:00pm</p>
                                             </span>
-    
+
                                             <div class="bg-white p-1">
                                                 <p>
                                                     Lorem ipsum dolor sit amet
-                                                    consectetur adipisicing elit.
-                                                    Eius enim accusantium explicabo
-                                                    repellendus id commodi, nulla
-                                                    minima, suscipit distinctio
+                                                    consectetur adipisicing
+                                                    elit. Eius enim accusantium
+                                                    explicabo repellendus id
+                                                    commodi, nulla minima,
+                                                    suscipit distinctio
                                                     quibusdam rerum nihil, modi
-                                                    soluta cum nemo. Adipisci itaque
-                                                    ipsa enim!
+                                                    soluta cum nemo. Adipisci
+                                                    itaque ipsa enim!
                                                 </p>
                                                 Lorem ipsum dolor sit amet consectetur
-                                                adipisicing elit. voluptatum odio culpa
-                                                delectus quis, maiores, accusamus iure
-                                                eos
+                                                adipisicing elit. voluptatum odio
+                                                culpa delectus quis, maiores, accusamus
+                                                iure eos
                                             </div>
                                         </li>
                                     </ul>
                                 </div>
-                                {/if}
-                            
+                            {/if}
                         </div>
                     {:else if $page.props.auth.user_id == single_case.doctor.id}
                         <span

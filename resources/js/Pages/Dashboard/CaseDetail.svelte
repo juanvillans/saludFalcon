@@ -4,6 +4,9 @@
     import { useForm, page } from "@inertiajs/svelte";
     import StatusColor from "../../components/StatusColor.svelte";
     import Alert from "../../components/Alert.svelte";
+    import fetchLocalData  from "../../components/localData"
+    import { onMount } from 'svelte';
+
     import Editor from "cl-editor/src/Editor.svelte";
 
     export let areas = [];
@@ -11,8 +14,18 @@
     export let caseDetail = {};
     let countingCases;
     let form = useForm(structuredClone(caseDetail.data));
+    let localData = {};
 
-    console.log(caseDetail);
+    onMount(async () => {
+        console.log('ayy')
+        try {
+            localData = await fetchLocalData();
+            // console.log(fetchLocalData())
+        } catch (error) {
+            console.error("Error loading data:", error);
+        }
+    });
+    console.log(localData);
     $: if (patient) {
         countingCases = caseDetail.data.cases.length;
     }
@@ -20,7 +33,7 @@
     let descriptionLength = 0;
     let openAccordeon = -1;
     let editStatus = false;
-    $: console.log(patient?.data);
+    $: console.log(localData);
     function convertTo12HourFormat(time24) {
         console.log(time24);
         // Split the input into hours and minutes
@@ -158,7 +171,6 @@
                 bind:value={$form.patient_date_birth}
                 error={$form.errors?.patient_date_birth}
             />
-            
 
             <Input
                 type="tel"
@@ -173,9 +185,10 @@
                 bind:value={$form.municipality_id}
                 error={$form.errors?.municipality_id}
             >
-            <option value={$form.municipality_id}>{$form.municipality_name}</option>
-                <!-- {#each municipalities as micipality (micipality.id)}
-                {/each} -->
+              
+                {#each localData.municipalities || [] as micipality (micipality.id)}
+                    <option value={micipality.id}>{micipality.name}</option>
+                {/each}
             </Input>
 
             <Input
@@ -186,13 +199,9 @@
                 error={$form.errors?.parish_id}
             >
 
-            <option value={$form.parish_id}>{$form.parish_name}</option>
-
-                <!-- {#if municipalities[$form.municipality_id - 1]}
-                    {#each municipalities[$form.municipality_id - 1].parishes as parish (parish.id)}
+                    {#each localData?.municipalities?.[$form.municipality_id - 1]?.parishes || [] as parish (parish.id)}
                         <option value={parish.id}>{parish.name}</option>
                     {/each}
-                {/if} -->
             </Input>
             <Input
                 type="text"
@@ -240,14 +249,69 @@
 
     <form on:submit={submitCases} class="order-1 lg:order-2 w-full">
         <fieldset
-            class=" sm:px-5 md:mt-4 md:grid grid-cols-2 gap-x-5 sm:border sm:p-6 pt-2 border-color2 rounded-md"
+            class=" sm:px-5 md:mt-4  gap-x-5 sm:border sm:p-6 pt-2 border-color2 rounded-md"
         >
             <legend
                 class="text-center px-5 py-1 uppercase pt-1.5 rounded-sm bg-color2 text-gray-100"
                 >HISTORIAL DE {caseDetail.data.patient_name}
                 {caseDetail.data.patient_last_name}
-                {caseDetail.data.patient_ci}</legend
+                </legend
             >
+            <div class="col-span-2">
+                <h3 class="font-bold">Motivo de consulta:</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel aspernatur alias asperiores consequuntur recusandae voluptates quam soluta voluptas nihil inventore non</p>
+                <h3 class="font-bold">Duración total:</h3>
+                <p>3hrs</p>
+            </div>
+            <fieldset
+            class=" px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color3 rounded-md"
+        >
+            <legend
+                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
+                >DIAGNÓSTICO Y TRATAMIENTO</legend
+            >
+           
+        ñ
+            <div class="col-span-2">
+                <span>Diagnóstico *</span>
+                <div class="flex gap-4 mb-3">
+                    {#each localData?.conditions || [] as condition (condition.id)}
+                        <label
+                            class={`py-1 pb-0 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.current_patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
+                        >
+                            <div
+                                class={`w-2 aspect-square rounded-full  condition${condition.id}`}
+                            ></div>
+                            <input
+                                class="mr-3 hidden"
+                                type="radio"
+                                bind:group={$form.current_patient_condition_id}
+                                value={condition.id}
+                                name="condition"
+                                id=""
+                            /><span>{condition.name}</span>
+                        </label>
+                      
+                    {/each}
+                </div>
+                <Input
+                    type="textarea"
+                    required={true}
+                    classes={"col-span-2"}
+                    bind:value={$form.diagnosis}
+                    error={$form?.errors?.diagnosis}
+                />
+            </div>
+           
+            <Input
+                type="textarea"
+                required={true}
+                classes={"col-span-2"}
+                label={"Orden médica de ingreso *"}
+                bind:value={$form.treatment}
+                error={$form.errors?.treatment}
+            />
+        </fieldset>
         </fieldset>
     </form>
 </div>
