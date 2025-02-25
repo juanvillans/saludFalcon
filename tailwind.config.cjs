@@ -31,6 +31,7 @@ module.exports = {
         ...Object.keys(colorClasses).map((color) => `border-${color}`),
         ...Object.keys(colorClasses).map((color) => `hover:bg-${color}`),
     ],
+    darkMode: 'media',
     theme: {
         colors: {
             color1: "#011140",
