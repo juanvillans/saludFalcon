@@ -15,6 +15,7 @@
     let countingCases;
     let form = useForm(structuredClone(caseDetail.data));
     let evolutionForm = useForm({
+<<<<<<< HEAD
         diagnosis: "",
         treatment: "",
         reason: "",
@@ -24,6 +25,18 @@
     let localData = {};
 
     onMount(async () => {
+=======
+        diagnosis: '',
+        treatment: '',
+        reason: '',
+        admitted_area_id: 1,
+        status: null,
+    })
+    let localData = {};
+
+    onMount(async () => {
+        console.log("ayy");
+>>>>>>> fc4957416b5d9cce852fd0488b81273cf7fd7257
         try {
             localData = await fetchLocalData();
             // console.log(fetchLocalData())
@@ -133,13 +146,17 @@
     }
 </script>
 
-<div class="flex flex-col lg:flex-row gap-2 md:gap-5">
+<div class="flex flex-col lg:flex-row gap-2 md:gap-5 ">
     <form
         on:submit={updateClient}
         class="order-2 lg:order-1 h-fit max-w-[400px] lg:max-w-[430px] xl:max-w-[460px] w-full lg:sticky top-0"
     >
         <fieldset
+<<<<<<< HEAD
             class=" px-5 mt-4 gap-x-5 text-black  p-6 pt-2 border-color2 rounded-md"
+=======
+            class=" px-5 mt-4 gap-x-5 text-black border p-6 pt-2 border-color2 rounded-md"
+>>>>>>> fc4957416b5d9cce852fd0488b81273cf7fd7257
         >
             <legend
                 class="text-center px-5 py-1 pt-1.5 rounded-sm bg-color2 text-gray-100"
@@ -253,13 +270,18 @@
 
     <form on:submit={submitCases} class="order-1 lg:order-2 w-full">
         <fieldset
+<<<<<<< HEAD
             class=" sm:px-5 md:mt-4 gap-x-5  pt-2 bg-white rounded-md"
+=======
+            class=" sm:px-5 md:mt-4 gap-x-5 sm:border sm:p-6 pt-2 border-color2 rounded-md"
+>>>>>>> fc4957416b5d9cce852fd0488b81273cf7fd7257
         >
             <legend
                 class="text-center px-5 py-1 uppercase pt-1.5 rounded-sm bg-color1 text-gray-100"
                 >HISTORIAL DE {caseDetail.data.patient_name}
                 {caseDetail.data.patient_last_name}
             </legend>
+<<<<<<< HEAD
             <div class="col-span-2 flex gap-5">
                 <data value="">
                     <h3 class="font-bold">Duración total:</h3>
@@ -274,6 +296,14 @@
             <div class=" mt-4 gap-x-5 w-full  pt-2 bg-gray-10">
                 {#if isOpenCreateEvolution}
                 <div class="bg-gray-50 p-4 mb-3 rounded-md">
+=======
+            <div class="col-span-2">
+                <h3 class="font-bold">Duración total:</h3>
+                <p>3hrs</p>
+            </div>
+            <div class=" px-5 mt-4 gap-x-5 w-full border p-6 pt-2 bg-gray-150">
+                {#if isOpenCreateEvolution}
+>>>>>>> fc4957416b5d9cce852fd0488b81273cf7fd7257
                     <div class="">
                         <div class="grid-cols-2 md:grid gap-x-5">
                             <Input
@@ -283,6 +313,7 @@
                                 error={$evolutionForm.errors?.status}
                             >
                                 {#each localData.statutes as status (status.id)}
+<<<<<<< HEAD
                                     {#if status.id == 4}
                                         <option value={null} selected
                                             >Sigue en {$form.area_name}</option
@@ -318,6 +349,42 @@
                                         {/each}
                                     </Input>
                                 </div>
+=======
+                                {#if status.id == 4}
+                                <option value={null} selected>Sigue en {$form.area_name}</option>
+
+                            >
+                                {:else}
+                                <option value={status.id}
+                                >{status.name}</option
+                            >
+                                {/if}
+                                   
+
+                                    {/each}
+                            </Input>
+                            {#if $evolutionForm.status == "3"}
+                            <div class="flex items-center">
+                                <span class="mr-2 relative top-2">
+                                    a: 
+                                </span>
+                                
+                                <Input
+                                    type="select"
+                                    required={true}
+                                    bind:value={$evolutionForm.admitted_area_id}
+                                    error={$evolutionForm.errors?.admitted_area_id}
+                                >
+                                    {#each localData.areas as area (area.id)}
+                                        {#if area.division_id == 1}
+                                            <option value={area.id}
+                                                >{area.name}</option
+                                            >
+                                        {/if}
+                                    {/each}
+                                </Input>
+                            </div>
+>>>>>>> fc4957416b5d9cce852fd0488b81273cf7fd7257
                             {/if}
                             {#if $evolutionForm.status == "3" && $evolutionForm.admitted_area_id == "7"}
                                 <Input
@@ -329,22 +396,34 @@
                                 />
                             {/if}
                             <div class="col-span-2 md:grid grid-cols-2 gap-x-4">
+<<<<<<< HEAD
+=======
+
+>>>>>>> fc4957416b5d9cce852fd0488b81273cf7fd7257
                                 {#if $evolutionForm.status != null}
                                     <Input
                                         type="date"
                                         label={"Fecha de salida "}
                                         required={true}
                                         bind:value={$evolutionForm.departure_date}
+<<<<<<< HEAD
                                         error={$evolutionForm.errors
                                             ?.departure_date}
+=======
+                                        error={$evolutionForm.errors?.departure_date}
+>>>>>>> fc4957416b5d9cce852fd0488b81273cf7fd7257
                                     />
                                     <Input
                                         type="time"
                                         required={true}
                                         label={"Hora de salida *"}
                                         bind:value={$evolutionForm.departure_hour}
+<<<<<<< HEAD
                                         error={$evolutionForm.errors
                                             ?.departure_hour}
+=======
+                                        error={$evolutionForm.errors?.departure_hour}
+>>>>>>> fc4957416b5d9cce852fd0488b81273cf7fd7257
                                     />
                                 {/if}
                             </div>
@@ -396,6 +475,7 @@
                         >
                         <input
                             type="submit"
+<<<<<<< HEAD
                             value={$evolutionForm.processing
                                 ? "Cargando..."
                                 : "Guardar"}
@@ -403,6 +483,12 @@
                         />
                     </div>
                 </div>
+=======
+                            value={$evolutionForm.processing ? "Cargando..." : "Guardar"}
+                            class="hover:bg-color3 hover:text-white duration-200 mt-3 px-4 bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
+                        />
+                    </div>
+>>>>>>> fc4957416b5d9cce852fd0488b81273cf7fd7257
                 {:else}
                     <button
                         on:click={(e) => (isOpenCreateEvolution = true)}
@@ -411,6 +497,7 @@
                     >
                 {/if}
             </div>
+<<<<<<< HEAD
             <ul>
                 <li
                     class="bg-gray-50 mb-3 border rounded-md overflow-hidden "
@@ -457,6 +544,8 @@
                     </div>
                 </li>
             </ul>
+=======
+>>>>>>> fc4957416b5d9cce852fd0488b81273cf7fd7257
         </fieldset>
     </form>
 </div>

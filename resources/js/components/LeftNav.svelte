@@ -63,13 +63,13 @@
 
 <style>
     .active {
-        background: linear-gradient(128deg, rgba(255, 255, 255, 0.24) 1%, rgba(255, 255, 255, 0.082) 100%);
+        background: linear-gradient(128deg, rgba(255, 255, 255, 0.24) 1%, rgba(255, 255, 255, 0.082) 50%);
         position: relative;
         left: -2px;
         border-radius: 0  6px 6px 0;
         font-weight: bold;
         color: #C9EBF2;
-        border-left: 4px solid #BF0404;
+        border-left: 4px solid #C9EBF2;
     }
     .burger_icon {
         

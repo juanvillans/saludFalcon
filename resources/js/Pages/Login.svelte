@@ -97,7 +97,11 @@
     
             <form
                 on:submit={handleSubmit}
+<<<<<<< HEAD
                 class="md:min-w-[290px] px-4 md:px-6 bg-white rounded-3xl h-full"
+=======
+                class="md:min-w-[270px] px-4 md:px-6 bg-white rounded-3xl h-full"
+>>>>>>> fc4957416b5d9cce852fd0488b81273cf7fd7257
             >
                 <legend class="text-center opacity-70 mt-7">INICIAR SESIÓN</legend>
                 <div>
@@ -131,8 +135,11 @@
                     use:inertia>Registrarme</a
                 >
             </form>
+<<<<<<< HEAD
 
    
+=======
+>>>>>>> fc4957416b5d9cce852fd0488b81273cf7fd7257
         </div>
     </section>
 
