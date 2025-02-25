@@ -501,7 +501,7 @@
             <Input
                 type="select"
                 required={true}
-                label={"Servicio Tratante *"}
+                label={"Area de ingreso *"}
                 bind:value={$form.area_id}
                 error={$form.errors?.area_id}
                 on:change={(e) => {
@@ -625,92 +625,7 @@
                             id=""
                         /><span>{condition.name}</span>
                     </label>
-                    <!-- </label> 
-                <label
-                    class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Estable" ? "bg-gray-200 font-bold" : " "}`}
-                >
-                    <div
-                        class={`w-2 aspect-square rounded-full bg-green `}
-                    ></div>
-                    <input
-                        class="mr-3 hidden"
-                        type="radio"
-                        bind:group={$form.condition}
-                        value="Estable"
-                        name="condition"
-                        id=""
-<<<<<<< HEAD
-                        
-                    /><span
-                        >Estable</span
-                    >
-                </label>
-
-                <label
-                class:bg-orange={$form.condition == "Inestable"}
-                 class:text-white={$form.condition == "Inestable"}    
-                class="text-orange px-2 font-bold py-1 hover:shadow-xl cursor-pointer  border-orange border rounded-full"
-                >
-                    <input
-                        class="mr-3 inline-block hidden"
-=======
-                    /><span>Estable</span>
-                </label>
-                <label
-                    class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Inestable" ? "bg-gray-200 font-bold" : " "}`}
-                >
-                    <div
-                        class={`w-2 aspect-square rounded-full bg-orange `}
-                    ></div>
-                    <input
-                        class="mr-3 hidden"
->>>>>>> ce26a355f8e6b9e91753fcf1301e86f55bda2977
-                        type="radio"
-                        bind:group={$form.condition}
-                        value="Inestable"
-                        name="condition"
-                        id=""
-<<<<<<< HEAD
-                        
-                    /><span
-                      
-                        >Inestable</span
-                    >
-                </label>
-                <label
-                class:bg-red={$form.condition == "Crítica"}
-                 class:text-white={$form.condition == "Crítica"}    
-                class="text-red px-2 font-bold py-1 hover:shadow-xl cursor-pointer border-red rounded-full border "
-                >
-                    <input
-                        class="mr-3 inline-block hidden"
-                        type="radio"
-                        bind:group={$form.condition}
-                        value="Crítica"
-                        name="condition"
-                        id=""
-                    /><span
-                        >Crítica</span
-                    >
-                </label>
-=======
-                    /><span>Inestable</span>
-                </label>
-                <label
-                    class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.condition == "Crítico" ? "bg-gray-200 font-bold" : " "}`}
-                >
-                    <div class={`w-2 aspect-square rounded-full bg-red `}></div>
-                    <input
-                        class="mr-3 hidden"
-                        type="radio"
-                        bind:group={$form.condition}
-                        value="Crítico"
-                        name="condition"
-                        id=""
-                    /><span>Crítico</span>
-                </label>  -->
                 {/each}
->>>>>>> ce26a355f8e6b9e91753fcf1301e86f55bda2977
             </div>
             <Input
                 type="textarea"

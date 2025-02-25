@@ -248,6 +248,65 @@
                 {caseDetail.data.patient_last_name}
                 {caseDetail.data.patient_ci}</legend
             >
+            <div class="col-span-2">
+                <p>
+
+                    Duración total: 15hrs
+                </p>
+                <p>
+                    
+                    Motivo de consulta : Lorem ipsum, dolor sit amet consectetur adipisicing elit. Suscipit fugiat necessitatibus saepe provident dolor qui ab velit rerum, 
+                </p>
+            </div>
+
+            <div>
+                <p class="col-span-2 mt-1">Condición:</p>
+            <div class="flex gap-4 mb-3">
+                {#each conditions as condition (condition.id)}
+                    <label
+                        class={`py-1 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.current_patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
+                    >
+                        <div
+                            class={`w-2 aspect-square rounded-full  condition${condition.id}`}
+                        ></div>
+                        <input
+                            class="mr-3 hidden"
+                            type="radio"
+                            bind:group={$form.current_patient_condition_id}
+                            value={condition.id}
+                            name="condition"
+                            id=""
+                        /><span>{condition.name}</span>
+                    </label>
+                {/each}
+            </div>
+            <Input
+                type="textarea"
+                required={true}
+                classes={"col-span-2"}
+                label={"Motivo de consulta *"}
+                bind:value={$form.reason}
+                error={$form?.errors?.reason}
+            />
+            <Input
+                type="textarea"
+                required={true}
+                classes={"col-span-2"}
+                label={"Diagnóstico *"}
+                bind:value={$form.diagnosis}
+                error={$form?.errors?.diagnosis}
+            />
+
+            <Input
+                type="textarea"
+                required={true}
+                classes={"col-span-2"}
+                label={"Orden médica de ingreso *"}
+                bind:value={$form.treatment}
+                error={$form.errors?.treatment}
+            />
+            </div>
+
         </fieldset>
     </form>
 </div>
