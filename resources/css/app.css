@@ -52,8 +52,9 @@
     grid-template-rows: 40px 1fr 49px;
     transition: all 0.3s ease;
     background: var(--background);
-    color: #1d1d1d;
+    color: #0c0c0c;
 }
+
 .cl-content {
     /* resize: both; */
     box-shadow: none !important;
