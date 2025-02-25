@@ -21,7 +21,6 @@
         }
     }
  export let status;
- console.log(status);
  
 </script>
 <span
