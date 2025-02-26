@@ -2,36 +2,12 @@
 
 namespace App\Services;
 
-use App\Http\Resources\CaseCollection;
-use App\Http\Resources\PatientResource;
-use App\Models\EmergencyCase;
-use App\Models\Patient;
 use Exception;
 
-class EmergencyCaseService
+class EvolutionService
 {	
-    public function getCases($params)
-    {
-        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase','condition')
-                ->when($params['status'],function($query) use ($params){
-                    $query->where('current_status', $params['status']);
-                })
-                ->when($params['search'],function($query) use ($params){
+    public function createEvolution($case){
 
-                    $query->where(function($query) use ($params) {
-                        $query->whereHas('patient', function($query2) use ($params) {
-                            $query2->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($params['search']) . '%']);
-                        });
-                    });
-                })
-                ->orderBy('id', 'DESC')
-                ->paginate($params['per_page'] ?? 25);
-
-        return new CaseCollection($cases);
-    }
-
-    public function createCase($data)
-    {
         $patientID = $data['patient_id'];
         
         if($patientID == null)
