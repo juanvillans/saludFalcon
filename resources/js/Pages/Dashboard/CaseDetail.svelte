@@ -18,7 +18,7 @@
         diagnosis: "",
         treatment: "",
         reason: "",
-        admitted_area_id: 1,
+        area_id: 1,
         status: null,
     });
     let localData = {};
@@ -41,11 +41,11 @@
     let editStatus = false;
 
     function getFirstName(firstName) {
-        const parts = fullName.split(" ");
+        console.log(firstName);
+
+        const parts = firstName.split(" ");
         return parts[0];
     }
-
-
 
     function convertTo12HourFormat(time24) {
         console.log(time24);
@@ -418,14 +418,16 @@
                 {/if}
             </div>
             <ul>
-                <!-- {#each caseDetail.data.evolutions as evolution (evolution.id)}
+                {#each caseDetail.data.evolutions as evolution, i (evolution.id)}
                     <li
                         class="bg-gray-50 mb-3 border rounded-lg overflow-hidden"
                     >
                         <span
                             class="flex items-center gap-2 p-2 justify-between"
                         >
-                            <div class="flex flex-col sm:flex-row items-center gap-2 p-2 justify-between">
+                            <div
+                                class="flex flex-col sm:flex-row items-center gap-2 p-2 justify-between"
+                            >
                                 <StatusColor
                                     status={{
                                         name: evolution.status_name,
@@ -435,88 +437,63 @@
                                 <span>{evolution.area_name}</span>
 
                                 <span
-                                    class={`w-2 inline-block aspect-square rounded-full condition${row.current_patient_condition_id}`}
-                                    `}
+                                    class={`w-2 inline-block aspect-square rounded-full condition${evolution.patient_condition_id}`}
                                 ></span>
-                                <span>{evolutionForm.condition_name}</span>
+                                <span>{evolution.patient_condition_name}</span>
                             </div>
-                             <div class="flex ">
-                           <span
-                                >{getFirstName(evolutionForm.user_name)}
-                                {getFirstName(evolutionForm.user_last_name)}</span
-                            >
-                        </div>
+                            <div class="flex gap-2">
+                                {#if evolution.is_interconsult}
+                                    <span
+                                        class="pl-6 pr-1 listType bg-color1 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
+                                    >
+                                        INTERCONSULTA
+                                    </span>
+                                {:else if i != caseDetail.data.evolutions.length - 1}
+                                    <span
+                                        class="pl-6 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
+                                    >
+                                        EVOLUCIÓN
+                                    </span>
+                                {/if}
+                                <span class="flex items-center"
+                                    ><iconify-icon
+                                        icon="mdi:doctor"
+                                        width="24"
+                                        height="24"
+                                    ></iconify-icon>{getFirstName(
+                                        evolution.user_name,
+                                    )}
+                                    {getFirstName(
+                                        evolution.user_last_name,
+                                    )}</span
+                                >
+                                <span>{evolution.created_at}</span>
+                            </div>
                         </span>
 
-                        <div class="bg-white p-2.5">
-                            <h3 class="font-bold">Diagnostico:</h3>
-                            <p class="mb-2">
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit. Eius enim accusantium
-                                explicabo repellendus id commodi, nulla minima,
-                                suscipit distinctio quibusdam rerum nihil, modi
-                                soluta cum nemo. Adipisci itaque ipsa enim!
-                            </p>
-                            <h3 class="font-bold">Orden médica de ingreso:</h3>
-                            <p>
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit. Eius enim accusantium
-                                explicabo repellendus id commodi, nulla minima,
-                                suscipit distinctio quibusdam rerum nihil, modi
-                                soluta cum nemo. Adipisci itaque ipsa enim!
-                            </p>
+                        <div class="bg-white p-2.5 space-y-2">
+                            {#if i == caseDetail.data.evolutions.length - 1}
+                            <div>
+                                <h3 class="font-bold">Motivo de consulta:</h3>
+                                <p>{caseDetail.data.reason}</p>
+                            </div>
+                            {/if}
+                            <div>
+                                <h3 class="font-bold">Diagnostico:</h3>
+                                <p>
+                                    {evolution.diagnosis}
+                                </p>
+                            </div>
+
+                            <div>
+                                <h3 class="font-bold">Orden médica de ingreso:</h3>
+                                <p>
+                                    {evolution.treatment}
+                                </p>
+                            </div>
                         </div>
                     </li>
-                {/each} -->
-                <li class="bg-gray-50 mb-3 border rounded-lg overflow-hidden">
-                    <span
-                        class="flex flex-col sm:flex-row items-center gap-2 p-2 justify-between"
-                    >
-                        <div class="flex items-center gap-2 text-xl">
-                            <StatusColor
-                                status={{
-                                    name: "Ingresado",
-                                    id: 4,
-                                }}
-                            />
-                            <span>a sala de shock</span>
-                            <span
-                                class={`w-2 inline-block aspect-square rounded-full bg-green`}
-                            ></span>
-                            <span>Estable</span>
-                        </div>
-                        <div class="flex">
-                            <span
-                                class="pl-6 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
-                                >Evol. 1</span
-                            >
-                            <span
-                                >{getFirstName(evolutionForm.user_name)}
-                                {getFirstName(evolutionForm.user_last_name)}</span
-                            >
-                            <span>16 jun 2024, 3:00pm</span>
-                        </div>
-                    </span>
-
-                    <div class="bg-white p-2.5">
-                        <h3 class="font-bold">Diagnostico:</h3>
-                        <p class="mb-2">
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Eius enim accusantium explicabo repellendus id
-                            commodi, nulla minima, suscipit distinctio quibusdam
-                            rerum nihil, modi soluta cum nemo. Adipisci itaque
-                            ipsa enim!
-                        </p>
-                        <h3 class="font-bold">Orden médica de ingreso:</h3>
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Eius enim accusantium explicabo repellendus id
-                            commodi, nulla minima, suscipit distinctio quibusdam
-                            rerum nihil, modi soluta cum nemo. Adipisci itaque
-                            ipsa enim!
-                        </p>
-                    </div>
-                </li>
+                {/each}
             </ul>
         </fieldset>
     </form>
