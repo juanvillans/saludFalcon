@@ -480,23 +480,7 @@
                     </div>
                 </button>
             </div>
-            <Input
-                type="select"
-                required={true}
-                label={"Area de ingreso *"}
-                bind:value={$form.area_id}
-                error={$form.errors?.area_id}
-                on:change={(e) => {
-                    console.log(e.target.value);
-                    $form.area = e.target.value;
-                }}
-            >
-                {#each localData.areas as area (area.id)}
-                    {#if area.division_id == 2}
-                        <option value={area.id}>{area.name}</option>
-                    {/if}
-                {/each}
-            </Input>
+           
             <Input
                 type="date"
                 required={true}
@@ -521,33 +505,31 @@
                 error={$form.errors?.current_status}
             >
                 {#each localData.statutes as status (status.id)}
-                    <option value={status.id}>{status.name}</option>
+                    {#if status.id !== 6 && status.id !== 3}
+                        <option value={status.id}>{status.name}</option>
+                    {/if}
                 {/each}
             </Input>
-            {#if $form.current_status == "3"}
-                <Input
-                    type="select"
-                    required={true}
-                    label={"Area admitida *"}
-                    bind:value={$form.admitted_area_id}
-                    error={$form.errors?.admitted_area_id}
-                >
-                    {#each localData.areas as area (area.id)}
-                        {#if area.division_id == 1}
-                            <option value={area.id}>{area.name}</option>
-                        {/if}
-                    {/each}
-                </Input>
-            {/if}
-            {#if $form.current_status == "3" && $form.admitted_area_id == "7"}
-                <Input
-                    type="text"
-                    required={true}
-                    label={"Hospital o ambulatorio *"}
-                    bind:value={$form.destiny}
-                    error={$form.errors?.destiny}
-                />
-            {/if}
+           
+            <Input
+            type="select"
+            required={true}
+            label={"Area de ingreso *"}
+            bind:value={$form.area_id}
+            error={$form.errors?.area_id}
+            on:change={(e) => {
+                console.log(e.target.value);
+                $form.area = e.target.value;
+            }}
+        >
+            {#each localData.areas as area (area.id)}
+                {#if area.division_id == 2}
+                    <option value={area.id}>{area.name}</option>
+                {/if}
+            {/each}
+            </Input>
+
+           
             <!-- {#if $form.current_status == "3"}
                 <Input
                     type="select"
@@ -756,7 +738,7 @@
             <tr>
                 <th style="font-size: 12px;">N°</th>
                 <th>Duración</th>
-                <th>Estado</th>
+                <th>Estado y area</th>
                 <!-- <th>Condición</th> -->
                 <th>Paciente</th>
                 <th>Motivo de consulta</th>

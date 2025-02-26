@@ -39,7 +39,14 @@
     let openAccordeon = -1;
 
     let editStatus = false;
-    $: console.log(caseDetail.data);
+
+    function getFirstName(firstName) {
+        const parts = fullName.split(" ");
+        return parts[0];
+    }
+
+
+
     function convertTo12HourFormat(time24) {
         console.log(time24);
         // Split the input into hours and minutes
@@ -418,7 +425,7 @@
                         <span
                             class="flex items-center gap-2 p-2 justify-between"
                         >
-                            <div class="flex items-center gap-2 text-xl">
+                            <div class="flex flex-col sm:flex-row items-center gap-2 p-2 justify-between">
                                 <StatusColor
                                     status={{
                                         name: evolution.status_name,
@@ -433,9 +440,12 @@
                                 ></span>
                                 <span>{evolutionForm.condition_name}</span>
                             </div>
-                            <div>
-                                <span>16 jun 2024, 3:00pm</span>
-                            </div>
+                             <div class="flex ">
+                           <span
+                                >{getFirstName(evolutionForm.user_name)}
+                                {getFirstName(evolutionForm.user_last_name)}</span
+                            >
+                        </div>
                         </span>
 
                         <div class="bg-white p-2.5">
@@ -459,7 +469,9 @@
                     </li>
                 {/each} -->
                 <li class="bg-gray-50 mb-3 border rounded-lg overflow-hidden">
-                    <span class="flex flex-col sm:flex-row items-center gap-2 p-2 justify-between">
+                    <span
+                        class="flex flex-col sm:flex-row items-center gap-2 p-2 justify-between"
+                    >
                         <div class="flex items-center gap-2 text-xl">
                             <StatusColor
                                 status={{
@@ -468,14 +480,20 @@
                                 }}
                             />
                             <span>a sala de shock</span>
-
                             <span
                                 class={`w-2 inline-block aspect-square rounded-full bg-green`}
                             ></span>
                             <span>Estable</span>
                         </div>
-                        <div class="flex ">
-                            <span class="pl-6 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase">Evol. 1</span>
+                        <div class="flex">
+                            <span
+                                class="pl-6 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
+                                >Evol. 1</span
+                            >
+                            <span
+                                >{getFirstName(evolutionForm.user_name)}
+                                {getFirstName(evolutionForm.user_last_name)}</span
+                            >
                             <span>16 jun 2024, 3:00pm</span>
                         </div>
                     </span>
@@ -532,6 +550,5 @@
     }
     .listType {
         clip-path: polygon(100% 10%, 100% 51%, 100% 90%, 0 90%, 13% 53%, 0 15%);
-
     }
 </style>
