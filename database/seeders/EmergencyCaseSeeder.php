@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\EmergencyCase;
+use App\Models\Evolution;
 use App\Models\Patient;
 use App\Models\User;
 use Carbon\Carbon;
@@ -40,7 +41,7 @@ class EmergencyCaseSeeder extends Seeder
             ]);
 
 
-            EmergencyCase::create([
+            $emergencyModel = EmergencyCase::create([
 
                 'patient_id' => $patient->id,
                 'user_id' => $doctor->id,
@@ -54,6 +55,20 @@ class EmergencyCaseSeeder extends Seeder
                 'reason' => 'Diarrea',
                 'diagnosis' => 'Efectivamente tiene diarrea',
                 'treatment' => 'Café con bastante cambul',
+            ]);
+
+            Evolution::create([
+
+                'emergency_case_id' => $emergencyModel->id,
+                'user_id' => $doctor->id,
+                'area_id' => 1,
+                'patient_condition_id' => 3,
+                'status_id' => 1,
+                'diagnosis' => 'Efectivamente tiene diarrea',
+                'treatment' => 'Café con bastante cambul',
+                'destiny' => NULL,
+                'is_interconsult' => false,
+
             ]);
             
         }

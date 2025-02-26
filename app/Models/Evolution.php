@@ -14,19 +14,33 @@ class Evolution extends Model
         'emergency_case_id',
         'user_id',
         'area_id',
-        'entry_date',
-        'entry_hour',
-        'current_status',
-        'departure_date',
-        'departure_hour',
-        'reason',
+        'patient_condition_id',
+        'status_id',
         'diagnosis',
         'treatment',
         'destiny',
+        'is_interconsult',
      ];
 
     public function emergencyCase(){
         return $this->belongsTo(EmergencyCase::class);
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
+    public function area(){
+        return $this->belongsTo(Area::class);
+    }
+
+
+    public function condition(){
+        return $this->belongsTo(PatientCondition::class,'patient_condition_id','id');
+    }
+
+    public function status(){
+        return $this->belongsTo(StatusCase::class,'status_id','id');
     }
 
 

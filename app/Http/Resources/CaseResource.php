@@ -50,9 +50,6 @@ class CaseResource extends JsonResource
             'area_id' => $this->area_id,
             'area_name' => $this->area->name,
 
-            'admitted_area_id' => $this->admitted_area_id,
-            'admitted_area_name' => $this->admittedArea->name ?? null,
-
 
             'current_patient_condition_id' => $this->current_patient_condition_id,
             'current_patient_condition_name' => $this->condition->name,

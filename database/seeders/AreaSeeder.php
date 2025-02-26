@@ -72,6 +72,16 @@ class AreaSeeder extends Seeder
             'name' => 'Sala de Yeso',
             'division_id' => 2,            
         ]);
+
+        Area::create([
+            'name' => 'Observación',
+            'division_id' => 2,            
+        ]);
+
+        Area::create([
+            'name' => 'Aislamiento',
+            'division_id' => 2,            
+        ]);
         
     }
 }

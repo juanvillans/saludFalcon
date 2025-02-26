@@ -12,7 +12,7 @@ class EmergencyCaseService
 {	
     public function getCases($params)
     {
-        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase','condition', 'admittedArea')
+        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase','condition')
                 ->when($params['status'],function($query) use ($params){
                     $query->where('current_status', $params['status']);
                 })
@@ -22,7 +22,7 @@ class EmergencyCaseService
                         $query->whereHas('patient', function($query2) use ($params) {
                             $query2->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($params['search']) . '%']);
                         });
-                    })
+                    });
                 })
                 ->orderBy('id', 'DESC')
                 ->paginate($params['per_page'] ?? 25);
