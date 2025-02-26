@@ -6,6 +6,7 @@ use App\Http\Resources\CaseCollection;
 use App\Http\Resources\PatientResource;
 use App\Models\EmergencyCase;
 use App\Models\Patient;
+use App\Services\EvolutionService;
 use Exception;
 
 class EmergencyCaseService
@@ -37,13 +38,12 @@ class EmergencyCaseService
         if($patientID == null)
             $patientID = $this->createPatient($data);
 
-        EmergencyCase::create([
+        $caseCreated = EmergencyCase::create([
 
             'patient_id' => $patientID,
             'current_patient_condition_id' => $data['current_patient_condition_id'],
             'user_id' => $data['user_id'],
             'area_id' => $data['area_id'],
-            'admitted_area_id' => $data['admitted_area_id'],
             'entry_date' => $data['entry_date'],
             'entry_hour' => $data['entry_hour'],
             'current_status' => $data['current_status'],
@@ -55,8 +55,12 @@ class EmergencyCaseService
             'destiny' => $data['destiny'],
         ]);
 
-        
+        $evolutionService = new EvolutionService;
 
+        if($caseCreated->current_status == 1 || $caseCreated->current_status == 2)
+            $evolutionService->createEvolutionFromCaseButDischarge($caseCreated);
+
+        $evolutionService->createEvolutionFromCase($caseCreated);
 
         return 0;
 

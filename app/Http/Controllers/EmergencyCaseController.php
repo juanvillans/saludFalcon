@@ -15,6 +15,7 @@ use App\Services\EmergencyCaseService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class EmergencyCaseController extends Controller
 {
@@ -79,6 +80,7 @@ class EmergencyCaseController extends Controller
         {   
             
             DB::rollback();
+            Log::info('Error: ' . $e->getMessage() . ' --- Linea: ' . $e->getLine());
             
             return redirect()->back()->withErrors(['data' => $e->getMessage()]);
         }

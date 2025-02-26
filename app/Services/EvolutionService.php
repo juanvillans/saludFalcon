@@ -2,97 +2,57 @@
 
 namespace App\Services;
 
+use App\Models\Evolution;
 use Exception;
 
-class EvolutionService
-{	
-    public function createEvolution($case){
+class EvolutionService{
 
-        $patientID = $data['patient_id'];
-        
-        if($patientID == null)
-            $patientID = $this->createPatient($data);
+    protected $STATUS_CHARGED = 4;
 
-        EmergencyCase::create([
+    public function createEvolutionFromCase($case){
 
-            'patient_id' => $patientID,
-            'current_patient_condition_id' => $data['current_patient_condition_id'],
-            'user_id' => $data['user_id'],
-            'area_id' => $data['area_id'],
-            'admitted_area_id' => $data['admitted_area_id'],
-            'entry_date' => $data['entry_date'],
-            'entry_hour' => $data['entry_hour'],
-            'current_status' => $data['current_status'],
-            'departure_date' => $data['departure_date'] ?? null,
-            'departure_hour' => $data['departure_hour'] ?? null,
-            'reason' => $data['reason'],
-            'diagnosis' => $data['diagnosis'],
-            'treatment' => $data['treatment'],
-            'destiny' => $data['destiny'],
-        ]);
-
-        
-
-
-        return 0;
-
-    }
-
-    public function updatePatient($data, $patient){
-        $patient->update([
-            'ci' => $data['patient_ci'],
-            'name' => $data['patient_name'],
-            'last_name' => $data['patient_last_name'],
-            'phone_number' => $data['patient_phone_number'],
-            'sex' => $data['patient_sex'],
-            'date_birth' => $data['patient_date_birth'],
-        ]);
-
-        return 0;
-    }
-
-    public function getPatientByCI($param){
-        
-        
-        $patient = Patient::where('ci',$param['ci'])->with('municipality','parish')->first();
-        
-        if(!isset($patient->id))
-            return null;
-    
-        return new PatientResource($patient);
-        
-    }
-
-    private function createPatient($data){
-
-            $this->validateIfRepeatCI($data['patient_ci']);
-
-            $newPatient = Patient::create([
-                'ci' => $data['patient_ci'],
-                'name' => $data['patient_name'],
-                'last_name' => $data['patient_last_name'],
-                'phone_number' => $data['patient_phone_number'] ?? null,
-                'sex' => $data['patient_sex'],
-                'date_birth' => $data['patient_date_birth'],
-                'municipality_id' => $data['municipality_id'],
-                'parish_id' => $data['parish_id'],
-                'address' => $data['patient_address'],
+        Evolution::create([
+                'emergency_case_id' => $case->id,
+                'user_id' => $case->user_id,
+                'area_id' => $case->area_id,
+                'patient_condition_id' => $case->current_patient_condition_id,
+                'status_id' => $case->current_status,
+                'diagnosis' => $case->diagnosis,
+                'treatment' => $case->treatment,
+                'destiny' => $case->destiny ?? null,
+                'is_interconsult' => false,
             ]);
 
-
-            return $newPatient->id;
-    }
-
-    private function validateIfRepeatCI($ci){
-        
-        $patient = Patient::where('ci',$ci)->first();
-        
-        if(isset($patient->id))
-            throw new Exception("Esta cédula ya se encuentra registrada", 403);
-        
         return 0;
+
     }
-    
-   
+
+    public function createEvolutionFromCaseButDischarge($case){
+            
+        Evolution::create([
+            'emergency_case_id' => $case->id,
+            'user_id' => $case->user_id,
+            'status_id' => $this->STATUS_CHARGED,
+            'area_id' => $case->area_id,
+            'patient_condition_id' => $case->current_patient_condition_id,
+            'diagnosis' => $case->diagnosis,
+            'treatment' => $case->treatment,
+            'destiny' => $case->destiny ?? null,
+            'is_interconsult' => false,
+        ]);
+
+        Evolution::create([
+            'emergency_case_id' => $case->id,
+            'user_id' => $case->user_id,
+            'area_id' => $case->area_id,
+            'patient_condition_id' => $case->current_patient_condition_id,
+            'status_id' => $case->current_status,
+            'diagnosis' => null,
+            'treatment' => null,
+            'destiny' => $case->destiny ?? null,
+            'is_interconsult' => false,
+        ]);
+
+    }
 
 }
