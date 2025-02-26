@@ -18,7 +18,6 @@ class EmergencyCase extends Model
         'current_patient_condition_id',
         'user_id',
         'area_id',
-        'admitted_area_id',
         'entry_date',
         'entry_hour',
         'current_status',

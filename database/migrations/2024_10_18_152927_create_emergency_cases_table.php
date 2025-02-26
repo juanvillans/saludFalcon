@@ -16,12 +16,6 @@ return new class extends Migration
             $table->foreignId('patient_id');
             $table->foreignId('user_id');
             $table->foreignId('area_id');
-            
-            $table->foreignId('admitted_area_id')
-                  ->nullable()
-                  ->constrained('areas')
-                  ->onDelete('restrict')
-                  ->onUpdate('cascade');
 
             $table->foreignId('current_patient_condition_id')
                   ->nullable()
