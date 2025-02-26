@@ -45,7 +45,6 @@ class EmergencyCaseSeeder extends Seeder
                 'patient_id' => $patient->id,
                 'user_id' => $doctor->id,
                 'area_id' => 1,
-                'admitted_area_id' => null,
                 'current_patient_condition_id' => 3,
                 'entry_date' => Carbon::now(),
                 'entry_hour' => Carbon::now()->format('H:i:s'),
