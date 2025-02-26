@@ -34,9 +34,6 @@ class EmergencyCase extends Model
         return $this->belongsTo(Area::class);
     }
 
-    public function admittedArea(){
-        return $this->belongsTo(Area::class,'admitted_area_id','id');
-    }
 
     public function condition(){
         return $this->belongsTo(PatientCondition::class,'current_patient_condition_id','id');

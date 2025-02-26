@@ -86,7 +86,7 @@ class EmergencyCaseController extends Controller
 
     public function caseDetail(Request $request, EmergencyCase $case){
 
-        $case->load('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase','condition', 'admittedArea');
+        $case->load('patient.municipality','patient.parish','user.specialty','area', 'evolutions.user' , 'evolutions.area', 'evolutions.condition', 'evolutions.status','statusCase','condition');
         
         return inertia('Dashboard/CaseDetail',[
             'caseDetail' => new CaseResource($case)
