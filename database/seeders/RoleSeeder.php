@@ -42,7 +42,7 @@ class RoleSeeder extends Seeder
             $readUserPermission, $createUserPermission, $updateUserPermission, $deleteUserPermission,
             $readSpecialtyPermission, $createSpecialtyPermission, $updateSpecialtyPermission, $deleteSpecialtyPermission,
             $readServicePermission, $createServicePermission, $updateServicePermission, $deleteServicePermission,
-            $readCasePermission
+            $readCasePermission, $createCasePermission, $updateCasePermission, $deleteCasePermission,
         ];
 
         $receptionistPermissions = [
