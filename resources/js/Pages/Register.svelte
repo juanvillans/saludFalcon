@@ -21,6 +21,7 @@
         phone_number: "",
         role_name: "doctor",
         specialty_id: 1,
+        medical_license: "",
     };
 
     let formCreate = useForm({
