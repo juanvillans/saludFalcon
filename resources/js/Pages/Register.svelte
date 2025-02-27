@@ -42,29 +42,26 @@
     function handleSubmit(event) {
         event.preventDefault();
         $formCreate.clearErrors();
-      
-            $formCreate.post("/registrarse", {
-                onError: (errors) => {
-                    console.log(errors);
-                    
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
-                },
-                onSuccess: (mensaje) => {
-                    console.log(mensaje);
-                    
-                    $formCreate.reset();
-                    displayAlert({
-                        type: "success",
-                        message: mensaje.props.flash.message,
-                    });
-                },
-            });
-       
-    }
 
-  
+        $formCreate.post("/registrarse", {
+            onError: (errors) => {
+                console.log(errors);
+
+                if (errors.data) {
+                    displayAlert({ type: "error", message: errors.data });
+                }
+            },
+            onSuccess: (mensaje) => {
+                console.log(mensaje);
+
+                $formCreate.reset();
+                displayAlert({
+                    type: "success",
+                    message: mensaje.props.flash.message,
+                });
+            },
+        });
+    }
 
     let submitStatus = "Enviar solicitud";
 </script>
@@ -114,18 +111,23 @@
             bind:value={$formCreate.phone_number}
             error={$formCreate.errors?.phone_number}
         />
-      
-            <Input
-                type="select"
-                required={true}
-                label={"Servicio tratante"}
-                bind:value={$formCreate.specialty_id}
-                error={$formCreate.errors?.specialty_id}
-            >
-                {#each data.specialties as speci (speci.id)}
-                    <option value={speci.id}>{speci.name}</option>
-                {/each}
-            </Input>
+        <Input
+            label={"Matrícula médica"}
+            required={true}
+            bind:value={$formCreate.medical_license}
+            error={$formCreate.errors?.medical_license}
+        />
+        <Input
+            type="select"
+            required={true}
+            label={"Servicio tratante"}
+            bind:value={$formCreate.specialty_id}
+            error={$formCreate.errors?.specialty_id}
+        >
+            {#each data.specialties as speci (speci.id)}
+                <option value={speci.id}>{speci.name}</option>
+            {/each}
+        </Input>
     </form>
     <input
         form="a-form"
@@ -134,8 +136,9 @@
         class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
     />
 
-    <a href="/" class="mt-2 inline-block text-xl underline text-color1" use:inertia>Ya tengo cuenta, iniciar sesión</a>
-
+    <a
+        href="/"
+        class="mt-2 inline-block text-xl underline text-color1"
+        use:inertia>Ya tengo cuenta, iniciar sesión</a
+    >
 </div>
-
-

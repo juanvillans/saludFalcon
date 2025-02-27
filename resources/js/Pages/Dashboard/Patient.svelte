@@ -54,14 +54,9 @@
         municipality_id: 14,
         parish_id: 0,
 
-        user_id:
-            $page.props.auth.rol[0] == "admin" ? -1 : $page.props.auth.user_id,
-        user_name:
-            $page.props.auth.rol[0] == "admin" ? -1 : $page.props.auth.name,
-        user_last_name:
-            $page.props.auth.rol[0] == "admin"
-                ? -1
-                : $page.props.auth.last_name,
+        user_id: $page.props.auth.user_id,
+        user_name: $page.props.auth.name,
+        user_last_name: $page.props.auth.last_name,
         // user_ci: $page.props.auth.last_name,
         // history_number: "",
         // marital_status: "",
@@ -102,7 +97,7 @@
         }
         $form.clearErrors();
         if (submitStatus == "Crear") {
-            $form.post("/admin/historial-medico", {
+            $form.post("/admin/casos", {
                 onError: (errors) => {
                     if (errors.data) {
                         displayAlert({ type: "error", message: errors.data });
@@ -360,6 +355,7 @@
                 label={"Fecha de Nacimiento*"}
                 bind:value={$form.patient_date_birth}
                 readOnly={$form.patient_id}
+                required={true}
                 error={$form.errors?.patient_date_birth}
             />
 

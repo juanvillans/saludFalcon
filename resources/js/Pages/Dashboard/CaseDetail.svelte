@@ -18,8 +18,8 @@
         diagnosis: "",
         treatment: "",
         reason: "",
-        area_id: 1,
-        status: null,
+        area_id: "",
+        status: 6,
     });
     let localData = {};
 
@@ -138,6 +138,9 @@
             },
         });
     }
+
+    $: console.log($evolutionForm);
+    
 </script>
 
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">
@@ -287,15 +290,15 @@
                                     error={$evolutionForm.errors?.status}
                                 >
                                     {#each localData.statutes as status (status.id)}
-                                        {#if status.id == 4}
-                                            <option value={null} selected
-                                                >Sigue en {$form.area_name}</option
-                                            >
-
-                                            >
-                                        {:else}
+                                        {#if status.id !== 4 && status.id !== 6}
                                             <option value={status.id}
                                                 >{status.name}</option
+                                            >
+                                        {/if}
+                                        {#if status.id == 6}
+                                            <option  value={status.id}
+                                                >{status.name}
+                                                {caseDetail.data.area_name}</option
                                             >
                                         {/if}
                                     {/each}
@@ -434,9 +437,14 @@
                                         id: evolution.status_id,
                                     }}
                                 />
-                                <span>{evolution.area_name}</span>
-
-                                <span>{evolution.patient_condition_name}</span>
+                                {#if evolution.status_id == 1 || evolution.status_id == 2 || evolution.status_id == 5}
+                                    de
+                                {:else if evolution.status_id == 4 || evolution.status_id == 5}
+                                    en
+                                {:else if evolution.status_id == 3}
+                                    a
+                                {/if}
+                                {evolution.area_name}
                             </div>
                             <div class="flex gap-2">
                                 {#if evolution.is_interconsult}
@@ -455,8 +463,8 @@
                                 <span class="flex items-center"
                                     ><iconify-icon
                                         icon="mdi:doctor"
-                                        width="24"
-                                        height="24"
+                                        width="20"
+                                        height="20"
                                     ></iconify-icon>{getFirstName(
                                         evolution.user_name,
                                     )}
@@ -464,7 +472,10 @@
                                         evolution.user_last_name,
                                     )}</span
                                 >
-                                <span>  <span class="text-gray-500">el</span> {evolution.formatted_created_at}</span>
+                                <span
+                                    ><span class="text-gray-500">el</span>
+                                    {evolution.formatted_created_at}</span
+                                >
                             </div>
                         </span>
 
@@ -474,7 +485,9 @@
                                     <h3 class="font-bold">
                                         Motivo de consulta:
                                     </h3>
-                                    <p class="text-dark">{caseDetail.data.reason}</p>
+                                    <p class="text-dark">
+                                        {caseDetail.data.reason}
+                                    </p>
                                 </div>
                             {/if}
                             <div>
@@ -484,10 +497,10 @@
                                         <span
                                             class={`ml-2 w-2 inline-block aspect-square rounded-full condition${evolution.patient_condition_id}`}
                                         ></span>
-                                        <span class="opacity-90 uppercase text-xs"
+                                        <span
+                                            class="opacity-90 uppercase text-xs"
                                             >{evolution.patient_condition_name}</span
                                         >
-
                                     </div>
                                 </div>
                                 <p class="text-dark">
