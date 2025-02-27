@@ -11,6 +11,12 @@ use Exception;
 
 class EmergencyCaseService
 {	
+
+    protected $STATUS_MEDICAL_DISPATCH = 1;
+    protected $STATUS_CONTRAMEDICAL_DISPATCH = 2;
+    protected $STATUS_DECEASED = 5; 
+
+
     public function getCases($params)
     {
         $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase','condition')
@@ -37,6 +43,9 @@ class EmergencyCaseService
         
         if($patientID == null)
             $patientID = $this->createPatient($data);
+
+
+        $this->validateIfExistsOpenCase($patientID);
 
         $caseCreated = EmergencyCase::create([
 
@@ -124,6 +133,25 @@ class EmergencyCaseService
             throw new Exception("Esta cédula ya se encuentra registrada", 403);
         
         return 0;
+    }
+
+    private function validateIfExistsOpenCase($patientID){
+
+        $case = EmergencyCase::where('patient_id',$patientID)
+        ->orderBy('id','desc')
+        ->first();
+
+        if(!isset($case->id))
+            return 0;
+
+        if($case->current_status != $this->STATUS_MEDICAL_DISPATCH || 
+           $case->current_status != $this->STATUS_CONTRAMEDICAL_DISPATCH || 
+           $case->current_status != $this->STATUS_DECEASED  
+          )
+        {
+            throw new Exception("Este paciente tiene un caso sin cerrar: <a href='" . route('caseDetail', ['case' => $case->id]) ."' target='_blank'> Ver caso </a>" , 400);
+            
+        }
     }
     
    
