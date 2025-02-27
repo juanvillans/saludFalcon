@@ -140,13 +140,12 @@
     }
 
     $: console.log($evolutionForm);
-    
 </script>
 
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">
     <form
         on:submit={updateClient}
-        class="order-2 lg:order-1 h-fit max-w-[360px] w-full lg:sticky top-0"
+        class="order-2 lg:order-1 h-fit max-w-[330px] w-full lg:sticky top-0"
     >
         <fieldset
             class=" px-5 mt-4 gap-x-5 text-black p-6 pt-2 border-color2 rounded-md"
@@ -296,9 +295,10 @@
                                             >
                                         {/if}
                                         {#if status.id == 6}
-                                            <option  value={status.id}
+                                            <option value={status.id}
                                                 >{status.name}
-                                                {caseDetail.data.area_name}</option
+                                                {caseDetail.data
+                                                    .area_name}</option
                                             >
                                         {/if}
                                     {/each}
@@ -338,10 +338,11 @@
                                 <div
                                     class="col-span-2 md:grid grid-cols-2 gap-x-4"
                                 >
-                                    {#if $evolutionForm.status != null}
+                                    {#if $evolutionForm.status != 6}
                                         <Input
                                             type="date"
-                                            label={"Fecha de salida "}
+                                            label={"Fecha " +
+                                                `${$evolutionForm.status == 3 ? "transferida" : ""}`}
                                             required={true}
                                             bind:value={$evolutionForm.departure_date}
                                             error={$evolutionForm.errors
@@ -350,7 +351,8 @@
                                         <Input
                                             type="time"
                                             required={true}
-                                            label={"Hora de salida *"}
+                                            label={"Hora " +
+                                                `${$evolutionForm.status == 3 ? "transferida" : ""}`}
                                             bind:value={$evolutionForm.departure_hour}
                                             error={$evolutionForm.errors
                                                 ?.departure_hour}
@@ -465,22 +467,27 @@
                                         icon="mdi:doctor"
                                         width="20"
                                         height="20"
-                                    ></iconify-icon>{getFirstName(
-                                        evolution.user_name,
-                                    )}
-                                    {getFirstName(
-                                        evolution.user_last_name,
-                                    )}</span
-                                >
-                                <span
-                                    ><span class="text-gray-500">el</span>
-                                    {evolution.formatted_created_at}</span
-                                >
+                                    ></iconify-icon>
+                                    {getFirstName(evolution.user_name)}
+                                    {getFirstName(evolution.user_last_name)}
+                                    <span class="text-xs ml-1">
+                                        <span class="text-gray-500">el</span>
+                                        {evolution.formatted_created_at}
+                                    </span>
+                                </span>
                             </div>
                         </span>
 
                         <div class="bg-white p-2.5 space-y-2">
                             {#if i == caseDetail.data.evolutions.length - 1}
+                            <div>
+                                <h3 class="font-bold">
+                                    Hora y fecha:
+                                </h3>
+                                <p class="text-dark">
+                                    {caseDetail.data.entry_date} {caseDetail.data.entry_hour}
+                                </p>
+                            </div>
                                 <div>
                                     <h3 class="font-bold">
                                         Motivo de consulta:
@@ -490,9 +497,20 @@
                                     </p>
                                 </div>
                             {/if}
+                            {#if caseDetail.status !== 6}
+                                    <div>
+                                        <h3 class="font-bold">
+                                            Hora y fecha:
+                                        </h3>
+                                        <p class="text-dark">
+                                            {evolution.data.formatted_departure_date} {evolution.data.departure_hour}
+                                        </p>
+                                    </div>
+                                {/if}
                             <div>
                                 <div class="flex">
                                     <h3 class="font-bold">Diagnostico:</h3>
+
                                     <div>
                                         <span
                                             class={`ml-2 w-2 inline-block aspect-square rounded-full condition${evolution.patient_condition_id}`}
@@ -503,18 +521,22 @@
                                         >
                                     </div>
                                 </div>
-                                <p class="text-dark">
-                                    {evolution.diagnosis}
-                                </p>
+                                {#if evolution.diagnosis}
+                                    <p class="text-dark">
+                                        {evolution.diagnosis}
+                                    </p>
+                                {/if}
                             </div>
 
                             <div>
-                                <h3 class="font-bold">
-                                    Orden médica de ingreso:
-                                </h3>
-                                <p class="text-dark">
-                                    {evolution.treatment}
-                                </p>
+                                {#if evolution.treatment}
+                                    <h3 class="font-bold">
+                                        Orden médica de ingreso:
+                                    </h3>
+                                    <p class="text-dark">
+                                        {evolution.treatment}
+                                    </p>
+                                {/if}
                             </div>
                         </div>
                     </li>

@@ -111,7 +111,6 @@
 
     function fillFormToEdit() {
         submitStatus = "Editar";
-        $formCreate.reset();
         showModal = true;
     }
 
@@ -332,12 +331,13 @@
                                 id: row.id,
                                 title: row.title,
                             };
-                            $formCreate.defaults({
+                            $formCreate = {
+                                ...$formCreate,
                                 ...row,
-                                specialties_ids: row.specialties.map(
-                                    (obj) => obj.id,
-                                ),
-                            });
+                                specialty_id: row.specialty.id
+                            };
+                            console.log($formCreate);
+                            
                             $formCreate.clearErrors();
                         } else {
                             selectedRow = {
