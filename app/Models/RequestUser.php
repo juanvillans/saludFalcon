@@ -16,6 +16,7 @@ class RequestUser extends Model
         'email',
         'phone_number',
         'specialty_id',
+        'medical_license',
         'search',
     ];
 

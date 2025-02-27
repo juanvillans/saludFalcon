@@ -24,6 +24,7 @@ class CreateUsersTable extends Migration
             $table->foreignId('specialty_id');
             $table->string('medical_license',50)->unique();
             $table->string('search');
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }

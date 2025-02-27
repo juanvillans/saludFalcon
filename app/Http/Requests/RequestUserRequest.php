@@ -23,10 +23,11 @@ class RequestUserRequest extends FormRequest
     {
         return [
 
-            'ci' => ['required','unique:request_users,ci'],
+            'ci' => ['required','unique:users,ci'],
             'name' => ['required'],
             'last_name' => ['required'],
-            'email' => ['required'],
+            "email" => ['required','email','unique:users,email'],
+            "medical_license" => ['required', 'max:50', 'string', 'unique:users,medical_license'],
             'phone_number' => ['required'],
             'specialty_id' => ['required'],
         

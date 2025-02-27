@@ -24,6 +24,7 @@ class User extends Authenticatable
         'phone_number',
         'specialty_id',
         'medical_license',
+        'status',
         'search',
     ];
 

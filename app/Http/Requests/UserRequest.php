@@ -28,7 +28,7 @@ class UserRequest extends FormRequest
             "last_name" => ['required','max:40','string'],
             "email" => ['required','email','unique:users,email'],
             "phone_number" => ['required','max:14','string'],
-            "medical_license" => ['required', 'max:50', 'string'],
+            "medical_license" => ['required', 'max:50', 'string', 'unique:users,medical_license'],
             "role_name" => ['required'],
             "specialties" => ['sometimes'],
             "specialties_ids" => ['sometimes'],
