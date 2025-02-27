@@ -26,9 +26,15 @@ class EmergencyCaseService
                 ->when($params['search'],function($query) use ($params){
 
                     $query->where(function($query) use ($params) {
+                        
                         $query->whereHas('patient', function($query2) use ($params) {
                             $query2->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($params['search']) . '%']);
                         });
+
+                        $query->orWhereHas('user', function($query3) use ($params) {
+                            $query3->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($params['search']) . '%']);
+                        });
+
                     });
                 })
                 ->orderBy('id', 'DESC')

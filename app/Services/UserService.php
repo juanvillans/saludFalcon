@@ -30,6 +30,7 @@ class UserService
             $query->where('id',$userID);
         })
         ->with('specialty', 'roles')
+        ->orderBy('id','desc')
         ->get();
 
         return new UserCollection($users);
