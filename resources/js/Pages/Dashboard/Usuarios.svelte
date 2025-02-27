@@ -20,13 +20,16 @@
     }
     // Update data based on the current state of `data.specialties`
     const emptyDataForm = {
+        id: 1,
         ci: "",
         name: "",
         last_name: "",
         email: "",
         phone_number: "",
-        role_name: "",
-        specialty_id: "",
+        created_at: "",
+        specialty: { id: 1, name:"", status: ""},
+        role_id: "",
+        medical_license: "",
     };
 
     let formCreate = useForm({
@@ -114,8 +117,10 @@
 
     function fillFormToEdit() {
         submitStatus = "Editar";
-        $formCreate.reset();
+        console.log(selectedRow);
+
         showModal = true;
+        console.log($formCreate);
     }
 
     function acept(id) {
@@ -246,12 +251,10 @@
                         title: "",
                     };
 
-                    $formCreate.defaults({
+                    $formCreate = {
                         ...emptyDataForm,
-                    });
-                    setTimeout(() => {
-                        $formCreate.reset();
-                    }, 100);
+                    };
+                 
                 }
                 e.preventDefault();
 
@@ -330,18 +333,13 @@
                         )
                     ) {
                         if (row.id != selectedRow.id) {
+                            console.log(row);
+
                             selectedRow = {
                                 status: true,
                                 id: row.id,
-                                title: row.title,
                             };
-                            $formCreate.defaults({
-                                ...row,
-                                specialties_ids: row.specialties.map(
-                                    (obj) => obj.id,
-                                ),
-                            });
-                            $formCreate.clearErrors();
+                            $formCreate = { ...row };
                         } else {
                             selectedRow = {
                                 status: false,
