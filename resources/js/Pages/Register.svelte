@@ -20,7 +20,7 @@
         email: "",
         phone_number: "",
         role_name: "doctor",
-        specialty_id: "1",
+        specialty_id: 1,
     };
 
     let formCreate = useForm({

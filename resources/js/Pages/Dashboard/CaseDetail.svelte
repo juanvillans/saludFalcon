@@ -143,7 +143,7 @@
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">
     <form
         on:submit={updateClient}
-        class="order-2 lg:order-1 h-fit max-w-[400px] lg:max-w-[430px] xl:max-w-[460px] w-full lg:sticky top-0"
+        class="order-2 lg:order-1 h-fit max-w-[360px] w-full lg:sticky top-0"
     >
         <fieldset
             class=" px-5 mt-4 gap-x-5 text-black p-6 pt-2 border-color2 rounded-md"
@@ -436,9 +436,6 @@
                                 />
                                 <span>{evolution.area_name}</span>
 
-                                <span
-                                    class={`w-2 inline-block aspect-square rounded-full condition${evolution.patient_condition_id}`}
-                                ></span>
                                 <span>{evolution.patient_condition_name}</span>
                             </div>
                             <div class="flex gap-2">
@@ -467,27 +464,42 @@
                                         evolution.user_last_name,
                                     )}</span
                                 >
-                                <span>{evolution.formatted_created_at}</span>
+                                <span>  <span class="text-gray-500">el</span> {evolution.formatted_created_at}</span>
                             </div>
                         </span>
 
                         <div class="bg-white p-2.5 space-y-2">
                             {#if i == caseDetail.data.evolutions.length - 1}
-                            <div>
-                                <h3 class="font-bold">Motivo de consulta:</h3>
-                                <p>{caseDetail.data.reason}</p>
-                            </div>
+                                <div>
+                                    <h3 class="font-bold">
+                                        Motivo de consulta:
+                                    </h3>
+                                    <p class="text-dark">{caseDetail.data.reason}</p>
+                                </div>
                             {/if}
                             <div>
-                                <h3 class="font-bold">Diagnostico:</h3>
-                                <p>
+                                <div class="flex">
+                                    <h3 class="font-bold">Diagnostico:</h3>
+                                    <div>
+                                        <span
+                                            class={`ml-2 w-2 inline-block aspect-square rounded-full condition${evolution.patient_condition_id}`}
+                                        ></span>
+                                        <span class="opacity-90 uppercase text-xs"
+                                            >{evolution.patient_condition_name}</span
+                                        >
+
+                                    </div>
+                                </div>
+                                <p class="text-dark">
                                     {evolution.diagnosis}
                                 </p>
                             </div>
 
                             <div>
-                                <h3 class="font-bold">Orden médica de ingreso:</h3>
-                                <p>
+                                <h3 class="font-bold">
+                                    Orden médica de ingreso:
+                                </h3>
+                                <p class="text-dark">
                                     {evolution.treatment}
                                 </p>
                             </div>
