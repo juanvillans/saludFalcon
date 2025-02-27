@@ -37,6 +37,7 @@ class EvolutionResource extends JsonResource
             'destiny' => $this->destiny ?? null,
             'is_interconsult' => $this->is_interconsult,
             'created_at' => $this->created_at,
+            'formatted_created_at' => $this->formatted_created_at,
             'updated_at' => $this->updated_at,
 
         ];

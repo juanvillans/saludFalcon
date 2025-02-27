@@ -109,6 +109,7 @@ class EmergencyCaseService
                 'municipality_id' => $data['municipality_id'],
                 'parish_id' => $data['parish_id'],
                 'address' => $data['patient_address'],
+                'search' => $data['patient_name'] . ' ' . $data['patient_last_name'] . $data['patient_ci'], 
             ]);
 
 
