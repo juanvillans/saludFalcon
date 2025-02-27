@@ -60,7 +60,11 @@ class EmergencyCaseService
         if($caseCreated->current_status == 1 || $caseCreated->current_status == 2)
             $evolutionService->createEvolutionFromCaseButDischarge($caseCreated);
 
-        $evolutionService->createEvolutionFromCase($caseCreated);
+        else{
+
+            $evolutionService->createEvolutionFromCase($caseCreated);
+        }
+
 
         return 0;
 
