@@ -33,10 +33,16 @@ class RoleSeeder extends Seeder
         $updateServicePermission = Permission::create(['name' => 'update-services']);
         $deleteServicePermission = Permission::create(['name' => 'delete-services']);
 
+        $readCasePermission = Permission::create(['name' => 'read-cases']);
+        $createCasePermission = Permission::create(['name' => 'create-cases']);
+        $updateCasePermission = Permission::create(['name' => 'update-cases']);
+        $deleteCasePermission = Permission::create(['name' => 'delete-cases']);
+
         $adminPermissions = [
             $readUserPermission, $createUserPermission, $updateUserPermission, $deleteUserPermission,
             $readSpecialtyPermission, $createSpecialtyPermission, $updateSpecialtyPermission, $deleteSpecialtyPermission,
             $readServicePermission, $createServicePermission, $updateServicePermission, $deleteServicePermission,
+            $readCasePermission
         ];
 
         $receptionistPermissions = [
@@ -45,9 +51,10 @@ class RoleSeeder extends Seeder
         ];
 
         $doctorPermissions = [
-	   $readUserPermission,
+	        $readUserPermission,
             $readSpecialtyPermission, $createSpecialtyPermission, $updateSpecialtyPermission, $deleteSpecialtyPermission,
             $readServicePermission, $createServicePermission, $updateServicePermission, $deleteServicePermission,
+            $readCasePermission, $createCasePermission, $updateCasePermission, $deleteCasePermission,
         ];
 
         $adminRole->syncPermissions($adminPermissions);

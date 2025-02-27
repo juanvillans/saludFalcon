@@ -87,7 +87,14 @@ class UserService
         $number = $usersDeleted + 1;
 
         $fields = $usuario->getAttributes();
-        unset($fields['id'], $fields['status'], $fields['search'], $fields['specialty_id'] );
+        unset(
+            $fields['id'],
+            $fields['status'],
+            $fields['search'],
+            $fields['specialty_id'],
+            $fields['name'],
+            $fields['last_name'],
+            );
         
         $usuario->update(array_map(function ($value) use ($number){
 
