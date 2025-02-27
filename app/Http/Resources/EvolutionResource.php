@@ -39,6 +39,10 @@ class EvolutionResource extends JsonResource
             'created_at' => $this->created_at,
             'formatted_created_at' => $this->formatted_created_at,
             'updated_at' => $this->updated_at,
+            'departure_date' => $this->departure_date,
+            'formatted_departure_date' => $this->formatted_departure_date,
+            'departure_hour' => $this->departure_hour,
+
 
         ];
     }

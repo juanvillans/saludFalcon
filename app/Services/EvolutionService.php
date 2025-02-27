@@ -21,6 +21,9 @@ class EvolutionService{
                 'treatment' => $case->treatment,
                 'destiny' => $case->destiny ?? null,
                 'is_interconsult' => false,
+                'departure_date' => $case->departure_date ?? null,
+                'departure_hour' => $case->departure_hour ?? null,
+
             ]);
 
         return 0;
@@ -51,6 +54,8 @@ class EvolutionService{
             'treatment' => null,
             'destiny' => $case->destiny ?? null,
             'is_interconsult' => false,
+            'departure_date' => $case->departure_date,
+            'departure_hour' => $case->departure_hour,
         ]);
 
     }

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->text('treatment')->nullable();
             $table->string('destiny')->nullable();
             $table->boolean('is_interconsult')->default(false);
+            $table->date('departure_date')->nullable();
+            $table->string('departure_hour')->nullable();
             $table->timestamps();
 
             // Foreign key constraints

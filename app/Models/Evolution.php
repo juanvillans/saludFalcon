@@ -21,11 +21,18 @@ class Evolution extends Model
         'treatment',
         'destiny',
         'is_interconsult',
+        'departure_date',
+        'departure_hour',
      ];
 
      public function getFormattedCreatedAtAttribute(){
         
         return Carbon::parse($this->created_at)->format('d M Y');
+    }
+
+    public function getFormattedDepartureDateAttribute(){
+        
+        return Carbon::parse($this->departure_date)->format('d M Y');
     }
 
     public function emergencyCase(){
