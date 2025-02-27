@@ -19,8 +19,8 @@
         last_name: "",
         email: "",
         phone_number: "",
-        role_name: "",
-        specialty_id: "",
+        role_name: "doctor",
+        specialty_id: "1",
     };
 
     let formCreate = useForm({
@@ -114,17 +114,7 @@
             bind:value={$formCreate.phone_number}
             error={$formCreate.errors?.phone_number}
         />
-        <Input
-            type="select"
-            required={true}
-            label={"Tipo de Usuario"}
-            bind:value={$formCreate.role_name}
-            error={$formCreate.errors?.role_name}
-        >
-            <option value="doctor">Doctor</option>
-            <option value="admin">Admin</option>
-        </Input>
-        {#if $formCreate.role_name == "doctor"}
+      
             <Input
                 type="select"
                 required={true}
@@ -136,7 +126,6 @@
                     <option value={speci.id}>{speci.name}</option>
                 {/each}
             </Input>
-        {/if}
     </form>
     <input
         form="a-form"

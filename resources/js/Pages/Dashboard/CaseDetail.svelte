@@ -446,13 +446,13 @@
                                     <span
                                         class="pl-6 pr-1 listType bg-color1 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
                                     >
-                                        INTERCONSULTA
+                                        IC
                                     </span>
                                 {:else if i != caseDetail.data.evolutions.length - 1}
                                     <span
                                         class="pl-6 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
                                     >
-                                        EVOLUCIÓN
+                                        EVOL
                                     </span>
                                 {/if}
                                 <span class="flex items-center"
