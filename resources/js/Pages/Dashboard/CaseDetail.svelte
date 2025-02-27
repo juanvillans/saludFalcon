@@ -467,7 +467,7 @@
                                         evolution.user_last_name,
                                     )}</span
                                 >
-                                <span>{evolution.created_at}</span>
+                                <span>{evolution.formatted_created_at}</span>
                             </div>
                         </span>
 

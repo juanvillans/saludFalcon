@@ -50,7 +50,7 @@ class EmergencyCase extends Model
     }
 
     public function evolutions(){
-        return $this->hasMany(Evolution::class);
+        return $this->hasMany(Evolution::class)->orderBy('id','desc');
     }
 
     public function statusCase(){
