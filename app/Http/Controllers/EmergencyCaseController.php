@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CaseRequest;
+use App\Http\Requests\EvolutionRequest;
 use App\Http\Requests\PatientRequest;
 use App\Http\Resources\CaseResource;
 use App\Http\Resources\PatientResource;
@@ -13,6 +14,7 @@ use App\Models\Patient;
 use App\Models\PatientCondition;
 use App\Models\StatusCase;
 use App\Services\EmergencyCaseService;
+use App\Services\EvolutionService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +29,8 @@ class EmergencyCaseController extends Controller
     public function __construct()
     {
         $this->emergencyCaseService = new EmergencyCaseService;
+        $this->evolutionService = new EvolutionService;
+
     }
 
     public function index(Request $request)
@@ -48,7 +52,7 @@ class EmergencyCaseController extends Controller
         $statutes = StatusCase::get();
         $conditions = PatientCondition::get();
         
-        return inertia('Dashboard/Patient',[
+        return inertia('Dashboard/Cases',[
             'data' => $emergencyCases,
             'patient' => $patient ?? null,
             'areas' => $areas,
@@ -139,6 +143,33 @@ class EmergencyCaseController extends Controller
 
         $patient = $this->emergencyCaseService->getPatientByCI($this->params);
         return response()->json(['patient' => $patient]);
+    }
+
+    public function addEvolution(EvolutionRequest $request, EmergencyCase $case){
+
+         DB::beginTransaction();
+
+        try 
+        {
+            $data = $request->all();
+
+            // $this->evolutionService->addEvolution($case,$data);
+
+            DB::commit();
+
+            return redirect()->back()->with(['message' => 'Evolución añadida']);
+
+        }
+        catch (\Throwable $e)
+        {   
+            
+            DB::rollback();
+            
+            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+        }
+
+
+        return 'OSKERS';
     }
 
 }

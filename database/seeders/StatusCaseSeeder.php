@@ -15,11 +15,11 @@ class StatusCaseSeeder extends Seeder
     {
 
         StatusCase::create([
-            'name' => 'Egresado: Alta médica',
+            'name' => 'Egresado: Alta M.',
         ]);
 
         StatusCase::create([
-            'name' => 'Egresado: Alta contraopinión',
+            'name' => 'Egresado: Alta Co.',
         ]);
 
         StatusCase::create([

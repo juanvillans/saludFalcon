@@ -46,7 +46,7 @@ class UserController extends Controller
             $requests = RequestUser::with('specialty')->get(); 
         
 
-        return inertia('Dashboard/Usuarios',[
+        return inertia('Dashboard/Users',[
 
             'data' => [
                 'users' => $users,

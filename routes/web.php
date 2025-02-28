@@ -57,6 +57,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::get('/casos',[EmergencyCaseController::class,'index'])->middleware('permission:read-cases');
     Route::post('/casos',[EmergencyCaseController::class,'store'])->middleware('permission:create-cases');
     Route::get('/casos/detalle-caso/{case}',[EmergencyCaseController::class,'caseDetail'])->middleware('permission:read-cases')->name('caseDetail');
+    Route::post('/casos/detalle-caso/{case}/evolution',[EmergencyCaseController::class,'addEvolution'])->middleware('permission:create-cases');
+
 
     // Searchers
     Route::get('/historial-medico',[EmergencyCaseController::class,'searchPatient']);
