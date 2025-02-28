@@ -368,7 +368,7 @@
                             <div class="flex gap-4 mb-3">
                                 {#each localData?.conditions || [] as condition (condition.id)}
                                     <label
-                                        class={`py-1 pb-0 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
+                                        class={`py-1 pb-0 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$evolutionForm.patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
                                     >
                                         <div
                                             class={`w-2 aspect-square rounded-full  condition${condition.id}`}
@@ -376,7 +376,7 @@
                                         <input
                                             class="mr-3 hidden"
                                             type="radio"
-                                            bind:group={$form.patient_condition_id}
+                                            bind:group={$evolutionForm.patient_condition_id}
                                             name="condition"
                                             id=""
                                         /><span>{condition.name}</span>
