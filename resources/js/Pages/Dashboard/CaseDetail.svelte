@@ -21,6 +21,7 @@
         departure_hour: "",
         area_id: "",
         status: 6,
+        destiny: "",
     });
     let localData = {};
 
@@ -318,7 +319,7 @@
                                                 ?.area_id}
                                         >
                                             {#each localData.areas as area (area.id)}
-                                                {#if area.division_id == 1}
+                                                {#if area.id != caseDetail.data.area_id}
                                                     <option value={area.id}
                                                         >{area.name}</option
                                                     >
@@ -327,7 +328,7 @@
                                         </Input>
                                     </div>
                                 {/if}
-                                {#if $evolutionForm.status == "3" && $evolutionForm.admitted_area_id == "7"}
+                                {#if $evolutionForm.status == "3" && $evolutionForm.area_id == "7"}
                                     <Input
                                         type="text"
                                         required={true}
