@@ -26,6 +26,11 @@
                 document.body.removeEventListener("click", onClick);
             },
         };
+
+    }
+    const dictionaryPages = {
+        patient: 'Casos',
+        users: 'Usuarios'
     }
 </script>
 
@@ -34,11 +39,12 @@
         class="flex justify-between items-center w-full max-h-32 py-2 gap-3 text-sm px-3 md:px-5"
     >
         <span class="flex gap-1 items-center">
+            <!-- svelte-ignore missing-declaration -->
             <a
                 href="/dashboard"
                 use:inertia
                 class="text-sm hidden md:inline font-bold"
-                >{$page.component.replace("Dashboard/", "").toUpperCase()}</a
+                >{$page.component.replace("Dashboard/", "")}</a
             >
         </span>
         <!-- <div class="flex bg-color2  md:min-w-72 rounded-full items-center">
