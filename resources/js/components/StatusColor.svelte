@@ -23,10 +23,9 @@
     export let status;
 </script>
 
-<div class={`flex gap-2 items-center`}>
     <span style={`color: ${getStatusColor(status.id)}; `} class="min-h-max">
         {#if status.id == 1 || status.id == 2}
-            <iconify-icon icon="famicons:log-out" width="30" height="30"
+            <iconify-icon icon="famicons:log-out" width="25" height="25"
             ></iconify-icon>
         {:else if status.id == 3}
             <iconify-icon
@@ -42,4 +41,3 @@
        {/if}
     </span>
     {status.name}
-</div>

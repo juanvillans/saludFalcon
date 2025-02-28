@@ -18,6 +18,8 @@
         diagnosis: "",
         treatment: "",
         reason: "",
+        departure_date: "",
+        departure_hour: "",
         area_id: "",
         status: 6,
     });
@@ -101,8 +103,8 @@
     }
     function submitCases(event) {
         event.preventDefault();
-        $form.clearErrors();
-        $form.post("/admin/historial-medico", {
+        $evolutionForm.clearErrors();
+        $evolutionForm.post("/admin/casos/detalle-caso/"+$form.id+"/evolution", {
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });

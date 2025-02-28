@@ -49,7 +49,7 @@
         patient_name: "",
         patient_last_name: "",
         patient_ci: "",
-        patient_sex: "",
+        patient_sex: "Masculino",
         patient_date_birth: "",
         patient_phone_number: "",
         patient_address: "",
@@ -137,7 +137,6 @@
         }
     }, 280);
 
-    $: console.log($form);
     const searchDoctor = debounce(async (search) => {
         showModal = true;
         prosecingSearchPatient = true; // Cambiar a verdadero antes de la búsqueda
@@ -155,28 +154,7 @@
             prosecingSearchPatient = false; // Cambiar a falso después de la búsqueda
         }
     }, 280);
-    // router.get(
-    //     "",
-    //     { ci },
-    //     {
-    //         preserveState: true,
-    //         only: ["patient"],
-    //         onSuccess: (page) => {
-    //             // showModal = true;
-    //             if (page.props.patient == null) {
-    //                 return;
-    //             }
-    //             $form = {
-    //                 ...$form,
-    //                 ...page.props.patient.data,
-    //                 cases: page.props.patient.data.cases,
-    //             };
-    //         },
-    //         onFinish: (visit) => {
-    //             prosecingSearchPatient = false;
-    //         },
-    //     },
-    // );
+
 
     function goToDetailsPatientPage(id) {
         router.get("/admin/casos/detalle-caso/" + id);
@@ -786,11 +764,19 @@
                                     id: row?.current_status,
                                 }}
                             />
-                            <p>
-                                {#if row?.current_status == "3"}
+                            
+                                <!-- {#if row?.current_status == "3"}
                                     a {row?.admitted_area_name}
+                                {/if} -->
+                                {#if row.current_status== 1 || row.current_status== 2 || row.current_status== 6}
+                                    de
+                                {:else if row.current_status== 4 || row.current_status== 5}
+                                    en
+                                {:else if row.current_status== 3}
+                                    a
                                 {/if}
-                            </p>
+                                {row.area_name}
+                            
                         </td>
 
                         <td class="min-w-[180px]">
