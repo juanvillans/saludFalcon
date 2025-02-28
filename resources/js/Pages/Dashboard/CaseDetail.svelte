@@ -268,8 +268,7 @@
         <fieldset class=" sm:px-5 md:mt-4 gap-x-5 pt-2 bg-white rounded-xl">
             <legend
                 class="relative text-center px-5 py-1 uppercase pt-1.5 rounded-xl bg-color1 text-gray-100"
-                >HISTORIAL DE {caseDetail.data.patient_name}
-                {caseDetail.data.patient_last_name}
+                >CASO {caseDetail.data.id}
             </legend>
             <div class="col-span-2 flex gap-5">
                 <data value="">

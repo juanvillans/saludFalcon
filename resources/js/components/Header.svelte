@@ -29,8 +29,10 @@
 
     }
     const dictionaryPages = {
-        patient: 'Casos',
-        users: 'Usuarios'
+        cases: 'Casos',
+        casedetail: 'Detalles del caso',
+        users: 'usuarios',
+        
     }
 </script>
 
@@ -44,7 +46,7 @@
                 href="/dashboard"
                 use:inertia
                 class="text-sm hidden md:inline font-bold"
-                >{$page.component.replace("Dashboard/", "")}</a
+                >{dictionaryPages?.[$page.component.replace("Dashboard/", "").toLowerCase()].toUpperCase()}</a
             >
         </span>
         <!-- <div class="flex bg-color2  md:min-w-72 rounded-full items-center">
