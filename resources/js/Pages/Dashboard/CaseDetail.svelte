@@ -1,7 +1,7 @@
 <script>
     import Input from "../../components/Input.svelte";
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm, page } from "@inertiajs/svelte";
+    import { useForm } from "@inertiajs/svelte";
     import StatusColor from "../../components/StatusColor.svelte";
     import Alert from "../../components/Alert.svelte";
     import fetchLocalData from "../../components/localData";
@@ -20,8 +20,10 @@
         departure_date: "",
         departure_hour: "",
         area_id: "",
-        status: 6,
+        patient_condition_id: '',
+        status_id: 6,
         destiny: "",
+
     });
     let localData = {};
 
@@ -287,8 +289,8 @@
                                 <Input
                                     type="select"
                                     required={true}
-                                    bind:value={$evolutionForm.status}
-                                    error={$evolutionForm.errors?.status}
+                                    bind:value={$evolutionForm.status_id}
+                                    error={$evolutionForm.errors?.status_id}
                                 >
                                     {#each localData.statutes as status (status.id)}
                                         {#if status.id !== 4 && status.id !== 6}
@@ -305,7 +307,7 @@
                                         {/if}
                                     {/each}
                                 </Input>
-                                {#if $evolutionForm.status == "3"}
+                                {#if $evolutionForm.status_id == "3"}
                                     <div class="flex items-center">
                                         <span class="mr-2 relative top-2">
                                             a:
@@ -328,7 +330,7 @@
                                         </Input>
                                     </div>
                                 {/if}
-                                {#if $evolutionForm.status == "3" && $evolutionForm.area_id == "7"}
+                                {#if $evolutionForm.status_id == "3" && $evolutionForm.area_id == "7"}
                                     <Input
                                         type="text"
                                         required={true}
@@ -340,11 +342,11 @@
                                 <div
                                     class="col-span-2 md:grid grid-cols-2 gap-x-4"
                                 >
-                                    {#if $evolutionForm.status != 6}
+                                    {#if $evolutionForm.status_id != 6}
                                         <Input
                                             type="date"
                                             label={"Fecha " +
-                                                `${$evolutionForm.status == 3 ? "transferida" : ""}`}
+                                                `${$evolutionForm.status_id == 3 ? "transferida" : ""}`}
                                             required={true}
                                             bind:value={$evolutionForm.departure_date}
                                             error={$evolutionForm.errors
@@ -354,7 +356,7 @@
                                             type="time"
                                             required={true}
                                             label={"Hora " +
-                                                `${$evolutionForm.status == 3 ? "transferida" : ""}`}
+                                                `${$evolutionForm.status_id == 3 ? "transferida" : ""}`}
                                             bind:value={$evolutionForm.departure_hour}
                                             error={$evolutionForm.errors
                                                 ?.departure_hour}
