@@ -91,8 +91,19 @@ class EmergencyCaseController extends Controller
 
         $case->load('patient.municipality','patient.parish','user.specialty','area', 'evolutions.user' , 'evolutions.area', 'evolutions.condition', 'evolutions.status','statusCase','condition');
         
+        $nroEvolutions = $case->evolutions->filter(function ($evolution) {
+            return $evolution->is_interconsult == false;
+        })->count();
+
+        
+        $nroInter = $case->evolutions->filter(function ($evolution) {
+            return $evolution->is_interconsult == true;
+        })->count();
+        
         return inertia('Dashboard/CaseDetail',[
-            'caseDetail' => new CaseResource($case)
+            'caseDetail' => new CaseResource($case),
+            'nroEvol' => $nroEvolutions,
+            'nroInter' => $nroInter,
         ]);
     }
 
