@@ -38,6 +38,7 @@
             ></iconify-icon>
         {:else if status.id == 5}
         <iconify-icon icon="mdi:cross" width="24" height="24"></iconify-icon>
+        
        {/if}
     </span>
     {status.name}

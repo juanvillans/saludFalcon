@@ -443,7 +443,7 @@
                                         id: evolution.status_id,
                                     }}
                                 />
-                                {#if evolution.status_id == 1 || evolution.status_id == 2 || evolution.status_id == 6}
+                                {#if evolution.status_id == 1 || evolution.status_id == 2}
                                     de
                                 {:else if evolution.status_id == 4 || evolution.status_id == 5}
                                     en
