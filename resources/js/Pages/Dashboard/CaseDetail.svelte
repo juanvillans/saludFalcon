@@ -377,7 +377,6 @@
                                             class="mr-3 hidden"
                                             type="radio"
                                             bind:group={$form.patient_condition_id}
-                                            value={condition.id}
                                             name="condition"
                                             id=""
                                         /><span>{condition.name}</span>
