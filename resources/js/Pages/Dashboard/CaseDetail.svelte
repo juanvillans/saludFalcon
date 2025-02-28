@@ -22,6 +22,8 @@
         area_id: "",
         status: 6,
         destiny: "",
+        user_id: $page.props.auth.user_id,
+
     });
     let localData = {};
 

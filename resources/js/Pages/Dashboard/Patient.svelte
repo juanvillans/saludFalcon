@@ -720,7 +720,7 @@
         <div slot="filterBox"></div>
         <thead slot="thead" class="sticky top-0">
             <tr>
-                <th style="font-size: 12px;">N°</th>
+                <th style="font-size: 12px;">ID</th>
                 <th>Duración</th>
                 <th>Estado y area</th>
                 <!-- <th>Condición</th> -->
@@ -740,10 +740,7 @@
                         class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5`}
                     >
                         <td style="font-size: 12px;"
-                            >{data.meta.total -
-                                (data.meta.current_page - 1) *
-                                    data.meta.per_page -
-                                i}</td
+                            >{row.id}</td
                         >
                         <td>
                             {timeBetweenDateAndTime(
