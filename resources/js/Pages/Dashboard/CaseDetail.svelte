@@ -17,7 +17,6 @@
     let evolutionForm = useForm({
         diagnosis: "",
         treatment: "",
-        reason: "",
         departure_date: "",
         departure_hour: "",
         area_id: "",
@@ -314,9 +313,9 @@
                                         <Input
                                             type="select"
                                             required={true}
-                                            bind:value={$evolutionForm.admitted_area_id}
+                                            bind:value={$evolutionForm.area_id}
                                             error={$evolutionForm.errors
-                                                ?.admitted_area_id}
+                                                ?.area_id}
                                         >
                                             {#each localData.areas as area (area.id)}
                                                 {#if area.division_id == 1}

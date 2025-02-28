@@ -25,16 +25,16 @@
 
     <span style={`color: ${getStatusColor(status.id)}; `} class="min-h-max">
         {#if status.id == 1 || status.id == 2}
-            <iconify-icon icon="famicons:log-out" width="25" height="25"
+            <iconify-icon icon="famicons:log-out" width="15" height="15"
             ></iconify-icon>
         {:else if status.id == 3}
             <iconify-icon
                 icon="material-symbols-light:move-location-outline-rounded"
-                width="30"
-                height="30"
+                width="15"
+                height="15"
             ></iconify-icon>
         {:else if status.id == 4}
-            <iconify-icon icon="icomoon-free:enter" width="25" height="25" class="relative top-1"
+            <iconify-icon icon="icomoon-free:enter" width="15" height="15" class="relative top-1"
             ></iconify-icon>
         {:else if status.id == 5}
         <iconify-icon icon="mdi:cross" width="24" height="24"></iconify-icon>
