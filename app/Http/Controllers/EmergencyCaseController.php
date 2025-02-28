@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CaseRequest;
 use App\Http\Requests\PatientRequest;
 use App\Http\Resources\CaseResource;
 use App\Http\Resources\PatientResource;
@@ -61,7 +62,7 @@ class EmergencyCaseController extends Controller
 
    
    
-    public function store(Request $request)
+    public function store(CaseRequest $request)
     {
         DB::beginTransaction();
 

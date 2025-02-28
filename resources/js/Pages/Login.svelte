@@ -50,10 +50,10 @@
             class="delay-1 animate-slide-in bg-color1 w-[96%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%]"
         ></div>
         <div
-            class="delay-2 animate-slide-in bg-gray-200 w-[92%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%] flex justify-between p3 md:p-5 lg:p-8 md:gap-5"
+            class="delay-2 animate-slide-in bg-gray-200 w-[92%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%] flex  flex-col md:flex-row md:justify-between p-3 md:p-5 lg:p-8 md:gap-5"
         >
             <div>
-                <header class="flex items-center gap-3">
+                <header class="flex  items-center gap-3">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="32"
@@ -88,18 +88,21 @@
                     </svg>
                     <h4>SALUDFALCÓN.COM</h4>
                 </header>
-                <img src="/images/4logos.png" alt="" srcset="" />
-                <h1 class="text-color1 xl:text-3xl">
+                <img src="/img/4logos.png" alt="" srcset=""  class="mx-auto mt-5 md:mt-12 lg:mt-16 max-w-[200px] md:max-w-[300px]"/>
+                <h1 class="text-color1 xl:text-3xl mt-1 lg:mt-3">
                     REGISTROS DE CASOS DE EMERGENCIA DEL HOSPITAL DR ALFREDO VAN
                     GRIECKEN
                 </h1>
+
+                <img src="/img/hospitalVector.svg" class="absolute bottom-0 -left-2 md:left-10 w-1/2 min-w-[280px] max-w-[700px] lg:max-w-[1000px]" alt="" srcset="" />
+
             </div>
     
             <form
                 on:submit={handleSubmit}
-                class="md:min-w-[290px] px-4 md:px-6 bg-white rounded-3xl h-full"
+                class="md:min-w-[290px] px-4 md:px-6 bg-white rounded-3xl md:h-full"
             >
-                <legend class="text-center opacity-70 mt-7">INICIAR SESIÓN</legend>
+                <legend class="text-center opacity-70 mt-3 md:mt-7">INICIAR SESIÓN</legend>
                 <div>
                     <Input
                         type="text"

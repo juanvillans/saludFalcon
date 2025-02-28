@@ -19,7 +19,9 @@
 </script>
 
 <style>
-    
+     input:read-only, select:disabled {
+        background-color: transparent;
+    }
     input,
     textarea,
     select {
@@ -27,9 +29,7 @@
         border-radius: 5px;
     }
     
-    option {
-        background: #ffffff;
-    }
+    
     input:focus,
     textarea:focus,
     select:focus {

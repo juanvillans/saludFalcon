@@ -21,20 +21,23 @@ class CaseRequest extends FormRequest
      */
     public function rules(): array
     {
-        // return [
-        //     'patient_id',
-        //     'current_patient_condition_id',
-        //     'user_id',
-        //     'area_id',
-        //     'entry_date',
-        //     'entry_hour',
-        //     'current_status',
-        //     'departure_date',
-        //     'departure_hour',
-        //     'reason',
-        //     'diagnosis',
-        //     'treatment',
-        //     'destiny',
-        // ];
+        return [
+            'patient_id' => ['sometimes'],
+            'current_patient_condition_id' => ['required'],
+            'user_id' => ['required'],
+            'area_id' => ['required'],
+            'entry_date' => ['required'],
+            'entry_hour' => ['required'],
+            'current_status' => ['required'],
+            'departure_date' => ['sometimes'],
+            'departure_hour' => ['sometimes'],
+            'reason' => ['required'],
+            'diagnosis' => ['required'],
+            'treatment' => ['required'],
+            'destiny' => ['sometimes'],
+            'patient_sex' => ['required'],
+            'patient_ci' => ['required','min:6'],
+
+        ];
     }
 }

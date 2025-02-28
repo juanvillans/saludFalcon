@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Resources\PatientResource;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
@@ -29,6 +30,11 @@ class EmergencyCase extends Model
         'destiny',
 
     ];
+
+    public function getFormattedEntryDateAttribute(){
+        
+        return Carbon::parse($this->entry_date)->format('d M Y');
+    }
 
     public function area(){
         return $this->belongsTo(Area::class);

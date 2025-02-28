@@ -27,7 +27,7 @@ class Evolution extends Model
 
      public function getFormattedCreatedAtAttribute(){
         
-        return Carbon::parse($this->created_at)->format('d M Y');
+        return Carbon::parse($this->created_at)->format('d M Y h:i A');
     }
 
     public function getFormattedDepartureDateAttribute(){

@@ -11,7 +11,7 @@
                 return "#818f8f";
                 break;
             case 5: // fallecido
-                return "#BF0404";
+                return "#00000";
                 break;
             case 4: // Ingreso
                 return "#6a1ccd";
@@ -38,7 +38,7 @@
             <iconify-icon icon="icomoon-free:enter" width="25" height="25" class="relative top-1"
             ></iconify-icon>
         {:else if status.id == 5}
-        <iconify-icon icon="healthicons:death-alt2" width="48" height="48"></iconify-icon>
+        <iconify-icon icon="mdi:cross" width="24" height="24"></iconify-icon>
        {/if}
     </span>
     {status.name}

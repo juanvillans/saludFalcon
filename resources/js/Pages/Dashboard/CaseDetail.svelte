@@ -439,7 +439,7 @@
                                         id: evolution.status_id,
                                     }}
                                 />
-                                {#if evolution.status_id == 1 || evolution.status_id == 2 || evolution.status_id == 5}
+                                {#if evolution.status_id == 1 || evolution.status_id == 2 || evolution.status_id == 6}
                                     de
                                 {:else if evolution.status_id == 4 || evolution.status_id == 5}
                                     en
@@ -479,13 +479,13 @@
                         </span>
 
                         <div class="bg-white p-2.5 space-y-2">
-                            {#if i == caseDetail.data.evolutions.length - 1}
+                            {#if evolution.status_id == 4}
                             <div>
                                 <h3 class="font-bold">
                                     Hora y fecha:
                                 </h3>
                                 <p class="text-dark">
-                                    {caseDetail.data.entry_date} {caseDetail.data.entry_hour}
+                                    El {caseDetail.data.formatted_entry_date}  {caseDetail.data.entry_hour}
                                 </p>
                             </div>
                                 <div>
@@ -497,13 +497,13 @@
                                     </p>
                                 </div>
                             {/if}
-                            {#if caseDetail.status !== 6}
+                            {#if evolution.status_id !== 6 && evolution.status_id !== 4 }
                                     <div>
                                         <h3 class="font-bold">
                                             Hora y fecha:
                                         </h3>
                                         <p class="text-dark">
-                                            {evolution.data.formatted_departure_date} {evolution.data.departure_hour}
+                                            {evolution.formatted_departure_date} {evolution.departure_hour}
                                         </p>
                                     </div>
                                 {/if}

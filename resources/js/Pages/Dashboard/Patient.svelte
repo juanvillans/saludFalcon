@@ -36,18 +36,20 @@
     // Format the date to YYYY-MM-DD
     const formattedDate = today.toISOString().split("T")[0];
 
-    const hours = String(today.getHours()).padStart(2, "0");
+    
+    function getCurrentHour() {
+        const hours = String(today.getHours()).padStart(2, "0");
     const minutes = String(today.getMinutes()).padStart(2, "0");
-    const formattedTime = `${hours}:${minutes}`;
-
+    return `${hours}:${minutes}`;
+    }
     let searchedDoctors = [];
 
     const emptyDataForm = {
         patient_id: null,
-        patient_name: "Juan Francisco",
-        patient_last_name: "Villasmil Tovar",
-        patient_ci: "27253194",
-        patient_sex: "Masculino",
+        patient_name: "",
+        patient_last_name: "",
+        patient_ci: "",
+        patient_sex: "",
         patient_date_birth: "",
         patient_phone_number: "",
         patient_address: "",
@@ -57,27 +59,17 @@
         user_id: $page.props.auth.user_id,
         user_name: $page.props.auth.name,
         user_last_name: $page.props.auth.last_name,
-        // user_ci: $page.props.auth.last_name,
-        // history_number: "",
-        // marital_status: "",
-        // current_address: "",
-        // economic_classification: "",
-        // nationality: "",
-        // place_of_birth: "",
-        // notify_in_case_of_emergency: "",
-        // relationship: "",
-        // profession: "",
-        reason: "al paciente le duele la barriga",
-        diagnosis: "tiene parasitos",
-        treatment: "semillas de auyama y ajo crudo",
-        current_status: "1",
+        reason: "",
+        diagnosis: "",
+        treatment: "",
+        current_status: "",
         current_patient_condition_id: 1,
         condition: "Inconcluso",
         cases: [],
         entry_date: formattedDate,
-        departure_date: formattedDate,
-        entry_hour: formattedTime,
-        departure_hour: formattedTime,
+        departure_date: "",
+        entry_hour: getCurrentHour(),
+        departure_hour: "",
         area_id: "",
         area_name: "",
         destiny: "",
@@ -365,6 +357,8 @@
                 label={"Municipio"}
                 bind:value={$form.municipality_id}
                 error={$form.errors?.municipality_id}
+                disabled={$form.patient_id}
+
             >
                 {#each localData.municipalities as micipality (micipality.id)}
                     <option value={micipality.id}>{micipality.name}</option>
@@ -377,6 +371,8 @@
                 label={"Parroquia"}
                 bind:value={$form.parish_id}
                 error={$form.errors?.parish_id}
+                disabled={$form.patient_id}
+
             >
                 {#if localData.municipalities[$form.municipality_id - 1]}
                     {#each localData.municipalities[$form.municipality_id - 1].parishes as parish (parish.id)}
@@ -390,6 +386,7 @@
                 bind:value={$form.patient_address}
                 readOnly={$form.patient_id}
                 error={$form.errors?.patient_address}
+
             />
 
             <Input
@@ -398,6 +395,7 @@
                 readOnly={$form.patient_id}
                 bind:value={$form.patient_phone_number}
                 error={$form.errors?.patient_phone_number}
+
             />
             <div class="flex flex-col mt-6">
                 <label class="py-1 cursor-pointer hover:bg-gray-100">
@@ -408,6 +406,7 @@
                         value="Masculino"
                         name="sex"
                         id=""
+                        required
                     /><span class:font-bold={$form.patient_sex == "Masculino"}
                         >Masculino</span
                     >
@@ -421,6 +420,8 @@
                         value="Femenino"
                         name="sex"
                         id=""
+                        required
+
                     /><span class:font-bold={$form.patient_sex == "Femenino"}
                         >Femenino</span
                     >
@@ -499,6 +500,15 @@
                 label={"Estado *"}
                 bind:value={$form.current_status}
                 error={$form.errors?.current_status}
+                on:change={() => {
+                    if ($form.current_status == 4) {
+                        $form.departure_date = ""
+                        $form.departure_hour = ""
+                    } else {
+                        $form.departure_date = formattedDate
+                        $form.departure_hour = getCurrentHour()
+                    }
+                }}
             >
                 {#each localData.statutes as status (status.id)}
                     {#if status.id !== 6 && status.id !== 3}
@@ -542,7 +552,7 @@
                 </Input>
             {/if} -->
 
-            {#if $form.current_status != "4"}
+            {#if $form.current_status != "4" && $form.current_status != ""}
                 <Input
                     type="date"
                     label={"Fecha de salida "}
@@ -1008,4 +1018,5 @@
         backdrop-filter: blur(2px);
         -webkit-backdrop-filter: blur(2px);
     }
+   
 </style>

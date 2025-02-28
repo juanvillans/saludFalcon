@@ -72,7 +72,10 @@ class EmergencyCaseService
 
         $evolutionService = new EvolutionService;
 
-        if($caseCreated->current_status == 1 || $caseCreated->current_status == 2)
+        if($caseCreated->current_status == $this->STATUS_MEDICAL_DISPATCH || 
+           $caseCreated->current_status == $this->STATUS_CONTRAMEDICAL_DISPATCH ||
+           $caseCreated->current_status == $this->STATUS_DECEASED 
+       )
             $evolutionService->createEvolutionFromCaseButDischarge($caseCreated);
 
         else{
@@ -150,8 +153,8 @@ class EmergencyCaseService
         if(!isset($case->id))
             return 0;
 
-        if($case->current_status != $this->STATUS_MEDICAL_DISPATCH || 
-           $case->current_status != $this->STATUS_CONTRAMEDICAL_DISPATCH || 
+        if($case->current_status != $this->STATUS_MEDICAL_DISPATCH && 
+           $case->current_status != $this->STATUS_CONTRAMEDICAL_DISPATCH && 
            $case->current_status != $this->STATUS_DECEASED  
           )
         {
