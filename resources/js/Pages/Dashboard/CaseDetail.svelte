@@ -376,7 +376,7 @@
                                         <input
                                             class="mr-3 hidden"
                                             type="radio"
-                                            bind:group={$form.current_patient_condition_id}
+                                            bind:group={$form.patient_condition_id}
                                             value={condition.id}
                                             name="condition"
                                             id=""
@@ -397,7 +397,7 @@
                             type="textarea"
                             required={true}
                             classes={"col-span-2"}
-                            label={"Orden médica de ingreso *"}
+                            label={"Orden médica *"}
                             bind:value={$evolutionForm.treatment}
                             error={$evolutionForm.errors?.treatment}
                         />
