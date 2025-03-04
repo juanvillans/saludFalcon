@@ -18,6 +18,7 @@ class CaseResource extends JsonResource
 
             "id" => $this->id,
             'entry_date' => $this->entry_date,
+            'formatted_entry_date' => $this->formatted_entry_date,
             'entry_hour' => $this->entry_hour,
             'departure_date' => $this->departure_date,
             'departure_hour' => $this->departure_hour,
@@ -49,9 +50,6 @@ class CaseResource extends JsonResource
             
             'area_id' => $this->area_id,
             'area_name' => $this->area->name,
-
-            'admitted_area_id' => $this->admitted_area_id,
-            'admitted_area_name' => $this->admittedArea->name ?? null,
 
 
             'current_patient_condition_id' => $this->current_patient_condition_id,

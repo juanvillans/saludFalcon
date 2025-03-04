@@ -2,39 +2,23 @@
     import Table from "../../components/Table.svelte";
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
-    import Especialidades from "../../components/Especialidades.svelte";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, page, router } from "@inertiajs/svelte";
     export let data = [];
-    
+
     let instituteSpecialities = [];
     let specialities = [];
-    let dataTable = []
+    let dataTable = [];
     $: if (data) {
         if (data.requests) {
-            dataTable = data.requests
+            dataTable = data.requests;
         } else {
-            
-            dataTable = data.users.data
+            dataTable = data.users.data;
         }
 
         // UpdateData();
-
     }
     // Update data based on the current state of `data.specialties`
-    function UpdateData() {
-        instituteSpecialities = [];
-        specialities = [];
-
-        for (let i = 0; i < data.specialties.length; i++) {
-            const speciality = data.specialties[i];
-            if (speciality.status == 1) {
-                instituteSpecialities.push(speciality);
-            } else {
-                specialities.push(speciality);
-            }
-        }
-    }
     const emptyDataForm = {
         ci: "",
         name: "",
@@ -43,18 +27,14 @@
         phone_number: "",
         role_name: "",
         specialty_id: "",
+        medical_license: "",
     };
 
     let formCreate = useForm({
         ...emptyDataForm,
     });
 
-    let formEdit = useForm({
-        ...emptyDataForm,
-    });
-
     let showModal = false;
-    $: showModalCreateSpecialties = false;
     let selectedRow = { status: false, id: 0 };
 
     document.addEventListener("keydown", ({ key }) => {
@@ -66,7 +46,10 @@
     function handleSubmit(event) {
         event.preventDefault();
         $formCreate.clearErrors();
-        if (submitStatus == "Crear" &&  $page.props.auth.permissions.find((p) => p == "create-users")) {
+        if (
+            submitStatus == "Crear" &&
+            $page.props.auth.permissions.find((p) => p == "create-users")
+        ) {
             $formCreate.post("/admin/usuarios", {
                 onError: (errors) => {
                     if (errors.data) {
@@ -82,7 +65,10 @@
                     showModal = false;
                 },
             });
-        } else if (submitStatus == "Editar" && $page.props.auth.permissions.find((p) => p == "update-users")) {
+        } else if (
+            submitStatus == "Editar" &&
+            $page.props.auth.permissions.find((p) => p == "update-users")
+        ) {
             $formCreate.put(`/admin/usuarios/${$formCreate.id}`, {
                 onError: (errors) => {
                     if (errors.data) {
@@ -105,7 +91,8 @@
     function handleDelete(id) {
         if ($page.props.auth.permissions.find((p) => p == "update-users")) {
             $formCreate.delete(`/admin/usuarios/${id}`, {
-                onBefore: () => confirm(`¿Está seguro de eliminar a este usuario?`),
+                onBefore: () =>
+                    confirm(`¿Está seguro de eliminar a este usuario?`),
                 onError: (errors) => {
                     if (errors.data) {
                         displayAlert({ type: "error", message: errors.data });
@@ -119,107 +106,108 @@
                     selectedRow = { status: false, id: 0, row: {} };
                 },
             });
-
         }
     }
 
     function fillFormToEdit() {
         submitStatus = "Editar";
-        $formCreate.reset();
         showModal = true;
     }
 
     function acept(id) {
         if ($page.props.auth.permissions.find((p) => p == "update-users")) {
-            $formCreate.post(`/admin/usuarios/solicitudes/aceptar/${selectedRow.id}`, {
-                onBefore: () => confirm(`¿Está seguro de aceptar a este usuario?`),
-                onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
+            $formCreate.post(
+                `/admin/usuarios/solicitudes/aceptar/${selectedRow.id}`,
+                {
+                    onBefore: () =>
+                        confirm(`¿Está seguro de aceptar a este usuario?`),
+                    onError: (errors) => {
+                        if (errors.data) {
+                            displayAlert({
+                                type: "error",
+                                message: errors.data,
+                            });
+                        }
+                    },
+                    onSuccess: (mensaje) => {
+                        displayAlert({
+                            type: "success",
+                            message: mensaje.props.flash.message,
+                        });
+                        selectedRow = { status: false, id: 0, row: {} };
+                    },
                 },
-                onSuccess: (mensaje) => {
-                    displayAlert({
-                        type: "success",
-                        message:mensaje.props.flash.message,
-                    });
-                    selectedRow = { status: false, id: 0, row: {} };
-                },
-            });
-
+            );
         }
     }
 
     let submitStatus = "Crear";
     let selectSpecialityModal = false;
     let filteredSpecialities = [];
-
-    $: if ($formCreate.specialties) {
-        filteredSpecialities = instituteSpecialities.filter(
-            (obj) =>
-                !$formCreate.specialties.some((speci) => speci.id == obj.id),
-        );
-    }
 </script>
 
 <svelte:head>
     <title>Usuarios</title>
 </svelte:head>
 
- 
 {#if $page.props.auth.permissions.find((p) => p == "create-users")}
     <Modal bind:showModal modalClasses={"max-w-[560px]"}>
         <form
-        id="a-form"
-        on:submit={handleSubmit}
-        action=""
-        class="w-full px-5 mt-2 md:grid md:grid-cols-2 gap-x-5 p-6 pt-0 rounded-md"
-    >
-        <div class="mt-4 col-span-2"></div>
-        <Input
-            type="text"
-            required={true}
-            label={"Nombres"}
-            bind:value={$formCreate.name}
-            error={$formCreate.errors?.name}
-        />
-        <Input
-            type="text"
-            required={true}
-            label={"Apellidos"}
-            bind:value={$formCreate.last_name}
-            error={$formCreate.errors?.last_name}
-        />
-        <Input
-            type="email"
-            label="correo"
-            bind:value={$formCreate.email}
-            error={$formCreate.errors?.email}
-        />
-        <Input
-            type="number"
-            required={true}
-            label={"Cédula"}
-            bind:value={$formCreate.ci}
-            error={$formCreate.errors?.ci}
-        />
-        <Input
-            type="tel"
-            label={"Teléfono"}
-            bind:value={$formCreate.phone_number}
-            error={$formCreate.errors?.phone_number}
-        />
-        <Input
-            type="select"
-            required={true}
-            label={"Tipo de Usuario"}
-            bind:value={$formCreate.role_name}
-            error={$formCreate.errors?.role_name}
+            id="a-form"
+            on:submit={handleSubmit}
+            action=""
+            class="w-full px-5 mt-2 md:grid md:grid-cols-2 gap-x-5 p-6 pt-0 rounded-md"
         >
-            <option value="doctor">Doctor</option>
-            <option value="admin">Admin</option>
-        </Input>
-        {#if $formCreate.role_name == "doctor"}
+            <div class="mt-4 col-span-2"></div>
+            <Input
+                type="text"
+                required={true}
+                label={"Nombres"}
+                bind:value={$formCreate.name}
+                error={$formCreate.errors?.name}
+            />
+            <Input
+                type="text"
+                required={true}
+                label={"Apellidos"}
+                bind:value={$formCreate.last_name}
+                error={$formCreate.errors?.last_name}
+            />
+            <Input
+                type="email"
+                label="correo"
+                bind:value={$formCreate.email}
+                error={$formCreate.errors?.email}
+            />
+            <Input
+                type="number"
+                required={true}
+                label={"Cédula"}
+                bind:value={$formCreate.ci}
+                error={$formCreate.errors?.ci}
+            />
+            <Input
+                type="tel"
+                label={"Teléfono"}
+                bind:value={$formCreate.phone_number}
+                error={$formCreate.errors?.phone_number}
+            />
+            <Input
+                type="select"
+                required={true}
+                label={"Tipo de Usuario"}
+                bind:value={$formCreate.role_name}
+                error={$formCreate.errors?.role_name}
+            >
+                <option value="doctor">Doctor</option>
+                <option value="admin">Admin</option>
+            </Input>
+            <Input
+                label={"Matrícula médica"}
+                required={true}
+                bind:value={$formCreate.medical_license}
+                error={$formCreate.errors?.medical_license}
+            />
             <Input
                 type="select"
                 required={true}
@@ -231,8 +219,7 @@
                     <option value={speci.id}>{speci.name}</option>
                 {/each}
             </Input>
-        {/if}
-    </form>
+        </form>
         <input
             form="a-form"
             slot="btn_footer"
@@ -240,10 +227,6 @@
             value={$formCreate.processing ? "Cargando..." : submitStatus}
             class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
         />
-    </Modal>
-
-    <Modal bind:showModal={showModalCreateSpecialties}>
-        <Especialidades {instituteSpecialities} {specialities} {data} />
     </Modal>
 {/if}
 
@@ -279,14 +262,8 @@
         </button>
         <!-- svelte-ignore missing-declaration -->
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <a
-            class="cursor-pointer border-b py-2 px-3 hover:bg-color4"
-            on:click={() => (showModalCreateSpecialties = true)}
-            >Especialidades de la institución</a
-        >
     </div>
 {/if}
-
 
 <div class="flex">
     <div
@@ -302,14 +279,14 @@
             Usuarios aceptados
         </button>
         <button
-        on:click={(e) => {
-            router.get(`${$page.url}`, {requests: true});
-        }}
-        class="filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
-        class:bg-gray-200={data.requests}
-    >
-        Solicitudes
-    </button>
+            on:click={(e) => {
+                router.get(`${$page.url}`, { requests: true });
+            }}
+            class="filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
+            class:bg-gray-200={data.requests}
+        >
+            Solicitudes
+        </button>
     </div>
 </div>
 <Table
@@ -319,8 +296,11 @@
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.id);
     }}
-    selectedRowOptions={{"editar": !data.requests ? true : false, "eliminar": !data.requests ? true : false,
-        "aceptar": data.requests ? true : false, "rechazar": data.requests ? true : false,
+    selectedRowOptions={{
+        editar: !data.requests ? true : false,
+        eliminar: !data.requests ? true : false,
+        aceptar: data.requests ? true : false,
+        rechazar: data.requests ? true : false,
     }}
     pagination={false}
 >
@@ -340,33 +320,36 @@
         {#each dataTable as row, i}
             <tr
                 on:click={(e) => {
-
-                  if ($page.props.auth.permissions.find((p) => p == "create-users")) {
-                      if (row.id != selectedRow.id) {
-                          selectedRow = {
-                              status: true,
-                              id: row.id,
-                              title: row.title,
-                          };
-                          $formCreate.defaults({
-                              ...row,
-                              specialties_ids: row.specialties.map(
-                                  (obj) => obj.id,
-                              ),
-                          });
-                          $formCreate.clearErrors();
-                      } else {
-                          selectedRow = {
-                              status: false,
-                              id: 0,
-                              title: "",
-                          };
-                          $formCreate.defaults({
-                              ...emptyDataForm,
-                          });
-                      }
-
-                  }
+                    if (
+                        $page.props.auth.permissions.find(
+                            (p) => p == "create-users",
+                        )
+                    ) {
+                        if (row.id != selectedRow.id) {
+                            selectedRow = {
+                                status: true,
+                                id: row.id,
+                                title: row.title,
+                            };
+                            $formCreate = {
+                                ...$formCreate,
+                                ...row,
+                                specialty_id: row.specialty.id
+                            };
+                            console.log($formCreate);
+                            
+                            $formCreate.clearErrors();
+                        } else {
+                            selectedRow = {
+                                status: false,
+                                id: 0,
+                                title: "",
+                            };
+                            $formCreate.defaults({
+                                ...emptyDataForm,
+                            });
+                        }
+                    }
                 }}
                 class={`cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
             >
@@ -378,10 +361,10 @@
                 <td>{row.phone_number}</td>
                 <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
                 <td class="flex gap-3"
-                    >{#if row.specialty.name}
-                            <span class="px-3 py-1 rounded-full bg-gray-100">
-                                {row.specialty.name + " "}
-                            </span>
+                    >{#if row.specialty}
+                        <span class="px-3 py-1 rounded-full bg-gray-100">
+                            {row.specialty.name + " "}
+                        </span>
                     {:else}
                         <span class="opacity-60">No tiene</span>
                     {/if}

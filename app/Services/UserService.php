@@ -13,6 +13,7 @@ class UserService
     public function getUsers($params)
     {
         $users = User::query()
+        ->where('status',1)
         ->when($params['search'] ?? null, function($query, $search){
             
             $query->where('search','like','%' . $search . '%');
@@ -29,6 +30,7 @@ class UserService
             $query->where('id',$userID);
         })
         ->with('specialty', 'roles')
+        ->orderBy('id','desc')
         ->get();
 
         return new UserCollection($users);
@@ -44,6 +46,7 @@ class UserService
             "email" => $data['email'],
             "password" => Hash::make($data['ci']),
             "phone_number" => $data['phone_number'],
+            "medical_license" => $data['medical_license'],
             "specialty_id" => $data['specialty_id'],
             "search" => $this->generateSearch($data),
         ]);
@@ -64,6 +67,7 @@ class UserService
             "last_name" => $data['last_name'],
             "email" => $data['email'],
             "specialty_id" => $data['specialty_id'],
+            "medical_license" => $data['medical_license'],
             "search" => $this->generateSearch($data),
         ]);
 
@@ -80,8 +84,26 @@ class UserService
         $authUserId = auth()->id();
         $usuario->id == $authUserId ? throw new Exception("No puedes eliminar tu propio usuario", 401) : null;
 
-        $usuario->roles()->detach();
-        $usuario->delete();
+        $usersDeleted = User::where('status',0)->count();
+        $number = $usersDeleted + 1;
+
+        $fields = $usuario->getAttributes();
+        unset(
+            $fields['id'],
+            $fields['status'],
+            $fields['search'],
+            $fields['specialty_id'],
+            $fields['name'],
+            $fields['last_name'],
+            );
+        
+        $usuario->update(array_map(function ($value) use ($number){
+
+            return $value .'deleted-'.$number;
+
+        }, $fields));
+
+        $usuario->update(['status' => 0]);
 
         return 0;
     }
@@ -108,7 +130,10 @@ class UserService
                  .$data['name'] . " "
                  .$data['last_name'] . " "
                  .$data['email'] . " "
-                 .$data['phone_number'] . " ";
+                 .$data['phone_number'] . " "
+                 .$data['medical_license'] . " "
+
+                 ;
         
         return $search;
     }

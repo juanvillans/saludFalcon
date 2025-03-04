@@ -13,24 +13,29 @@ class StatusCaseSeeder extends Seeder
      */
     public function run(): void
     {
+
         StatusCase::create([
-            'name' => 'Egreso: Alta médica',
+            'name' => 'Egresado: Alta M.',
         ]);
 
         StatusCase::create([
-            'name' => 'Egreso: Alta contraindicación',
+            'name' => 'Egresado: Alta Co.',
         ]);
 
         StatusCase::create([
-            'name' => 'Admitido',
+            'name' => 'Transferido',
         ]);
 
         StatusCase::create([
-            'name' => 'Ingreso',
+            'name' => 'Ingresado',
         ]);
 
         StatusCase::create([
-            'name' => 'Defución',
+            'name' => 'Fallecido',
+        ]);
+
+        StatusCase::create([
+            'name' => 'Permanece en',
         ]);
         
     }

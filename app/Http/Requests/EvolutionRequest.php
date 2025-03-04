@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RequestUserRequest extends FormRequest
+class EvolutionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,14 +23,13 @@ class RequestUserRequest extends FormRequest
     {
         return [
 
-            'ci' => ['required','unique:users,ci'],
-            'name' => ['required'],
-            'last_name' => ['required'],
-            "email" => ['required','email','unique:users,email'],
-            "medical_license" => ['required', 'max:50', 'string', 'unique:users,medical_license'],
-            'phone_number' => ['required'],
-            'specialty_id' => ['required'],
-        
+            "diagnosis" => ['required'],
+            "treatment" => ['required'],
+            "status" => ['required'],
+            "area_id" => ['sometimes'],
+            "destiny" => ['sometimes'],
+            "departure_date" => ['sometimes'],
+            "departure_hour" => ['sometimes'],
         ];
     }
 }

@@ -6,20 +6,35 @@ use App\Http\Resources\CaseCollection;
 use App\Http\Resources\PatientResource;
 use App\Models\EmergencyCase;
 use App\Models\Patient;
+use App\Services\EvolutionService;
 use Exception;
 
 class EmergencyCaseService
 {	
+
+    protected $STATUS_MEDICAL_DISPATCH = 1;
+    protected $STATUS_CONTRAMEDICAL_DISPATCH = 2;
+    protected $STATUS_DECEASED = 5; 
+
+
     public function getCases($params)
     {
-        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase','condition', 'admittedArea')
+        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase','condition')
                 ->when($params['status'],function($query) use ($params){
                     $query->where('current_status', $params['status']);
                 })
                 ->when($params['search'],function($query) use ($params){
 
-                    $query->whereHas('patient',function($query2) use ($params){
-                        $query2->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($params['search']) . '%']);
+                    $query->where(function($query) use ($params) {
+                        
+                        $query->whereHas('patient', function($query2) use ($params) {
+                            $query2->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($params['search']) . '%']);
+                        });
+
+                        $query->orWhereHas('user', function($query3) use ($params) {
+                            $query3->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($params['search']) . '%']);
+                        });
+
                     });
                 })
                 ->orderBy('id', 'DESC')
@@ -35,13 +50,15 @@ class EmergencyCaseService
         if($patientID == null)
             $patientID = $this->createPatient($data);
 
-        EmergencyCase::create([
+
+        $this->validateIfExistsOpenCase($patientID);
+
+        $caseCreated = EmergencyCase::create([
 
             'patient_id' => $patientID,
             'current_patient_condition_id' => $data['current_patient_condition_id'],
             'user_id' => $data['user_id'],
             'area_id' => $data['area_id'],
-            'admitted_area_id' => $data['admitted_area_id'],
             'entry_date' => $data['entry_date'],
             'entry_hour' => $data['entry_hour'],
             'current_status' => $data['current_status'],
@@ -52,6 +69,19 @@ class EmergencyCaseService
             'treatment' => $data['treatment'],
             'destiny' => $data['destiny'],
         ]);
+
+        $evolutionService = new EvolutionService;
+
+        if($caseCreated->current_status == $this->STATUS_MEDICAL_DISPATCH || 
+           $caseCreated->current_status == $this->STATUS_CONTRAMEDICAL_DISPATCH ||
+           $caseCreated->current_status == $this->STATUS_DECEASED 
+       )
+            $evolutionService->createEvolutionFromCaseButDischarge($caseCreated);
+
+        else{
+
+            $evolutionService->createEvolutionFromCase($caseCreated);
+        }
 
 
         return 0;
@@ -97,6 +127,7 @@ class EmergencyCaseService
                 'municipality_id' => $data['municipality_id'],
                 'parish_id' => $data['parish_id'],
                 'address' => $data['patient_address'],
+                'search' => $data['patient_name'] . ' ' . $data['patient_last_name'] . $data['patient_ci'], 
             ]);
 
 
@@ -111,6 +142,25 @@ class EmergencyCaseService
             throw new Exception("Esta cédula ya se encuentra registrada", 403);
         
         return 0;
+    }
+
+    private function validateIfExistsOpenCase($patientID){
+
+        $case = EmergencyCase::where('patient_id',$patientID)
+        ->orderBy('id','desc')
+        ->first();
+
+        if(!isset($case->id))
+            return 0;
+
+        if($case->current_status != $this->STATUS_MEDICAL_DISPATCH && 
+           $case->current_status != $this->STATUS_CONTRAMEDICAL_DISPATCH && 
+           $case->current_status != $this->STATUS_DECEASED  
+          )
+        {
+            throw new Exception("Este paciente tiene un caso sin cerrar: <a href='" . route('caseDetail', ['case' => $case->id]) ."' target='_blank'> Ver caso </a>" , 400);
+            
+        }
     }
     
    

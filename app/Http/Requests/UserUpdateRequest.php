@@ -32,6 +32,7 @@ class UserUpdateRequest extends FormRequest
             "last_name" => ['required','max:40','string'],
             'email'=> ['required','email',Rule::unique(User::class)->ignore($userId)],
             "phone_number" => ['required','max:14','string'],
+            "medical_license" => ['required', 'max:50', 'string', Rule::unique(User::class)->ignore($userId)],
             "role_name" => ['required'],
             "specialties" => ['sometimes'],
         ];

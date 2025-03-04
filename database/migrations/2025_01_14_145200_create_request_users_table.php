@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('phone_number');
             $table->foreignId('specialty_id');
             $table->string('search');
+            $table->string('medical_license',50);
             $table->timestamps();
         });
     }

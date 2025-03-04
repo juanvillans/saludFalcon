@@ -25,7 +25,8 @@ class UserSeeder extends Seeder
             "password" => Hash::make('admin'),
             "phone_number" => "04125800610",
             "specialty_id" => 1,
-            "search" => "Juan Donquis juandonquis07@gmail.com 30847627 04125800610"
+            "medical_license" => "00001",
+            "search" => "Juan Donquis juandonquis07@gmail.com 30847627 04125800610 00001"
         ]);
 
         $user2 = User::create([
@@ -37,7 +38,8 @@ class UserSeeder extends Seeder
             "password" => Hash::make('admin'),
             "phone_number" => "04124393123",
             "specialty_id" => 1,
-            "search" => "Juan Villasmil juanvillans16@gmail.com 27253194 04124393123"
+            "medical_license" => "00002",
+            "search" => "Juan Villasmil juanvillans16@gmail.com 27253194 04124393123 00002"
         ]);
 
         $user3 = User::create([
@@ -49,7 +51,8 @@ class UserSeeder extends Seeder
             "password" => Hash::make('doctor'),
             "phone_number" => "04143672200",
             "specialty_id" => 2,
-            "search" => "Juan Rodriguez joserodriguez@gmail.com 27253194 04143672200"
+            "medical_license" => "00003",
+            "search" => "Juan Rodriguez joserodriguez@gmail.com 27253194 04143672200 00003"
         ]);
 
         $user1->assignRole('admin');

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Resources\PatientResource;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
@@ -18,7 +19,6 @@ class EmergencyCase extends Model
         'current_patient_condition_id',
         'user_id',
         'area_id',
-        'admitted_area_id',
         'entry_date',
         'entry_hour',
         'current_status',
@@ -31,13 +31,15 @@ class EmergencyCase extends Model
 
     ];
 
+    public function getFormattedEntryDateAttribute(){
+        
+        return Carbon::parse($this->entry_date)->format('d M Y');
+    }
+
     public function area(){
         return $this->belongsTo(Area::class);
     }
 
-    public function admittedArea(){
-        return $this->belongsTo(Area::class,'admitted_area_id','id');
-    }
 
     public function condition(){
         return $this->belongsTo(PatientCondition::class,'current_patient_condition_id','id');
@@ -54,7 +56,7 @@ class EmergencyCase extends Model
     }
 
     public function evolutions(){
-        return $this->hasMany(Evolution::class);
+        return $this->hasMany(Evolution::class)->orderBy('id','desc');
     }
 
     public function statusCase(){

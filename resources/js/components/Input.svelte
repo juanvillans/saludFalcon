@@ -19,7 +19,9 @@
 </script>
 
 <style>
-    
+     input:read-only, select:disabled {
+        background-color: transparent;
+    }
     input,
     textarea,
     select {
@@ -27,9 +29,7 @@
         border-radius: 5px;
     }
     
-    option {
-        background: #ffffff;
-    }
+    
     input:focus,
     textarea:focus,
     select:focus {
@@ -73,7 +73,7 @@
 
                 
 <div class={`text-left   ${theme == "dark" ? "bg-color1 text-gray-100" : ''}${classes ? classes : "mt-5 w-full"}`} >
-    <label for={label} class={` w-full text-gray-900 ${theme == "dark" ? "bg-color1 text-gray-100" : ''} ${labelClasses}`} {placeholder}>{label}</label>
+    <label for={label} class={`font-medium w-full text-gray-900 ${theme == "dark" ? "bg-color1 text-gray-100" : ''} ${labelClasses}`} {placeholder}>{label}</label>
     <div class="relative w-full parent_div">
         {#if type === "textarea"}
             <textarea readonly={readOnly} class={`mb-1.5 overflow-y-auto bg-gray-200 w-full p-3 py-4`} bind:value id={label} ></textarea>
