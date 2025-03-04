@@ -62,16 +62,7 @@
             $page.props.auth.rol[0] == "admin"
                 ? -1
                 : $page.props.auth.last_name,
-        // user_ci: $page.props.auth.last_name,
-        // history_number: "",
-        // marital_status: "",
-        // current_address: "",
-        // economic_classification: "",
-        // nationality: "",
-        // place_of_birth: "",
-        // notify_in_case_of_emergency: "",
-        // relationship: "",
-        // profession: "",
+    
         reason: "al paciente le duele la barriga",
         diagnosis: "tiene parasitos",
         treatment: "semillas de auyama y ajo crudo",

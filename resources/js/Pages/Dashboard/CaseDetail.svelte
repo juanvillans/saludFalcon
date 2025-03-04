@@ -32,7 +32,6 @@
             console.error("Error loading data:", error);
         }
     });
-    console.log(localData);
     $: if (patient) {
         countingCases = caseDetail.data.cases.length;
     }
@@ -41,7 +40,6 @@
     let openAccordeon = -1;
 
     let editStatus = false;
-    $: console.log(caseDetail.data);
     function convertTo12HourFormat(time24) {
         console.log(time24);
         // Split the input into hours and minutes
