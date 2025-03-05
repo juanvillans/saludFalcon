@@ -155,7 +155,7 @@
             class=" px-5 mt-4 gap-x-5 text-black p-6 pt-2 border-color2 rounded-md"
         >
             <legend
-                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color2 text-gray-100"
+                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color3 text-gray-100"
                 >DATOS DEL PACIENTE</legend
             >
             <div class="flex gap-1 items-end text-black">
@@ -265,24 +265,28 @@
     </form>
 
     <form on:submit={submitCases} class="order-1 lg:order-2 w-full">
-        <fieldset class=" sm:px-5 md:mt-4 gap-x-5 pt-2 bg-white rounded-xl">
+        <fieldset class=" sm:px-5 md:mt-4 gap-x-5 pt-2  bg-gray-200 rounded-2xl pb-4">
             <legend
                 class="relative text-center px-5 py-1 uppercase pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >CASO {caseDetail.data.id}
             </legend>
-            <div class="col-span-2 flex gap-5">
-                <data value="">
-                    <h3 class="font-bold">Duración total:</h3>
+            <div class="col-span-2 flex gap-5 md:mt-5">
+                <div value="" class="neumorphism2 p-3 rounded-2xl">
+                    <h3 class="font-bold text-gray-800 text-sm ">Duración total:</h3>
                     <p>3hrs</p>
-                </data>
-                <data value="">
-                    <h3 class="font-bold">Nro de evoluciones</h3>
+                </div>
+                <div value="" class="neumorphism2 p-3 rounded-2xl">
+                    <h3 class="font-bold text-gray-800 text-sm ">Nro de evoluciones</h3>
                     <p>7</p>
-                </data>
+                </div>
+                <div value="" class="neumorphism2 p-3 rounded-2xl">
+                    <h3 class="font-bold text-gray-800 text-sm ">Nro de Interconsultas</h3>
+                    <p>7</p>
+                </div>
             </div>
             <div class=" mt-4 gap-x-5 w-full pt-2 bg-gray-10">
                 {#if isOpenCreateEvolution}
-                    <div class="bg p-4 mb-3 rounded-lg">
+                    <div class="bg p-4 mb-3 md:mb-5 lg:mb-7 rounded-lg neumorphism bg-gray-50">
                         <div class="">
                             <div class="grid-cols-2 md:grid gap-x-5">
                                 <Input
@@ -405,7 +409,7 @@
                         <div class="flex justify-between items-center">
                             <button
                                 type="button"
-                                class=""
+                                class="hover:bg-gray-300 rounded-full p-2 px-3"
                                 on:click={() => (isOpenCreateEvolution = false)}
                                 >Cancelar</button
                             >
@@ -414,14 +418,14 @@
                                 value={$evolutionForm.processing
                                     ? "Cargando..."
                                     : "Guardar"}
-                                class="hover:bg-color3 hover:text-white duration-200 mt-3 px-4 md:px-20 bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
+                                class="bg-color3 text-white duration-200 mt-3 px-4 md:px-20 hover:bg-color4 hover:text-black font-bold py-3 rounded-md cursor-pointer"
                             />
                         </div>
                     </div>
                 {:else}
                     <button
                         on:click={(e) => (isOpenCreateEvolution = true)}
-                        class="p-1 rounded shadow-md hover:bg-gray-100 hover: px-3 border-4 border-color3 font-bold text-color3 mb-3"
+                        class="btn_create inline-block p-2 px-3 mb-3 lg:mb-6 shadow-sm "
                         >Crear nueva evolución</button
                     >
                 {/if}
@@ -429,10 +433,10 @@
             <ul>
                 {#each caseDetail.data.evolutions as evolution, i (evolution.id)}
                     <li
-                        class="bg-gray-50 mb-3 border rounded-lg overflow-hidden"
+                        class="bg-gray-50 mb-3 border rounded-lg overflow-hidden neumorphism"
                     >
                         <span
-                            class="flex items-center gap-2 p-2 justify-between"
+                            class="flex items-center gap-2 p-2 md:pr-4 lg:pr-6 justify-between"
                         >
                             <div
                                 class="flex flex-col sm:flex-row items-center gap-2 p-2 justify-between"
@@ -466,12 +470,8 @@
                                         EVOL
                                     </span>
                                 {/if}
-                                <span class="flex items-center"
-                                    ><iconify-icon
-                                        icon="mdi:doctor"
-                                        width="20"
-                                        height="20"
-                                    ></iconify-icon>
+                                <span class="flex items-center">
+                                    Dr(a)
                                     {getFirstName(evolution.user_name)}
                                     {getFirstName(evolution.user_last_name)}
                                     <span class="text-xs ml-1">
@@ -482,10 +482,10 @@
                             </div>
                         </span>
 
-                        <div class="bg-white p-2.5 space-y-2">
+                        <div class="bg-white p-3 md:p-4 lg:p-5  space-y-2">
                             {#if evolution.status_id == 4}
                             <div>
-                                <h3 class="font-bold">
+                                <h3 class="font-semibold">
                                     Hora y fecha:
                                 </h3>
                                 <p class="text-dark">
@@ -493,7 +493,7 @@
                                 </p>
                             </div>
                                 <div>
-                                    <h3 class="font-bold">
+                                    <h3 class="font-semibold">
                                         Motivo de consulta:
                                     </h3>
                                     <p class="text-dark">
@@ -503,7 +503,7 @@
                             {/if}
                             {#if evolution.status_id !== 6 && evolution.status_id !== 4 }
                                     <div>
-                                        <h3 class="font-bold">
+                                        <h3 class="font-semibold">
                                             Hora y fecha:
                                         </h3>
                                         <p class="text-dark">
@@ -513,7 +513,7 @@
                                 {/if}
                             <div>
                                 <div class="flex">
-                                    <h3 class="font-bold">Diagnostico:</h3>
+                                    <h3 class="font-semibold">Diagnostico:</h3>
 
                                     <div>
                                         <span
@@ -534,7 +534,7 @@
 
                             <div>
                                 {#if evolution.treatment}
-                                    <h3 class="font-bold">
+                                    <h3 class="font-semibold">
                                         Orden médica de ingreso:
                                     </h3>
                                     <p class="text-dark">
