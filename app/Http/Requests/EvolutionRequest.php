@@ -25,11 +25,13 @@ class EvolutionRequest extends FormRequest
 
             "diagnosis" => ['required'],
             "treatment" => ['required'],
-            "status" => ['required'],
+            "status_id" => ['required'],
+            "patient_condition_id" => ['required'],
             "area_id" => ['sometimes'],
             "destiny" => ['sometimes'],
             "departure_date" => ['sometimes'],
             "departure_hour" => ['sometimes'],
+        
         ];
     }
 }

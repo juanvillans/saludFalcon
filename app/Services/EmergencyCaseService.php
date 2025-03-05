@@ -23,6 +23,12 @@ class EmergencyCaseService
                 ->when($params['status'],function($query) use ($params){
                     $query->where('current_status', $params['status']);
                 })
+                ->when($params['condition'],function($query) use ($params){
+                    $query->where('current_patient_condition_id', $params['condition']);
+                })
+                ->when($params['area_id'],function($query) use ($params){
+                    $query->where('area_id', $params['area_id']);
+                })
                 ->when($params['search'],function($query) use ($params){
 
                     $query->where(function($query) use ($params) {

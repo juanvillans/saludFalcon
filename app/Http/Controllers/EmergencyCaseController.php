@@ -24,6 +24,7 @@ class EmergencyCaseController extends Controller
 {
     private $params = [];
     private EmergencyCaseService $emergencyCaseService;
+    private EvolutionService $evolutionService;
 
 
     public function __construct()
@@ -47,19 +48,16 @@ class EmergencyCaseController extends Controller
         if($this->params['patient_ci'] != null)
             $patient = $this->emergencyCaseService->getPatientByCI($this->params);
         
-        $areas = Area::get();
-        $muncipalities = Municipality::with('parishes')->get();
-        $statutes = StatusCase::get();
-        $conditions = PatientCondition::get();
         
         return inertia('Dashboard/Cases',[
             'data' => $emergencyCases,
             'patient' => $patient ?? null,
-            'areas' => $areas,
-            'municipalities' => $muncipalities,
-            'statutes' => $statutes,
-            'conditions' => $conditions,
-            'filters' => ['status' => $request->input('status') ?? ''],
+            'filters' => [
+                'status' => $request->input('status') ?? '',
+                'condition' => $request->input('condition') ?? '',
+                'area_id' => $request->input('area_id') ?? '',
+                'search' => $request->input('search') ?? '',
+            ],
         ]);
 
     }
@@ -153,7 +151,7 @@ class EmergencyCaseController extends Controller
         {
             $data = $request->all();
 
-            // $this->evolutionService->addEvolution($case,$data);
+            $this->evolutionService->addEvolution($case,$data);
 
             DB::commit();
 
@@ -164,6 +162,8 @@ class EmergencyCaseController extends Controller
         {   
             
             DB::rollback();
+
+            Log::info(json_encode($e->getMessage(), JSON_PRETTY_PRINT));
             
             return redirect()->back()->withErrors(['data' => $e->getMessage()]);
         }
