@@ -41,8 +41,8 @@ class EmergencyCaseController extends Controller
             'page' => $request->input('page') ?? null,
             'per_page' => $request->input('per_page') ?? null,
             'status' => $request->input('status') ?? null,
-            'condition' => $request->input('status') ?? null,
-            'area_id' => $request->input('status') ?? null,
+            'condition' => $request->input('condition') ?? null,
+            'area_id' => $request->input('area_id') ?? null,
             'patient_ci' => $request->input('ci') ?? null,
         ];
 
