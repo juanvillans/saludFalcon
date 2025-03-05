@@ -19,7 +19,7 @@ class EmergencyCaseService
 
     public function getCases($params)
     {
-        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area', 'evolutions','statusCase','condition')
+        $cases = EmergencyCase::with('patient.municipality','patient.parish','user.specialty','area','statusCase','condition')
                 ->when($params['status'],function($query) use ($params){
                     $query->where('current_status', $params['status']);
                 })
