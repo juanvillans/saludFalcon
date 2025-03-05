@@ -30,7 +30,6 @@
 
 
     // $: console.log($page.props.auth);
-    $: console.log(localData, statutes);
     // Update data based on the current state of `data.specialties`
     const today = new Date();
     // Format the date to YYYY-MM-DD
@@ -713,7 +712,9 @@
 {#if visulizateType == "table"}
     <Table
         filtersOptions={{
-            status: localData?.statutes || [],
+            status: {label: "Estado", options: localData?.statutes || []} || {},
+            area_id: {label: "Última area", options: localData?.areas || []} || {},
+            condition: {label: "Diagnóstico", options: localData?.conditions || []} || {},
         }}
         allowSearch={false}
     >
@@ -754,7 +755,7 @@
                             <!-- {formatDateSpanish(row.entry_date)} -->
                         </td>
 
-                        <td style="white-space: normal;">
+                        <td style="white-space: normal;" class="min-w-[150px]">
                             <StatusColor
                                 status={{
                                     name: row?.current_status_name,
@@ -765,6 +766,7 @@
                                 <!-- {#if row?.current_status == "3"}
                                     a {row?.admitted_area_name}
                                 {/if} -->
+                                <span class="inline-block flex">
                                 {#if row.current_status== 1 || row.current_status== 2 || row.current_status== 6}
                                     de
                                 {:else if row.current_status== 4 || row.current_status== 5}
@@ -772,7 +774,9 @@
                                 {:else if row.current_status== 3}
                                     a
                                 {/if}
-                                {row.area_name}
+                                    {row.area_name}
+
+                                </span>
                             
                         </td>
 
