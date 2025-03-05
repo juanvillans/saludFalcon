@@ -11,5 +11,6 @@ class PatientCondition extends Model
 
     protected $fillable = [
         'name',
+        'description',
     ];
 }
