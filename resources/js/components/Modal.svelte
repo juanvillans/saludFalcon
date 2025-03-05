@@ -5,6 +5,7 @@
     export let showModal = false;
     export let onClose;
     export let modalClasses = '';
+    export let showCancelButton = true;
   
     let dialog;
   
@@ -44,9 +45,11 @@
         <slot />
         <hr class="my-4" />
         <div class="flex justify-between gap-12">
-          <button class="text-gray-400" on:click={() => dialog.close()}>
+          {#if showCancelButton}
+          <button class="text-gray-500 hover:bg-gray-300 rounded-full p-2 px-3" on:click={() => dialog.close()}>
             Cancelar
           </button>
+          {/if}
           <slot name="btn_footer" />
         </div>
       </div>

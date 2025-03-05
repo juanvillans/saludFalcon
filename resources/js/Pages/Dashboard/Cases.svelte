@@ -30,7 +30,6 @@
 
 
     // $: console.log($page.props.auth);
-    $: console.log(localData, statutes);
     // Update data based on the current state of `data.specialties`
     const today = new Date();
     // Format the date to YYYY-MM-DD
@@ -56,21 +55,6 @@
         municipality_id: 14,
         parish_id: 0,
 
-<<<<<<< HEAD:resources/js/Pages/Dashboard/Patient.svelte
-        user_id:
-            $page.props.auth.rol[0] == "admin" ? -1 : $page.props.auth.user_id,
-        user_name:
-            $page.props.auth.rol[0] == "admin" ? -1 : $page.props.auth.name,
-        user_last_name:
-            $page.props.auth.rol[0] == "admin"
-                ? -1
-                : $page.props.auth.last_name,
-    
-        reason: "al paciente le duele la barriga",
-        diagnosis: "tiene parasitos",
-        treatment: "semillas de auyama y ajo crudo",
-        current_status: "1",
-=======
         user_id: $page.props.auth.user_id,
         user_name: $page.props.auth.name,
         user_last_name: $page.props.auth.last_name,
@@ -78,7 +62,6 @@
         diagnosis: "",
         treatment: "",
         current_status: "",
->>>>>>> 7f48991a154f1b1de4bc39dcfb77976b36173a3d:resources/js/Pages/Dashboard/Cases.svelte
         current_patient_condition_id: 1,
         condition: "Inconcluso",
         cases: [],
@@ -729,7 +712,8 @@
 {#if visulizateType == "table"}
     <Table
         filtersOptions={{
-            status: localData?.statutes || [],
+            status: {label: "Estado", options: localData?.statutes || []} || {},
+            condition: {label: "Diagnóstico", options: localData?.conditions || []} || {},
         }}
         allowSearch={false}
     >
@@ -770,7 +754,7 @@
                             <!-- {formatDateSpanish(row.entry_date)} -->
                         </td>
 
-                        <td style="white-space: normal;">
+                        <td style="white-space: normal;" class="min-w-[150px]">
                             <StatusColor
                                 status={{
                                     name: row?.current_status_name,
@@ -781,6 +765,7 @@
                                 <!-- {#if row?.current_status == "3"}
                                     a {row?.admitted_area_name}
                                 {/if} -->
+                                <span class="inline-block flex">
                                 {#if row.current_status== 1 || row.current_status== 2 || row.current_status== 6}
                                     de
                                 {:else if row.current_status== 4 || row.current_status== 5}
@@ -788,7 +773,9 @@
                                 {:else if row.current_status== 3}
                                     a
                                 {/if}
-                                {row.area_name}
+                                    {row.area_name}
+
+                                </span>
                             
                         </td>
 

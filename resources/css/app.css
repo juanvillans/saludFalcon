@@ -14,20 +14,20 @@
 :root {
     --color1: #011140;
     --color2: #397373;
-    --color3: #6595BF;
-    --color4: #C9EBF2;
+    --color3: #6595bf;
+    --color4: #c9ebf2;
     --pink: #ffb4b4;
     --black: #000000;
     --dark: #161616;
-    --white: #FFFFFF;
-    --red: #BF0404;
-    --green: #02731E;
+    --white: #ffffff;
+    --red: #bf0404;
+    --green: #02731e;
     --grayBlue: #c7d2da;
     --ligthGreen: #54ffaf;
     --redLight: #ff6464;
     --background: #ececec;
     --zelle: #6a1ccd;
-    --binance: #F3BA2F;
+    --binance: #f3ba2f;
     --orange: #be5c00;
 }
 .text-editor ul,
@@ -54,7 +54,15 @@
     background: var(--background);
     color: #0c0c0c;
 }
+.neumorphism {
+    border-radius: 37px;
+    /* background: #ececec; */
+    box-shadow: 6px 6px 22px #d0d0d0, -6px -6px 22px #ffffff;
+}
 
+.neumorphism2 {
+    box-shadow: 8px 8px 13px #dcdee2, -8px -8px 13px #eef0f4;
+}
 .cl-content {
     /* resize: both; */
     box-shadow: none !important;
@@ -90,7 +98,6 @@
     }
     .main_and_footer_container::-webkit-scrollbar {
         width: 12px; /* width of the entire scrollbar */
-        
     }
 
     .main_and_footer_container::-webkit-scrollbar-track {
@@ -213,6 +220,7 @@ h1 {
     background: var(--color4);
     font-weight: bold;
     color: var(--color1);
+    border: 1px solid var(--color1);
     /* box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.075); */
     position: relative;
     z-index: 1;
@@ -293,9 +301,7 @@ progress::-webkit-progress-value {
 }
 .condition3 {
     background: var(--orange);
-    
 }
-.condition4  {
+.condition4 {
     background: var(--red);
-    
 }
