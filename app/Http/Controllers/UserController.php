@@ -202,4 +202,17 @@ class UserController extends Controller
 
         return response()->json(['doctors' => $doctors]);
     }
+
+    public function myProfile(){
+
+        
+        $evolutions = $this->userService->getMyEvolutions();
+
+        return inertia('Dashboard/Profile',[
+
+            'data' => [
+                'evolutions' => $evolutions,
+            ]
+        ]);
+    }
 }

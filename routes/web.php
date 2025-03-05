@@ -38,6 +38,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 {
     // Dashboard
     Route::get('/', [AppController::class, 'admin'])->name('admin');
+
+    // My Profile
+    Route::get('/perfil', [UserController::class, 'myProfile'])->name('perfil');
+
    
     // Change password
     Route::get('/cambiar-contraseña', [UserController::class, 'changePasswordIndex'])->name('change-password-index');

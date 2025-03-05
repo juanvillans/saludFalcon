@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
+use App\Models\Evolution;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
@@ -122,6 +123,17 @@ class UserService
 
         return 0;
         
+    }
+
+    public function getMyEvolutions(){
+        $user = auth()->user();
+
+        $evolutions = Evolution::where('user_id',$user->id)
+        ->with('emergencyCase')
+        ->orderBy('id','desc')
+        ->get();
+
+        return $evolutions;
     }
     
     private function generateSearch($data)
