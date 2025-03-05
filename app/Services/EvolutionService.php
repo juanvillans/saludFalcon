@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Evolution;
+use App\Models\User;
 use Exception;
 
 class EvolutionService{
@@ -62,18 +63,18 @@ class EvolutionService{
 
     public function addEvolution($case, $data){
 
-        $is_interconsult = $this->evalIsEvolutionOrInteconsult($case);
+        $areaID = $this->evalIsSameArea($case, $data);
 
         $newEvolution = Evolution::create([
             'emergency_case_id' => $case->id,
             'user_id' => auth()->user()->id,
-            'area_id' => $data['area_id'],
+            'area_id' => $areaID,
             'patient_condition_id' => $data['patient_condition_id'],
             'status_id' => $data['status_id'],
             'diagnosis' => $data['diagnosis'],
             'treatment' => $data['treatment'],
             'destiny' => $data['destiny'] ?? null,
-            'is_interconsult' => $is_interconsult,
+            'is_interconsult' => false,
             'departure_date' => $data['departure_date'] ?? null,
             'departure_hour' => $data['departure_hour'] ?? null,
             ]);
@@ -82,28 +83,23 @@ class EvolutionService{
             'current_patient_condition_id' => $newEvolution->patient_condition_id,
             'area_id' => $newEvolution->area_id,
             'current_status' => $newEvolution->status_id,
-            'departure_date' => $newEvolution->status_id,
-            'departure_hour' => $newEvolution->status_id,
-
-
-
+            'departure_date' => $newEvolution->departure_date,
+            'departure_hour' => $newEvolution->departure_hour,
+            'diagnosis' => $newEvolution->diagnosis,
+            'treatment' => $newEvolution->treatment,
+            'destiny' => $newEvolution->destiny,
         ]);
 
+        return 0;
 
     }
 
-    public function evalIsEvolutionOrInteconsult($case){
-        
-        $doctor = auth()->user();
-        
-        if($doctor->id == $case->user_id)
-            return false;
 
-        $user = User::where('id',$case->user_id)->first();
-        
-        if($doctor->specialty_id == $user->specialty_id)
-            return false;
-        else        
-            return true;
+    public function evalIsSameArea($case, $data){
+
+        if($data['area_id'] != '')  
+            return $data['area_id'];
+        else
+            return $case->area_id;
     }   
 }
