@@ -6,17 +6,16 @@
     import Pagination from "../../components/Pagination.svelte";
     import debounce from "lodash/debounce";
     import Search from "../../components/Search.svelte";
-    import fetchLocalData  from "../../components/localData"
+    import fetchLocalData from "../../components/localData";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router, page } from "@inertiajs/svelte";
     import { construct_svelte_component } from "svelte/internal";
     import axios from "axios";
-    import { onMount } from 'svelte';
+    import { onMount } from "svelte";
 
     export let data = {};
     export let statutes = {};
     let showModalDoctor = false;
-
 
     let localData;
 
@@ -24,10 +23,9 @@
         try {
             localData = await fetchLocalData();
         } catch (error) {
-            console.error('Error loading data:', error);
+            console.error("Error loading data:", error);
         }
     });
-
 
     // $: console.log($page.props.auth);
     // Update data based on the current state of `data.specialties`
@@ -35,11 +33,10 @@
     // Format the date to YYYY-MM-DD
     const formattedDate = today.toISOString().split("T")[0];
 
-    
     function getCurrentHour() {
         const hours = String(today.getHours()).padStart(2, "0");
-    const minutes = String(today.getMinutes()).padStart(2, "0");
-    return `${hours}:${minutes}`;
+        const minutes = String(today.getMinutes()).padStart(2, "0");
+        return `${hours}:${minutes}`;
     }
     let searchedDoctors = [];
 
@@ -154,7 +151,6 @@
         }
     }, 280);
 
-
     function goToDetailsPatientPage(id) {
         router.get("/admin/casos/detalle-caso/" + id);
     }
@@ -182,22 +178,25 @@
         endTime,
         status,
     ) {
-        // Combine date and time strings into a single Date object
-        if (status == "3") {
-            const now = new Date(); // Get the current date and time
-            endDate = now.toISOString().split("T")[0]; // Format to YYYY-MM-DD
-            endTime = now.toTimeString().split(" ")[0].substring(0, 5); // Format to HH:mm
+        
+        if (status == "4") {
+            const now = new Date();
+            endDate = now.toISOString().split("T")[0];
+            endTime = now.toTimeString().split(" ")[0].substring(0, 5);
         }
+
         const startDateTime = new Date(`${startDate}T${startTime}`);
         const endDateTime = new Date(`${endDate}T${endTime}`);
 
-        const diffInMs = endDateTime - startDateTime; // Difference in milliseconds
+        const diffInMs = endDateTime - startDateTime;
         const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
         const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
         const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
         if (diffInDays > 0) {
-            if (diffInHours > 0) {
-                return `${diffInDays} Dia${diffInDays > 1 ? "s" : ""}, ${diffInHours - 24} Hr${diffInHours > 1 ? "s" : ""}`;
+            const remainingHours = diffInHours % 24; // Get the remaining hours after full days
+            if (remainingHours > 0) {
+                return `${diffInDays} Dia${diffInDays > 1 ? "s" : ""}, ${remainingHours} Hr${remainingHours > 1 ? "s" : ""}`;
             } else {
                 return `${diffInDays} Dia${diffInDays > 1 ? "s" : ""}`;
             }
@@ -335,7 +334,6 @@
                 bind:value={$form.municipality_id}
                 error={$form.errors?.municipality_id}
                 disabled={$form.patient_id}
-
             >
                 {#each localData.municipalities as micipality (micipality.id)}
                     <option value={micipality.id}>{micipality.name}</option>
@@ -349,7 +347,6 @@
                 bind:value={$form.parish_id}
                 error={$form.errors?.parish_id}
                 disabled={$form.patient_id}
-
             >
                 {#if localData.municipalities[$form.municipality_id - 1]}
                     {#each localData.municipalities[$form.municipality_id - 1].parishes as parish (parish.id)}
@@ -363,7 +360,6 @@
                 bind:value={$form.patient_address}
                 readOnly={$form.patient_id}
                 error={$form.errors?.patient_address}
-
             />
 
             <Input
@@ -372,7 +368,6 @@
                 readOnly={$form.patient_id}
                 bind:value={$form.patient_phone_number}
                 error={$form.errors?.patient_phone_number}
-
             />
             <div class="flex flex-col mt-6">
                 <label class="py-1 cursor-pointer hover:bg-gray-100">
@@ -398,7 +393,6 @@
                         name="sex"
                         id=""
                         required
-
                     /><span class:font-bold={$form.patient_sex == "Femenino"}
                         >Femenino</span
                     >
@@ -454,19 +448,32 @@
                     </div>
                 </button>
             </div>
-           
+
             <Input
                 type="date"
                 required={true}
-                label={"Fecha de entrada *"}
-                bind:value={$form.entry_date}
+                label={"Fecha de ingreso *"}
+                on:change={(e) => {
+                    const selectedDate = new Date(e.target.value);
+                    if (selectedDate > today) {
+                        $form.errors = {
+                            ...$form.errors,
+                            entry_date:
+                                "La fecha de ingreso no puede ser posterior a hoy.",
+                        };
+                    } else {
+                        $form.errors = { ...$form.errors, entry_date: null }; // Clear the error
+                    }
+                    $form.entry_date = e.target.value;
+                }}
+                value={$form.entry_date}
                 error={$form.errors?.entry_date}
             />
 
             <Input
                 type="time"
                 required={true}
-                label={"Hora de entrada *"}
+                label={"Hora de ingreso *"}
                 bind:value={$form.entry_hour}
                 error={$form.errors?.entry_hour}
             />
@@ -479,11 +486,11 @@
                 error={$form.errors?.current_status}
                 on:change={() => {
                     if ($form.current_status == 4) {
-                        $form.departure_date = ""
-                        $form.departure_hour = ""
+                        $form.departure_date = "";
+                        $form.departure_hour = "";
                     } else {
-                        $form.departure_date = formattedDate
-                        $form.departure_hour = getCurrentHour()
+                        $form.departure_date = formattedDate;
+                        $form.departure_hour = getCurrentHour();
                     }
                 }}
             >
@@ -493,26 +500,25 @@
                     {/if}
                 {/each}
             </Input>
-           
+
             <Input
-            type="select"
-            required={true}
-            label={"Area de ingreso *"}
-            bind:value={$form.area_id}
-            error={$form.errors?.area_id}
-            on:change={(e) => {
-                console.log(e.target.value);
-                $form.area = e.target.value;
-            }}
-        >
-            {#each localData.areas as area (area.id)}
-                {#if area.division_id == 2}
-                    <option value={area.id}>{area.name}</option>
-                {/if}
-            {/each}
+                type="select"
+                required={true}
+                label={"Area de ingreso *"}
+                bind:value={$form.area_id}
+                error={$form.errors?.area_id}
+                on:change={(e) => {
+                    console.log(e.target.value);
+                    $form.area = e.target.value;
+                }}
+            >
+                {#each localData.areas as area (area.id)}
+                    {#if area.division_id == 2}
+                        <option value={area.id}>{area.name}</option>
+                    {/if}
+                {/each}
             </Input>
 
-           
             <!-- {#if $form.current_status == "3"}
                 <Input
                     type="select"
@@ -534,14 +540,49 @@
                     type="date"
                     label={"Fecha de salida "}
                     required={true}
-                    bind:value={$form.departure_date}
+                    on:change={(e) => {
+                        const selectedDate = new Date(e.target.value);
+                        console.log(selectedDate, $form.entry_date);
+
+                        if (selectedDate < new Date($form.entry_date)) {
+                            $form.errors = {
+                                ...$form.errors,
+                                departure_date:
+                                    "La fecha de salida no puede ser mayor a de ingreso",
+                            };
+                        } else {
+                            $form.errors = {
+                                ...$form.errors,
+                                departure_date: null,
+                            }; // Clear the error
+                        }
+                        $form.departure_date = e.target.value;
+                    }}
+                    value={$form.departure_date}
                     error={$form.errors?.departure_date}
                 />
                 <Input
                     type="time"
                     required={true}
                     label={"Hora de salida *"}
-                    bind:value={$form.departure_hour}
+                    on:input={(e) => {
+                        if ($form.entry_date == $form.departure_date) {
+                            if (e.target.value < $form.entry_hour) {
+                                $form.errors = {
+                                    ...$form.errors,
+                                    departure_hour:
+                                        "la hora de salida no puede ser menor a la de ingreso",
+                                };
+                            } else {
+                                $form.errors = {
+                                    ...$form.errors,
+                                    departure_hour: null,
+                                }; // Clear the error
+                            }
+                        }
+                        $form.departure_hour = e.target.value;
+                    }}
+                    value={$form?.departure_hour}
                     error={$form.errors?.departure_hour}
                 />
             {/if}
@@ -554,7 +595,7 @@
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DIAGNÓSTICO Y TRATAMIENTO</legend
             >
-           
+
             <Input
                 type="textarea"
                 required={true}
@@ -582,7 +623,6 @@
                                 id=""
                             /><span>{condition.name}</span>
                         </label>
-                      
                     {/each}
                 </div>
                 <Input
@@ -593,7 +633,7 @@
                     error={$form?.errors?.diagnosis}
                 />
             </div>
-           
+
             <Input
                 type="textarea"
                 required={true}
@@ -712,8 +752,15 @@
 {#if visulizateType == "table"}
     <Table
         filtersOptions={{
-            status: {label: "Estado", options: localData?.statutes || []} || {},
-            condition: {label: "Diagnóstico", options: localData?.conditions || []} || {},
+            status:
+                { label: "Estado", options: localData?.statutes || [] } || {},
+            area_id:
+                { label: "Última area", options: localData?.areas || [] } || {},
+            condition:
+                {
+                    label: "Diagnóstico",
+                    options: localData?.conditions || [],
+                } || {},
         }}
         allowSearch={false}
     >
@@ -739,9 +786,7 @@
                         on:mouseup={(e) => handleMouseUp(e, row.id)}
                         class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5`}
                     >
-                        <td style="font-size: 12px;"
-                            >{row.id}</td
-                        >
+                        <td style="font-size: 12px;">{row.id}</td>
                         <td>
                             {timeBetweenDateAndTime(
                                 row?.entry_date,
@@ -761,22 +806,20 @@
                                     id: row?.current_status,
                                 }}
                             />
-                            
-                                <!-- {#if row?.current_status == "3"}
+
+                            <!-- {#if row?.current_status == "3"}
                                     a {row?.admitted_area_name}
                                 {/if} -->
-                                <span class="inline-block flex">
-                                {#if row.current_status== 1 || row.current_status== 2 || row.current_status== 6}
+                            <span class="inline-block flex">
+                                {#if row.current_status == 1 || row.current_status == 2 || row.current_status == 6}
                                     de
-                                {:else if row.current_status== 4 || row.current_status== 5}
+                                {:else if row.current_status == 4 || row.current_status == 5}
                                     en
-                                {:else if row.current_status== 3}
+                                {:else if row.current_status == 3}
                                     a
                                 {/if}
-                                    {row.area_name}
-
-                                </span>
-                            
+                                {row.area_name}
+                            </span>
                         </td>
 
                         <td class="min-w-[180px]">
@@ -922,25 +965,22 @@
                     {:else}
                         {row?.reason}
                     {/if}
-
-                   
                 </div>
                 <div class="mt-2 flex items-center">
-                        <div
+                    <div
                         class={`inline-block w-2 h-2 mr-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
-                        ></div>
-                        <p class="flex">
-
-                            {#if row.diagnosis.length > 240}
-                                {row.diagnosis.slice(0, 240)}
-                                <span
-                                    class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                                    >...</span
-                                >
-                            {:else}
-                                {row.diagnosis}
-                            {/if}
-                        </p>
+                    ></div>
+                    <p class="flex">
+                        {#if row.diagnosis.length > 240}
+                            {row.diagnosis.slice(0, 240)}
+                            <span
+                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                >...</span
+                            >
+                        {:else}
+                            {row.diagnosis}
+                        {/if}
+                    </p>
                 </div>
                 <div class="mt-2">
                     <p>
@@ -1004,5 +1044,4 @@
         backdrop-filter: blur(2px);
         -webkit-backdrop-filter: blur(2px);
     }
-   
 </style>
