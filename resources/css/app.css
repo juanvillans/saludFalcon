@@ -293,15 +293,13 @@ progress::-webkit-progress-value {
     }
 }
 
+
 .condition1 {
-    background: rgb(107 114 128);
-}
-.condition2 {
     background: var(--green);
 }
-.condition3 {
+.condition2 {
     background: var(--orange);
 }
-.condition4 {
+.condition3 {
     background: var(--red);
 }
