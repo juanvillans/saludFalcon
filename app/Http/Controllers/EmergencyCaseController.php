@@ -51,15 +51,15 @@ class EmergencyCaseController extends Controller
             $patient = $this->emergencyCaseService->getPatientByCI($this->params);
         
         
-        return inertia('Dashboard/Cases',[
+        return inertia('Dashboard/Cases', [
             'data' => $emergencyCases,
             'patient' => $patient ?? null,
-            'filters' => [
+            'filters' => array_filter([
                 'status' => $request->input('status') ?? '',
                 'condition' => $request->input('condition') ?? '',
                 'area_id' => $request->input('area_id') ?? '',
                 'search' => $request->input('search') ?? '',
-            ],
+            ]),
         ]);
 
     }
