@@ -8,8 +8,8 @@
     import { onMount } from "svelte";
 
     import Editor from "cl-editor/src/Editor.svelte";
-    export let evolutions = 0
-    console.log(evolutions);
+    export let data = 0
+    console.log(data);
     export let areas = [];
     
     export let patient = false;
