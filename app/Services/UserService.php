@@ -129,7 +129,7 @@ class UserService
         $user = auth()->user();
 
         $evolutions = Evolution::where('user_id',$user->id)
-        ->with('emergencyCase')
+        ->with('emergencyCase','user',)
         ->orderBy('id','desc')
         ->get();
 
