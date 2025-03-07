@@ -40,7 +40,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::get('/', [AppController::class, 'admin'])->name('admin');
 
     // My Profile
-    Route::get('/perfil', [UserController::class, 'myProfile'])->name('perfil');
+    Route::get('/perfil/{userID}', [UserController::class, 'myProfile'])->name('perfil');
 
    
     // Change password
