@@ -61,7 +61,7 @@
         treatment: "",
         current_status: "",
         current_patient_condition_id: 1,
-        condition: "Inconcluso",
+        condition: "",
         cases: [],
         entry_date: formattedDate,
         departure_date: "",

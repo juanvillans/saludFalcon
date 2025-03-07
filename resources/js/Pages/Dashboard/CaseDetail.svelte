@@ -1,19 +1,18 @@
 <script>
     import Input from "../../components/Input.svelte";
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm } from "@inertiajs/svelte";
+    import { useForm, inertia, page } from "@inertiajs/svelte";
     import StatusColor from "../../components/StatusColor.svelte";
     import Alert from "../../components/Alert.svelte";
     import fetchLocalData from "../../components/localData";
     import { onMount } from "svelte";
+    import {getDuration} from "../../components/getDuration.js";
 
-    import Editor from "cl-editor/src/Editor.svelte";
-
-    export let areas = [];
     export let patient = false;
     export let caseDetail = {};
-    export let nroEvol = 0
-    export let nroInter = 0
+    export let nroEvol = 0;
+    export let nroInter = 0;
+    export let showMorePatientDetail = false;
     let countingCases;
     let form = useForm(structuredClone(caseDetail.data));
     let evolutionForm = useForm({
@@ -22,10 +21,9 @@
         departure_date: "",
         departure_hour: "",
         area_id: "",
-        patient_condition_id: '',
+        patient_condition_id: "",
         status_id: 6,
         destiny: "",
-
     });
     let localData = {};
 
@@ -47,12 +45,11 @@
     let editStatus = false;
 
     function getFirstName(firstName) {
-        console.log(firstName);
 
         const parts = firstName.split(" ");
         return parts[0];
     }
-
+    let isSmallScreen = window.innerWidth > 1024
     function convertTo12HourFormat(time24) {
         console.log(time24);
         // Split the input into hours and minutes
@@ -108,20 +105,23 @@
     function submitCases(event) {
         event.preventDefault();
         $evolutionForm.clearErrors();
-        $evolutionForm.post("/admin/casos/detalle-caso/"+$form.id+"/evolution", {
-            onError: (errors) => {
-                if (errors.data) {
-                    displayAlert({ type: "error", message: errors.data });
-                }
+        $evolutionForm.post(
+            "/admin/casos/detalle-caso/" + $form.id + "/evolution",
+            {
+                onError: (errors) => {
+                    if (errors.data) {
+                        displayAlert({ type: "error", message: errors.data });
+                    }
+                },
+                onSuccess: (mensaje) => {
+                    displayAlert({
+                        type: "success",
+                        message: "Caso editado exitosamente!",
+                    });
+                    editStatus = false;
+                },
             },
-            onSuccess: (mensaje) => {
-                displayAlert({
-                    type: "success",
-                    message: "Caso editado exitosamente!",
-                });
-                editStatus = false;
-            },
-        });
+        );
     }
 
     function handleDelete() {
@@ -151,7 +151,7 @@
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">
     <form
         on:submit={updateClient}
-        class="order-2 lg:order-1 h-fit max-w-[330px] w-full lg:sticky top-0"
+        class=" h-fit lg:max-w-[330px] w-full lg:sticky top-0"
     >
         <fieldset
             class=" px-5 mt-4 gap-x-5 text-black p-6 pt-2 border-color2 rounded-md"
@@ -160,102 +160,121 @@
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color3 text-gray-100"
                 >DATOS DEL PACIENTE</legend
             >
-            <div class="flex gap-1 items-end text-black">
-                <Input
-                    type="number"
-                    required={true}
-                    label={"C.I *"}
-                    bind:value={$form.patient_ci}
-                    on:input={() => ($form.cases = [])}
-                    error={$form.errors.patient_ci}
-                />
+            
+            
+            
+            <div class="my-2 lg:hidden" on:click={() => showMorePatientDetail = !showMorePatientDetail}>
+                {#if !showMorePatientDetail}
+                <h5 class="font-bold">Nombres y Apellidos:</h5>
+                <p class="text-lg">{$form.patient_name} {$form.patient_last_name}</p>
+                {/if}
+                <div class="seeMore flex hover:cursor-pointer hover:font-bold ">
+                    <p>Ver más datos del paciente</p>
+                    <iconify-icon icon="ic:outline-expand-more" width="24" height="24"></iconify-icon>
+                </div>
             </div>
-            <Input
-                type="text"
-                required={true}
-                label={"Nombres del paciente *"}
-                bind:value={$form.patient_name}
-                error={$form.errors?.patient_name}
-            />
-            <Input
-                type="text"
-                required={true}
-                label={"Apellidos del paciente *"}
-                bind:value={$form.patient_last_name}
-                error={$form.errors?.patient_last_name}
-            />
 
-            <Input
-                type="date"
-                required={true}
-                label={"Fecha de Nacimiento*"}
-                bind:value={$form.patient_date_birth}
-                error={$form.errors?.patient_date_birth}
-            />
+            {#if showMorePatientDetail || isSmallScreen}
+                <div class="sm:grid grid-cols-2 lg:grid-cols-1 gap-4 lg:gap-0">
+                    <Input
+                        type="number"
+                        required={true}
+                        label={"C.I *"}
+                        bind:value={$form.patient_ci}
+                        on:input={() => ($form.cases = [])}
+                        error={$form.errors.patient_ci}
+                    />
+                    <Input
+                        type="text"
+                        required={true}
+                        label={"Nombres del paciente *"}
+                        bind:value={$form.patient_name}
+                        error={$form.errors?.patient_name}
+                    />
+                    <Input
+                        type="text"
+                        required={true}
+                        label={"Apellidos del paciente *"}
+                        bind:value={$form.patient_last_name}
+                        error={$form.errors?.patient_last_name}
+                    />
 
-            <Input
-                type="tel"
-                label={"Teléfono"}
-                bind:value={$form.patient_phone_number}
-                error={$form.errors?.patient_phone_number}
-            />
-            <Input
-                type="select"
-                required={true}
-                label={"Municipio"}
-                bind:value={$form.municipality_id}
-                error={$form.errors?.municipality_id}
-            >
-                {#each localData.municipalities || [] as micipality (micipality.id)}
-                    <option value={micipality.id}>{micipality.name}</option>
-                {/each}
-            </Input>
+                    <Input
+                        type="date"
+                        required={true}
+                        label={"Fecha de Nacimiento*"}
+                        bind:value={$form.patient_date_birth}
+                        error={$form.errors?.patient_date_birth}
+                    />
 
-            <Input
-                type="select"
-                required={true}
-                label={"Parroquia"}
-                bind:value={$form.parish_id}
-                error={$form.errors?.parish_id}
-            >
-                {#each localData?.municipalities?.[$form.municipality_id - 1]?.parishes || [] as parish (parish.id)}
-                    <option value={parish.id}>{parish.name}</option>
-                {/each}
-            </Input>
-            <Input
-                type="text"
-                label={"Dirección"}
-                bind:value={$form.patient_address}
-                readOnly={$form.patient_id}
-                error={$form.errors?.patient_address}
-            />
-            <div class="flex flex-col mt-6">
-                <label class="py-1 cursor-pointer hover:bg-gray-100">
-                    <input
-                        class="mr-3 inline-block"
-                        type="radio"
-                        bind:group={$form.patient_sex}
-                        value="Masculino"
-                        name="sex"
-                        id=""
-                    /><span class:font-bold={$form.patient_sex == "Masculino"}
-                        >Masculino</span
+                    <Input
+                        type="tel"
+                        label={"Teléfono"}
+                        bind:value={$form.patient_phone_number}
+                        error={$form.errors?.patient_phone_number}
+                    />
+                    <Input
+                        type="select"
+                        required={true}
+                        label={"Municipio"}
+                        bind:value={$form.municipality_id}
+                        error={$form.errors?.municipality_id}
                     >
-                </label>
+                        {#each localData.municipalities || [] as micipality (micipality.id)}
+                            <option value={micipality.id}>{micipality.name}</option>
+                        {/each}
+                    </Input>
 
-                <label class="py-1 cursor-pointer hover:bg-gray-100">
-                    <input
-                        class="mr-3 inline-block"
-                        type="radio"
-                        bind:group={$form.patient_sex}
-                        value="Femenino"
-                        name="sex"
-                        id=""
-                    /><span class:font-bold={$form.patient_sex == "Femenino"}
-                        >Femenino</span
+                    <Input
+                        type="select"
+                        required={true}
+                        label={"Parroquia"}
+                        bind:value={$form.parish_id}
+                        error={$form.errors?.parish_id}
                     >
-                </label>
-            </div>
+                        {#each localData?.municipalities?.[$form.municipality_id - 1]?.parishes || [] as parish (parish.id)}
+                            <option value={parish.id}>{parish.name}</option>
+                        {/each}
+                    </Input>
+                    <Input
+                        type="text"
+                        label={"Dirección"}
+                        bind:value={$form.patient_address}
+                        readOnly={$form.patient_id}
+                        error={$form.errors?.patient_address}
+                    />
+                    <div class="flex flex-col mt-6">
+                        <label class="py-1 cursor-pointer hover:bg-gray-100">
+                            <input
+                                class="mr-3 inline-block"
+                                type="radio"
+                                bind:group={$form.patient_sex}
+                                value="Masculino"
+                                name="sex"
+                                id=""
+                            /><span
+                                class:font-bold={$form.patient_sex == "Masculino"}
+                                >Masculino</span
+                            >
+                        </label>
+
+                        <label class="py-1 cursor-pointer hover:bg-gray-100">
+                            <input
+                                class="mr-3 inline-block"
+                                type="radio"
+                                bind:group={$form.patient_sex}
+                                value="Femenino"
+                                name="sex"
+                                id=""
+                            /><span
+                                class:font-bold={$form.patient_sex == "Femenino"}
+                                >Femenino</span
+                            >
+                        </label>
+                    </div>
+                </div>
+            {/if}
+
             {#if $form.isDirty}
                 <input
                     type="submit"
@@ -266,31 +285,47 @@
         </fieldset>
     </form>
 
-    <form on:submit={submitCases} class="order-1 lg:order-2 w-full">
-        <fieldset class=" sm:px-5 md:mt-4 gap-x-5 pt-2  bg-gray-200 rounded-2xl pb-4">
+    <form on:submit={submitCases} class=" w-full">
+        <fieldset
+            class=" sm:px-5 md:mt-4 gap-x-5 pt-2 bg-gray-200 rounded-2xl pb-4 "
+        >
             <legend
                 class="relative text-center px-5 py-1 uppercase pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >CASO {caseDetail.data.id}
             </legend>
             <div class="col-span-2 flex gap-5 md:mt-5">
                 <div value="" class="neumorphism2 p-3 rounded-2xl">
-                    <h3 class="font-bold text-gray-800 text-sm ">Duración total:</h3>
-                    <p></p>
+                    <h3 class="font-bold text-gray-800 text-sm">
+                        Duración total:
+                    </h3>
+                    <p>{getDuration(
+                        caseDetail.data?.entry_date,
+                        caseDetail.data?.entry_hour,
+                        caseDetail.data?.departure_date,
+                        caseDetail.data?.departure_hour,
+                        caseDetail.data?.current_status,
+                    )}</p>
                 </div>
                 <div value="" class="neumorphism2 p-3 rounded-2xl">
-                    <h3 class="font-bold text-gray-800 text-sm ">Nro de evoluciones</h3>
+                    <h3 class="font-bold text-gray-800 text-sm">
+                        Nro de evoluciones
+                    </h3>
                     <p>{nroEvol}</p>
                 </div>
                 <div value="" class="neumorphism2 p-3 rounded-2xl">
-                    <h3 class="font-bold text-gray-800 text-sm ">Nro de Interconsultas</h3>
+                    <h3 class="font-bold text-gray-800 text-sm">
+                        Nro de Interconsultas
+                    </h3>
                     <p>{nroInter}</p>
                 </div>
             </div>
             <div class=" mt-4 gap-x-5 w-full pt-2 bg-gray-10">
                 {#if isOpenCreateEvolution}
-                    <div class="bg p-4 mb-3 md:mb-5 lg:mb-7 rounded-lg neumorphism bg-gray-50">
+                    <div
+                        class="bg p-4 mb-3 md:mb-5 lg:mb-7 rounded-lg neumorphism bg-gray-50  lg:px-9"
+                    >
                         <div class="">
-                            <div class="grid-cols-2 md:grid gap-x-5">
+                            <div class="grid-cols-2 md:grid gap-x-5 ">
                                 <Input
                                     type="select"
                                     required={true}
@@ -375,7 +410,6 @@
                                 {#each localData?.conditions || [] as condition (condition.id)}
                                     <label
                                         class={`py-1 pb-0 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$evolutionForm.patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
-                                        
                                     >
                                         <div
                                             class={`w-2 aspect-square rounded-full  condition${condition.id}`}
@@ -427,7 +461,7 @@
                 {:else}
                     <button
                         on:click={(e) => (isOpenCreateEvolution = true)}
-                        class="btn_create inline-block p-2 px-3 mb-3 lg:mb-6 shadow-sm "
+                        class="btn_create inline-block p-2 px-3 mb-3 lg:mb-6 shadow-sm"
                         >Crear nueva evolución</button
                     >
                 {/if}
@@ -435,13 +469,13 @@
             <ul>
                 {#each caseDetail.data.evolutions as evolution, i (evolution.id)}
                     <li
-                        class="bg-gray-50 mb-3 border rounded-lg overflow-hidden neumorphism"
+                        class=" bg-gray-50 mb-3 border rounded-lg overflow-hidden neumorphism"
                     >
                         <span
-                            class="flex items-center gap-2 p-2 md:pr-4 lg:pr-6 justify-between"
+                            class="md:flex items-center gap-2 py-3 px-2 sm:p-2  md:pr-4 lg:pr-6 justify-between"
                         >
                             <div
-                                class="flex flex-col sm:flex-row items-center gap-2 p-2 justify-between"
+                                class="md:flex flex-col sm:flex-row items-center gap-2 px-2 md:p-2 justify-between"
                             >
                                 <StatusColor
                                     status={{
@@ -458,25 +492,33 @@
                                 {/if}
                                 {evolution.area_name}
                             </div>
-                            <div class="flex gap-2">
+                            <div class="flex gap-2 justify-center">
                                 {#if evolution.is_interconsult}
                                     <span
-                                        class="pl-6 pr-1 listType bg-color1 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
+                                        class="pl-4 pr-1 listType bg-color1 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
                                     >
                                         IC
                                     </span>
                                 {:else if i != caseDetail.data.evolutions.length - 1}
                                     <span
-                                        class="pl-6 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
+                                        class="pl-4 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
                                     >
                                         EVOL
                                     </span>
                                 {/if}
                                 <span class="flex items-center">
                                     Dr(a)
-                                    {getFirstName(evolution.user_name)}
-                                    {getFirstName(evolution.user_last_name)}
-                                    <span class="text-xs ml-1">
+                                    <a
+                                        href={`/admin/perfil/${evolution.user_id}`}
+                                        use:inertia
+                                        class="ml-1 cursor-pointer hover:underline hover:text-color1 block"
+                                    >
+                                        {getFirstName(evolution.user_name)}
+                                        {getFirstName(
+                                            evolution.user_last_name,
+                                        )}</a
+                                    >
+                                    <span class="text-xs ml-1 inline-block">
                                         <span class="text-gray-500">el</span>
                                         {evolution.formatted_created_at}
                                     </span>
@@ -484,16 +526,16 @@
                             </div>
                         </span>
 
-                        <div class="bg-white p-3 md:p-4 lg:p-5  space-y-2">
+                        <div class="bg-white p-4 lg:p-5 space-y-2">
                             {#if evolution.status_id == 4}
-                            <div>
-                                <h3 class="font-semibold">
-                                    Hora y fecha:
-                                </h3>
-                                <p class="text-dark">
-                                    El {caseDetail.data.formatted_entry_date}  {caseDetail.data.entry_hour}
-                                </p>
-                            </div>
+                                <div>
+                                    <h3 class="font-semibold">Hora y fecha:</h3>
+                                    <p class="text-dark">
+                                        El {caseDetail.data
+                                            .formatted_entry_date}
+                                        {caseDetail.data.entry_hour}
+                                    </p>
+                                </div>
                                 <div>
                                     <h3 class="font-semibold">
                                         Motivo de consulta:
@@ -503,16 +545,15 @@
                                     </p>
                                 </div>
                             {/if}
-                            {#if evolution.status_id !== 6 && evolution.status_id !== 4 }
-                                    <div>
-                                        <h3 class="font-semibold">
-                                            Hora y fecha:
-                                        </h3>
-                                        <p class="text-dark">
-                                            {evolution.formatted_departure_date} {evolution.departure_hour}
-                                        </p>
-                                    </div>
-                                {/if}
+                            {#if evolution.status_id !== 6 && evolution.status_id !== 4}
+                                <div>
+                                    <h3 class="font-semibold">Hora y fecha:</h3>
+                                    <p class="text-dark">
+                                        {evolution.formatted_departure_date}
+                                        {evolution.departure_hour}
+                                    </p>
+                                </div>
+                            {/if}
                             <div>
                                 <div class="flex">
                                     <h3 class="font-semibold">Diagnostico:</h3>

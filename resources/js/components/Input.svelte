@@ -20,7 +20,7 @@
 
 <style>
      input:read-only, select:disabled {
-        background-color: transparent;
+        background-color: transparent !important;
     }
     input,
     textarea,

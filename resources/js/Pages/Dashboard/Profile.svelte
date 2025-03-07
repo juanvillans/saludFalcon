@@ -1,13 +1,12 @@
 <script>
     import Input from "../../components/Input.svelte";
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm } from "@inertiajs/svelte";
+    import { useForm, page, inertia } from "@inertiajs/svelte";
     import StatusColor from "../../components/StatusColor.svelte";
     import Alert from "../../components/Alert.svelte";
     import fetchLocalData from "../../components/localData";
     import { onMount } from "svelte";
 
-    import Editor from "cl-editor/src/Editor.svelte";
     export let data = [];
     export let areas = [];
 
@@ -16,7 +15,10 @@
     let nroEvol = data.nroEvol;
     let nroInter = data.nroInter;
     let countingCases;
-    let form = useForm(structuredClone(data.user));
+    let isTheSameUser = data.user.data.id != $page.props.auth.user_id;
+    console.log(data.user.data.id, $page.props.auth.user_id);
+
+    let form = useForm(structuredClone(data.user.data));
     let evolutionForm = useForm({
         diagnosis: "",
         treatment: "",
@@ -153,7 +155,8 @@
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">
     <form
         on:submit={updateClient}
-        class="order-2 lg:order-1 h-fit max-w-[330px] w-full lg:sticky top-0"
+        style="height: calc(100vh - 100px);"
+        class=" overflow-y-auto md:max-w-[330px] w-full lg:sticky top-0"
     >
         <fieldset
             class=" px-5 mt-4 gap-x-5 text-black p-6 pt-2 border-color2 rounded-md"
@@ -168,6 +171,7 @@
                 label={"Nombres"}
                 bind:value={$form.name}
                 error={$form.errors?.name}
+                disabled={isTheSameUser}
             />
             <Input
                 type="text"
@@ -175,12 +179,14 @@
                 label={"Apellidos"}
                 bind:value={$form.last_name}
                 error={$form.errors?.last_name}
+                disabled={isTheSameUser}
             />
             <Input
                 type="email"
                 label="correo"
                 bind:value={$form.email}
                 error={$form.errors?.email}
+                disabled={isTheSameUser}
             />
             <Input
                 type="number"
@@ -188,14 +194,16 @@
                 label={"Cédula"}
                 bind:value={$form.ci}
                 error={$form.errors?.ci}
+                disabled={isTheSameUser}
             />
             <Input
                 type="tel"
                 label={"Teléfono"}
                 bind:value={$form.phone_number}
                 error={$form.errors?.phone_number}
+                disabled={isTheSameUser}
             />
-            <!-- <Input
+            <Input
                 type="select"
                 required={true}
                 label={"Tipo de Usuario"}
@@ -205,12 +213,13 @@
             >
                 <option value="doctor">Doctor</option>
                 <option value="admin">Admin</option>
-            </Input> -->
+            </Input>
             <Input
                 label={"Matrícula médica"}
                 required={true}
                 bind:value={$form.medical_license}
                 error={$form.errors?.medical_license}
+                disabled={isTheSameUser}
             />
             <Input
                 type="select"
@@ -234,7 +243,7 @@
         </fieldset>
     </form>
 
-    <form on:submit={submitCases} class="order-1 lg:order-2 w-full">
+    <form on:submit={submitCases} class="w-full">
         <fieldset
             class=" sm:px-5 md:mt-4 gap-x-5 pt-5 bg-gray-200 rounded-2xl pb-4"
         >
@@ -263,11 +272,19 @@
                         class="bg-gray-50 mb-3 border rounded-lg overflow-hidden neumorphism"
                     >
                         <span
-                            class="flex items-center gap-2 p-2 md:pr-4 lg:pr-6 justify-between"
+                            class="md:flex items-center gap-2 py-3 px-2 sm:p-2 md:pr-4 lg:pr-6 justify-between"
                         >
                             <div
-                                class="flex flex-col sm:flex-row items-center gap-2 p-2 justify-between"
+                                class="md:flex flex-col sm:flex-row items-center gap-2 px-2 md:p-2 justify-between"
                             >
+
+                                <a
+                                    href={`/admin/casos/detalle-caso/${evolution.id}`}
+                                    use:inertia
+                                    class="ml-1 relative text-sm cursor-pointer caseLink block"
+                                >
+                                    CASO: {evolution.id}
+                                </a>
                                 <StatusColor
                                     status={{
                                         name: evolution.status_name,
@@ -286,13 +303,13 @@
                             <div class="flex gap-2">
                                 {#if evolution.is_interconsult}
                                     <span
-                                        class="pl-6 pr-1 listType bg-color1 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
+                                        class="pl-4 pr-1 listType bg-color1 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
                                     >
                                         IC
                                     </span>
                                 {:else}
                                     <span
-                                        class="pl-6 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
+                                        class="pl-4 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
                                     >
                                         EVOL
                                     </span>
@@ -399,5 +416,25 @@
     }
     .listType {
         clip-path: polygon(100% 10%, 100% 51%, 100% 90%, 0 90%, 13% 53%, 0 15%);
+    }
+    a.caseLink {
+        text-decoration: none;
+        position: relative;
+    }
+    a.caseLink:before {
+        content: "ss ";
+        background-color: hsla(196, 61%, 58%, 0.75) !important;
+        position: absolute;
+        left: 0;
+        bottom: 3px;
+        width: 100%;
+        height: 8px;
+        z-index: -1;
+        transition: all 0.3s ease-in-out;
+    }
+
+    a.caseLink:hover:before {
+        bottom: 0 !important;
+        height: 100% !important;
     }
 </style>
