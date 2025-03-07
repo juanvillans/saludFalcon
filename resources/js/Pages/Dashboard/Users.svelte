@@ -215,7 +215,7 @@
                 bind:value={$formCreate.specialty_id}
                 error={$formCreate.errors?.specialty_id}
             >
-                {#each data.specialties as speci (speci.id)}
+                {#each data.specialties || [] as speci (speci.id)}
                     <option value={speci.id}>{speci.name}</option>
                 {/each}
             </Input>
