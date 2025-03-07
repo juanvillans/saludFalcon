@@ -8,26 +8,24 @@
     import { onMount } from "svelte";
 
     import Editor from "cl-editor/src/Editor.svelte";
-    export let evolutions = 0
-    console.log(evolutions);
+    export let data = [];
     export let areas = [];
-    
+
     export let patient = false;
-    export let caseDetail = {};
-    export let nroEvol = 0
-    export let nroInter = 0
+    // export let = {};
+    export let nroEvol = 0;
+    export let nroInter = 0;
     let countingCases;
-    let form = useForm(structuredClone(caseDetail.data));
+    let form = useForm(structuredClone(data));
     let evolutionForm = useForm({
         diagnosis: "",
         treatment: "",
         departure_date: "",
         departure_hour: "",
         area_id: "",
-        patient_condition_id: '',
+        patient_condition_id: "",
         status_id: 6,
         destiny: "",
-
     });
     let localData = {};
 
@@ -40,7 +38,7 @@
         }
     });
     $: if (patient) {
-        countingCases = caseDetail.data.cases.length;
+        countingCases = data.cases.length;
     }
     let editor;
     let descriptionLength = 0;
@@ -50,7 +48,6 @@
 
     function getFirstName(firstName) {
         console.log(firstName);
-
         const parts = firstName.split(" ");
         return parts[0];
     }
@@ -110,20 +107,23 @@
     function submitCases(event) {
         event.preventDefault();
         $evolutionForm.clearErrors();
-        $evolutionForm.post("/admin/casos/detalle-caso/"+$form.id+"/evolution", {
-            onError: (errors) => {
-                if (errors.data) {
-                    displayAlert({ type: "error", message: errors.data });
-                }
+        $evolutionForm.post(
+            "/admin/casos/detalle-caso/" + $form.id + "/evolution",
+            {
+                onError: (errors) => {
+                    if (errors.data) {
+                        displayAlert({ type: "error", message: errors.data });
+                    }
+                },
+                onSuccess: (mensaje) => {
+                    displayAlert({
+                        type: "success",
+                        message: "Caso editado exitosamente!",
+                    });
+                    editStatus = false;
+                },
             },
-            onSuccess: (mensaje) => {
-                displayAlert({
-                    type: "success",
-                    message: "Caso editado exitosamente!",
-                });
-                editStatus = false;
-            },
-        });
+        );
     }
 
     function handleDelete() {
@@ -160,58 +160,58 @@
         >
             <legend
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-white text-dark"
-                >DATOS DEL USUARIO</legend
+                >Datos del usuario</legend
             >
             <Input
-            type="text"
-            required={true}
-            label={"Nombres"}
-            bind:value={$form.name}
-            error={$form.errors?.name}
-        />
-        <Input
-            type="text"
-            required={true}
-            label={"Apellidos"}
-            bind:value={$form.last_name}
-            error={$form.errors?.last_name}
-        />
-        <Input
-            type="email"
-            label="correo"
-            bind:value={$form.email}
-            error={$form.errors?.email}
-        />
-        <Input
-            type="number"
-            required={true}
-            label={"Cédula"}
-            bind:value={$form.ci}
-            error={$form.errors?.ci}
-        />
-        <Input
-            type="tel"
-            label={"Teléfono"}
-            bind:value={$form.phone_number}
-            error={$form.errors?.phone_number}
-        />
-        <Input
-            type="select"
-            required={true}
-            label={"Tipo de Usuario"}
-            bind:value={$form.role_name}
-            error={$form.errors?.role_name}
-        >
-            <option value="doctor">Doctor</option>
-            <option value="admin">Admin</option>
-        </Input>
-        <Input
-            label={"Matrícula médica"}
-            required={true}
-            bind:value={$form.medical_license}
-            error={$form.errors?.medical_license}
-        />
-        <!-- <Input
+                type="text"
+                required={true}
+                label={"Nombres"}
+                bind:value={$form.name}
+                error={$form.errors?.name}
+            />
+            <Input
+                type="text"
+                required={true}
+                label={"Apellidos"}
+                bind:value={$form.last_name}
+                error={$form.errors?.last_name}
+            />
+            <Input
+                type="email"
+                label="correo"
+                bind:value={$form.email}
+                error={$form.errors?.email}
+            />
+            <Input
+                type="number"
+                required={true}
+                label={"Cédula"}
+                bind:value={$form.ci}
+                error={$form.errors?.ci}
+            />
+            <Input
+                type="tel"
+                label={"Teléfono"}
+                bind:value={$form.phone_number}
+                error={$form.errors?.phone_number}
+            />
+            <Input
+                type="select"
+                required={true}
+                label={"Tipo de Usuario"}
+                bind:value={$form.role_name}
+                error={$form.errors?.role_name}
+            >
+                <option value="doctor">Doctor</option>
+                <option value="admin">Admin</option>
+            </Input>
+            <Input
+                label={"Matrícula médica"}
+                required={true}
+                bind:value={$form.medical_license}
+                error={$form.errors?.medical_license}
+            />
+            <!-- <Input
             type="select"
             required={true}
             label={"Servicio tratante"}
@@ -232,174 +232,14 @@
         </fieldset>
     </form>
 
-    <!-- <form on:submit={submitCases} class="order-1 lg:order-2 w-full">
-        <fieldset class=" sm:px-5 md:mt-4 gap-x-5 pt-2  bg-gray-200 rounded-2xl pb-4">
+    <form on:submit={submitCases} class="order-1 lg:order-2 w-full">
+        <fieldset class=" sm:px-5 md:mt-4 gap-x-5 pt-5  bg-gray-200 rounded-2xl pb-4">
             <legend
-                class="relative text-center px-5 py-1 uppercase pt-1.5 rounded-xl bg-color1 text-gray-100"
-                >CASO {caseDetail.data.id}
-            </legend>
-            <div class="col-span-2 flex gap-5 md:mt-5">
-                <div value="" class="neumorphism2 p-3 rounded-2xl">
-                    <h3 class="font-bold text-gray-800 text-sm ">Duración total:</h3>
-                    <p></p>
-                </div>
-                <div value="" class="neumorphism2 p-3 rounded-2xl">
-                    <h3 class="font-bold text-gray-800 text-sm ">Nro de evoluciones</h3>
-                    <p>{nroEvol}</p>
-                </div>
-                <div value="" class="neumorphism2 p-3 rounded-2xl">
-                    <h3 class="font-bold text-gray-800 text-sm ">Nro de Interconsultas</h3>
-                    <p>{nroInter}</p>
-                </div>
-            </div>
-            <div class=" mt-4 gap-x-5 w-full pt-2 bg-gray-10">
-                {#if isOpenCreateEvolution}
-                    <div class="bg p-4 mb-3 md:mb-5 lg:mb-7 rounded-lg neumorphism bg-gray-50">
-                        <div class="">
-                            <div class="grid-cols-2 md:grid gap-x-5">
-                                <Input
-                                    type="select"
-                                    required={true}
-                                    bind:value={$evolutionForm.status_id}
-                                    error={$evolutionForm.errors?.status_id}
-                                >
-                                    {#each localData.statutes as status (status.id)}
-                                        {#if status.id !== 4 && status.id !== 6}
-                                            <option value={status.id}
-                                                >{status.name}</option
-                                            >
-                                        {/if}
-                                        {#if status.id == 6}
-                                            <option value={status.id}
-                                                >{status.name}
-                                                {caseDetail.data
-                                                    .area_name}</option
-                                            >
-                                        {/if}
-                                    {/each}
-                                </Input>
-                                {#if $evolutionForm.status_id == "3"}
-                                    <div class="flex items-center">
-                                        <span class="mr-2 relative top-2">
-                                            a:
-                                        </span>
-
-                                        <Input
-                                            type="select"
-                                            required={true}
-                                            bind:value={$evolutionForm.area_id}
-                                            error={$evolutionForm.errors
-                                                ?.area_id}
-                                        >
-                                            {#each localData.areas as area (area.id)}
-                                                {#if area.id != caseDetail.data.area_id}
-                                                    <option value={area.id}
-                                                        >{area.name}</option
-                                                    >
-                                                {/if}
-                                            {/each}
-                                        </Input>
-                                    </div>
-                                {/if}
-                                {#if $evolutionForm.status_id == "3" && $evolutionForm.area_id == "7"}
-                                    <Input
-                                        type="text"
-                                        required={true}
-                                        label={"Hospital o ambulatorio *"}
-                                        bind:value={$evolutionForm.destiny}
-                                        error={$evolutionForm.errors?.destiny}
-                                    />
-                                {/if}
-                                <div
-                                    class="col-span-2 md:grid grid-cols-2 gap-x-4"
-                                >
-                                    {#if $evolutionForm.status_id != 6}
-                                        <Input
-                                            type="date"
-                                            label={"Fecha " +
-                                                `${$evolutionForm.status_id == 3 ? "transferida" : ""}`}
-                                            required={true}
-                                            bind:value={$evolutionForm.departure_date}
-                                            error={$evolutionForm.errors
-                                                ?.departure_date}
-                                        />
-                                        <Input
-                                            type="time"
-                                            required={true}
-                                            label={"Hora " +
-                                                `${$evolutionForm.status_id == 3 ? "transferida" : ""}`}
-                                            bind:value={$evolutionForm.departure_hour}
-                                            error={$evolutionForm.errors
-                                                ?.departure_hour}
-                                        />
-                                    {/if}
-                                </div>
-                            </div>
-
-                            <p class="mt-4">Diagnóstico *</p>
-                            <div class="flex gap-4 mb-3">
-                                {#each localData?.conditions || [] as condition (condition.id)}
-                                    <label
-                                        class={`py-1 pb-0 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$evolutionForm.patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
-                                        
-                                    >
-                                        <div
-                                            class={`w-2 aspect-square rounded-full  condition${condition.id}`}
-                                        ></div>
-                                        <input
-                                            class="mr-3 hidden"
-                                            type="radio"
-                                            bind:group={$evolutionForm.patient_condition_id}
-                                            value={condition.id}
-                                            name="condition"
-                                            id=""
-                                        /><span>{condition.name}</span>
-                                    </label>
-                                {/each}
-                            </div>
-                            <Input
-                                type="textarea"
-                                required={true}
-                                classes={"col-span-2"}
-                                bind:value={$evolutionForm.diagnosis}
-                                error={$evolutionForm?.errors?.diagnosis}
-                            />
-                        </div>
-
-                        <Input
-                            type="textarea"
-                            required={true}
-                            classes={"col-span-2"}
-                            label={"Orden médica *"}
-                            bind:value={$evolutionForm.treatment}
-                            error={$evolutionForm.errors?.treatment}
-                        />
-                        <div class="flex justify-between items-center">
-                            <button
-                                type="button"
-                                class="hover:bg-gray-300 rounded-full p-2 px-3"
-                                on:click={() => (isOpenCreateEvolution = false)}
-                                >Cancelar</button
-                            >
-                            <input
-                                type="submit"
-                                value={$evolutionForm.processing
-                                    ? "Cargando..."
-                                    : "Guardar"}
-                                class="bg-color3 text-white duration-200 mt-3 px-4 md:px-20 hover:bg-color4 hover:text-black font-bold py-3 rounded-md cursor-pointer"
-                            />
-                        </div>
-                    </div>
-                {:else}
-                    <button
-                        on:click={(e) => (isOpenCreateEvolution = true)}
-                        class="btn_create inline-block p-2 px-3 mb-3 lg:mb-6 shadow-sm "
-                        >Crear nueva evolución</button
-                    >
-                {/if}
-            </div>
+                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color3 text-gray-100"
+                >Movimientos del usuario</legend
+            >
             <ul>
-                {#each caseDetail.data.evolutions as evolution, i (evolution.id)}
+                {#each data.evolutions as evolution, i (evolution.id)}
                     <li
                         class="bg-gray-50 mb-3 border rounded-lg overflow-hidden neumorphism"
                     >
@@ -419,7 +259,7 @@
                                     de
                                 {:else if evolution.status_id == 4 || evolution.status_id == 5}
                                     en
-                                {:else if evolution.status_id == 3}
+                                <!-- {:else if evolution.status_id == 3} -->
                                     a
                                 {/if}
                                 {evolution.area_name}
@@ -431,22 +271,13 @@
                                     >
                                         IC
                                     </span>
-                                {:else if i != caseDetail.data.evolutions.length - 1}
+                                {:else if i != data.evolutions.length - 1}
                                     <span
                                         class="pl-6 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
                                     >
                                         EVOL
                                     </span>
                                 {/if}
-                                <span class="flex items-center">
-                                    Dr(a)
-                                    {getFirstName(evolution.user_name)}
-                                    {getFirstName(evolution.user_last_name)}
-                                    <span class="text-xs ml-1">
-                                        <span class="text-gray-500">el</span>
-                                        {evolution.formatted_created_at}
-                                    </span>
-                                </span>
                             </div>
                         </span>
 
@@ -457,7 +288,7 @@
                                     Hora y fecha:
                                 </h3>
                                 <p class="text-dark">
-                                    El {caseDetail.data.formatted_entry_date}  {caseDetail.data.entry_hour}
+                                    El {data.formatted_entry_date}  {data.entry_hour}
                                 </p>
                             </div>
                                 <div>
@@ -465,7 +296,7 @@
                                         Motivo de consulta:
                                     </h3>
                                     <p class="text-dark">
-                                        {caseDetail.data.reason}
+                                        {data.reason}
                                     </p>
                                 </div>
                             {/if}
@@ -515,7 +346,7 @@
                 {/each}
             </ul>
         </fieldset>
-    </form> -->
+    </form>
 </div>
 <Alert />
 
