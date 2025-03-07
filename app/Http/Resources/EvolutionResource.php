@@ -42,7 +42,10 @@ class EvolutionResource extends JsonResource
             'departure_date' => $this->departure_date,
             'formatted_departure_date' => $this->formatted_departure_date,
             'departure_hour' => $this->departure_hour,
-
+            'reason' => $this->whenLoaded('emergencyCase')->reason,
+            'entry_date' => $this->whenLoaded('emergencyCase')->entry_date,
+            'formatted_entry_date' => $this->whenLoaded('emergencyCase')->formatted_entry_date,
+            'entry_hour' => $this->whenLoaded('emergencyCase')->entry_hour,
 
         ];
     }

@@ -125,10 +125,9 @@ class UserService
         
     }
 
-    public function getMyEvolutions(){
-        $user = auth()->user();
+    public function getMyEvolutions($userID){
 
-        $evolutions = Evolution::where('user_id',$user->id)
+        $evolutions = Evolution::where('user_id',$userID)
         ->with('emergencyCase', 'status', 'condition', 'area')
         ->orderBy('id','desc')
         ->get();
