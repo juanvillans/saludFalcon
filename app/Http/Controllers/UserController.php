@@ -8,6 +8,7 @@ use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\DoctorCollection;
 use App\Http\Resources\DoctorResource;
+use App\Http\Resources\EvolutionCollection;
 use App\Http\Resources\UserResource;
 use App\Models\RequestUser;
 use App\Models\Specialty;
@@ -223,7 +224,7 @@ class UserController extends Controller
         return inertia('Dashboard/Profile',[
 
             'data' => [
-                'evolutions' => $evolutions,
+                'evolutions' => new EvolutionCollection($evolutions),
                 'nroEvol' => $nroEvolutions,
                 'nroInter' => $nroInter,
                 'user' => $user,
