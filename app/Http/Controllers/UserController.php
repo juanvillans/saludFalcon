@@ -210,7 +210,7 @@ class UserController extends Controller
         
         $evolutions = $this->userService->getMyEvolutions($userID);
         
-        $user = User::where('id',$userID)->with('specialty')->first();
+        $user = User::where('id',$userID)->with('specialty','roles')->first();
         
         $nroEvolutions = $evolutions->filter(function ($evolution) {
             return $evolution->is_interconsult == false;
@@ -227,7 +227,7 @@ class UserController extends Controller
                 'evolutions' => new EvolutionCollection($evolutions),
                 'nroEvol' => $nroEvolutions,
                 'nroInter' => $nroInter,
-                'user' => $user,
+                'user' => new UserResource($user),
             ]
         ]);
     }
