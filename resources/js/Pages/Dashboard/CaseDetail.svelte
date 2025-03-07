@@ -12,6 +12,8 @@
     export let areas = [];
     export let patient = false;
     export let caseDetail = {};
+    export let nroEvol = 0
+    export let nroInter = 0
     let countingCases;
     let form = useForm(structuredClone(caseDetail.data));
     let evolutionForm = useForm({
@@ -273,15 +275,15 @@
             <div class="col-span-2 flex gap-5 md:mt-5">
                 <div value="" class="neumorphism2 p-3 rounded-2xl">
                     <h3 class="font-bold text-gray-800 text-sm ">Duración total:</h3>
-                    <p>3hrs</p>
+                    <p></p>
                 </div>
                 <div value="" class="neumorphism2 p-3 rounded-2xl">
                     <h3 class="font-bold text-gray-800 text-sm ">Nro de evoluciones</h3>
-                    <p>7</p>
+                    <p>{nroEvol}</p>
                 </div>
                 <div value="" class="neumorphism2 p-3 rounded-2xl">
                     <h3 class="font-bold text-gray-800 text-sm ">Nro de Interconsultas</h3>
-                    <p>7</p>
+                    <p>{nroInter}</p>
                 </div>
             </div>
             <div class=" mt-4 gap-x-5 w-full pt-2 bg-gray-10">
