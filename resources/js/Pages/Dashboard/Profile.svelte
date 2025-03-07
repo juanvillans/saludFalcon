@@ -13,10 +13,10 @@
 
     export let patient = false;
     // export let = {};
-    export let nroEvol = 0;
-    export let nroInter = 0;
+    let nroEvol = data.nroEvol;
+    let nroInter = data.nroInter;
     let countingCases;
-    let form = useForm(structuredClone(data));
+    let form = useForm(structuredClone(data.user));
     let evolutionForm = useForm({
         diagnosis: "",
         treatment: "",
@@ -84,6 +84,7 @@
     }
     let showAllCases = window.screen.width > 700 ? true : false;
     let isOpenCreateEvolution = false;
+
     function updateClient(event) {
         event.preventDefault();
         $form.clearErrors();
@@ -104,6 +105,7 @@
             },
         );
     }
+
     function submitCases(event) {
         event.preventDefault();
         $evolutionForm.clearErrors();
@@ -146,8 +148,6 @@
             },
         });
     }
-
-    $: console.log($evolutionForm);
 </script>
 
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">
@@ -159,7 +159,7 @@
             class=" px-5 mt-4 gap-x-5 text-black p-6 pt-2 border-color2 rounded-md"
         >
             <legend
-                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-white text-dark"
+                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-gray-50 text-dark"
                 >Datos del usuario</legend
             >
             <Input
@@ -195,33 +195,35 @@
                 bind:value={$form.phone_number}
                 error={$form.errors?.phone_number}
             />
-            <Input
+            <!-- <Input
                 type="select"
                 required={true}
                 label={"Tipo de Usuario"}
                 bind:value={$form.role_name}
                 error={$form.errors?.role_name}
+                disabled={true}
             >
                 <option value="doctor">Doctor</option>
                 <option value="admin">Admin</option>
-            </Input>
+            </Input> -->
             <Input
                 label={"Matrícula médica"}
                 required={true}
                 bind:value={$form.medical_license}
                 error={$form.errors?.medical_license}
             />
-            <!-- <Input
-            type="select"
-            required={true}
-            label={"Servicio tratante"}
-            bind:value={$form.specialty_id}
-            error={$form.errors?.specialty_id}
-        >
-            {#each localData.specialties as speci (speci.id)}
-                <option value={speci.id}>{speci.name}</option>
-            {/each}
-        </Input> -->
+            <Input
+                type="select"
+                required={true}
+                label={"Servicio tratante"}
+                bind:value={$form.specialty_id}
+                error={$form.errors?.specialty_id}
+                disabled={true}
+            >
+                {#each localData.specialties || [] as speci (speci.id)}
+                    <option value={speci.id}>{speci.name}</option>
+                {/each}
+            </Input>
             {#if $form.isDirty}
                 <input
                     type="submit"
@@ -233,13 +235,30 @@
     </form>
 
     <form on:submit={submitCases} class="order-1 lg:order-2 w-full">
-        <fieldset class=" sm:px-5 md:mt-4 gap-x-5 pt-5  bg-gray-200 rounded-2xl pb-4">
+        <fieldset
+            class=" sm:px-5 md:mt-4 gap-x-5 pt-5 bg-gray-200 rounded-2xl pb-4"
+        >
             <legend
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color3 text-gray-100"
                 >Movimientos del usuario</legend
             >
+
+            <div class="col-span-2 flex gap-5 md:mt-5 mb-5">
+                <div value="" class="neumorphism2 p-3 rounded-2xl">
+                    <h3 class="font-bold text-gray-800 text-sm">
+                        Nro de evoluciones
+                    </h3>
+                    <p>{nroEvol}</p>
+                </div>
+                <div value="" class="neumorphism2 p-3 rounded-2xl">
+                    <h3 class="font-bold text-gray-800 text-sm">
+                        Nro de Interconsultas
+                    </h3>
+                    <p>{nroInter}</p>
+                </div>
+            </div>
             <ul>
-                {#each data.evolutions as evolution, i (evolution.id)}
+                {#each data.evolutions.data as evolution, i (evolution.id)}
                     <li
                         class="bg-gray-50 mb-3 border rounded-lg overflow-hidden neumorphism"
                     >
@@ -259,7 +278,7 @@
                                     de
                                 {:else if evolution.status_id == 4 || evolution.status_id == 5}
                                     en
-                                <!-- {:else if evolution.status_id == 3} -->
+                                    <!-- {:else if evolution.status_id == 3} -->
                                     a
                                 {/if}
                                 {evolution.area_name}
@@ -271,45 +290,48 @@
                                     >
                                         IC
                                     </span>
-                                {:else if i != data.evolutions.length - 1}
+                                {:else}
                                     <span
                                         class="pl-6 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
                                     >
                                         EVOL
                                     </span>
                                 {/if}
+                                <span class="flex items-center">
+                                    <span class="text-xs">
+                                        <span class="text-gray-500">el</span>
+                                        {evolution.formatted_created_at}
+                                    </span>
+                                </span>
                             </div>
                         </span>
 
-                        <div class="bg-white p-3 md:p-4 lg:p-5  space-y-2">
+                        <div class="bg-white p-3 md:p-4 lg:p-5 space-y-2">
                             {#if evolution.status_id == 4}
-                            <div>
-                                <h3 class="font-semibold">
-                                    Hora y fecha:
-                                </h3>
-                                <p class="text-dark">
-                                    El {data.formatted_entry_date}  {data.entry_hour}
-                                </p>
-                            </div>
+                                <div>
+                                    <h3 class="font-semibold">Fecha y hora:</h3>
+                                    <p class="text-dark">
+                                        El {evolution.formatted_entry_date} a las
+                                        {evolution.entry_hour}
+                                    </p>
+                                </div>
                                 <div>
                                     <h3 class="font-semibold">
                                         Motivo de consulta:
                                     </h3>
                                     <p class="text-dark">
-                                        {data.reason}
+                                        {evolution.reason}
                                     </p>
                                 </div>
                             {/if}
-                            {#if evolution.status_id !== 6 && evolution.status_id !== 4 }
-                                    <div>
-                                        <h3 class="font-semibold">
-                                            Hora y fecha:
-                                        </h3>
-                                        <p class="text-dark">
-                                            {evolution.formatted_departure_date} {evolution.departure_hour}
-                                        </p>
-                                    </div>
-                                {/if}
+                            {#if evolution.status_id !== 6 && evolution.status_id !== 4}
+                                <div>
+                                    <h3 class="font-semibold">Fecha y hora:</h3>
+                                    <p class="text-dark">
+                                        {evolution.formatted_departure_date} a las{evolution.departure_hour}
+                                    </p>
+                                </div>
+                            {/if}
                             <div>
                                 <div class="flex">
                                     <h3 class="font-semibold">Diagnostico:</h3>

@@ -28,7 +28,7 @@
         <span style={`color: ${getStatusColor(status.id)}; `}>
             {#if status.id == 1 || status.id == 2}
 
-            <iconify-icon  icon="famicons:log-out" width="15" height="15"
+            <iconify-icon class="relative top-0.5"  icon="famicons:log-out" width="18" height="18"
             ></iconify-icon>
             {:else if status.id == 3}
             <iconify-icon
