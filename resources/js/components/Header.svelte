@@ -4,7 +4,7 @@
 
     let pageName = "";
     $: userNav = false;
-
+    
     function toggleNavUser() {
         userNav = !userNav;
     }
@@ -32,7 +32,7 @@
         cases: 'Casos',
         casedetail: 'Detalles del caso',
         users: 'usuarios',
-        
+        profile: 'Perfil',
     }
 </script>
 
@@ -95,6 +95,12 @@
             {#if userNav}
                 <div
                     class="absolute  w-fit rounded-lg flex items-center flex-col bg-color1 overflow-hidden  z-50 top-10 right-3 rounded-tr-none text-gray-100 shadow-xl"
+                >
+                    <a
+                    href={`/admin/perfil/${$page.props.auth.user_id}`}
+                    use:inertia
+                    class="p-2 py-3 px-4  w-full cursor-pointer hover:underline hover:text-gray-50 block whitespace-nowrap"
+                    >Mi perfil</a
                 >
                     <a
                         href="/admin/cambiar-contraseña"

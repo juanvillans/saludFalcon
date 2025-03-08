@@ -8,6 +8,8 @@ use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\DoctorCollection;
 use App\Http\Resources\DoctorResource;
+use App\Http\Resources\EvolutionCollection;
+use App\Http\Resources\UserResource;
 use App\Models\RequestUser;
 use App\Models\Specialty;
 use App\Models\User;
@@ -201,5 +203,32 @@ class UserController extends Controller
         
 
         return response()->json(['doctors' => $doctors]);
+    }
+
+    public function myProfile($userID){
+
+        
+        $evolutions = $this->userService->getMyEvolutions($userID);
+        
+        $user = User::where('id',$userID)->with('specialty','roles')->first();
+        
+        $nroEvolutions = $evolutions->filter(function ($evolution) {
+            return $evolution->is_interconsult == false;
+        })->count();
+
+        
+        $nroInter = $evolutions->filter(function ($evolution) {
+            return $evolution->is_interconsult == true;
+        })->count();
+
+        return inertia('Dashboard/Profile',[
+
+            'data' => [
+                'evolutions' => new EvolutionCollection($evolutions),
+                'nroEvol' => $nroEvolutions,
+                'nroInter' => $nroInter,
+                'user' => new UserResource($user),
+            ]
+        ]);
     }
 }

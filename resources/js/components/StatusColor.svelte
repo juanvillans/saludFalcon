@@ -22,6 +22,7 @@
     }
     export let status;
 </script>
+<<<<<<< HEAD
 <div class="flex gap-1">
 
     <span style={`color: ${getStatusColor(status.id)}; `} class="min-h-max inline-block">
@@ -43,4 +44,30 @@
        {/if}
     </span>
     {status.name}
+=======
+<div class=" gap-1 inline-block">
+
+    <span  class="min-h-max inline-block">
+        <span style={`color: ${getStatusColor(status.id)}; `}>
+            {#if status.id == 1 || status.id == 2}
+
+            <iconify-icon class="relative top-0.5"  icon="famicons:log-out" width="18" height="18"
+            ></iconify-icon>
+            {:else if status.id == 3}
+            <iconify-icon
+            icon="material-symbols-light:move-location-outline-rounded"
+            width="15"
+            height="15"
+            ></iconify-icon>
+            {:else if status.id == 4}
+                <iconify-icon icon="icomoon-free:enter" width="15" height="15" class="relative top-1"
+                ></iconify-icon>
+                {:else if status.id == 5}
+                <iconify-icon icon="mdi:cross" width="24" height="24"></iconify-icon>
+                
+           {/if}
+        </span>
+       {status.name}
+    </span>
+>>>>>>> 8ed2fca14e810812fd34242b24a1789e7e7e14af
 </div>
