@@ -47,56 +47,30 @@
             class="animate-slide-in bg-red w-[99%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%]"
         ></div>
         <div
-            class="delay-1 animate-slide-in bg-color1 w-[96%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%]"
+            class="delay-1 animate-slide-in bg-color1 w-[96.6%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%]"
         ></div>
         <div
-            class="delay-2 animate-slide-in bg-gray-200 w-[92%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%] flex  flex-col md:flex-row md:justify-between p-3 md:p-5 lg:p-8 md:gap-5"
+            class="delay-2 animate-slide-in bg-gray-100 w-[92%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%] flex  flex-col md:flex-row md:justify-between p-3 md:p-5 lg:p-8 md:gap-5"
         >
             <div class="relative">
                 <header class="flex  items-center gap-3">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="32"
-                        height="32"
-                        viewBox="0 0 48 48"
-                        fill="none"
-                    >
-                        <rect
-                            x="20.25"
-                            width="7.5"
-                            height="48"
-                            rx="3.75"
-                            fill="#00247D"
-                        />
-                        <rect
-                            x="48"
-                            y="20.25"
-                            width="7.5"
-                            height="48"
-                            rx="3.75"
-                            transform="rotate(90 48 20.25)"
-                            fill="#00247D"
-                        />
-                        <path
-                            d="M20 44.8043V27.7514C25.4857 27.3379 27.8095 22.4115 28 20V27.7514V44.8043C24.3429 50.592 21.1429 47.2159 20 44.8043Z"
-                            fill="#BF0404"
-                        />
-                        <path
-                            d="M28 20H44C46.2091 20 48 21.7909 48 24V24C48 26.2091 46.2091 28 44 28H28V20Z"
-                            fill="#FFCC00"
-                        />
-                    </svg>
+                    <img src="/img/logoBlue.svg" alt="" srcset=""  class="1/2 w-10"/>
+
                     <h4>SALUDFALCÓN.COM</h4>
                 </header>
-                <h1 class="text-color1 xl:text-3xl mt-1 lg:mt-6 xl:mt-12">
+                <h1 class="text-color1  xl:text-3xl mt-2 lg:mt-6 xl:mt-12">
                     REGISTROS DE CASOS DE EMERGENCIA DEL HOSPITAL DR ALFREDO VAN
                     GRIECKEN
                 </h1>
+                <img src="/img/doctor.png" alt="" srcset=""  class=""/>
+
+            <img src="/img/4logos.png" alt="" srcset=""  class="target fixed  md:absolute bottom-2 md:bottom-0 left-1/2 -translate-x-1/2 mx-auto mt-5 md:mt-12 lg:mt-16 max-w-[200px] md:max-w-[300px]"/>
+
             </div>
             
             <form
                 on:submit={handleSubmit}
-                class="md:min-w-[290px] px-4 md:px-6 bg-white rounded-3xl md:h-full"
+                class="md:min-w-[290px] px-4 md:px-6 lg:px-8 bg-gray-100 rounded-3xl md:h-full md:neumorphism"
             >
                 <legend class="text-center opacity-70 mt-3 md:mt-7">INICIAR SESIÓN</legend>
                 <div>
@@ -122,7 +96,7 @@
                     type="submit"
                     disabled={$form.processing}
                     value={$form.processing ? "Cargando..." : "ENTRAR"}
-                    class="btn_create py-3 w-full  mt-2 lg:mt-5 rounded-md cursor-pointer"
+                    class="btn_create py-3 w-40 mx-auto  md:w-full md:mt-2 lg:mt-5 rounded-md cursor-pointer hover:text-color2"
                 />
                 <a
                     href="/registrarse"
@@ -131,7 +105,7 @@
                 >
             </form>
 
-   
+            
         </div>
     </section>
 

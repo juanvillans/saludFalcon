@@ -34,7 +34,13 @@
     </button> -->
     <div
         class="hidden md:block burger_icon items-center pt-1 text-center text-2xl text-gray-300 hover:text-color4 bg-color2 bg-opacity-20"
-    ></div>
+    >
+    <div class="flex items-center justify-center mt-3 gap-2">
+        <img src="/img/logoWhite.svg" alt="" srcset=""  class="1/2 w-6 "/>
+        <span class="label_link text-xs">SALUDFALCÓN.COM</span>
+    </div>
+
+</div>
 
     <ul
         class="flex justify-around items-center w-full md:flex-col
