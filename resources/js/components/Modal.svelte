@@ -33,7 +33,7 @@
       class={`p-0 rounded-xl min-w-[300px] ${modalClasses}`}
     >
       <Alert />
-      <div class="p-6 pb-5" on:click|stopPropagation>
+      <div class="p-3 sm:p-6 pb-5" on:click|stopPropagation>
         <div class="sticky top-0 flex w-full items-center bg-white z-50">
           <slot name="header" />
           <button style="font-size: 16px;" class="ml-auto p-1" on:click={() => dialog.close()}>

@@ -3,16 +3,15 @@
     import Modal from "../../components/Modal.svelte";
     import Input from "../../components/Input.svelte";
     import StatusColor from "../../components/StatusColor.svelte";
-    import Pagination from "../../components/Pagination.svelte";
     import debounce from "lodash/debounce";
-    import Search from "../../components/Search.svelte";
     import fetchLocalData from "../../components/localData";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, router, page } from "@inertiajs/svelte";
     import { construct_svelte_component } from "svelte/internal";
+    import Pagination from "../../components/Pagination.svelte";
     import axios from "axios";
     import { onMount } from "svelte";
-    import {getDuration} from "../../components/getDuration.js";
+    import { getDuration } from "../../components/getDuration.js";
 
     export let data = {};
     export let statutes = {};
@@ -27,7 +26,10 @@
             console.error("Error loading data:", error);
         }
     });
-
+    function getFirstName(firstName) {
+        const parts = firstName.split(" ");
+        return parts[0];
+    }
     // $: console.log($page.props.auth);
     // Update data based on the current state of `data.specialties`
     const today = new Date();
@@ -75,6 +77,21 @@
     let form = useForm(structuredClone(emptyDataForm));
 
     let visulizateType = "table";
+    // Check if 'visualizateTypeCases' exists in localStorage
+    if (typeof localStorage !== "undefined") {
+    const storedValue = localStorage.getItem('visualizateTypeCases');
+    if (storedValue) {
+      visulizateType = storedValue; // Use the stored value if it exists
+    } else {
+      localStorage.setItem('visualizateTypeCases', visulizateType); // Save the default value
+    }
+  }
+
+    $: if (visulizateType) {
+        if (typeof localStorage !== "undefined") {
+        localStorage.setItem('visualizateTypeCases', visulizateType);
+    }
+    }
     let showModal = false;
 
     function handleSubmit(event) {
@@ -155,7 +172,6 @@
     function goToDetailsPatientPage(id) {
         router.get("/admin/casos/detalle-caso/" + id);
     }
-    let selectingText = false;
 
     function handleMouseDown() {
         selectingText = false; // Reset before mouse down
@@ -171,8 +187,6 @@
     }
     let submitStatus = "Crear";
     let prosecingSearchPatient = false;
-
-    
 
     $: if (showModal) {
         setTimeout(() => {
@@ -679,7 +693,7 @@
         {/each}
     </ul>
 </Modal>
-<div class="flex justify-between items-center">
+<div class="flex  justify-between items-center">
     <button
         class="btn_create inline-block p-2 px-3"
         on:click={(e) => {
@@ -690,13 +704,13 @@
         }}
         title="Crear un nuevo caso"
     >
-        <span class="md:hidden text-4xl relative top-1 font-bold"
+        <span class="sm:hidden  text-2xl relative top-1 font-bold"
             ><iconify-icon icon="ic:round-add"></iconify-icon></span
         >
-        <span class="hidden md:block"> Nuevo caso</span>
+        <span class="hidden sm:block"> Nuevo caso</span>
     </button>
 
-    <div class="text-gray-600 text-xl md:text-2xl">
+    <div class="text-gray-600 text-xl md:text-2xl ml-auto">
         <iconify-icon
             class="cursor-pointer mr-2"
             title="Vizualizar tipo Tabla"
@@ -716,182 +730,191 @@
     </div>
 </div>
 
-{#if visulizateType == "table"}
-    <Table
-        filtersOptions={{
-            status:
-                { label: "Estado", options: localData?.statutes || [] } || {},
-            area_id:
-                { label: "Última area", options: localData?.areas || [] } || {},
-            condition:
-                {
-                    label: "Diagnóstico",
-                    options: localData?.conditions || [],
-                } || {},
-        }}
-        allowSearch={false}
-    >
-        <div slot="filterBox"></div>
-        <thead slot="thead" class="sticky top-0">
-            <tr>
-                <th style="font-size: 12px;">ID</th>
-                <th>Duración</th>
-                <th>Estado y area</th>
-                <!-- <th>Condición</th> -->
-                <th>Paciente</th>
-                <th>Motivo de consulta</th>
-                <th>Diagnóstico</th>
-                <th>Orden médica de ingreso</th>
-            </tr>
-        </thead>
+<Table
+    filtersOptions={{
+        status: { label: "Estado", options: localData?.statutes || [] } || {},
+        area_id:
+            { label: "Última area", options: localData?.areas || [] } || {},
+        condition:
+            {
+                label: "Diagnóstico",
+                options: localData?.conditions || [],
+            } || {},
+    }}
+    {visulizateType}
+>
+    <div slot="filterBox"></div>
+    <thead slot="thead" class="sticky top-0">
+        <tr>
+            <th style="font-size: 12px;">ID</th>
+            <th>Duración</th>
+            <th>Estado y area</th>
+            <!-- <th>Condición</th> -->
+            <th>Paciente</th>
+            <th>Motivo de consulta</th>
+            <th>Diagnóstico</th>
+            <th>Orden médica de ingreso</th>
+        </tr>
+    </thead>
 
-        <tbody slot="tbody">
-            {#if data?.data?.length > 0}
-                {#each data?.data as row, i (row.id)}
-                    <tr
-                        on:mousedown={handleMouseDown}
-                        on:mouseup={(e) => handleMouseUp(e, row.id)}
-                        class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5`}
-                    >
-                        <td style="font-size: 12px;">{row.id}</td>
-                        <td>
-                            {getDuration(
-                                row?.entry_date,
-                                row?.entry_hour,
-                                row?.departure_date,
-                                row?.departure_hour,
-                                row?.current_status,
-                            )}
+    <tbody slot="tbody">
+        {#if data?.data?.length > 0 && visulizateType == "table"}
+            {#each data?.data as row, i (row.id)}
+                <tr
+                    on:mousedown={handleMouseDown}
+                    on:mouseup={(e) => handleMouseUp(e, row.id)}
+                    class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5`}
+                >
+                    <td style="font-size: 12px;">{row.id}</td>
+                    <td>
+                        {getDuration(
+                            row?.entry_date,
+                            row?.entry_hour,
+                            row?.departure_date,
+                            row?.departure_hour,
+                            row?.current_status,
+                        )}
 
-                            <!-- {formatDateSpanish(row.entry_date)} -->
-                        </td>
+                        <!-- {formatDateSpanish(row.entry_date)} -->
+                    </td>
 
-                        <td style="white-space: normal;" class="min-w-[150px]">
-                            <StatusColor
-                                status={{
-                                    name: row?.current_status_name,
-                                    id: row?.current_status,
-                                }}
-                            />
+                    <td style="white-space: normal;" class="min-w-[150px]">
+                        <StatusColor
+                            status={{
+                                name: row?.current_status_name,
+                                id: row?.current_status,
+                            }}
+                        />
 
-                            <!-- {#if row?.current_status == "3"}
+                        <!-- {#if row?.current_status == "3"}
                                     a {row?.admitted_area_name}
                                 {/if} -->
-                            <span class="inline-block flex">
-                                {#if row.current_status == 1 || row.current_status == 2 || row.current_status == 6}
-                                    de
-                                {:else if row.current_status == 4 || row.current_status == 5}
-                                    en
-                                {:else if row.current_status == 3}
-                                    a
-                                {/if}
-                                {row.area_name}
-                            </span>
-                        </td>
+                        <span class="inline-block flex">
+                            {#if row.current_status == 1 || row.current_status == 2 || row.current_status == 6}
+                                de
+                            {:else if row.current_status == 4 || row.current_status == 5}
+                                en
+                            {:else if row.current_status == 3}
+                                a
+                            {/if}
+                            {row.area_name}
+                        </span>
+                    </td>
 
-                        <td class="min-w-[180px]">
-                            <div class="flex items-center gap-2">
-                                {#if row.sex == "Femenino"}
-                                    <span class="text-pink text-2xl">
-                                        <iconify-icon icon="fa-solid:female"
-                                        ></iconify-icon>
-                                    </span>
-                                {:else}
-                                    <span class="text-color3 text-2xl">
-                                        <iconify-icon icon="fa-solid:male"
-                                        ></iconify-icon>
-                                    </span>
-                                {/if}
-                                <span class="whitespace-normal"
-                                    >{row?.patient_name}
-                                    {row?.patient_last_name}
-                                    - {row?.patient_ci}
+                    <td class="min-w-[180px]">
+                        <div class="flex items-center gap-2">
+                            {#if row.sex == "Femenino"}
+                                <span class="text-pink text-2xl">
+                                    <iconify-icon icon="fa-solid:female"
+                                    ></iconify-icon>
                                 </span>
-                            </div>
-                        </td>
-                        <td
-                            class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
-                            style="white-space: normal;"
-                        >
-                            {#if row?.reason.length > 240}
-                                {row?.reason.slice(0, 240)}
-                                <span
-                                    class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                                    >...</span
-                                >
                             {:else}
-                                {row?.reason}
+                                <span class="text-color3 text-2xl">
+                                    <iconify-icon icon="fa-solid:male"
+                                    ></iconify-icon>
+                                </span>
                             {/if}
-                        </td>
-                        <td
-                            title={row?.current_patient_condition_name}
-                            class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
-                            style="white-space: normal;"
-                        >
-                            <div
-                                class={`inline-block w-2 h-2 mr-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
-                            ></div>
-                            <!-- {row?.current_patient_condition_name} -->
-                            {#if row?.diagnosis.length > 240}
-                                {row?.diagnosis.slice(0, 240)}
-                                <span
-                                    class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                                    >...</span
-                                >
-                            {:else}
-                                {row?.diagnosis}
-                            {/if}
-                        </td>
-                        <!-- <td>{row.sex}</td> -->
-                        <td
-                            class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
-                            style="white-space: normal;"
-                        >
-                            {#if row?.treatment.length > 240}
-                                {row?.treatment.slice(0, 240)}
-                                <span
-                                    class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                                    >...</span
-                                >
-                            {:else}
-                                {row?.treatment}
-                            {/if}
-                        </td>
-                        <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
-                    </tr>
-                {/each}
-            {/if}
-        </tbody>
-    </Table>
-{/if}
+                            <span class="whitespace-normal"
+                                >{getFirstName(row?.patient_name)}
+                                {getFirstName(row?.patient_last_name)}
+                                <small class="text-gray-400">C.I:</small
+                                >{row?.patient_ci}
+                            </span>
+                        </div>
+                    </td>
+                    <td
+                        class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
+                        style="white-space: normal;"
+                    >
+                        {#if row?.reason.length > 240}
+                            {row?.reason.slice(0, 240)}
+                            <span
+                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                >...</span
+                            >
+                        {:else}
+                            {row?.reason}
+                        {/if}
+                    </td>
+                    <td
+                        title={row?.current_patient_condition_name}
+                        class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
+                        style="white-space: normal;"
+                    >
+                        <div
+                            class={`inline-block w-2 h-2 mr-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
+                        ></div>
+                        {#if row?.diagnosis.length > 240}
+                            {row?.diagnosis.slice(0, 240)}
+                            <span
+                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                >...</span
+                            >
+                        {:else}
+                            {row?.diagnosis}
+                        {/if}
+                    </td>
+                    <!-- <td>{row.sex}</td> -->
+                    <td
+                        class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
+                        style="white-space: normal;"
+                    >
+                        {#if row?.treatment.length > 240}
+                            {row?.treatment.slice(0, 240)}
+                            <span
+                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                >...</span
+                            >
+                        {:else}
+                            {row?.treatment}
+                        {/if}
+                    </td>
+                    <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
+                </tr>
+            {/each}
+        {/if}
+    </tbody>
+</Table>
 
 {#if visulizateType == "card"}
-    <div class="lg:grid lg:grid-cols-2 gap-3 mt-3">
+    <div class="grid lg:grid-cols-2 gap-5 mt-3">
         {#each data?.data as row, i (row.id)}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <article
                 on:mousedown={handleMouseDown}
                 on:mouseup={(e) => handleMouseUp(e, row.id)}
-                class={`border mb-3 relative w-full cursor-pointer bg-gray-50 p-2 md:p-5 rounded-md shadow-sm hover:bg-gray-500 hover:bg-opacity-5`}
+                class={`relative w-full cursor-pointer bg-gray-100 p-2 md:p-5 rounded-md  hover:bg-color4 hover:bg-opacity-60 neumorphism2`}
             >
                 <span
-                    class="h-fit absolute right-0 top-0 text-center col-span-2 bg-gray-100 p-1 rounded-lg inline-block w-10 px-2"
-                    >{i + 1}°</span
+                    class="h-fit absolute right-0 top-0 text-center col-span-2  p-1 text-xs inline-block w-10 md:px-2"
+                    >{row.id}</span
                 >
-                <div class="flex gap-2 items-center">
+                <div class="flex gap-1 items-center">
                     <StatusColor
                         status={{
-                            id: row?.current_status,
                             name: row?.current_status_name,
+                            id: row?.current_status,
                         }}
                     />
-                    {#if row?.current_status == "3"}
+
+                    <!-- {#if row?.current_status == "3"}
                         a {row?.admitted_area_name}
-                    {/if}
+                    {/if} -->
+                    <span class="inline-flex">
+                        {#if row.current_status == 1 || row.current_status == 2 || row.current_status == 6}
+                            de
+                        {:else if row.current_status == 4 || row.current_status == 5}
+                            en
+                        {:else if row.current_status == 3}
+                            a
+                        {/if}
+                        {row.area_name}.
+                    </span>
                     <div class="flex items-cenenter gap-1">
                         <iconify-icon
-                            class="text-sm text-gray-600 relative top-1"
-                            icon="feather:clock"
+                            icon="game-icons:duration"
+                            class="text-gray-600 text-xs md:text-sm"
+                           
                         ></iconify-icon>
 
                         <p>
@@ -906,7 +929,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 mt-1">
+                <div class="flex items-center gap-3 mt-1">
                     {#if row.sex == "Femenino"}
                         <span class="text-pink text-lg sm:text-2xl">
                             <iconify-icon icon="fa-solid:female"></iconify-icon>
@@ -917,12 +940,18 @@
                         </span>
                     {/if}
                     <span
-                        >{row.user_name}
-                        {row.user_last_name}
-                        - {row.user_ci}
+                        >{getFirstName(row?.patient_name)}
+                        {getFirstName(row.patient_last_name)}
+                        <small class="text-gray-500">C.I:</small>{row.user_ci}
                     </span>
                 </div>
-                <div class="mt-2">
+                <div class="mt-1 flex items-center gap-2">
+                    <iconify-icon
+                        icon="emojione-monotone:speaking-head"
+                        width="20"
+                        height="20"
+                        class="text-gray-900"
+                    ></iconify-icon>
                     {#if row?.reason.length > 240}
                         {row?.reason.slice(0, 240)}
                         <span
@@ -933,7 +962,7 @@
                         {row?.reason}
                     {/if}
                 </div>
-                <div class="mt-2 flex items-center">
+                <div class="mt-2 flex items-center gap-2">
                     <div
                         class={`inline-block w-2 h-2 mr-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
                     ></div>
@@ -949,12 +978,9 @@
                         {/if}
                     </p>
                 </div>
-                <div class="mt-2">
+                <div class="mt-2 items-center flex gap-2">
                     <p>
-                        <iconify-icon
-                            class="text-lg sm:text-2xl relative top-1.5 text-color1"
-                            icon="mdi:medicine-bottle"
-                        ></iconify-icon>
+                        <iconify-icon class="relative top-1 -left-1 text-color2" icon="ant-design:medicine-box-filled" width="20" height="20"></iconify-icon>
                         {#if row.treatment.length > 240}
                             {row.treatment.slice(0, 240)}
                             <span
@@ -981,7 +1007,6 @@
     </div>
 {/if}
 
-<Search />
 <div class="col-span-2">
     <Pagination pagination={{ ...data?.meta, ...data?.links }} />
 </div>

@@ -28,7 +28,7 @@
     --background: #ececec;
     --zelle: #6a1ccd;
     --binance: #f3ba2f;
-    --orange: #be5c00;
+    --orange: #c77102;
 }
 .text-editor ul,
 .description ul {
@@ -225,11 +225,13 @@ h1 {
     position: relative;
     z-index: 1;
 }
-@media (max-width: 450px) {
+@media (max-width: 350px) {
     .btn_create {
         bottom: 70px;
         right: 20px;
         position: fixed;
+        box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.219);
+
     }
 }
 .btn_create:after {

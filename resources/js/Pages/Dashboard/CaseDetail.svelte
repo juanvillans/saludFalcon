@@ -13,7 +13,6 @@
     export let nroEvol = 0;
     export let nroInter = 0;
     export let showMorePatientDetail = false;
-    let countingCases;
     let form = useForm(structuredClone(caseDetail.data));
     let evolutionForm = useForm({
         diagnosis: "",
@@ -35,14 +34,11 @@
             console.error("Error loading data:", error);
         }
     });
-    $: if (patient) {
-        countingCases = caseDetail.data.cases.length;
-    }
+    
     let editor;
     let descriptionLength = 0;
     let openAccordeon = -1;
 
-    let editStatus = false;
 
     function getFirstName(firstName) {
 
@@ -80,7 +76,6 @@
 
         return formattedDate;
     }
-    let showAllCases = window.screen.width > 700 ? true : false;
     let isOpenCreateEvolution = false;
     function updateClient(event) {
         event.preventDefault();
@@ -114,38 +109,18 @@
                     }
                 },
                 onSuccess: (mensaje) => {
+                    $evolutionForm.reset()
                     displayAlert({
                         type: "success",
-                        message: "Caso editado exitosamente!",
+                        message: "Guardado",
                     });
-                    editStatus = false;
+                    isOpenCreateEvolution = false
                 },
             },
         );
     }
 
-    function handleDelete() {
-        $form.post("/admin/historial-medico", {
-            onBefore: () => {
-                if (confirm(`¿Está seguro de eliminar este caso?`)) {
-                    $form.cases = $form.cases.slice(1);
-                }
-            },
-            onError: (errors) => {
-                if (errors.data) {
-                    displayAlert({ type: "error", message: errors.data });
-                }
-            },
-            onSuccess: (mensaje) => {
-                displayAlert({
-                    type: "success",
-                    message: "Caso Eliminado exitosamente",
-                });
-            },
-        });
-    }
 
-    $: console.log($evolutionForm);
 </script>
 
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">

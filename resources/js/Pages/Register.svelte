@@ -70,8 +70,9 @@
 <svelte:head>
     <title>Usuarios</title>
 </svelte:head>
-
 <div class="w-11/12 mx-auto max-w-[800px]">
+    <h1 class="mt-3">Registrarme</h1>
+    <p>Una vez que envie la solicitud podrá inicar sesión si usuario admin lo acepta</p>
     <form
         id="a-form"
         on:submit={handleSubmit}

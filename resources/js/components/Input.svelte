@@ -35,20 +35,6 @@
     select:focus {
         outline: none;
     }
-    input:-webkit-autofill,
-    textarea:-webkit-autofill,
-    select:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0 50px #3b414d inset; /* Change the color to your own background color */
-        -webkit-text-fill-color: gainsboro;
-        font-family: "Figtree";
-    }
-
-    input:-webkit-autofill:focus,
-    textarea:-webkit-autofill:focus {
-        -webkit-box-shadow: 0 0 0 50px #3b414d inset; /*your box-shadow*/
-        -webkit-text-fill-color: gainsboro;
-        font-family: "Figtree";
-    }
     .parent_div:before {
         content: "";
         display: block;

@@ -6,6 +6,7 @@
     import Modal from "./Modal.svelte";
 
     import Search from "./Search.svelte";
+    import { object_without_properties } from "svelte/internal";
     const dispatch = createEventDispatcher();
     let showModal = false;
 
@@ -14,22 +15,32 @@
     export let selectedRowOptions = {};
     export let pagination = false;
     export let allowSearch = true;
+    export let visulizateType = "table";
+    let isFilterAply = false;
     let firstTime = true;
-    $: filterClientData = { ...$page.props.filters };
+    let filterClientData;
+    $: {
+        filterClientData = { ...$page.props.filters };
+        isFilterAply = Object.keys(filterClientData).some(
+            (value) => value != "search",
+        );
+    }
+
     // $: $form, handleFilters()
     $: console.log(filterClientData);
-    
+
     const handleFilters = () => {
         firstTime = false;
-        router.get(`${$page.url.split('?')[0]}`, filterClientData);
+        router.get(`${$page.url.split("?")[0]}`, filterClientData);
     };
 </script>
 
 <section class="w-full">
-    <div class=" md:flex md:items-center md:justify-between lg:justify-end">
+    <div class="flex md:items-center justify-end">
         {#if filtersOptions}
             <button
-                class="flex gap-2 hover:bg-gray-300 rounded-full p-2 px-3"
+                class="relative flex gap-2 hover:bg-gray-300 rounded-full p-2 px-3"
+                class:bg-gray-300={isFilterAply}
                 title="Busqueda de filtros"
                 on:click={(e) => {
                     e.preventDefault();
@@ -37,30 +48,16 @@
                     showModal = true;
                 }}
             >
+                {#if isFilterAply}
+                    <div
+                        class="absolute bg-color1 h-2 w-2 rounded-full right-1 top-0"
+                    ></div>
+                {/if}
                 <span> Filtros </span>
                 <iconify-icon icon="mage:filter" width="24" height="24"
                 ></iconify-icon>
             </button>
-            <div class="flex">
-                <div
-                    class="inline-flex overflow-hidden border border-dark border-opacity-30 divide-x divide-gray-300 rounded-lg rtl:flex-row-reverse"
-                >
-                    <!-- <button
-                        on:click={(e) => {
-                            filterClientData["status"] = "";
-                            handleFilters();
-                        }}
-                        class="filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
-                        class:bg-gray-200={filterClientData["status"] == ""}
-                    >
-                        Todos
-                    </button> -->
-
-                    <!-- </article>
-                    {/each} -->
-                </div>
-                <slot name="filterBox"></slot>
-            </div>
+          
         {/if}
 
         {#if allowSearch}
@@ -116,64 +113,72 @@
             </div>
         {/if}
     </div>
-
-    <div class="flex flex-col mt-4">
-        <div
-            class="-mx-4 -my-2 overflow-x-auto overflow-y-visible sm:-mx-6 lg:-mx-8"
-        >
-            <div class="inline-block w-full py-2 align-middle md:px-6 lg:px-8">
+    {#if visulizateType == "table"}
+        <div class="flex flex-col mt-2">
+            <div
+                class="-mx-4 -my-2 overflow-x-auto overflow-y-visible sm:-mx-6 lg:-mx-8"
+            >
                 <div
-                    class="overflow-x-auto border border-gray-200 md:rounded-lg"
+                    class="inline-block w-full py-2 align-middle md:px-6 lg:px-8"
                 >
-                    <table
-                        class="relative table overflow-scroll overflow-y-auto w-full divide-y divide-gray-200"
+                    <div
+                        class="overflow-x-auto border border-gray-200 md:rounded-lg"
                     >
-                        <slot name="thead"></slot>
+                        <table
+                            class="relative table overflow-scroll overflow-y-auto w-full divide-y divide-gray-200"
+                        >
+                            <slot name="thead"></slot>
 
-                        <slot
-                            name="tbody"
-                            class="bg-white divide-y divide-gray-200  "
-                        ></slot>
-                    </table>
+                            <slot
+                                name="tbody"
+                                class="bg-white divide-y divide-gray-200  "
+                            ></slot>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    {#if pagination}
+        
+        {#if pagination}
         <!-- Pagination ---------------------------------------------------------------------------------------------- -->
         <Pagination pagination={{ ...pagination }} />
-    {/if}
+        {/if}
+        {/if}
 </section>
 
 <Modal bind:showModal modalClasses={"max-w-[560px]"} showCancelButton={false}>
     <p slot="header" class="opacity-60">Filtros de busqueda</p>
-    <div class="flex gap-10">
+    <div class="flex gap-5 md:gap-10">
         {#each Object.entries(filtersOptions) as [filterKey, filterOption] (filterKey)}
             <article>
-                <h4 class="uppercase text-sm font-medium border-b px-2 pb-2 mb-1.5">
+                <h4
+                    class="uppercase text-xs md:text-sm font-medium border-b px-2 pb-2 mb-1.5"
+                >
                     {filterOption.label}
                 </h4>
                 {#each filterOption.options as filter, i (filter.id)}
                     <button
-                        class="filter_button px-2 py-1 my-1 text-xs font-medium hover:text-dark rounded-full text-gray-700 block transition-colors duration-75 sm:text-sm hover:bg-gray-200"
+                        class="text-left filter_button px-2 py-1 my-1 text-xs font-medium hover:text-dark rounded-full text-gray-700 block transition-colors duration-75 sm:text-sm hover:bg-gray-200"
                         class:bg-gray-200={filterClientData?.[filterKey] ==
                             filter.id}
                         on:click={(e) => {
                             if (filterClientData[filterKey] == filter.id) {
-                                console.log(filterKey)
-                                delete filterClientData[filterKey] 
+                                console.log(filterKey);
+                                delete filterClientData[filterKey];
                             } else {
                                 filterClientData[filterKey] = filter.id;
                             }
                             console.log(filterClientData);
-                            
+
                             handleFilters();
                         }}
                     >
                         {filter.name}
                         {#if filterClientData?.[filterKey] == filter.id}
-                            <iconify-icon icon="line-md:close" class="relative top-1"></iconify-icon>
+                            <iconify-icon
+                                icon="line-md:close"
+                                class="relative top-1"
+                            ></iconify-icon>
                         {/if}
                     </button>
                 {/each}
