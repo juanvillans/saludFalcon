@@ -52,7 +52,7 @@
         <div
             class="delay-2 animate-slide-in bg-gray-200 w-[92%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%] flex  flex-col md:flex-row md:justify-between p-3 md:p-5 lg:p-8 md:gap-5"
         >
-            <div>
+            <div class="relative">
                 <header class="flex  items-center gap-3">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -88,13 +88,13 @@
                     </svg>
                     <h4>SALUDFALCÓN.COM</h4>
                 </header>
-                <img src="/img/4logos.png" alt="" srcset=""  class="mx-auto mt-5 md:mt-12 lg:mt-16 max-w-[200px] md:max-w-[300px]"/>
-                <h1 class="text-color1 xl:text-3xl mt-1 lg:mt-3">
+                <h1 class="text-color1 xl:text-3xl mt-1 lg:mt-6 xl:mt-12">
                     REGISTROS DE CASOS DE EMERGENCIA DEL HOSPITAL DR ALFREDO VAN
                     GRIECKEN
                 </h1>
+                <img src="/img/4logos.png" alt="" srcset=""  class="target absolute bottom-0 left-1/2 -translate-x-1/2 mx-auto mt-5 md:mt-12 lg:mt-16 max-w-[200px] md:max-w-[300px]"/>
 
-                <img src="/img/hospitalVector.svg" class="absolute bottom-0 -left-2 md:left-10 w-1/2 min-w-[280px] max-w-[700px] lg:max-w-[1000px]" alt="" srcset="" />
+                <!-- <img src="/img/hospitalVector.svg" class="absolute bottom-0 -left-2 md:left-10 w-1/2 min-w-[280px] max-w-[700px] lg:max-w-[1000px]" alt="" srcset="" /> -->
 
             </div>
     
@@ -126,7 +126,7 @@
                     type="submit"
                     disabled={$form.processing}
                     value={$form.processing ? "Cargando..." : "ENTRAR"}
-                    class="bg-color1 text-white duration-200 mt-5 w-full hover:bg-color4 hover:text-black font-bold py-3 rounded-md cursor-pointer"
+                    class="btn_create py-3 w-full  mt-2 lg:mt-5 rounded-md cursor-pointer"
                 />
                 <a
                     href="/registrarse"

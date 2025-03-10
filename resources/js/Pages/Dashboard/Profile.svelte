@@ -281,7 +281,7 @@
                                 <a
                                     href={`/admin/casos/detalle-caso/${evolution.id}`}
                                     use:inertia
-                                    class="ml-1 relative text-sm cursor-pointer caseLink block"
+                                    class="ml-1 text-sm caseLink"
                                 >
                                     CASO: {evolution.id}
                                 </a>
@@ -323,7 +323,7 @@
                             </div>
                         </span>
 
-                        <div class="bg-white p-3 md:p-4 lg:p-5 space-y-2">
+                        <div class="bg-white  p-3 md:p-4 lg:p-5 space-y-2">
                             {#if evolution.status_id == 4}
                                 <div>
                                     <h3 class="font-semibold">Fecha y hora:</h3>
@@ -420,21 +420,24 @@
     a.caseLink {
         text-decoration: none;
         position: relative;
+        display: block;
+        z-index: 1;
     }
-    a.caseLink:before {
-        content: "ss ";
-        background-color: hsla(196, 61%, 58%, 0.75) !important;
+    a.caseLink::before {
+        content: "";
+        background-color: #c9ebf2 !important;
         position: absolute;
         left: 0;
-        bottom: 3px;
+        bottom: 5px;
         width: 100%;
-        height: 8px;
+        height: 5px;
         z-index: -1;
-        transition: all 0.3s ease-in-out;
+        transition: all 0.2s ease-in-out;
     }
 
-    a.caseLink:hover:before {
+    a.caseLink:hover::before {
         bottom: 0 !important;
+        left: 0 !important;
         height: 100% !important;
     }
 </style>
