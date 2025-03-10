@@ -93,11 +93,8 @@
                     REGISTROS DE CASOS DE EMERGENCIA DEL HOSPITAL DR ALFREDO VAN
                     GRIECKEN
                 </h1>
-
-                <img src="/img/hospitalVector.svg" class="absolute bottom-0 -left-2 md:left-10 w-1/2 min-w-[280px] max-w-[700px] lg:max-w-[1000px]" alt="" srcset="" />
-
             </div>
-    
+            
             <form
                 on:submit={handleSubmit}
                 class="md:min-w-[290px] px-4 md:px-6 bg-white rounded-3xl md:h-full"

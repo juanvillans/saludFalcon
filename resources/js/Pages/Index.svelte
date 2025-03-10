@@ -94,7 +94,6 @@
     }
     let focusedDate = data.today;
     getNextNDays("2024-10-01T04:00:00.000Z", numberOfDays);
-    $: console.log({ frontCalendar });
 </script>
 
 <Alert />
