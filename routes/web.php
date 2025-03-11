@@ -41,6 +41,9 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 
     // My Profile
     Route::get('/perfil/{userID}', [UserController::class, 'myProfile'])->name('perfil');
+    // 
+    Route::get('/perfil/json/{userID}', [UserController::class, 'myProfilePaginate'])->name('perfil');
+
 
    
     // Change password
