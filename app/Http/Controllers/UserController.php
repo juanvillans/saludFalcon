@@ -229,6 +229,6 @@ class UserController extends Controller
     public function myProfilePaginate(Request $request, $userID){
         $evolutions = $this->userService->getMyEvolutions($userID);
         
-        return response()->json(['data' => $evolutions]);
+        return response()->json(['data' => new EvolutionCollection($evolutions)]);
     }
 }
