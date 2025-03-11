@@ -10,6 +10,7 @@ use App\Http\Resources\DoctorCollection;
 use App\Http\Resources\DoctorResource;
 use App\Http\Resources\EvolutionCollection;
 use App\Http\Resources\UserResource;
+use App\Models\Evolution;
 use App\Models\RequestUser;
 use App\Models\Specialty;
 use App\Models\User;
@@ -205,22 +206,15 @@ class UserController extends Controller
         return response()->json(['doctors' => $doctors]);
     }
 
-    public function myProfile($userID){
+    public function myProfile(Request $request, $userID){
 
         
         $evolutions = $this->userService->getMyEvolutions($userID);
+        $nroEvolutions = Evolution::where('user_id',$userID)->where('is_interconsult',0)->count();
+        $nroInter = Evolution::where('user_id',$userID)->where('is_interconsult',1)->count();
         
         $user = User::where('id',$userID)->with('specialty','roles')->first();
-        
-        $nroEvolutions = $evolutions->filter(function ($evolution) {
-            return $evolution->is_interconsult == false;
-        })->count();
-
-        
-        $nroInter = $evolutions->filter(function ($evolution) {
-            return $evolution->is_interconsult == true;
-        })->count();
-
+    
         return inertia('Dashboard/Profile',[
 
             'data' => [

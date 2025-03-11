@@ -130,7 +130,7 @@ class UserService
         $evolutions = Evolution::where('user_id',$userID)
         ->with('emergencyCase', 'status', 'condition', 'area')
         ->orderBy('id','desc')
-        ->get();
+        ->paginate(25, ['*'], 'page', request()->get('page',1));
 
         return $evolutions;
     }
