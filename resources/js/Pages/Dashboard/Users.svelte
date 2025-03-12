@@ -383,7 +383,7 @@
                 class={`cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
             >
             <td>
-                <img src={`/storate/users/${row.photo}`} alt="" srcset="">
+                <img src={`/storage/users/${row.photo}`} alt="" srcset="">
                 
             </td>
 
