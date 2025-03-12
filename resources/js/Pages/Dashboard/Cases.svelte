@@ -737,7 +737,7 @@
             { label: "Última area", options: localData?.areas || [] } || {},
         condition:
             {
-                label: "Diagnóstico",
+                label: "Condición",
                 options: localData?.conditions || [],
             } || {},
     }}
