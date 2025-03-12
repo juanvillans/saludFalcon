@@ -40,7 +40,7 @@ class UserService
 
     public function createUser($data)
     {   
-        $fileName = $this->handlePhoto($data);
+        
         $newUser = User::create([
             
             "ci" => $data['ci'],

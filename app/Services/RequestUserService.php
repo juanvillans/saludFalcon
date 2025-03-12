@@ -66,6 +66,7 @@ class RequestUserService
     
         $request = RequestUser::find($requestID);
         $dataToCreate = $request->toArray();
+        $this->movePhoto($dataToCreate);
         $dataToCreate['role_name'] = 'Doctor';
         
         $userService = new UserService;
@@ -118,6 +119,27 @@ class RequestUserService
 
     throw new Exception("La imagen no es valida, intente con otra", 500);    
 
+    }
+
+
+    private function movePhoto($data) {
+
+        if (isset($data['ci']) && isset($data['photo'])) {
+            $fileName = $data['photo'];
+            $sourcePath = storage_path('app/public/requests/' . $fileName);
+            
+            if (file_exists($sourcePath)) {
+                $destinationPath = storage_path('app/public/users/' . $fileName);
+                rename($sourcePath, $destinationPath); 
+            
+            } else {
+                throw new Exception("La imagen no existe en la carpeta requests.", 404);
+            }
+    
+            return $fileName;
+        }
+        
+        throw new Exception("La imagen no es válida, intente con otra", 500);
     }
 
 }
