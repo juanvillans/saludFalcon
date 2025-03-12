@@ -17,6 +17,7 @@ class RequestUser extends Model
         'phone_number',
         'specialty_id',
         'medical_license',
+        'photo',    
         'search',
     ];
 

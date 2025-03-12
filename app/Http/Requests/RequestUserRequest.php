@@ -30,6 +30,7 @@ class RequestUserRequest extends FormRequest
             "medical_license" => ['required', 'max:50', 'string', 'unique:users,medical_license'],
             'phone_number' => ['required'],
             'specialty_id' => ['required'],
+            'photo' => ['required','image','mimes:jpg,jpeg,png','max:4096'],
         
         ];
     }

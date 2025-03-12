@@ -8,6 +8,7 @@ use App\Models\Evolution;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Intervention\Image\Facades\Image;
 
 class UserService
 {	
@@ -38,7 +39,8 @@ class UserService
     }
 
     public function createUser($data)
-    {
+    {   
+        $fileName = $this->handlePhoto($data);
         $newUser = User::create([
             
             "ci" => $data['ci'],
@@ -49,6 +51,7 @@ class UserService
             "phone_number" => $data['phone_number'],
             "medical_license" => $data['medical_license'],
             "specialty_id" => $data['specialty_id'],
+            "photo" => $fileName,
             "search" => $this->generateSearch($data),
         ]);
 
@@ -60,6 +63,7 @@ class UserService
 
     public function updateUser($data, $user)
     {
+        $fileName = $this->handleUpdatePhoto($data);
 
         $user->update([
             
@@ -69,6 +73,7 @@ class UserService
             "email" => $data['email'],
             "specialty_id" => $data['specialty_id'],
             "medical_license" => $data['medical_license'],
+            "photo" => $fileName,
             "search" => $this->generateSearch($data),
         ]);
 
@@ -135,8 +140,7 @@ class UserService
         return $evolutions;
     }
     
-    private function generateSearch($data)
-    {
+    private function generateSearch($data){
         $search = $data['ci'] . " "
                  .$data['name'] . " "
                  .$data['last_name'] . " "
@@ -147,6 +151,52 @@ class UserService
                  ;
         
         return $search;
+    }
+
+    private function handlePhoto($data){
+
+        if (isset($data['photo']) && $data['photo']->isValid()) {
+            $fileName = $data['ci'] . '-profile.webp';
+            $image = Image::make($data['photo']);
+            
+            $image->resize(180, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            
+            $image->save(storage_path('app/public/users/' . $fileName), 100); // 100 es el nivel de calidad (0-100)
+    
+            return $fileName;
+        }
+    
+        throw new Exception("La imagen no es valida, intente con otra", 500);    
+    
+        }
+    private function handleUpdatePhoto($data){
+        
+        if (isset($data['photo']) && $data['photo']->isValid()) {
+            $fileName = $data['ci'] . '-profile.webp';
+            $filePath = storage_path('app/public/users/' . $fileName);
+        
+            // Verifica si la imagen existe y la elimina
+            if (file_exists($filePath)) {
+                unlink($filePath); // Elimina el archivo existente
+            }
+        
+            // Crea la nueva imagen
+            $image = Image::make($data['photo']);
+            
+            $image->resize(180, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            
+            $image->save($filePath, 100); // 100 es el nivel de calidad (0-100)
+        
+            return $fileName;
+        }
+        
+        throw new Exception("La imagen no es válida, intente con otra", 500);
     }
     
 

@@ -10,6 +10,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Intervention\Image\Facades\Image;
 
 class RequestUserService
 {	
@@ -39,6 +40,9 @@ class RequestUserService
 
     public function createRequest($data)
     {
+
+        $fileName = $this->handlePhoto($data);
+
         $newRequest = RequestUser::create([
             
             "ci" => $data['ci'],
@@ -48,8 +52,11 @@ class RequestUserService
             "specialty_id" => $data['specialty_id'],
             "phone_number" => $data['phone_number'],
             "medical_license" => $data['medical_license'],
+            "photo" => $fileName,
             "search" => $this->generateSearch($data),
         ]);
+
+        
 
         return $newRequest;
 
@@ -93,5 +100,24 @@ class RequestUserService
         return $search;
     }
     
+    private function handlePhoto($data){
+
+    if (isset($data['photo']) && $data['photo']->isValid()) {
+        $fileName = $data['ci'] . '-profile.webp';
+        $image = Image::make($data['photo']);
+        
+        $image->resize(180, null, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+        
+        $image->save(storage_path('app/public/requests/' . $fileName), 100); // 100 es el nivel de calidad (0-100)
+
+        return $fileName;
+    }
+
+    throw new Exception("La imagen no es valida, intente con otra", 500);    
+
+    }
 
 }

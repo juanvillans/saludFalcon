@@ -26,6 +26,7 @@ class UserSeeder extends Seeder
             "phone_number" => "04125800610",
             "specialty_id" => 1,
             "medical_license" => "00001",
+            "photo" => "30847627-profile.web",
             "search" => "Juan Donquis juandonquis07@gmail.com 30847627 04125800610 00001"
         ]);
 
@@ -39,6 +40,7 @@ class UserSeeder extends Seeder
             "phone_number" => "04124393123",
             "specialty_id" => 1,
             "medical_license" => "00002",
+            "photo" => "27253194-profile.webp",
             "search" => "Juan Villasmil juanvillans16@gmail.com 27253194 04124393123 00002"
         ]);
 
@@ -52,6 +54,7 @@ class UserSeeder extends Seeder
             "phone_number" => "04143672200",
             "specialty_id" => 2,
             "medical_license" => "00003",
+            "photo" => "14027371-profile.webp",
             "search" => "Juan Rodriguez joserodriguez@gmail.com 27253194 04143672200 00003"
         ]);
 

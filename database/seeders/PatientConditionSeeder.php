@@ -14,15 +14,8 @@ class PatientConditionSeeder extends Seeder
     public function run(): void
     {
         PatientCondition::create(
-            ['name' => 'Leve',
+            ['name' => 'Estable',
              'description' => 'Síntomas o condiciones que pueden esperar o manejarse sin urgencia.'
-            ]
-        );
-
-        PatientCondition::create(
-            [
-                'name' => 'Moderado',
-                'description' => 'Condición que necesita atención pronta pero no es una amenaza inmediata para la vida.'    
             ]
         );
 

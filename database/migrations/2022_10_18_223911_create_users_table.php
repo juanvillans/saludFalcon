@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->string("phone_number",30);
             $table->foreignId('specialty_id');
             $table->string('medical_license',50)->unique();
+            $table->string('photo',50);
             $table->string('search');
             $table->boolean('status')->default(1);
             $table->timestamps();

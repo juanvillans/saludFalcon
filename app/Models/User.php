@@ -25,6 +25,7 @@ class User extends Authenticatable
         'specialty_id',
         'medical_license',
         'status',
+        'photo',
         'search',
     ];
 

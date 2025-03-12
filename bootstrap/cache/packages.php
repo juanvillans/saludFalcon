@@ -6,6 +6,17 @@
       0 => 'Inertia\\ServiceProvider',
     ),
   ),
+  'intervention/image' => 
+  array (
+    'aliases' => 
+    array (
+      'Image' => 'Intervention\\Image\\Facades\\Image',
+    ),
+    'providers' => 
+    array (
+      0 => 'Intervention\\Image\\ImageServiceProvider',
+    ),
+  ),
   'laravel-lang/attributes' => 
   array (
     'providers' => 
@@ -110,13 +121,13 @@
   ),
   'spatie/laravel-ignition' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
-    ),
     'aliases' => 
     array (
       'Flare' => 'Spatie\\LaravelIgnition\\Facades\\Flare',
+    ),
+    'providers' => 
+    array (
+      0 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
     ),
   ),
   'spatie/laravel-permission' => 

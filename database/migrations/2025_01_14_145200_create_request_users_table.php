@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('specialty_id');
             $table->string('search');
             $table->string('medical_license',50);
+            $table->string('photo',50);
             $table->timestamps();
         });
     }

@@ -32,9 +32,7 @@ class UserRequest extends FormRequest
             "role_name" => ['required'],
             "specialties" => ['sometimes'],
             "specialties_ids" => ['sometimes'],
-
-
-
+            'photo' => ['required','image','mimes:jpg,jpeg,png','max:4096'],
         ];
     }
 }
