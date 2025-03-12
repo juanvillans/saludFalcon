@@ -139,10 +139,10 @@
             <input type="file" accept="image/*" on:change={handleFileChange} class="hidden" />
             <!-- Display the selected image -->
             {#if imagePreview}
-            <img src={imagePreview} alt="Preview" class="absolute w-[180] h-[218px] object-cover border rounded border-gray-500" />
+            <img src={imagePreview} alt="Preview" class="absolute w-[180px] max-w-[180px] h-[218px] object-cover border rounded border-gray-500" />
             
             {:else}
-            <div class="rouded absolute w-[180] h-[218px]  bg-gray-200 flex items-center justify-center cursor-pointer text-gray-300 hover:text-gray-500">
+            <div class="rouded absolute w-[180px] max-w-[180px] h-[218px]  bg-gray-200 flex items-center justify-center cursor-pointer text-gray-300 hover:text-gray-500">
                 <iconify-icon class="" icon="tdesign:portrait" width="180" height="180"></iconify-icon>
 
             </div>

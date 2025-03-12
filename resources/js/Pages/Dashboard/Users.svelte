@@ -188,19 +188,19 @@
             
             <Input
                 type="email"
-                label="correo"
+                label="Correo"
                 bind:value={$formCreate.email}
                 error={$formCreate.errors?.email}
             />
-            <label class="relative mt-4 row-span-3 mb-7  w-[180px] h-[218px]">
-                <p>Foto carnet</p>
+            <label class="relative  md:mt-4 row-span-3 mb-10 md:mb-7 max-w-[180px] h-[218px]  block">
+                <p class="mt-4 md:mt-0">Foto carnet</p>
                 <input type="file" accept="image/*" on:change={handleFileChange} class="hidden" />
                 <!-- Display the selected image -->
                 {#if imagePreview}
-                <img src={imagePreview} alt="Preview" class="absolute w-[180px] h-full object-cover border rounded border-gray-500" />
+                <img src={imagePreview} alt="Preview" class="absolute max-w-[180px]  w-[180px] h-[218px] object-cover border rounded border-gray-500" />
                 
                 {:else}
-                <div class="rouded absolute w-[180px] h-full bg-gray-200 flex items-center justify-center cursor-pointer text-gray-300 hover:text-gray-500">
+                <div class="rouded absolute max-w-[180px] w-[180px] h-[218px]  bg-gray-200 flex items-center justify-center cursor-pointer text-gray-300 hover:text-gray-500">
                     <iconify-icon class="" icon="tdesign:portrait" width="180" height="180"></iconify-icon>
     
                 </div>
@@ -335,6 +335,7 @@
     <div slot="filterBox"></div>
     <thead slot="thead">
         <tr>
+            <th>Foto</th>
             <th>Nombres</th>
             <th>Apellidos</th>
             <th>C.I</th>
@@ -381,6 +382,11 @@
                 }}
                 class={`cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
             >
+            <td>
+                <img src={`/storate/users/${row.photo}`} alt="" srcset="">
+                
+            </td>
+
                 <td>{row.name}</td>
                 <td>{row.last_name}</td>
                 <td>{row.ci}</td>
