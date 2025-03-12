@@ -60,7 +60,7 @@
                 </header>
                 <h1 class="text-color1  xl:text-3xl mt-2 lg:mt-6 xl:mt-12">
                     REGISTROS DE CASOS DE EMERGENCIA DEL HOSPITAL DR ALFREDO VAN
-                    GRIECKEN
+                    GRIEKEN
                 </h1>
                 <img class="w-28 md:w-40 lg:w-80 fixed -left-2 md:absolute bottom-0 " src="/img/doctor.png" alt="" srcset="" />
 
@@ -124,11 +124,12 @@
         }
     }
 
-
-        /* Hide scrollbar for Firefox */
+    @media (min-width: 924px) {
     .animate-slide-in {
-        animation: slide-in 0.4s ease-out forwards; /* Adjust duration and timing as needed */
+        animation: slide-in 0.4s ease-out forwards;
     }
+}
+   
     .delay-1 {
         animation-delay: 0.15s; /* First div delay */
     }

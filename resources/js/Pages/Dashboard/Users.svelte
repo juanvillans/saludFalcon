@@ -28,6 +28,7 @@
         role_name: "",
         specialty_id: "",
         medical_license: "",
+        photo: "",
     };
 
     let formCreate = useForm({
@@ -50,7 +51,7 @@
       // Create a URL for the selected file
       imagePreview = URL.createObjectURL(file);
       // Update the form data
-      form.image = file;
+      $formCreate.photo = file;
     }
   }
 
@@ -191,15 +192,15 @@
                 bind:value={$formCreate.email}
                 error={$formCreate.errors?.email}
             />
-            <label class="relative mt-4 row-span-3 mb-7">
+            <label class="relative mt-4 row-span-3 mb-7  w-[180px] h-[218px]">
                 <p>Foto carnet</p>
                 <input type="file" accept="image/*" on:change={handleFileChange} class="hidden" />
                 <!-- Display the selected image -->
                 {#if imagePreview}
-                <img src={imagePreview} alt="Preview" class="absolute w-[180] h-full object-cover border rounded border-gray-500" />
+                <img src={imagePreview} alt="Preview" class="absolute w-[180px] h-full object-cover border rounded border-gray-500" />
                 
                 {:else}
-                <div class="rouded absolute w-[180] h-full bg-gray-200 flex items-center justify-center cursor-pointer text-gray-300 hover:text-gray-500">
+                <div class="rouded absolute w-[180px] h-full bg-gray-200 flex items-center justify-center cursor-pointer text-gray-300 hover:text-gray-500">
                     <iconify-icon class="" icon="tdesign:portrait" width="180" height="180"></iconify-icon>
     
                 </div>
