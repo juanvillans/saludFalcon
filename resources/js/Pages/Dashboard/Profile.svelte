@@ -1,11 +1,12 @@
 <script>
     import Input from "../../components/Input.svelte";
     import { displayAlert } from "../../stores/alertStore";
-    import { useForm, page, inertia } from "@inertiajs/svelte";
+    import { useForm, page, router, inertia } from "@inertiajs/svelte";
     import StatusColor from "../../components/StatusColor.svelte";
     import Alert from "../../components/Alert.svelte";
     import fetchLocalData from "../../components/localData";
     import { onMount } from "svelte";
+    import axios from "axios";
 
     export let data = [];
     export let areas = [];
@@ -16,7 +17,61 @@
     let nroInter = data.nroInter;
     let countingCases;
     let isTheSameUser = data.user.data.id != $page.props.auth.user_id;
-    console.log(data.user.data.id, $page.props.auth.user_id);
+
+    let pageNumber = 1; // Current page number
+    let loading = false; // Tracks if data is being loaded
+    let hasMore = true; // Tracks if there are more items to load
+
+    async function loadMore() {
+        if (loading || !hasMore) return; // Prevent multiple requests
+
+        loading = true; // Set loading state
+
+        try {
+            const res = await axios.get(
+                "/admin/perfil/json/" + data.user.data.id,
+                { params: { page: pageNumber + 1 } },
+            );
+            if (res.data.data.length > 0) {
+                console.log(res.data.data, data.evolutions.data);
+                data.evolutions.data = [
+                    ...data.evolutions.data,
+                    ...res.data.data,
+                ];
+                pageNumber += 1; // Increment page number
+            } else {
+                hasMore = false; // No more items to load
+            }
+            loading = false;
+        } catch (error) {}
+    }
+
+    // Detect when the user scrolls to the bottom
+    function handleScroll(e, i) {
+        // console.log(e,i)
+        const scrollableElement = document.querySelector(
+            ".main_and_footer_container",
+        );
+
+        // Check if the user has scrolled to the bottom of the scrollable element
+        const bottom =
+            scrollableElement.scrollTop + scrollableElement.clientHeight >=
+            scrollableElement.scrollHeight - 200; // 200px buffer
+
+        if (bottom && hasMore) {
+            loadMore();
+        }
+    }
+
+    // Attach scroll event listener
+    onMount(() => {
+        const scrollableElement = document.querySelector(
+            ".main_and_footer_container",
+        );
+        scrollableElement.addEventListener("scroll", handleScroll);
+        return () =>
+            scrollableElement.removeEventListener("scroll", handleScroll);
+    });
 
     let form = useForm(structuredClone(data.user.data));
     let evolutionForm = useForm({
@@ -49,13 +104,11 @@
     let editStatus = false;
 
     function getFirstName(firstName) {
-        console.log(firstName);
         const parts = firstName.split(" ");
         return parts[0];
     }
 
     function convertTo12HourFormat(time24) {
-        console.log(time24);
         // Split the input into hours and minutes
         let [hours, minutes] = time24.split(":").map(Number);
 
@@ -243,7 +296,7 @@
         </fieldset>
     </form>
 
-    <form on:submit={submitCases} class="w-full">
+    <div class="w-full">
         <fieldset
             class=" sm:px-5 md:mt-4 gap-x-5 pt-5 bg-gray-200 rounded-2xl pb-4"
         >
@@ -277,13 +330,12 @@
                             <div
                                 class="md:flex flex-col sm:flex-row items-center gap-2 px-2 md:p-2 justify-between"
                             >
-
                                 <a
-                                    href={`/admin/casos/detalle-caso/${evolution.id}`}
+                                    href={`/admin/casos/detalle-caso/${evolution.emergency_case_id}`}
                                     use:inertia
                                     class="ml-1 text-sm caseLink"
                                 >
-                                    CASO: {evolution.id}
+                                    CASO: {evolution.emergency_case_id}
                                 </a>
                                 <StatusColor
                                     status={{
@@ -323,7 +375,7 @@
                             </div>
                         </span>
 
-                        <div class="bg-white  p-3 md:p-4 lg:p-5 space-y-2">
+                        <div class="bg-white p-3 md:p-4 lg:p-5 space-y-2">
                             {#if evolution.status_id == 4}
                                 <div>
                                     <h3 class="font-semibold">Fecha y hora:</h3>
@@ -383,9 +435,17 @@
                         </div>
                     </li>
                 {/each}
+                {#if loading}
+                    <div class="loading">Cargando...</div>
+                {/if}
+
+                <!-- Show message if no more items -->
+                {#if !hasMore}
+                    <div class="loading text-gray-800">No hay más datos que cargar.</div>
+                {/if}
             </ul>
         </fieldset>
-    </form>
+    </div>
 </div>
 <Alert />
 
@@ -420,7 +480,7 @@
     a.caseLink {
         text-decoration: none;
         position: relative;
-        display: block;
+        /* display: block; */
         z-index: 1;
     }
     a.caseLink::before {

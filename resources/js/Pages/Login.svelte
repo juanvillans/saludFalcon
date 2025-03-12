@@ -41,7 +41,7 @@
 <Alert />
 
     <section
-        class="overflow-clip dark:bg-gray-800 bg-white min-h-screen justify-center items-center px-2 relative"
+        class="md:overflow-clip dark:bg-gray-800 bg-white md:min-h-screen justify-center items-center px-2 relative"
     >
         <div
             class="animate-slide-in bg-red w-[99%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%]"
@@ -62,7 +62,7 @@
                     REGISTROS DE CASOS DE EMERGENCIA DEL HOSPITAL DR ALFREDO VAN
                     GRIECKEN
                 </h1>
-                <img src="/img/doctor.png" alt="" srcset=""  class=""/>
+                <img class="w-28 md:w-40 lg:w-80 fixed -left-2 md:absolute bottom-0 " src="/img/doctor.png" alt="" srcset="" />
 
             <img src="/img/4logos.png" alt="" srcset=""  class="target fixed  md:absolute bottom-2 md:bottom-0 left-1/2 -translate-x-1/2 mx-auto mt-5 md:mt-12 lg:mt-16 max-w-[200px] md:max-w-[300px]"/>
 
@@ -70,7 +70,7 @@
             
             <form
                 on:submit={handleSubmit}
-                class="md:min-w-[290px] px-4 md:px-6 lg:px-8 bg-gray-100 rounded-3xl md:h-full md:neumorphism"
+                class="md:min-w-[290px] py-7 px-4 md:px-6 lg:px-8 bg-gray-100 rounded-3xl md:h-full neumorphism"
             >
                 <legend class="text-center opacity-70 mt-3 md:mt-7">INICIAR SESIÓN</legend>
                 <div>
@@ -96,7 +96,7 @@
                     type="submit"
                     disabled={$form.processing}
                     value={$form.processing ? "Cargando..." : "ENTRAR"}
-                    class="btn_create py-3 w-40 mx-auto  md:w-full md:mt-2 lg:mt-5 rounded-md cursor-pointer hover:text-color2"
+                    class=" py-3  mx-auto  w-full mt-4  lg:mt-6 rounded-md cursor-pointer hover:text-color2 bg-color4 text-color1 border-color1 border"
                 />
                 <a
                     href="/registrarse"

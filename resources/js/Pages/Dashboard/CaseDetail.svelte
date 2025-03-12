@@ -447,7 +447,7 @@
                         class=" bg-gray-50 mb-3 border rounded-lg overflow-hidden neumorphism"
                     >
                         <span
-                            class="md:flex items-center gap-2 py-3 px-2 sm:p-2  md:pr-4 lg:pr-6 justify-between"
+                            class="md:flex items-center gap-2 py-3 px-2 sm:p-2  md:px-4 lg:pr-6 justify-between"
                         >
                             <div
                                 class="md:flex flex-col sm:flex-row items-center gap-2 px-2 md:p-2 justify-between"

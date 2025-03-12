@@ -790,7 +790,7 @@
                                     a {row?.admitted_area_name}
                                 {/if} -->
                         <span class="inline-block flex">
-                            {#if row.current_status == 1 || row.current_status == 2 || row.current_status == 6}
+                            {#if row.current_status == 1 || row.current_status == 2 }
                                 de
                             {:else if row.current_status == 4 || row.current_status == 5}
                                 en
@@ -826,8 +826,8 @@
                         class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
                         style="white-space: normal;"
                     >
-                        {#if row?.reason.length > 240}
-                            {row?.reason.slice(0, 240)}
+                        {#if row?.reason.length > 200}
+                            {row?.reason.slice(0, 200)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
@@ -844,8 +844,8 @@
                         <div
                             class={`inline-block w-2 h-2 mr-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
                         ></div>
-                        {#if row?.diagnosis.length > 240}
-                            {row?.diagnosis.slice(0, 240)}
+                        {#if row?.diagnosis.length > 200}
+                            {row?.diagnosis.slice(0, 200)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
@@ -859,8 +859,8 @@
                         class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
                         style="white-space: normal;"
                     >
-                        {#if row?.treatment.length > 240}
-                            {row?.treatment.slice(0, 240)}
+                        {#if row?.treatment.length > 200}
+                            {row?.treatment.slice(0, 200)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
@@ -901,7 +901,7 @@
                         a {row?.admitted_area_name}
                     {/if} -->
                     <span class="inline-flex">
-                        {#if row.current_status == 1 || row.current_status == 2 || row.current_status == 6}
+                        {#if row.current_status == 1 || row.current_status == 2 }
                             de
                         {:else if row.current_status == 4 || row.current_status == 5}
                             en
@@ -945,30 +945,33 @@
                         <small class="text-gray-500">C.I:</small>{row.user_ci}
                     </span>
                 </div>
-                <div class="mt-1 flex items-center gap-2">
+                <div class="mt-1 flex  gap-1.5">
                     <iconify-icon
                         icon="emojione-monotone:speaking-head"
                         width="20"
                         height="20"
                         class="text-gray-900"
                     ></iconify-icon>
-                    {#if row?.reason.length > 240}
-                        {row?.reason.slice(0, 240)}
-                        <span
-                            class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                            >...</span
-                        >
-                    {:else}
-                        {row?.reason}
-                    {/if}
+                    <p>
+
+                        {#if row?.reason.length > 200}
+                            {row?.reason.slice(0, 200)}
+                            <span
+                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                >...</span
+                            >
+                        {:else}
+                            {row?.reason}
+                        {/if}
+                    </p>
                 </div>
-                <div class="mt-2 flex items-center gap-2">
+                <div class="mt-2 flex  gap-2">
                     <div
-                        class={`inline-block w-2 h-2 mr-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
+                        class={`inline-block w-2 h-2 mr-2 relative top-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
                     ></div>
-                    <p class="flex">
-                        {#if row.diagnosis.length > 240}
-                            {row.diagnosis.slice(0, 240)}
+                    <p>
+                        {#if row.diagnosis.length > 200}
+                            {row.diagnosis.slice(0, 200)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
@@ -978,11 +981,12 @@
                         {/if}
                     </p>
                 </div>
-                <div class="mt-2 items-center flex gap-2">
+                <div class="mt-2  flex gap-2">
+
+                    <iconify-icon class="relative top-1 -left-1 text-color2" icon="ant-design:medicine-box-filled" width="20" height="20"></iconify-icon>
                     <p>
-                        <iconify-icon class="relative top-1 -left-1 text-color2" icon="ant-design:medicine-box-filled" width="20" height="20"></iconify-icon>
-                        {#if row.treatment.length > 240}
-                            {row.treatment.slice(0, 240)}
+                        {#if row.treatment.length > 200}
+                            {row.treatment.slice(0, 200)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
