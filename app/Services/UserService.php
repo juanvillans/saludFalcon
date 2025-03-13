@@ -67,8 +67,6 @@ class UserService
 
     public function updateUser($data, $user)
     {
-        $fileName = $this->handleUpdatePhoto($data);
-
         $user->update([
             
             "ci" => $data['ci'],
@@ -77,13 +75,13 @@ class UserService
             "email" => $data['email'],
             "specialty_id" => $data['specialty_id'],
             "medical_license" => $data['medical_license'],
-            "photo" => $fileName,
             "search" => $this->generateSearch($data),
         ]);
 
         method_exists($user, 'revokeRoles') ? $user->revokeRoles(): null;
         
         $user->assignRole($data['role_name']);
+
 
         return 0;
 
@@ -177,17 +175,19 @@ class UserService
         throw new Exception("La imagen no es valida, intente con otra", 500);    
     
         }
-    private function handleUpdatePhoto($data){
+    public function handleUpdatePhoto($data, $user){
         
         if (isset($data['photo']) && $data['photo']->isValid()) {
-            $fileName = $data['ci'] . '-profile.webp';
+            $fileName = $user->photo;
             $filePath = storage_path('app/public/users/' . $fileName);
+
         
             // Verifica si la imagen existe y la elimina
             if (file_exists($filePath)) {
                 unlink($filePath); // Elimina el archivo existente
             }
-        
+            
+
             // Crea la nueva imagen
             $image = Image::make($data['photo']);
             
@@ -196,9 +196,10 @@ class UserService
 
                 $constraint->upsize();
             });
+
             
             $image->save($filePath, 100); // 100 es el nivel de calidad (0-100)
-        
+            
             return $fileName;
         }
         

@@ -58,7 +58,7 @@
 </style>
 
                 
-<div class={`text-left   ${theme == "dark" ? "bg-color1 text-gray-100" : ''}${classes ? classes : "mt-5 w-full"}`} >
+<div class={`text-left   ${theme == "dark" ? "bg-color1 text-gray-100" : ''}${classes ? classes : "mt-3 w-full"}`} >
     <label for={label} class={`font-medium w-full text-gray-900 ${theme == "dark" ? "bg-color1 text-gray-100" : ''} ${labelClasses}`} {placeholder}>{label}</label>
     <div class="relative w-full parent_div">
         {#if type === "textarea"}

@@ -4,6 +4,7 @@
     import Input from "../../components/Input.svelte";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, page, router } from "@inertiajs/svelte";
+    import { onMount } from 'svelte';
     export let data = [];
 
     let instituteSpecialities = [];
@@ -44,6 +45,16 @@
         }
     });
 
+    let requests = false;
+    function CheckRequestUrl() {
+        const params = new URLSearchParams(window.location.search);
+        requests = params.get('requests') === 'true'; // Check if requests is 'true'
+    }
+    
+    onMount(() => {
+    CheckRequestUrl()
+ 
+});
     let imagePreview = '';
   function handleFileChange(event) {
     const file = event.target.files[0];
@@ -156,6 +167,25 @@
     let submitStatus = "Crear";
     let selectSpecialityModal = false;
     let filteredSpecialities = [];
+
+    function handleMouseDown() {
+        selectingText = false; // Reset before mouse down
+    }
+
+    function handleMouseUp(event, id) {
+        const selection = window.getSelection();
+
+        // Check if there is any selected text
+        if (selection.toString().length === 0) {
+            goToDetailPage(id);
+        }
+    }
+
+    function goToDetailPage(id) {
+        if (!requests) {
+            router.get("/admin/perfil/" + id);
+        }
+    }
 </script>
 
 <svelte:head>
@@ -300,6 +330,7 @@
         <button
             on:click={(e) => {
                 router.get(`/admin/usuarios`, {});
+                requests = false
             }}
             class="filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
             class:bg-gray-200={!data.requests}
@@ -309,6 +340,7 @@
         <button
             on:click={(e) => {
                 router.get(`${$page.url}`, { requests: true });
+                requests = true
             }}
             class="filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
             class:bg-gray-200={data.requests}
@@ -348,42 +380,13 @@
     <tbody slot="tbody">
         {#each dataTable as row, i}
             <tr
-                on:click={(e) => {
-                    if (
-                        $page.props.auth.permissions.find(
-                            (p) => p == "create-users",
-                        )
-                    ) {
-                        if (row.id != selectedRow.id) {
-                            selectedRow = {
-                                status: true,
-                                id: row.id,
-                                title: row.title,
-                            };
-                            $formCreate = {
-                                ...$formCreate,
-                                ...row,
-                                specialty_id: row.specialty.id
-                            };
-                            console.log($formCreate);
-                            
-                            $formCreate.clearErrors();
-                        } else {
-                            selectedRow = {
-                                status: false,
-                                id: 0,
-                                title: "",
-                            };
-                            $formCreate.defaults({
-                                ...emptyDataForm,
-                            });
-                        }
-                    }
-                }}
+            on:mousedown={handleMouseDown}
+            on:mouseup={(e) => handleMouseUp(e, row.id)}
+             
                 class={`cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
             >
             <td>
-                <img src={`/storage/users/${row.photo}`} alt="" srcset="">
+                <img class="w-12 aspect-square rounded-full object-cover" src={`/storage/${requests ? "requests" : "users"}/${row.photo}`} alt="" srcset="">
                 
             </td>
 

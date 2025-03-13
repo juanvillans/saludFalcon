@@ -7,6 +7,8 @@
     import fetchLocalData from "../../components/localData";
     import { onMount } from "svelte";
     import axios from "axios";
+    import debounce from "lodash/debounce";
+
 
     export let data = [];
     export let areas = [];
@@ -16,8 +18,9 @@
     let nroEvol = data.nroEvol;
     let nroInter = data.nroInter;
     let countingCases;
-    let isTheSameUser = data.user.data.id != $page.props.auth.user_id;
-
+    let isTheSameUser = data.user.data.id == $page.props.auth.user_id;
+    let isAdmin = $page.props.auth.rol[0] == "admin";
+    let allowToEdit = !(isTheSameUser || isAdmin);
     let pageNumber = 1; // Current page number
     let loading = false; // Tracks if data is being loaded
     let hasMore = true; // Tracks if there are more items to load
@@ -74,16 +77,7 @@
     });
 
     let form = useForm(structuredClone(data.user.data));
-    let evolutionForm = useForm({
-        diagnosis: "",
-        treatment: "",
-        departure_date: "",
-        departure_hour: "",
-        area_id: "",
-        patient_condition_id: "",
-        status_id: 6,
-        destiny: "",
-    });
+
     let localData = {};
 
     onMount(async () => {
@@ -94,9 +88,7 @@
             console.error("Error loading data:", error);
         }
     });
-    $: if (patient) {
-        countingCases = data.cases.length;
-    }
+
     let editor;
     let descriptionLength = 0;
     let openAccordeon = -1;
@@ -106,6 +98,38 @@
     function getFirstName(firstName) {
         const parts = firstName.split(" ");
         return parts[0];
+    }
+
+    let imagePreview = "";
+    
+    let photoChanged = false;
+
+    function handleFileChange(event) {
+        const file = event.target.files[0];
+        photoChanged = true
+        if (file) {
+            // Create a URL for the selected file
+            imagePreview = URL.createObjectURL(file);
+            // Update the form data
+            $form.photo = file;
+            $form.post(
+            "/admin/perfil/picture/" + $form.id,
+            {
+                onError: (errors) => {
+                    if (errors.data) {
+                        displayAlert({ type: "error", message: errors.data });
+                    }
+                },
+                onSuccess: (mensaje) => {
+                    displayAlert({
+                        type: "success",
+                        message: "Foto cambiada exitosamente!",
+                    });
+                },
+            },
+            photoChanged = false
+        );
+        }
     }
 
     function convertTo12HourFormat(time24) {
@@ -137,14 +161,14 @@
 
         return formattedDate;
     }
+
     let showAllCases = window.screen.width > 700 ? true : false;
     let isOpenCreateEvolution = false;
 
-    function updateClient(event) {
-        event.preventDefault();
+    const updateClient = debounce((event) => {
         $form.clearErrors();
         $form.put(
-            "/admin/historial-medico/detalle-paciente/" + $form.patient_id,
+            "/admin/perfil/" + $form.id,
             {
                 onError: (errors) => {
                     if (errors.data) {
@@ -154,35 +178,15 @@
                 onSuccess: (mensaje) => {
                     displayAlert({
                         type: "success",
-                        message: "Paciente editado exitosamente!",
+                        message: "Usuario editado exitosamente!",
                     });
                 },
             },
         );
-    }
+    }, 400);
 
-    function submitCases(event) {
-        event.preventDefault();
-        $evolutionForm.clearErrors();
-        $evolutionForm.post(
-            "/admin/casos/detalle-caso/" + $form.id + "/evolution",
-            {
-                onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
-                },
-                onSuccess: (mensaje) => {
-                    displayAlert({
-                        type: "success",
-                        message: "Caso editado exitosamente!",
-                    });
-                    editStatus = false;
-                },
-            },
-        );
-    }
 
+    
     function handleDelete() {
         $form.post("/admin/historial-medico", {
             onBefore: () => {
@@ -207,7 +211,12 @@
 
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">
     <form
-        on:submit={updateClient}
+        on:input={(e) => {
+        
+          if (e.target.type !== "file") {
+            updateClient()
+        }  
+        }}
         style="height: calc(100vh - 100px);"
         class=" overflow-y-auto md:max-w-[330px] w-full lg:sticky top-0"
     >
@@ -218,13 +227,35 @@
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-gray-50 text-dark"
                 >Datos del usuario</legend
             >
+            <label
+                class="relative md:mt-4 row-span-3 mb-10 md:mb-10 max-w-[180px] cursor-pointer h-[218px] block"
+            >
+                <p class="mt-4 md:mt-0">Foto carnet</p>
+                <input
+                    type="file"
+                    accept="image/*"
+                    on:change={handleFileChange}
+                    class="hidden"
+                />
+                <!-- Display the selected image -->
+                {#if imagePreview}
+                    <img
+                        src={imagePreview}
+                        alt="Preview"
+                        class="absolute  max-w-[180px] w-[180px] h-[218px] object-cover border rounded border-gray-500"
+                    />
+                {:else}
+                <img class="absolute  max-w-[180px] w-[180px] h-[218px] object-cover border rounded " src={`/storage/users/${$form.photo}`} alt="" srcset="">
+
+                {/if}
+            </label>
             <Input
                 type="text"
                 required={true}
                 label={"Nombres"}
                 bind:value={$form.name}
                 error={$form.errors?.name}
-                disabled={isTheSameUser}
+                disabled={allowToEdit}
             />
             <Input
                 type="text"
@@ -232,37 +263,40 @@
                 label={"Apellidos"}
                 bind:value={$form.last_name}
                 error={$form.errors?.last_name}
-                disabled={isTheSameUser}
+                disabled={allowToEdit}
             />
-            <Input
-                type="email"
-                label="correo"
-                bind:value={$form.email}
-                error={$form.errors?.email}
-                disabled={isTheSameUser}
-            />
-            <Input
-                type="number"
-                required={true}
-                label={"Cédula"}
-                bind:value={$form.ci}
-                error={$form.errors?.ci}
-                disabled={isTheSameUser}
-            />
-            <Input
-                type="tel"
-                label={"Teléfono"}
-                bind:value={$form.phone_number}
-                error={$form.errors?.phone_number}
-                disabled={isTheSameUser}
-            />
+            {#if isAdmin} 
+            
+                <Input
+                    type="email"
+                    label="correo"
+                    bind:value={$form.email}
+                    error={$form.errors?.email}
+                    disabled={allowToEdit}
+                />
+                <Input
+                    type="number"
+                    required={true}
+                    label={"Cédula"}
+                    bind:value={$form.ci}
+                    error={$form.errors?.ci}
+                    disabled={allowToEdit}
+                />
+                <Input
+                    type="tel"
+                    label={"Teléfono"}
+                    bind:value={$form.phone_number}
+                    error={$form.errors?.phone_number}
+                    disabled={allowToEdit}
+                />
+            {/if}
             <Input
                 type="select"
                 required={true}
                 label={"Tipo de Usuario"}
                 bind:value={$form.role_name}
                 error={$form.errors?.role_name}
-                disabled={true}
+                disabled={!isAdmin}
             >
                 <option value="doctor">Doctor</option>
                 <option value="admin">Admin</option>
@@ -272,7 +306,7 @@
                 required={true}
                 bind:value={$form.medical_license}
                 error={$form.errors?.medical_license}
-                disabled={isTheSameUser}
+                disabled={allowToEdit}
             />
             <Input
                 type="select"
@@ -280,7 +314,7 @@
                 label={"Servicio tratante"}
                 bind:value={$form.specialty_id}
                 error={$form.errors?.specialty_id}
-                disabled={true}
+                disabled={!isAdmin}
             >
                 {#each localData.specialties || [] as speci (speci.id)}
                     <option value={speci.id}>{speci.name}</option>
@@ -441,7 +475,9 @@
 
                 <!-- Show message if no more items -->
                 {#if !hasMore}
-                    <div class="loading text-gray-800">No hay más datos que cargar.</div>
+                    <div class="loading text-gray-800">
+                        No hay más datos que cargar.
+                    </div>
                 {/if}
             </ul>
         </fieldset>

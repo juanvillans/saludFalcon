@@ -63,6 +63,7 @@ class EmergencyCaseSeeder extends Seeder
                 'user_id' => $doctor->id,
                 'area_id' => 1,
                 'patient_condition_id' => 2,
+                'evolution' => 'Sin descripción',
                 'status_id' => 4,
                 'diagnosis' => 'Efectivamente tiene diarrea',
                 'treatment' => 'Café con bastante cambul',
