@@ -14,29 +14,7 @@ use Intervention\Image\Facades\Image;
 
 class RequestUserService
 {	
-    // public function getUsers($params)
-    // {
-    //     $users = User::query()
-    //     ->when($params['search'] ?? null, function($query, $search){
-            
-    //         $query->where('search','like','%' . $search . '%');
-    //     })
-    //     ->when($params['role'] ?? null, function($query, $role) {
-    //         $query->whereHas('roles',function($query) use ($role){
-                
-    //             $query->where('name',$role);
-            
-    //         });
-    //     })
-    //     ->when($params['userID'] ?? null, function($query, $userID){
-            
-    //         $query->where('id',$userID);
-    //     })
-    //     ->with('specialties', 'roles')
-    //     ->get();
-
-    //     return new UserCollection($users);
-    // }
+    private $NO_HANDLE_PHOTO = false;
 
     public function createRequest($data)
     {
@@ -70,7 +48,7 @@ class RequestUserService
         $dataToCreate['role_name'] = 'Doctor';
         
         $userService = new UserService;
-        $userService->createUser($dataToCreate);
+        $userService->createUser($dataToCreate, $this->NO_HANDLE_PHOTO);
 
         $request->delete();
 
@@ -81,7 +59,9 @@ class RequestUserService
     }
 
     public function reject($requestID){
-        RequestUser::find($requestID)->delete();
+        $request = RequestUser::find($requestID);
+        $this->deletePhoto($request->photo);
+        $request->delete();
         return 0;
     }
 
@@ -141,5 +121,17 @@ class RequestUserService
         
         throw new Exception("La imagen no es válida, intente con otra", 500);
     }
+
+    private function deletePhoto($fileName) {
+        $filePath = storage_path('app/public/requests/' . $fileName);
+    
+        if (file_exists($filePath)) {
+            unlink($filePath);
+            return 0;
+        } else {
+            throw new Exception("La imagen no existe en la carpeta requests.", 404);
+        }
+    }
+    
 
 }

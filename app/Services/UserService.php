@@ -38,9 +38,13 @@ class UserService
         return new UserCollection($users);
     }
 
-    public function createUser($data)
+    public function createUser($data, $photo = true)
     {   
-        
+        if($photo)
+            $fileName = $this->handlePhoto($data);
+        else
+            $fileName = $data['photo'];
+
         $newUser = User::create([
             
             "ci" => $data['ci'],
@@ -101,6 +105,7 @@ class UserService
             $fields['specialty_id'],
             $fields['name'],
             $fields['last_name'],
+            $fields['photo'],
             );
         
         $usuario->update(array_map(function ($value) use ($number){
@@ -188,6 +193,7 @@ class UserService
             
             $image->resize(180, null, function ($constraint) {
                 $constraint->aspectRatio();
+
                 $constraint->upsize();
             });
             
