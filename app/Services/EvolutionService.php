@@ -69,6 +69,7 @@ class EvolutionService{
             'emergency_case_id' => $case->id,
             'user_id' => auth()->user()->id,
             'area_id' => $areaID,
+            'evolution' => $data['evolution'],
             'patient_condition_id' => $data['patient_condition_id'],
             'status_id' => $data['status_id'],
             'diagnosis' => $data['diagnosis'],

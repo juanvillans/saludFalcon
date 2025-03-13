@@ -17,6 +17,7 @@ class Evolution extends Model
         'area_id',
         'patient_condition_id',
         'status_id',
+        'evolution',    
         'diagnosis',
         'treatment',
         'destiny',
