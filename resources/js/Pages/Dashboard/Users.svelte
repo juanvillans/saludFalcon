@@ -93,6 +93,7 @@
                 },
                 onSuccess: (mensaje) => {
                     $formCreate.reset();
+                    imagePreview= ''
                     displayAlert({
                         type: "success",
                         message: "Ok todo salió bien",
@@ -377,7 +378,7 @@
                 submitStatus = "Crear";
             }}
         >
-            <span class="md:hidden text-4xl relative top-1 font-bold"
+            <span class="sm:hidden  text-2xl relative top-1 font-bold"
                 ><iconify-icon icon="ic:round-add"></iconify-icon></span
             >
             <span class="hidden md:block"> Nuevo Usuario </span>
