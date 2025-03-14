@@ -44,7 +44,7 @@
         }
     });
 
-    let imagePreview = '';
+    $: imagePreview = $formCreate.photo;
   function handleFileChange(event) {
     const file = event.target.files[0];
     if (file) {
@@ -70,6 +70,7 @@
                 },
                 onSuccess: (mensaje) => {
                     $formCreate.reset();
+                    imagePreview= ''
                     displayAlert({
                         type: "success",
                         message: "Ok todo salió bien",
@@ -365,7 +366,7 @@
                                 ...row,
                                 specialty_id: row.specialty.id
                             };
-                            console.log($formCreate);
+                            
                             
                             $formCreate.clearErrors();
                         } else {
@@ -383,7 +384,7 @@
                 class={`cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
             >
             <td>
-                <img src={`/storage/users/${row.photo}`} alt="" srcset="">
+                <img class="rounded-full max-w-[100px]" src={`/storage/users/${row.photo}`} alt="" srcset="">
                 
             </td>
 

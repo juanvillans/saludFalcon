@@ -218,6 +218,9 @@
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-gray-50 text-dark"
                 >Datos del usuario</legend
             >
+
+            <img class="max-w-[180px] h-[218px] object-cover" src={`/storage/users/${$form.photo}`} alt="" srcset="">
+
             <Input
                 type="text"
                 required={true}
