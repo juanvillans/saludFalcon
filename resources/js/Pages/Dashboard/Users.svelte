@@ -4,7 +4,7 @@
     import Input from "../../components/Input.svelte";
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, page, router } from "@inertiajs/svelte";
-    import { onMount } from 'svelte';
+    import { onMount } from "svelte";
     export let data = [];
 
     let instituteSpecialities = [];
@@ -48,23 +48,22 @@
     let requests = false;
     function CheckRequestUrl() {
         const params = new URLSearchParams(window.location.search);
-        requests = params.get('requests') === 'true'; // Check if requests is 'true'
+        requests = params.get("requests") === "true"; // Check if requests is 'true'
     }
-    
+
     onMount(() => {
-    CheckRequestUrl()
- 
-});
-    let imagePreview = '';
-  function handleFileChange(event) {
-    const file = event.target.files[0];
-    if (file) {
-      // Create a URL for the selected file
-      imagePreview = URL.createObjectURL(file);
-      // Update the form data
-      $formCreate.photo = file;
+        CheckRequestUrl();
+    });
+    let imagePreview = "";
+    function handleFileChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+            // Create a URL for the selected file
+            imagePreview = URL.createObjectURL(file);
+            // Update the form data
+            $formCreate.photo = file;
+        }
     }
-  }
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -164,6 +163,31 @@
         }
     }
 
+    function reject(id) {
+        if ($page.props.auth.permissions.find((p) => p == "update-users")) {
+            $formCreate.post(
+                `/admin/usuarios/solicitudes/rechazar/${selectedRow.id}`,
+                {
+                    onError: (errors) => {
+                        if (errors.data) {
+                            displayAlert({
+                                type: "error",
+                                message: errors.data,
+                            });
+                        }
+                    },
+                    onSuccess: (mensaje) => {
+                        displayAlert({
+                            type: "success",
+                            message: mensaje.props.flash.message,
+                        });
+                        selectedRow = { status: false, id: 0, row: {} };
+                    },
+                },
+            );
+        }
+    }
+
     let submitStatus = "Crear";
     let selectSpecialityModal = false;
     let filteredSpecialities = [];
@@ -172,13 +196,46 @@
         selectingText = false; // Reset before mouse down
     }
 
-    function handleMouseUp(event, id) {
+    function handleMouseUp(event, id, row) {
         const selection = window.getSelection();
 
         // Check if there is any selected text
         if (selection.toString().length === 0) {
-            goToDetailPage(id);
+            if (requests) {
+                if (
+                    $page.props.auth.permissions.find(
+                        (p) => p == "create-users",
+                    )
+                ) {
+                    if (row.id != selectedRow.id) {
+                        selectedRow = {
+                            status: true,
+                            id: row.id,
+                            title: row.title,
+                        };
+                        $formCreate = {
+                            ...$formCreate,
+                            ...row,
+                            specialty_id: row.specialty.id,
+                        };
+                        console.log($formCreate);
+
+                        $formCreate.clearErrors();
+                    } else {
+                        selectedRow = {
+                            status: false,
+                            id: 0,
+                            title: "",
+                        };
+                        $formCreate.defaults({
+                            ...emptyDataForm,
+                        });
+                    }
+                }
+                return;
+            }
         }
+        goToDetailPage(id);
     }
 
     function goToDetailPage(id) {
@@ -215,26 +272,41 @@
                 bind:value={$formCreate.last_name}
                 error={$formCreate.errors?.last_name}
             />
-            
+
             <Input
                 type="email"
                 label="Correo"
                 bind:value={$formCreate.email}
                 error={$formCreate.errors?.email}
             />
-            <label class="relative  md:mt-4 row-span-3 mb-10 md:mb-7 max-w-[180px] h-[218px]  block">
+            <label
+                class="relative md:mt-4 row-span-3 mb-10 md:mb-7 max-w-[180px] h-[218px] block"
+            >
                 <p class="mt-4 md:mt-0">Foto carnet</p>
-                <input type="file" accept="image/*" on:change={handleFileChange} class="hidden" />
+                <input
+                    type="file"
+                    accept="image/*"
+                    on:change={handleFileChange}
+                    class="hidden"
+                />
                 <!-- Display the selected image -->
                 {#if imagePreview}
-                <img src={imagePreview} alt="Preview" class="absolute max-w-[180px]  w-[180px] h-[218px] object-cover border rounded border-gray-500" />
-                
+                    <img
+                        src={imagePreview}
+                        alt="Preview"
+                        class="absolute max-w-[180px] w-[180px] h-[218px] object-cover border rounded border-gray-500"
+                    />
                 {:else}
-                <div class="rouded absolute max-w-[180px] w-[180px] h-[218px]  bg-gray-200 flex items-center justify-center cursor-pointer text-gray-300 hover:text-gray-500">
-                    <iconify-icon class="" icon="tdesign:portrait" width="180" height="180"></iconify-icon>
-    
-                </div>
-    
+                    <div
+                        class="rouded absolute max-w-[180px] w-[180px] h-[218px] bg-gray-200 flex items-center justify-center cursor-pointer text-gray-300 hover:text-gray-500"
+                    >
+                        <iconify-icon
+                            class=""
+                            icon="tdesign:portrait"
+                            width="180"
+                            height="180"
+                        ></iconify-icon>
+                    </div>
                 {/if}
             </label>
             <Input
@@ -330,20 +402,22 @@
         <button
             on:click={(e) => {
                 router.get(`/admin/usuarios`, {});
-                requests = false
+                requests = false;
             }}
             class="filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
-            class:bg-gray-200={!data.requests}
+            class:bg-gray-300={!data.requests}
+            class:text-gray-800={!data.requests}
         >
             Usuarios aceptados
         </button>
         <button
             on:click={(e) => {
                 router.get(`${$page.url}`, { requests: true });
-                requests = true
+                requests = true;
             }}
             class="filter_button px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm hover:bg-gray-200"
-            class:bg-gray-200={data.requests}
+            class:bg-gray-300={data.requests}
+            class:text-gray-800={data.requests}
         >
             Solicitudes
         </button>
@@ -353,6 +427,7 @@
     {selectedRow}
     on:fillFormToEdit={fillFormToEdit}
     on:acept={acept}
+    on:reject={reject}
     on:clickDeleteIcon={() => {
         handleDelete(selectedRow.id);
     }}
@@ -371,6 +446,7 @@
             <th>Nombres</th>
             <th>Apellidos</th>
             <th>C.I</th>
+            <th>Matrícula médica</th>
             <th>Correo</th>
             <th>Tel</th>
             <th>Especialidad</th>
@@ -380,19 +456,23 @@
     <tbody slot="tbody">
         {#each dataTable as row, i}
             <tr
-            on:mousedown={handleMouseDown}
-            on:mouseup={(e) => handleMouseUp(e, row.id)}
-             
+                on:mousedown={handleMouseDown}
+                on:mouseup={(e) => handleMouseUp(e, row.id, row)}
                 class={`cursor-pointer  ${selectedRow.id == row.id ? "bg-color2 hover:bg-opacity-10 bg-opacity-10 brightness-110" : " hover:bg-gray-500 hover:bg-opacity-5"}`}
             >
-            <td>
-                <img class="w-12 aspect-square rounded-full object-cover" src={`/storage/${requests ? "requests" : "users"}/${row.photo}`} alt="" srcset="">
-                
-            </td>
+                <td>
+                    <img
+                        class="w-12 aspect-square rounded-full object-cover"
+                        src={`/storage/${requests ? "requests" : "users"}/${row.photo}`}
+                        alt=""
+                        srcset=""
+                    />
+                </td>
 
                 <td>{row.name}</td>
                 <td>{row.last_name}</td>
                 <td>{row.ci}</td>
+                <td>{row.medical_license}</td>
                 <td>{row.email}</td>
                 <!-- <td>{row.sex}</td> -->
                 <td>{row.phone_number}</td>

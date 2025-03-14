@@ -55,6 +55,9 @@
         opacity: .8;
         background-color: white;
     }
+    .bg-error {
+        background-color: rgb(255, 147, 147);
+    }
 </style>
 
                 
@@ -66,7 +69,7 @@
         {:else if type === "select"}
                 
                 
-                <select readonly={readOnly}  disabled={disabled} on:focus class={`w-full ${inputClasses ? inputClasses : " p-2 bg-gray-200 "} ${error ? ' border-b border-red bg-red bg-opacity-10' : ""}`} id={label} bind:value  required={required} on:change > 
+                <select readonly={readOnly}  disabled={disabled} on:focus class={`w-full ${inputClasses ? inputClasses : " p-2 bg-gray-200 "} ${error ? ' border-b border-red bg-error' : ""}`} id={label} bind:value  required={required} on:change > 
                 <slot></slot>
             </select>
         {:else}
@@ -76,7 +79,7 @@
                 placeholder={placeholder}
                 id={label}
                 readonly={readOnly}
-                class={`w-full ${inputClasses ? inputClasses : "p-2 bg-gray-200 "} ${error ? ' border-b border-red bg-red bg-opacity-10' : ""}`}
+                class={`w-full ${inputClasses ? inputClasses : "p-2 bg-gray-200 "} ${error ? ' border-b border-red bg-error' : ""}`}
                 required={required}
                 disabled={disabled}
                 defaultValue={'xxx'}
