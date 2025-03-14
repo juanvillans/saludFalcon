@@ -8,6 +8,7 @@ use App\Models\Evolution;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 
 class UserService
@@ -103,7 +104,6 @@ class UserService
             $fields['specialty_id'],
             $fields['name'],
             $fields['last_name'],
-            $fields['photo'],
             );
         
         $usuario->update(array_map(function ($value) use ($number){
@@ -113,6 +113,8 @@ class UserService
         }, $fields));
 
         $usuario->update(['status' => 0]);
+
+        $this->changePhotoName($usuario,$number);
 
         return 0;
     }
@@ -204,6 +206,21 @@ class UserService
         }
         
         throw new Exception("La imagen no es válida, intente con otra", 500);
+    }
+
+    private function changePhotoName($user,$number){
+
+        $fileName = $user->photo;
+        $newFileName = $fileName . 'deleted-'. $number; 
+
+        if (Storage::exists('public/users/' . $fileName)) {
+            
+            Storage::move('public/users/' . $fileName, 'public/users/' . $newFileName);
+            $user->save();
+            return 0;
+        }
+
+        return 0;
     }
     
 

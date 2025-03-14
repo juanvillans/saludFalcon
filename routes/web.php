@@ -41,7 +41,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 
     // My Profile
     Route::get('/perfil/{userID}', [UserController::class, 'myProfile'])->name('profile');
-    Route::put('/perfil/{user}', [UserController::class, 'update'])->name('profileUpdate');
+    Route::post('/perfil/{user}', [UserController::class, 'update'])->name('profileUpdate');
     Route::delete('/perfil/{userID}', [UserController::class, 'destroy'])->name('profileDelete');
     Route::post('/perfil/picture/{user}', [UserController::class, 'updateProfilePicture'])->name('profilePictureUpdate');
     

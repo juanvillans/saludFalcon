@@ -167,7 +167,7 @@
 
     const updateClient = debounce((event) => {
         $form.clearErrors();
-        $form.put(
+        $form.post(
             "/admin/perfil/" + $form.id,
             {
                 onError: (errors) => {
