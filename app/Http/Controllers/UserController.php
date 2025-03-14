@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class UserController extends Controller
@@ -43,7 +44,6 @@ class UserController extends Controller
         $specialtyService = new SpecialtyService();
 
         $users = $this->userService->getUsers($this->params);
-        $specialties = $specialtyService->getSpecialties(['status' => 1]);
         $requests = null;
         if($request->has('requests'))
             $requests = RequestUser::with('specialty')->get(); 
@@ -54,7 +54,6 @@ class UserController extends Controller
             'data' => [
                 'users' => $users,
                 'requests' => $requests,
-                'specialties' => $specialties,
             ]
         ]);
     }
@@ -110,14 +109,14 @@ class UserController extends Controller
         }
     }
 
-    public function destroy(User $usuario)
+    public function destroy(User $user)
     {
 
         DB::beginTransaction();
 
         try 
         {
-            $this->userService->deleteUser($usuario);
+            $this->userService->deleteUser($user);
 
             DB::commit();
 
@@ -128,8 +127,8 @@ class UserController extends Controller
         {   
             
             DB::rollback();
-            
-            return redirect('/admin/usuarios')->withErrors(['data' => $e->getMessage()]);
+            Log::info($e->getMessage());            
+            return redirect('/admin/perfil/'.$user->id)->withErrors(['data' => $e->getMessage()]);
         }       
 
     }

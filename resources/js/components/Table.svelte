@@ -4,6 +4,7 @@
     import { createEventDispatcher, onMount } from "svelte";
     import Pagination from "./Pagination.svelte";
     import Modal from "./Modal.svelte";
+    import DateRange from "../components/DateRange.svelte";
 
     import Search from "./Search.svelte";
     import { object_without_properties } from "svelte/internal";
@@ -25,6 +26,14 @@
             (value) => value != "search",
         );
     }
+    const changeDateFilter = (args) => {
+        filterClientData = {
+            ...filterClientData,
+            start_date: args.detail.startDate,
+            end_date: args.detail.endDate,
+        };
+        handleFilters();
+    };
 
     // $: $form, handleFilters()
     $: console.log(filterClientData);
@@ -57,7 +66,6 @@
                 <iconify-icon icon="mage:filter" width="24" height="24"
                 ></iconify-icon>
             </button>
-          
         {/if}
 
         {#if allowSearch}
@@ -138,15 +146,15 @@
                 </div>
             </div>
         </div>
-        
+
         {#if pagination}
-        <!-- Pagination ---------------------------------------------------------------------------------------------- -->
-        <Pagination pagination={{ ...pagination }} />
+            <!-- Pagination ---------------------------------------------------------------------------------------------- -->
+            <Pagination pagination={{ ...pagination }} />
         {/if}
-        {/if}
+    {/if}
 </section>
 
-<Modal bind:showModal modalClasses={"max-w-[560px]"} showCancelButton={false}>
+<Modal bind:showModal modalClasses={"max-w-[960px]"} showCancelButton={false}>
     <p slot="header" class="opacity-60">Filtros de busqueda</p>
     <div class="flex gap-5 md:gap-10">
         {#each Object.entries(filtersOptions) as [filterKey, filterOption] (filterKey)}
@@ -184,6 +192,27 @@
                 {/each}
             </article>
         {/each}
+
+        <h4>Id del caso</h4>
+        <input
+            value={filterClientData.case_id || ""}
+            class="h-20"
+            type="search"
+            name=""
+            id=""
+            on:input={(e) => {
+                const inputValue = e.target.value;
+                if (/^\d*$/.test(inputValue)) {
+                    filterClientData.case_id = inputValue; 
+                    handleFilters();
+                } else {
+                    e.target.value = filterClientData.case_id || ""; 
+                }
+            }}
+        />
+
+        <h4>Rango de fecha</h4>
+        <DateRange on:changeDateFilter={changeDateFilter} />
     </div>
 </Modal>
 

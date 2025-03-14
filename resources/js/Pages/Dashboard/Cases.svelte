@@ -142,7 +142,6 @@
                     ...res.data.patient,
                 };
 
-                console.log(res.data.patient);
             }
         } catch (err) {
             console.log(err);
@@ -160,7 +159,6 @@
                 headers: {},
                 params: { search },
             });
-            console.log(res);
             searchedDoctors = res.data.doctors;
         } catch (err) {
             console.log(err);
@@ -200,6 +198,9 @@
 <svelte:head>
     <title>Historial médico</title>
 </svelte:head>
+
+    
+    
 
 <Modal bind:showModal modalClasses={"max-w-[560px]"}>
     <p slot="header" class="opacity-60">Registrar un nuevo caso</p>
@@ -489,7 +490,6 @@
                 bind:value={$form.area_id}
                 error={$form.errors?.area_id}
                 on:change={(e) => {
-                    console.log(e.target.value);
                     $form.area = e.target.value;
                 }}
             >
@@ -523,7 +523,6 @@
                     required={true}
                     on:change={(e) => {
                         const selectedDate = new Date(e.target.value);
-                        console.log(selectedDate, $form.entry_date);
 
                         if (selectedDate < new Date($form.entry_date)) {
                             $form.errors = {
@@ -733,6 +732,7 @@
 <Table
     filtersOptions={{
         status: { label: "Estado", options: localData?.statutes || [] } || {},
+        specialty_id: { label: "Servicio tra.", options: localData?.specialties || [] } || {},
         area_id:
             { label: "Última area", options: localData?.areas || [] } || {},
         condition:
@@ -747,7 +747,7 @@
     <thead slot="thead" class="sticky top-0">
         <tr>
             <th style="font-size: 12px;">ID</th>
-            <th>Duración</th>
+            <th>F. ingreso</th>
             <th>Estado y area</th>
             <!-- <th>Condición</th> -->
             <th>Paciente</th>
@@ -766,17 +766,7 @@
                     class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5`}
                 >
                     <td style="font-size: 12px;">{row.id}</td>
-                    <td>
-                        {getDuration(
-                            row?.entry_date,
-                            row?.entry_hour,
-                            row?.departure_date,
-                            row?.departure_hour,
-                            row?.current_status,
-                        )}
-
-                        <!-- {formatDateSpanish(row.entry_date)} -->
-                    </td>
+                    <td class="">{row.formatted_entry_date}</td>
 
                     <td style="white-space: normal;" class="min-w-[150px]">
                         <StatusColor

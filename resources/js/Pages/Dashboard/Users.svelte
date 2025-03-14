@@ -5,7 +5,20 @@
     import { displayAlert } from "../../stores/alertStore";
     import { useForm, page, router } from "@inertiajs/svelte";
     import { onMount } from "svelte";
+    import fetchLocalData from "../../components/localData";
+
     export let data = [];
+
+    let localData = {};
+
+    onMount(async () => {
+        try {
+            localData = await fetchLocalData();
+            // console.log(fetchLocalData())
+        } catch (error) {
+            console.error("Error loading data:", error);
+        }
+    });
 
     let instituteSpecialities = [];
     let specialities = [];
@@ -104,27 +117,6 @@
                         message: "Ok todo salió bien",
                     });
                     showModal = false;
-                    selectedRow = { status: false, id: 0, row: {} };
-                },
-            });
-        }
-    }
-
-    function handleDelete(id) {
-        if ($page.props.auth.permissions.find((p) => p == "update-users")) {
-            $formCreate.delete(`/admin/usuarios/${id}`, {
-                onBefore: () =>
-                    confirm(`¿Está seguro de eliminar a este usuario?`),
-                onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
-                },
-                onSuccess: (mensaje) => {
-                    displayAlert({
-                        type: "success",
-                        message: mensaje.props.flash.message,
-                    });
                     selectedRow = { status: false, id: 0, row: {} };
                 },
             });
@@ -240,7 +232,7 @@
 
     function goToDetailPage(id) {
         if (!requests) {
-            router.get("/admin/perfil/" + id);
+            router.get("/admin/perfil/" + id,{});
         }
     }
 </script>
@@ -345,7 +337,7 @@
                 bind:value={$formCreate.specialty_id}
                 error={$formCreate.errors?.specialty_id}
             >
-                {#each data.specialties || [] as speci (speci.id)}
+                {#each localData.specialties || [] as speci (speci.id)}
                     <option value={speci.id}>{speci.name}</option>
                 {/each}
             </Input>
@@ -428,12 +420,9 @@
     on:fillFormToEdit={fillFormToEdit}
     on:acept={acept}
     on:reject={reject}
-    on:clickDeleteIcon={() => {
-        handleDelete(selectedRow.id);
-    }}
     selectedRowOptions={{
-        editar: !data.requests ? true : false,
-        eliminar: !data.requests ? true : false,
+        editar: false,
+        eliminar: false,
         aceptar: data.requests ? true : false,
         rechazar: data.requests ? true : false,
     }}
@@ -449,7 +438,7 @@
             <th>Matrícula médica</th>
             <th>Correo</th>
             <th>Tel</th>
-            <th>Especialidad</th>
+            <th>Servicio tratante</th>
         </tr>
     </thead>
 

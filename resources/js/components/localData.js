@@ -9,6 +9,8 @@ export default async function fetchLocalData() {
         try {
             const response = await axios.get('/admin/general-data'); // Replace with your API endpoint
             const localData = response.data;
+            console.log({localData});
+            
             localStorage.setItem(localStorageKey, JSON.stringify(localData));
             return localData;
         } catch (error) {

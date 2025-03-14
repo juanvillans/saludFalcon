@@ -10,6 +10,8 @@
     import debounce from "lodash/debounce";
 
 
+ 
+
     export let data = [];
     export let areas = [];
 
@@ -36,7 +38,6 @@
                 { params: { page: pageNumber + 1 } },
             );
             if (res.data.data.length > 0) {
-                console.log(res.data.data, data.evolutions.data);
                 data.evolutions.data = [
                     ...data.evolutions.data,
                     ...res.data.data,
@@ -77,7 +78,7 @@
     });
 
     let form = useForm(structuredClone(data.user.data));
-
+    $: console.log($form)
     let localData = {};
 
     onMount(async () => {
@@ -101,34 +102,38 @@
     }
 
     let imagePreview = "";
-    
+
     let photoChanged = false;
 
     function handleFileChange(event) {
         const file = event.target.files[0];
-        photoChanged = true
+        photoChanged = true;
         if (file) {
             // Create a URL for the selected file
             imagePreview = URL.createObjectURL(file);
             // Update the form data
             $form.photo = file;
             $form.post(
-            "/admin/perfil/picture/" + $form.id,
-            {
-                onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
+                "/admin/perfil/picture/" + $form.id,
+                
+                {
+                    onError: (errors) => {
+                        if (errors.data) {
+                            displayAlert({
+                                type: "error",
+                                message: errors.data,
+                            });
+                        }
+                    },
+                    onSuccess: (mensaje) => {
+                        displayAlert({
+                            type: "success",
+                            message: "Foto cambiada exitosamente!",
+                        });
+                    },
                 },
-                onSuccess: (mensaje) => {
-                    displayAlert({
-                        type: "success",
-                        message: "Foto cambiada exitosamente!",
-                    });
-                },
-            },
-            photoChanged = false
-        );
+                (photoChanged = false),
+            );
         }
     }
 
@@ -167,33 +172,8 @@
 
     const updateClient = debounce((event) => {
         $form.clearErrors();
-        $form.post(
-            "/admin/perfil/" + $form.id,
-            {
-                onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
-                },
-                onSuccess: (mensaje) => {
-                    displayAlert({
-                        type: "success",
-                        message: "Usuario editado exitosamente!",
-                    });
-                },
-            },
-        );
-    }, 400);
-
-
-    
-    function handleDelete() {
-        $form.post("/admin/historial-medico", {
-            onBefore: () => {
-                if (confirm(`¿Está seguro de eliminar este caso?`)) {
-                    $form.cases = $form.cases.slice(1);
-                }
-            },
+        $form.post("/admin/perfil/" + $form.id, {
+            preserveScroll: true,
             onError: (errors) => {
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
@@ -202,133 +182,174 @@
             onSuccess: (mensaje) => {
                 displayAlert({
                     type: "success",
-                    message: "Caso Eliminado exitosamente",
+                    message: "Usuario editado exitosamente!",
                 });
             },
         });
+    }, 400);
+
+    function handleDelete(id) {
+        console.log({ id });
+
+        if ($page.props.auth.permissions.find((p) => p == "delete-users")) {
+            $form.delete(`/admin/perfil/${id}`, {
+                onBefore: () =>
+                    confirm(`¿Está seguro de eliminar a este usuario?`),
+                onError: (errors) => {
+                    console.log(errors);
+
+                    if (errors.data) {
+                        displayAlert({ type: "error", message: errors.data });
+                    }
+                },
+                onSuccess: (mensaje) => {
+                    displayAlert({
+                        type: "success",
+                        message: mensaje.props.flash.message,
+                    });
+                },
+            });
+        }
     }
 </script>
 
-<div class="flex flex-col lg:flex-row gap-2 md:gap-5">
-    <form
-        on:input={(e) => {
-        
-          if (e.target.type !== "file") {
-            updateClient()
-        }  
-        }}
-        style="height: calc(100vh - 100px);"
-        class=" overflow-y-auto md:max-w-[330px] w-full lg:sticky top-0"
-    >
-        <fieldset
-            class=" px-5 mt-4 gap-x-5 text-black p-6 pt-2 border-color2 rounded-md"
-        >
-            <legend
-                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-gray-50 text-dark"
-                >Datos del usuario</legend
-            >
-            <label
-                class="relative md:mt-4 row-span-3 mb-10 md:mb-10 max-w-[180px] cursor-pointer h-[218px] block"
-            >
-                <p class="mt-4 md:mt-0">Foto carnet</p>
-                <input
-                    type="file"
-                    accept="image/*"
-                    on:change={handleFileChange}
-                    class="hidden"
-                />
-                <!-- Display the selected image -->
-                {#if imagePreview}
-                    <img
-                        src={imagePreview}
-                        alt="Preview"
-                        class="absolute  max-w-[180px] w-[180px] h-[218px] object-cover border rounded border-gray-500"
-                    />
-                {:else}
-                <img class="absolute  max-w-[180px] w-[180px] h-[218px] object-cover border rounded " src={`/storage/users/${$form.photo}`} alt="" srcset="">
+<svelte:head>
+    <title>Usuario {getFirstName(data.user.data.name)} {getFirstName(data.user.data.last_name)}</title>
+</svelte:head>
 
-                {/if}
-            </label>
-            <Input
-                type="text"
-                required={true}
-                label={"Nombres"}
-                bind:value={$form.name}
-                error={$form.errors?.name}
-                disabled={allowToEdit}
-            />
-            <Input
-                type="text"
-                required={true}
-                label={"Apellidos"}
-                bind:value={$form.last_name}
-                error={$form.errors?.last_name}
-                disabled={allowToEdit}
-            />
-            {#if isAdmin} 
-            
+<div class="flex flex-col lg:flex-row gap-2 md:gap-5">
+    <div
+        class=" overflow-y-auto md:max-w-[330px] w-full lg:sticky top-0"
+        style="height: calc(100vh - 100px);"
+    >
+        <form
+            on:input={(e) => {
+                if (e.target.type !== "file") {
+                    updateClient();
+                }
+            }}
+        >
+            <fieldset
+                class=" px-5 mt-4 gap-x-5 text-black p-6 pt-2 border-color2 rounded-md"
+            >
+                <legend
+                    class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-gray-50 text-dark"
+                    >Datos del usuario</legend
+                >
+                <label
+                    class="relative md:mt-4 row-span-3 mb-10 md:mb-10 max-w-[180px] cursor-pointer h-[218px] block"
+                >
+                    <p class="mt-4 md:mt-0">Foto carnet</p>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        on:change={handleFileChange}
+                        class="hidden"
+                    />
+                    <!-- Display the selected image -->
+                    {#if imagePreview}
+                        <img
+                            src={imagePreview}
+                            alt="Preview"
+                            class="absolute max-w-[180px] w-[180px] h-[218px] object-cover border rounded border-gray-500"
+                        />
+                    {:else}
+                        <img
+                            class="absolute max-w-[180px] w-[180px] h-[218px] object-cover border rounded"
+                            src={`/storage/users/${$form.photo}?${new Date().getTime()}`} 
+                            
+                            alt=""
+                            srcset=""
+                        />
+                    {/if}
+                </label>
                 <Input
-                    type="email"
-                    label="correo"
-                    bind:value={$form.email}
-                    error={$form.errors?.email}
-                    disabled={allowToEdit}
-                />
-                <Input
-                    type="number"
+                    type="text"
                     required={true}
-                    label={"Cédula"}
-                    bind:value={$form.ci}
-                    error={$form.errors?.ci}
+                    label={"Nombres"}
+                    bind:value={$form.name}
+                    error={$form.errors?.name}
                     disabled={allowToEdit}
                 />
                 <Input
-                    type="tel"
-                    label={"Teléfono"}
-                    bind:value={$form.phone_number}
-                    error={$form.errors?.phone_number}
+                    type="text"
+                    required={true}
+                    label={"Apellidos"}
+                    bind:value={$form.last_name}
+                    error={$form.errors?.last_name}
                     disabled={allowToEdit}
                 />
-            {/if}
-            <Input
-                type="select"
-                required={true}
-                label={"Tipo de Usuario"}
-                bind:value={$form.role_name}
-                error={$form.errors?.role_name}
-                disabled={!isAdmin}
-            >
-                <option value="doctor">Doctor</option>
-                <option value="admin">Admin</option>
-            </Input>
-            <Input
-                label={"Matrícula médica"}
-                required={true}
-                bind:value={$form.medical_license}
-                error={$form.errors?.medical_license}
-                disabled={allowToEdit}
-            />
-            <Input
-                type="select"
-                required={true}
-                label={"Servicio tratante"}
-                bind:value={$form.specialty_id}
-                error={$form.errors?.specialty_id}
-                disabled={!isAdmin}
-            >
-                {#each localData.specialties || [] as speci (speci.id)}
-                    <option value={speci.id}>{speci.name}</option>
-                {/each}
-            </Input>
-            {#if $form.isDirty}
-                <input
-                    type="submit"
-                    value={$form.processing ? "Cargando..." : "Actualizar"}
-                    class="hover:bg-color3 hover:text-white duration-200 mt-3 w-full col-span-2 bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
+                {#if isAdmin}
+                    <Input
+                        type="email"
+                        label="correo"
+                        bind:value={$form.email}
+                        error={$form.errors?.email}
+                        disabled={allowToEdit}
+                    />
+                    <Input
+                        type="number"
+                        required={true}
+                        label={"Cédula"}
+                        bind:value={$form.ci}
+                        error={$form.errors?.ci}
+                        disabled={allowToEdit}
+                    />
+                    <Input
+                        type="tel"
+                        label={"Teléfono"}
+                        bind:value={$form.phone_number}
+                        error={$form.errors?.phone_number}
+                        disabled={allowToEdit}
+                    />
+                {/if}
+                <Input
+                    type="select"
+                    required={true}
+                    label={"Tipo de Usuario"}
+                    bind:value={$form.role_name}
+                    error={$form.errors?.role_name}
+                    disabled={!isAdmin}
+                >
+                    <option value="doctor">Doctor</option>
+                    <option value="admin">Admin</option>
+                </Input>
+                <Input
+                    label={"Matrícula médica"}
+                    required={true}
+                    bind:value={$form.medical_license}
+                    error={$form.errors?.medical_license}
+                    disabled={allowToEdit}
                 />
-            {/if}
-        </fieldset>
-    </form>
+                {#if localData.specialties}
+                <Input  
+                    type="select" 
+                    required={true}
+                    label={"Servicio tratante"}
+                    bind:value={$form.specialty_id}
+                    error={$form.errors?.specialty_id}
+                    disabled={!isAdmin}
+                >
+                    {#each localData?.specialties || [] as speci (speci.id)}
+                        <option value={speci.id}>{speci.name}</option>
+                    {/each}
+                </Input>
+                {/if}
+            </fieldset>
+        </form>
+
+        {#if isAdmin}
+            <button
+                class="py-1 px-4 mx-auto mt-3 rounded border border-gray-300 cursor-pointer"
+                on:click={() => {
+                    handleDelete($form.id);
+                }}> <iconify-icon
+                            class="relative -bottom-0.5"
+                            icon="material-symbols:delete-outline"
+                        ></iconify-icon> Eliminar usuario</button
+            >
+        {/if}
+    </div>
 
     <div class="w-full">
         <fieldset
@@ -353,133 +374,144 @@
                     <p>{nroInter}</p>
                 </div>
             </div>
-            <ul>
-                {#each data.evolutions.data as evolution, i (evolution.id)}
-                    <li
-                        class="bg-gray-50 mb-3 border rounded-lg overflow-hidden neumorphism"
-                    >
-                        <span
-                            class="md:flex items-center gap-2 py-3 px-2 sm:p-2 md:pr-4 lg:pr-6 justify-between"
+            {#if !allowToEdit}
+                <ul>
+                    {#each data.evolutions.data as evolution, i (evolution.id)}
+                        <li
+                            class="bg-gray-50 mb-3 border rounded-lg overflow-hidden neumorphism"
                         >
-                            <div
-                                class="md:flex flex-col sm:flex-row items-center gap-2 px-2 md:p-2 justify-between"
+                            <span
+                                class="md:flex items-center gap-2 py-3 px-2 sm:p-2 md:pr-4 lg:pr-6 justify-between"
                             >
-                                <a
-                                    href={`/admin/casos/detalle-caso/${evolution.emergency_case_id}`}
-                                    use:inertia
-                                    class="ml-1 text-sm caseLink"
+                                <div
+                                    class="md:flex flex-col sm:flex-row items-center gap-2 px-2 md:p-2 justify-between"
                                 >
-                                    CASO: {evolution.emergency_case_id}
-                                </a>
-                                <StatusColor
-                                    status={{
-                                        name: evolution.status_name,
-                                        id: evolution.status_id,
-                                    }}
-                                />
-                                {#if evolution.status_id == 1 || evolution.status_id == 2}
-                                    de
-                                {:else if evolution.status_id == 4 || evolution.status_id == 5}
-                                    en
-                                    <!-- {:else if evolution.status_id == 3} -->
-                                    a
-                                {/if}
-                                {evolution.area_name}
-                            </div>
-                            <div class="flex gap-2">
-                                {#if evolution.is_interconsult}
-                                    <span
-                                        class="pl-4 pr-1 listType bg-color1 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
+                                    <a
+                                        href={`/admin/casos/detalle-caso/${evolution.emergency_case_id}`}
+                                        use:inertia
+                                        class="ml-1 text-sm caseLink"
                                     >
-                                        IC
-                                    </span>
-                                {:else}
-                                    <span
-                                        class="pl-4 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
-                                    >
-                                        EVOL
-                                    </span>
-                                {/if}
-                                <span class="flex items-center">
-                                    <span class="text-xs">
-                                        <span class="text-gray-500">el</span>
-                                        {evolution.formatted_created_at}
-                                    </span>
-                                </span>
-                            </div>
-                        </span>
-
-                        <div class="bg-white p-3 md:p-4 lg:p-5 space-y-2">
-                            {#if evolution.status_id == 4}
-                                <div>
-                                    <h3 class="font-semibold">Fecha y hora:</h3>
-                                    <p class="text-dark">
-                                        El {evolution.formatted_entry_date} a las
-                                        {evolution.entry_hour}
-                                    </p>
+                                        CASO: {evolution.emergency_case_id}
+                                    </a>
+                                    <StatusColor
+                                        status={{
+                                            name: evolution.status_name,
+                                            id: evolution.status_id,
+                                        }}
+                                    />
+                                    {#if evolution.status_id == 1 || evolution.status_id == 2}
+                                        de
+                                    {:else if evolution.status_id == 4 || evolution.status_id == 5}
+                                        en
+                                        <!-- {:else if evolution.status_id == 3} -->
+                                        a
+                                    {/if}
+                                    {evolution.area_name}
                                 </div>
-                                <div>
-                                    <h3 class="font-semibold">
-                                        Motivo de consulta:
-                                    </h3>
-                                    <p class="text-dark">
-                                        {evolution.reason}
-                                    </p>
-                                </div>
-                            {/if}
-                            {#if evolution.status_id !== 6 && evolution.status_id !== 4}
-                                <div>
-                                    <h3 class="font-semibold">Fecha y hora:</h3>
-                                    <p class="text-dark">
-                                        {evolution.formatted_departure_date} a las{evolution.departure_hour}
-                                    </p>
-                                </div>
-                            {/if}
-                            <div>
-                                <div class="flex">
-                                    <h3 class="font-semibold">Diagnostico:</h3>
-
-                                    <div>
+                                <div class="flex gap-2">
+                                    {#if evolution.is_interconsult}
                                         <span
-                                            class={`ml-2 w-2 inline-block aspect-square rounded-full condition${evolution.patient_condition_id}`}
-                                        ></span>
-                                        <span
-                                            class="opacity-90 uppercase text-xs"
-                                            >{evolution.patient_condition_name}</span
+                                            class="pl-4 pr-1 listType bg-color1 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
                                         >
-                                    </div>
+                                            IC
+                                        </span>
+                                    {:else}
+                                        <span
+                                            class="pl-4 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
+                                        >
+                                            EVOL
+                                        </span>
+                                    {/if}
+                                    <span class="flex items-center">
+                                        <span class="text-xs">
+                                            <span class="text-gray-500">el</span>
+                                            {evolution.formatted_created_at}
+                                        </span>
+                                    </span>
                                 </div>
-                                {#if evolution.diagnosis}
-                                    <p class="text-dark">
-                                        {evolution.diagnosis}
-                                    </p>
-                                {/if}
-                            </div>
+                            </span>
 
-                            <div>
-                                {#if evolution.treatment}
-                                    <h3 class="font-semibold">
-                                        Orden médica de ingreso:
-                                    </h3>
-                                    <p class="text-dark">
-                                        {evolution.treatment}
-                                    </p>
+                            <div class="bg-white p-3 md:p-4 lg:p-5 space-y-2">
+                                {#if evolution.status_id == 4}
+                                    <div>
+                                        <h3 class="font-semibold">Fecha y hora:</h3>
+                                        <p class="text-dark">
+                                            El {evolution.formatted_entry_date} a las
+                                            {evolution.entry_hour}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold">
+                                            Motivo de consulta:
+                                        </h3>
+                                        <p class="text-dark">
+                                            {evolution.reason}
+                                        </p>
+                                    </div>
                                 {/if}
+                                {#if evolution.status_id !== 6 && evolution.status_id !== 4}
+                                    <div>
+                                        <h3 class="font-semibold">Fecha y hora:</h3>
+                                        <p class="text-dark">
+                                            {evolution.formatted_departure_date} a las{evolution.departure_hour}
+                                        </p>
+                                    </div>
+                                {/if}
+                                <div>
+                                    <div>
+                                    {#if evolution.evolution != "Sin descripción"}
+                                            
+                                            <p class="text-dark">
+                                                {evolution.evolution}
+                                            </p>
+                                        {/if}
+                                    </div>
+                                    <div class="flex">
+                                        <h3 class="font-semibold">Diagnostico:</h3>
+
+                                        <div>
+                                            <span
+                                                class={`ml-2 w-2 inline-block aspect-square rounded-full condition${evolution.patient_condition_id}`}
+                                            ></span>
+                                            <span
+                                                class="opacity-90 uppercase text-xs"
+                                                >{evolution.patient_condition_name}</span
+                                            >
+                                        </div>
+                                    </div>
+                                    {#if evolution.diagnosis}
+                                        <p class="text-dark">
+                                            {evolution.diagnosis}
+                                        </p>
+                                    {/if}
+                                </div>
+
+                                <div>
+                                    {#if evolution.treatment}
+                                        <h3 class="font-semibold">
+                                            Orden médica de ingreso:
+                                        </h3>
+                                        <p class="text-dark">
+                                            {evolution.treatment}
+                                        </p>
+                                    {/if}
+                                </div>
                             </div>
+                        </li>
+                    {/each}
+                    {#if loading}
+                        <div class="loading">Cargando...</div>
+                    {/if}
+
+                    <!-- Show message if no more items -->
+                    {#if !hasMore}
+                        <div class="loading text-gray-500">
+                            No hay más datos que cargar.
                         </div>
-                    </li>
-                {/each}
-                {#if loading}
-                    <div class="loading">Cargando...</div>
-                {/if}
+                    {/if}
+                </ul>
 
-                <!-- Show message if no more items -->
-                {#if !hasMore}
-                    <div class="loading text-gray-800">
-                        No hay más datos que cargar.
-                    </div>
-                {/if}
-            </ul>
+            {/if}
         </fieldset>
     </div>
 </div>

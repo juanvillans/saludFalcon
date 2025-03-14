@@ -23,6 +23,7 @@
         patient_condition_id: "",
         status_id: 6,
         destiny: "",
+        evolution: "",
     });
     let localData = {};
 
@@ -300,7 +301,7 @@
                         class="bg p-4 mb-3 md:mb-5 lg:mb-7 rounded-lg neumorphism bg-gray-50  lg:px-9"
                     >
                         <div class="">
-                            <div class="grid-cols-2 md:grid gap-x-5 ">
+                            <div class="grid-cols-2 md:grid gap-x-5 mb-4">
                                 <Input
                                     type="select"
                                     required={true}
@@ -380,7 +381,22 @@
                                 </div>
                             </div>
 
-                            <p class="mt-4">Diagnóstico *</p>
+                            <Input
+                            type="textarea"
+                            required={true}
+                            labelClasses={"font-semibold"}
+                            classes={"col-span-2"}
+                            label={"Evolución *"}
+                            bind:value={$evolutionForm.evolution}
+                            error={$evolutionForm.errors?.evolution}
+                        />
+                            <p class="font-semibold">Diagnóstico *</p>
+                            {#if $evolutionForm?.errors?.patient_condition_id}
+                            <p class="text-red block w-full">
+                                {$evolutionForm?.errors?.patient_condition_id}
+
+                            </p>
+                            {/if}
                             <div class="flex gap-4 mb-3">
                                 {#each localData?.conditions || [] as condition (condition.id)}
                                     <label
@@ -400,9 +416,11 @@
                                     </label>
                                 {/each}
                             </div>
+                            
                             <Input
                                 type="textarea"
                                 required={true}
+                                labelClasses={"font-semibold"}
                                 classes={"col-span-2"}
                                 bind:value={$evolutionForm.diagnosis}
                                 error={$evolutionForm?.errors?.diagnosis}
@@ -413,6 +431,7 @@
                             type="textarea"
                             required={true}
                             classes={"col-span-2"}
+                            labelClasses={"font-semibold"}
                             label={"Orden médica *"}
                             bind:value={$evolutionForm.treatment}
                             error={$evolutionForm.errors?.treatment}
@@ -529,6 +548,14 @@
                                     </p>
                                 </div>
                             {/if}
+                            <div>
+                                {#if evolution.evolution != "Sin descripción"}
+                                    
+                                    <p class="text-dark">
+                                        {evolution.evolution}
+                                    </p>
+                                {/if}
+                            </div>
                             <div>
                                 <div class="flex">
                                     <h3 class="font-semibold">Diagnostico:</h3>

@@ -7,7 +7,9 @@ use App\Http\Resources\PatientResource;
 use App\Models\EmergencyCase;
 use App\Models\Patient;
 use App\Services\EvolutionService;
+use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class EmergencyCaseService
 {	
@@ -36,7 +38,27 @@ class EmergencyCaseService
                     $query->whereRaw('id LIKE ?', ['%' . $params['case_id'] . '%']);
                 })
                 ->when(isset($params['start_date']) && isset($params['end_date']),function($query) use ($params){
-                    $query->whereBetween('entry_date', [$params['start_date'], $params['end_date']]);
+                    
+                    $startDateMillis = (int)$params['start_date']; 
+                    $endDateMillis = (int)$params['end_date']; 
+                
+                    $startDateSeconds = $startDateMillis / 1000;
+                    $endDateSeconds = $endDateMillis / 1000;
+
+                    $startDate = Carbon::createFromTimestamp($startDateSeconds)->startOfDay();
+                    $endDate = Carbon::createFromTimestamp($endDateSeconds)->endOfDay();
+
+                    Log::info([$startDate, $endDate]);
+
+                    $query->whereBetween('entry_date', [$startDate, $endDate]);
+                })
+                ->when($params['specialty_id'], function($query) use ($params){
+                    $query->where(function($query) use ($params) {
+                        $query->whereHas('user', function ($query2) use ($params){
+                            $query2->where('specialty_id',$params['specialty_id']);
+                        });
+                    });
+
                 })
                 ->when($params['search'],function($query) use ($params){
 

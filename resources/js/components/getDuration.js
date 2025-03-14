@@ -5,12 +5,7 @@ export function getDuration(
     endTime,
     status,
 ) {
-    console.log({  startDate,
-        startTime,
-        endDate,
-        endTime,
-        status,});
-    
+   
     
     if (status == "4") {
         const now = new Date();

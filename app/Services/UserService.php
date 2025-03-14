@@ -8,6 +8,7 @@ use App\Models\Evolution;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 
@@ -92,9 +93,11 @@ class UserService
     {   
         $authUserId = auth()->id();
         $usuario->id == $authUserId ? throw new Exception("No puedes eliminar tu propio usuario", 401) : null;
-
+        
         $usersDeleted = User::where('status',0)->count();
         $number = $usersDeleted + 1;
+
+
 
         $fields = $usuario->getAttributes();
         unset(
@@ -209,6 +212,7 @@ class UserService
     }
 
     private function changePhotoName($user,$number){
+
 
         $fileName = $user->photo;
         $newFileName = $fileName . 'deleted-'. $number; 

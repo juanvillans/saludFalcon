@@ -42,7 +42,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     // My Profile
     Route::get('/perfil/{userID}', [UserController::class, 'myProfile'])->name('profile');
     Route::post('/perfil/{user}', [UserController::class, 'update'])->name('profileUpdate');
-    Route::delete('/perfil/{userID}', [UserController::class, 'destroy'])->name('profileDelete');
+    Route::delete('/perfil/{user}', [UserController::class, 'destroy'])->name('profileDelete');
     Route::post('/perfil/picture/{user}', [UserController::class, 'updateProfilePicture'])->name('profilePictureUpdate');
     
     
@@ -59,6 +59,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 
     // Users CRUD
     Route::get('/usuarios', [UserController::class, 'index'])->middleware('role_or_permission:admin|read-users');
+    Route::post('/usuarios', [UserController::class, 'store'])->middleware('role_or_permission:admin|create-users');
+
     
     // Accept user requests 
     Route::post('/usuarios/solicitudes/aceptar/{requestID}', [RequestUserController::class, 'accept'])->name('requestUser.accept');

@@ -47,7 +47,7 @@ class EmergencyCaseController extends Controller
             'start_date' => $request->input('start_date') ?? null,
             'end_date' => $request->input('end_date') ?? null,
             'case_id' => $request->input('case_id') ?? null,
-
+            'specialty_id' => $request->input('specialty_id') ?? null,
         ];
 
         $emergencyCases = $this->emergencyCaseService->getCases($this->params);
@@ -63,6 +63,10 @@ class EmergencyCaseController extends Controller
                 'condition' => $request->input('condition') ?? '',
                 'area_id' => $request->input('area_id') ?? '',
                 'search' => $request->input('search') ?? '',
+                'start_date' => $request->input('start_date') ?? '',
+                'end_date' => $request->input('end_date') ?? '',
+                'case_id' => $request->input('case_id') ?? '',
+                'specialty_id' => $request->input('specialty_id') ?? '',
             ]),
         ]);
 
