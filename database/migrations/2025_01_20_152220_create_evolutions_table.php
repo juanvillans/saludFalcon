@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('area_id');
             $table->unsignedBigInteger('patient_condition_id');
             $table->unsignedBigInteger('status_id');
+            $table->text('evolution');
             $table->text('diagnosis')->nullable();
             $table->text('treatment')->nullable();
             $table->string('destiny')->nullable();

@@ -40,7 +40,13 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::get('/', [AppController::class, 'admin'])->name('admin');
 
     // My Profile
-    Route::get('/perfil/{userID}', [UserController::class, 'myProfile'])->name('perfil');
+    Route::get('/perfil/{userID}', [UserController::class, 'myProfile'])->name('profile');
+    Route::post('/perfil/{user}', [UserController::class, 'update'])->name('profileUpdate');
+    Route::delete('/perfil/{userID}', [UserController::class, 'destroy'])->name('profileDelete');
+    Route::post('/perfil/picture/{user}', [UserController::class, 'updateProfilePicture'])->name('profilePictureUpdate');
+    
+    
+
     // 
     Route::get('/perfil/json/{userID}', [UserController::class, 'myProfilePaginate'])->name('perfil');
 
@@ -52,7 +58,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::post('/cambiar-contraseña', [UserController::class, 'changePassword'])->name('change-password');
 
     // Users CRUD
-    Route::resource('/usuarios', UserController::class)->middleware('role_or_permission:admin|read-users');
+    Route::get('/usuarios', [UserController::class, 'index'])->middleware('role_or_permission:admin|read-users');
     
     // Accept user requests 
     Route::post('/usuarios/solicitudes/aceptar/{requestID}', [RequestUserController::class, 'accept'])->name('requestUser.accept');

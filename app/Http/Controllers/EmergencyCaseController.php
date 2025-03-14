@@ -44,6 +44,10 @@ class EmergencyCaseController extends Controller
             'condition' => $request->input('condition') ?? null,
             'area_id' => $request->input('area_id') ?? null,
             'patient_ci' => $request->input('ci') ?? null,
+            'start_date' => $request->input('start_date') ?? null,
+            'end_date' => $request->input('end_date') ?? null,
+            'case_id' => $request->input('case_id') ?? null,
+
         ];
 
         $emergencyCases = $this->emergencyCaseService->getCases($this->params);

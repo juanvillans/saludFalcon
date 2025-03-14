@@ -8,6 +8,7 @@ use App\Models\Evolution;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 
 class UserService
@@ -38,9 +39,13 @@ class UserService
         return new UserCollection($users);
     }
 
-    public function createUser($data)
+    public function createUser($data, $photo = true)
     {   
-        $fileName = $this->handlePhoto($data);
+        if($photo)
+            $fileName = $this->handlePhoto($data);
+        else
+            $fileName = $data['photo'];
+
         $newUser = User::create([
             
             "ci" => $data['ci'],
@@ -63,8 +68,6 @@ class UserService
 
     public function updateUser($data, $user)
     {
-        $fileName = $this->handleUpdatePhoto($data);
-
         $user->update([
             
             "ci" => $data['ci'],
@@ -73,13 +76,13 @@ class UserService
             "email" => $data['email'],
             "specialty_id" => $data['specialty_id'],
             "medical_license" => $data['medical_license'],
-            "photo" => $fileName,
             "search" => $this->generateSearch($data),
         ]);
 
         method_exists($user, 'revokeRoles') ? $user->revokeRoles(): null;
         
         $user->assignRole($data['role_name']);
+
 
         return 0;
 
@@ -110,6 +113,8 @@ class UserService
         }, $fields));
 
         $usuario->update(['status' => 0]);
+
+        $this->changePhotoName($usuario,$number);
 
         return 0;
     }
@@ -172,31 +177,50 @@ class UserService
         throw new Exception("La imagen no es valida, intente con otra", 500);    
     
         }
-    private function handleUpdatePhoto($data){
+    public function handleUpdatePhoto($data, $user){
         
         if (isset($data['photo']) && $data['photo']->isValid()) {
-            $fileName = $data['ci'] . '-profile.webp';
+            $fileName = $user->photo;
             $filePath = storage_path('app/public/users/' . $fileName);
+
         
             // Verifica si la imagen existe y la elimina
             if (file_exists($filePath)) {
                 unlink($filePath); // Elimina el archivo existente
             }
-        
+            
+
             // Crea la nueva imagen
             $image = Image::make($data['photo']);
             
             $image->resize(180, null, function ($constraint) {
                 $constraint->aspectRatio();
+
                 $constraint->upsize();
             });
+
             
             $image->save($filePath, 100); // 100 es el nivel de calidad (0-100)
-        
+            
             return $fileName;
         }
         
         throw new Exception("La imagen no es válida, intente con otra", 500);
+    }
+
+    private function changePhotoName($user,$number){
+
+        $fileName = $user->photo;
+        $newFileName = $fileName . 'deleted-'. $number; 
+
+        if (Storage::exists('public/users/' . $fileName)) {
+            
+            Storage::move('public/users/' . $fileName, 'public/users/' . $newFileName);
+            $user->save();
+            return 0;
+        }
+
+        return 0;
     }
     
 

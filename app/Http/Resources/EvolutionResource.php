@@ -32,6 +32,7 @@ class EvolutionResource extends JsonResource
             'status_id' => $this->status_id,
             'status_name' => $this->status->name,
 
+            'evolution' => $this->evolution,
             'diagnosis' => $this->diagnosis,
             'treatment' => $this->treatment,
             'destiny' => $this->destiny ?? null,

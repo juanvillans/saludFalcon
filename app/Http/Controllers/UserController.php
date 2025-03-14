@@ -85,7 +85,7 @@ class UserController extends Controller
 
     }
 
-    public function update(UserUpdateRequest $request, User $usuario)
+    public function update(UserUpdateRequest $request, User $user)
     {
         DB::beginTransaction();
 
@@ -93,11 +93,12 @@ class UserController extends Controller
         {
             $data = $request->all();
 
-            $this->userService->updateUser($data, $usuario);
+
+            $this->userService->updateUser($data, $user);
 
             DB::commit();
 
-            return redirect('/admin/usuarios');
+            return redirect('/admin/perfil/'.$user->id);
 
         }
         catch (\Throwable $e)
@@ -226,9 +227,21 @@ class UserController extends Controller
         ]);
     }
 
+    public function updateProfilePicture(Request $request, User $user){
+        
+        $data = $request->all();
+        $fileName = $this->userService->handleUpdatePhoto($data, $user);
+        $user->update(['photo' => $fileName]);
+
+        return redirect('/admin/perfil/'.$user->id);
+
+    }
+
     public function myProfilePaginate(Request $request, $userID){
         $evolutions = $this->userService->getMyEvolutions($userID);
         
         return response()->json(['data' => new EvolutionCollection($evolutions)]);
     }
+
+    
 }
