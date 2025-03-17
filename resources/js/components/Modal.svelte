@@ -30,7 +30,7 @@
         if (onClose) onClose();
       }}
       on:click|self={() => dialog.close()}
-      class={`p-0 rounded-xl min-w-[300px] ${modalClasses}`}
+      class={`p-0 rounded-xl min-w-[300px] h-auto ${modalClasses}`}
     >
       <Alert />
       <div class="p-3 sm:p-6 pb-5" on:click|stopPropagation>

@@ -74,7 +74,7 @@
       "Noviembre",
       "Diciembre"
     ]} bind:isOpen bind:startDate bind:endDate isRange showPresets>
-      <div class="date-field" on:click={toggleDatePicker} class:open={isOpen}>
+      <div class="date-field bg-gray-200" on:click={toggleDatePicker} class:open={isOpen}>
         <i class="icon-calendar" />
         <div class="date">
           {#if startDate}
@@ -93,14 +93,16 @@
   </div>
   
   <style>
+   
     .date-field {
       align-items: center;
-      background-color: #fff;
-      border-bottom: 1px solid #e8e9ea;
+      /* background-color: #fff; */
+      /* border-bottom: 1px solid #e8e9ea; */
       display: inline-flex;
       gap: 8px;
+      font-size: 15px;
       min-width: 100px;
-      padding: 16px;
+      padding: 4px;
     }
   
     .date-field.open {

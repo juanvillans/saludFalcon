@@ -364,7 +364,24 @@
                                             label={"Fecha " +
                                                 `${$evolutionForm.status_id == 3 ? "transferida" : ""}`}
                                             required={true}
-                                            bind:value={$evolutionForm.departure_date}
+                                            on:change={(e) => {
+                                                const selectedDate = new Date(e.target.value);
+                        
+                                                if (selectedDate < new Date(caseDetail.data?.entry_date)) {
+                                                    $evolutionForm.errors = {
+                                                        ...$evolutionForm.errors,
+                                                        departure_date:
+                                                            "La fecha de salida no puede ser mayor a de ingreso",
+                                                    };
+                                                } else {
+                                                    $evolutionForm.errors = {
+                                                        ...$evolutionForm.errors,
+                                                        departure_date: null,
+                                                    }; // Clear the error
+                                                }
+                                                $evolutionForm.departure_date = e.target.value;
+                                            }}
+                                            value={$evolutionForm.departure_date}
                                             error={$evolutionForm.errors
                                                 ?.departure_date}
                                         />
@@ -373,7 +390,24 @@
                                             required={true}
                                             label={"Hora " +
                                                 `${$evolutionForm.status_id == 3 ? "transferida" : ""}`}
-                                            bind:value={$evolutionForm.departure_hour}
+                                                on:input={(e) => {
+                                                    if ($evolutionForm.entry_date == caseDetail.data?.departure_date) {
+                                                        if (e.target.value < caseDetail.data?.entry_hour) {
+                                                            $evolutionForm.errors = {
+                                                                ...$evolutionForm.errors,
+                                                                departure_hour:
+                                                                    "la hora de salida no puede ser menor a la de ingreso",
+                                                            };
+                                                        } else {
+                                                            $evolutionForm.errors = {
+                                                                ...$evolutionForm.errors,
+                                                                departure_hour: null,
+                                                            }; // Clear the error
+                                                        }
+                                                    }
+                                                    $evolutionForm.departure_hour = e.target.value;
+                                                }}
+                                            value={$evolutionForm.departure_hour}
                                             error={$evolutionForm.errors
                                                 ?.departure_hour}
                                         />
@@ -549,7 +583,7 @@
                                 </div>
                             {/if}
                             <div>
-                                {#if evolution.evolution != "Sin descripción"}
+                                {#if evolution.evolution != "Sin descripción" && evolution.evolution}
                                     
                                     <p class="text-dark">
                                         {evolution.evolution}
