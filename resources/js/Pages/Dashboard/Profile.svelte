@@ -219,7 +219,7 @@
 
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">
     <div
-        class=" overflow-y-auto md:max-w-[330px] w-full lg:sticky top-0"
+        class=" overflow-y-auto lg:max-w-[330px] w-full lg:sticky top-0"
         style="height: calc(100vh - 100px);"
     >
         <form
@@ -237,31 +237,37 @@
                     >Datos del usuario</legend
                 >
                 <label
-                    class="relative md:mt-4 row-span-3 mb-10 md:mb-10 max-w-[180px] cursor-pointer h-[218px] block"
+                    class="relative mx-auto mt-2 md:mt-4 row-span-3 mb-10 md:mb-10 w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px] cursor-pointer block"
                 >
-                    <p class="mt-4 md:mt-0">Foto carnet</p>
                     <input
                         type="file"
                         accept="image/*"
+                        disabled={allowToEdit}
                         on:change={handleFileChange}
                         class="hidden"
                     />
+                  
                     <!-- Display the selected image -->
                     {#if imagePreview}
                         <img
                             src={imagePreview}
                             alt="Preview"
-                            class="absolute max-w-[180px] w-[180px] h-[218px] object-cover border rounded border-gray-500"
+                            class="absolute w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px]  object-cover border rounded border-gray-500"
                         />
                     {:else}
                         <img
-                            class="absolute max-w-[180px] w-[180px] h-[218px] object-cover border rounded"
+                            class="absolute w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px]  object-cover border rounded"
                             src={`/storage/users/${$form.photo}?${new Date().getTime()}`} 
                             
                             alt=""
                             srcset=""
                         />
                     {/if}
+                    <div class="md:hidden">
+                        <p>
+                            {$form.name} {$form.last_name}
+                        </p>
+                    </div>
                 </label>
                 <Input
                     type="text"
@@ -518,6 +524,13 @@
 <Alert />
 
 <style>
+    @media (max-width: 750px) {
+        legend::after,
+        legend::before {
+            bottom: 5px !important;
+            height: 13px;
+        }
+    }
     legend::after {
         content: " ";
         position: absolute;

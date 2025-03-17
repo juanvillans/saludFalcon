@@ -14,7 +14,7 @@
       return Date.now() - days * MILLISECONDS_IN_DAY;
     };
   
-    let startDate = getDateFromToday(29);
+    let startDate = "";
     let endDate = today;
     let dateFormat = 'MMM d, yyyy';
     let isOpen = false;
@@ -40,8 +40,6 @@
     $: formattedEndDate = formatDate(endDate);
     
     const onDateChange = (args) => {
-      console.log(args.startDate, args.endDate);
-      
       dispatch("changeDateFilter", {startDate:args.startDate, endDate:args.endDate});
   };
 
@@ -53,11 +51,11 @@
     <DatePicker {onDateChange}
     presetLabels={[
       "Hoy",
-      "Últimos 7 Días",
-      "Últimos 30 Días",
-      "Últimos 60 Días",
-      "Últimos 90 Días",
-      "Último Año"
+      "Últ. 7 Días",
+      "Últ. 30 Días",
+      "Últ. 60 Días",
+      "Últ. 90 Días",
+      "Últ. Año"
     ]}
     startOfWeek=1
     dowLabels={["dom","lun", "mar", "mié", "jue", "vie", "sáb"]} monthLabels={[
@@ -74,13 +72,13 @@
       "Noviembre",
       "Diciembre"
     ]} bind:isOpen bind:startDate bind:endDate isRange showPresets>
-      <div class="date-field" on:click={toggleDatePicker} class:open={isOpen}>
+      <div class="date-field bg-gray-200 rounded-md p-1.5" on:click={toggleDatePicker} class:open={isOpen}>
         <i class="icon-calendar" />
         <div class="date">
           {#if startDate}
             {formattedStartDate} - {formattedEndDate}
           {:else}
-            Pick a date
+            Selecciona una fecha
           {/if}
         </div>
         {#if startDate}
@@ -93,14 +91,16 @@
   </div>
   
   <style>
+   
     .date-field {
       align-items: center;
-      background-color: #fff;
-      border-bottom: 1px solid #e8e9ea;
+      /* background-color: #fff; */
+      /* border-bottom: 1px solid #e8e9ea; */
       display: inline-flex;
       gap: 8px;
+      font-size: 15px;
       min-width: 100px;
-      padding: 16px;
+      width: 100%;
     }
   
     .date-field.open {

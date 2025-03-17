@@ -195,7 +195,7 @@
 </script>
 
 <svelte:head>
-    <title>Historial médico</title>
+    <title>Casos</title>
 </svelte:head>
 
 <Modal bind:showModal modalClasses={"max-w-[560px]"}>
@@ -527,7 +527,7 @@
                             $form.errors = {
                                 ...$form.errors,
                                 departure_date:
-                                    "La fecha de salida no puede ser mayor a de ingreso",
+                                    "La fecha de salida no puede ser menor a la de ingreso",
                             };
                         } else {
                             $form.errors = {
@@ -730,17 +730,44 @@
 
 <Table
     filtersOptions={{
-        status: { label: "Estado", options: localData?.statutes || [] } || {},
+         date:
+            {
+                type: "date",
+                label: "Fecha de ingreso",
+
+            },
+        status:
+            {
+                type: "select",
+                label: "Estado",
+                options: localData?.statutes || [],
+            } || {},
+        case_id:
+            {
+                type: "search",
+                label: "ID del caso",
+                options: [],
+            } || {},
         specialty_id:
-            { label: "Servicio tra.", options: localData?.specialties || [] } ||
-            {},
+            {
+                type: "select",
+                label: "Servicio tra.",
+                options: localData?.specialties || [],
+            } || {},
         area_id:
-            { label: "Última area", options: localData?.areas || [] } || {},
+            {
+                type: "select",
+                label: "Última area",
+                options: localData?.areas || [],
+            } || {},
+           
         condition:
             {
+                type: "select",
                 label: "Condición",
                 options: localData?.conditions || [],
             } || {},
+           
     }}
     {visulizateType}
 >
@@ -794,7 +821,7 @@
 
                     <td class="min-w-[180px]">
                         <div class="flex items-center gap-2">
-                            {#if row.sex == "Femenino"}
+                            {#if row.patient_sex == "Femenino"}
                                 <span class="text-pink text-2xl">
                                     <iconify-icon icon="fa-solid:female"
                                     ></iconify-icon>
@@ -906,18 +933,11 @@
                             icon="game-icons:duration"
                             class="text-gray-600 text-xs md:text-sm"
                         ></iconify-icon>
-
-                        <p>
-                            {getDuration(
-                                row?.entry_date,
-                                row?.entry_hour,
-                                row?.departure_date,
-                                row?.departure_hour,
-                                row?.current_status,
-                            )}
-                        </p>
                     </div>
                 </div>
+                <p>
+                    F. de ingreso: {row.formatted_entry_date}
+                </p>
 
                 <div class="flex items-center gap-3 mt-1">
                     {#if row.sex == "Femenino"}
@@ -1009,6 +1029,13 @@
 </div>
 
 <style>
+    @media (max-width: 750px) {
+        legend::after,
+        legend::before {
+            bottom: 5px !important;
+            height: 13px;
+        }
+    }
     legend::after {
         content: " ";
         position: absolute;

@@ -154,65 +154,90 @@
     {/if}
 </section>
 
-<Modal bind:showModal modalClasses={"max-w-[960px]"} showCancelButton={false}>
-    <p slot="header" class="opacity-60">Filtros de busqueda</p>
-    <div class="flex gap-5 md:gap-10">
+<Modal bind:showModal modalClasses={"max-w-[960px] h-full"} showCancelButton={false}>
+    <p slot="header" class="opacity-60 ">Filtros de busqueda</p>
+    <div class="grid grid-cols-1 h-full md:grid-cols-3 gap-5 md:gap-10">
         {#each Object.entries(filtersOptions) as [filterKey, filterOption] (filterKey)}
-            <article>
+            <article class="md:flex md:flex-col">
                 <h4
-                    class="uppercase text-xs md:text-sm font-medium border-b px-2 pb-2 mb-1.5"
+                    class="uppercase w-fit md:w-full text-xs md:text-sm font-medium border-b px-2 flex items-center pb-2 lg:mb-1.5"
                 >
                     {filterOption.label}
                 </h4>
-                {#each filterOption.options as filter, i (filter.id)}
-                    <button
-                        class="text-left filter_button px-2 py-1 my-1 text-xs font-medium hover:text-dark rounded-full text-gray-700 block transition-colors duration-75 sm:text-sm hover:bg-gray-200"
-                        class:bg-gray-200={filterClientData?.[filterKey] ==
-                            filter.id}
-                        on:click={(e) => {
-                            if (filterClientData[filterKey] == filter.id) {
-                                console.log(filterKey);
+                {#if filterOption.type === "search"}
+                    <input
+                        value={filterClientData.case_id || ""}
+                        class="h-auto border-gray-400 bg-gray-200 border p-2 py-1 rounded max-w-[100px]"
+                        placeholder={"Buscar id"}
+                        type="search"
+                        name=""
+                        id=""
+                        on:input={(e) => {
+                            const inputValue = e.target.value;
+                            if (/^\d*$/.test(inputValue)) {
+                                filterClientData.case_id = inputValue;
+                                handleFilters();
+                            } else {
+                                e.target.value = filterClientData.case_id || "";
+                            }
+                        }}
+                    />
+                {:else if filterOption.type === "select"}
+                    <select
+                        on:change={(e) => {
+                            if (e.target.value == "todos") {
                                 delete filterClientData[filterKey];
                             } else {
-                                filterClientData[filterKey] = filter.id;
+                                filterClientData[filterKey] = e.target.value;
                             }
-                            console.log(filterClientData);
-
                             handleFilters();
                         }}
+                        name={filterOption.label}
+                        id=""
+                        class="bg-gray-200 p-1 py-2 rounded-md"
                     >
-                        {filter.name}
-                        {#if filterClientData?.[filterKey] == filter.id}
-                            <iconify-icon
-                                icon="line-md:close"
-                                class="relative top-1"
-                            ></iconify-icon>
-                        {/if}
-                    </button>
-                {/each}
+                        <option value="todos">Todos</option>
+                        {#each filterOption.options as filter, i (filter.id)}
+                            <option
+                                selected={filterClientData?.[filterKey] ==
+                                    filter.id}
+                                value={filter.id}>{filter.name}</option
+                            >
+                        {/each}
+                    </select>
+
+                {:else if filterOption.type === "date"}
+                    <DateRange on:changeDateFilter={changeDateFilter} />
+                {:else}
+                    {#each filterOption.options as filter, i (filter.id)}
+                        <button
+                            class="text-left filter_button px-2 py-1  my-1 text-xs font-medium hover:text-dark rounded-full text-gray-700 block transition-colors duration-75 sm:text-sm hover:bg-gray-200"
+                            class:bg-gray-200={filterClientData?.[filterKey] ==
+                                filter.id}
+                            on:click={(e) => {
+                                if (filterClientData[filterKey] == filter.id) {
+                                    delete filterClientData[filterKey];
+                                } else {
+                                    filterClientData[filterKey] = filter.id;
+                                }
+
+                                handleFilters();
+                            }}
+                        >
+                            {filter.name}
+                            {#if filterClientData?.[filterKey] == filter.id}
+                                <iconify-icon
+                                    icon="line-md:close"
+                                    class="relative top-1"
+                                ></iconify-icon>
+                            {/if}
+                        </button>
+                    {/each}
+                {/if}
             </article>
         {/each}
 
-        <h4>Id del caso</h4>
-        <input
-            value={filterClientData.case_id || ""}
-            class="h-20"
-            type="search"
-            name=""
-            id=""
-            on:input={(e) => {
-                const inputValue = e.target.value;
-                if (/^\d*$/.test(inputValue)) {
-                    filterClientData.case_id = inputValue; 
-                    handleFilters();
-                } else {
-                    e.target.value = filterClientData.case_id || ""; 
-                }
-            }}
-        />
-
-        <h4>Rango de fecha</h4>
-        <DateRange on:changeDateFilter={changeDateFilter} />
+      
     </div>
 </Modal>
 

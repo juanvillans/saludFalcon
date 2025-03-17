@@ -6,7 +6,7 @@
     import Alert from "../../components/Alert.svelte";
     import fetchLocalData from "../../components/localData";
     import { onMount } from "svelte";
-    import {getDuration} from "../../components/getDuration.js";
+    import { getDuration } from "../../components/getDuration.js";
 
     export let patient = false;
     export let caseDetail = {};
@@ -14,10 +14,14 @@
     export let nroInter = 0;
     export let showMorePatientDetail = false;
     let form = useForm(structuredClone(caseDetail.data));
+
+    const today = new Date();
+    const formattedDate = today.toISOString().split("T")[0];
+
     let evolutionForm = useForm({
         diagnosis: "",
         treatment: "",
-        departure_date: "",
+        departure_date: formattedDate,
         departure_hour: "",
         area_id: "",
         patient_condition_id: "",
@@ -35,18 +39,16 @@
             console.error("Error loading data:", error);
         }
     });
-    
+
     let editor;
     let descriptionLength = 0;
     let openAccordeon = -1;
 
-
     function getFirstName(firstName) {
-
         const parts = firstName.split(" ");
         return parts[0];
     }
-    let isSmallScreen = window.innerWidth > 1024
+    let isSmallScreen = window.innerWidth > 1024;
     function convertTo12HourFormat(time24) {
         console.log(time24);
         // Split the input into hours and minutes
@@ -65,18 +67,6 @@
         return `${hours}:${minutes} ${suffix}`;
     }
 
-    function formatDateSpanish(dateString) {
-        const options = {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        };
-
-        const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString("es-ES", options);
-
-        return formattedDate;
-    }
     let isOpenCreateEvolution = false;
     function updateClient(event) {
         event.preventDefault();
@@ -110,20 +100,21 @@
                     }
                 },
                 onSuccess: (mensaje) => {
-                    $evolutionForm.reset()
+                    $evolutionForm.reset();
                     displayAlert({
                         type: "success",
                         message: "Guardado",
                     });
-                    isOpenCreateEvolution = false
+                    isOpenCreateEvolution = false;
                 },
             },
         );
     }
-
-
 </script>
 
+<svelte:head>
+    <title>Detalles del caso</title>
+</svelte:head>
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">
     <form
         on:submit={updateClient}
@@ -136,17 +127,26 @@
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color3 text-gray-100"
                 >DATOS DEL PACIENTE</legend
             >
-            
-            
-            
-            <div class="my-2 lg:hidden" on:click={() => showMorePatientDetail = !showMorePatientDetail}>
+
+            <div
+                class="my-2 lg:hidden"
+                on:click={() =>
+                    (showMorePatientDetail = !showMorePatientDetail)}
+            >
                 {#if !showMorePatientDetail}
-                <h5 class="font-bold">Nombres y Apellidos:</h5>
-                <p class="text-lg">{$form.patient_name} {$form.patient_last_name}</p>
+                    <h5 class="font-bold">Nombres y Apellidos:</h5>
+                    <p class="text-lg">
+                        {$form.patient_name}
+                        {$form.patient_last_name}
+                    </p>
                 {/if}
-                <div class="seeMore flex hover:cursor-pointer hover:font-bold ">
+                <div class="seeMore flex hover:cursor-pointer hover:font-bold">
                     <p>Ver más datos del paciente</p>
-                    <iconify-icon icon="ic:outline-expand-more" width="24" height="24"></iconify-icon>
+                    <iconify-icon
+                        icon="ic:outline-expand-more"
+                        width="24"
+                        height="24"
+                    ></iconify-icon>
                 </div>
             </div>
 
@@ -197,7 +197,9 @@
                         error={$form.errors?.municipality_id}
                     >
                         {#each localData.municipalities || [] as micipality (micipality.id)}
-                            <option value={micipality.id}>{micipality.name}</option>
+                            <option value={micipality.id}
+                                >{micipality.name}</option
+                            >
                         {/each}
                     </Input>
 
@@ -216,7 +218,6 @@
                         type="text"
                         label={"Dirección"}
                         bind:value={$form.patient_address}
-                        readOnly={$form.patient_id}
                         error={$form.errors?.patient_address}
                     />
                     <div class="flex flex-col mt-6">
@@ -229,8 +230,8 @@
                                 name="sex"
                                 id=""
                             /><span
-                                class:font-bold={$form.patient_sex == "Masculino"}
-                                >Masculino</span
+                                class:font-bold={$form.patient_sex ==
+                                    "Masculino"}>Masculino</span
                             >
                         </label>
 
@@ -243,8 +244,8 @@
                                 name="sex"
                                 id=""
                             /><span
-                                class:font-bold={$form.patient_sex == "Femenino"}
-                                >Femenino</span
+                                class:font-bold={$form.patient_sex ==
+                                    "Femenino"}>Femenino</span
                             >
                         </label>
                     </div>
@@ -260,343 +261,434 @@
             {/if}
         </fieldset>
     </form>
-
-    <form on:submit={submitCases} class=" w-full">
-        <fieldset
-            class=" sm:px-5 md:mt-4 gap-x-5 pt-2 bg-gray-200 rounded-2xl pb-4 "
-        >
-            <legend
-                class="relative text-center px-5 py-1 uppercase pt-1.5 rounded-xl bg-color1 text-gray-100"
-                >CASO {caseDetail.data.id}
-            </legend>
-            <div class="col-span-2 flex gap-5 md:mt-5">
-                <div value="" class="neumorphism2 p-3 rounded-2xl">
-                    <h3 class="font-bold text-gray-800 text-sm">
-                        Duración total:
-                    </h3>
-                    <p>{getDuration(
-                        caseDetail.data?.entry_date,
-                        caseDetail.data?.entry_hour,
-                        caseDetail.data?.departure_date,
-                        caseDetail.data?.departure_hour,
-                        caseDetail.data?.current_status,
-                    )}</p>
+    <div
+        class="sm:px-6 md:mt-4 gap-x-5 w-full pt-2 bg-gray-200 rounded-2xl pb-4"
+    >
+        <form on:submit={submitCases}>
+            <fieldset class="gap-x-5 bg-gray-200 rounded-2xl">
+                <legend
+                    class="relative -top-6 text-center px-5 py-1 uppercase pt-1.5 rounded-xl bg-color1 text-gray-100"
+                    >CASO {caseDetail.data.id}
+                </legend>
+                <div
+                    class="col-span-2 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-5 md:mt-5"
+                >
+                    <div value="" class="neumorphism2 p-3 rounded-2xl">
+                        <h3 class="font-bold text-gray-800 text-sm">
+                            Duración en emergencia:
+                        </h3>
+                        <p>
+                            {getDuration(
+                                caseDetail.data?.entry_date,
+                                caseDetail.data?.entry_hour,
+                                caseDetail.data?.departure_date,
+                                caseDetail.data?.departure_hour,
+                                caseDetail.data?.current_status,
+                            )}
+                        </p>
+                    </div>
+                    <div value="" class="neumorphism2 p-3 rounded-2xl">
+                        <h3 class="font-bold text-gray-800 text-sm">
+                            Servicio Tratante
+                        </h3>
+                        <p>{nroInter}</p>
+                    </div>
+                    <div value="" class="neumorphism2 p-3 rounded-2xl">
+                        <h3 class="font-bold text-gray-800 text-sm">
+                            Nro de evoluciones
+                        </h3>
+                        <p>{nroEvol}</p>
+                    </div>
+                    <div value="" class="neumorphism2 p-3 rounded-2xl">
+                        <h3 class="font-bold text-gray-800 text-sm">
+                            Nro de Interconsultas
+                        </h3>
+                        <p>{nroInter}</p>
+                    </div>
                 </div>
-                <div value="" class="neumorphism2 p-3 rounded-2xl">
-                    <h3 class="font-bold text-gray-800 text-sm">
-                        Nro de evoluciones
-                    </h3>
-                    <p>{nroEvol}</p>
-                </div>
-                <div value="" class="neumorphism2 p-3 rounded-2xl">
-                    <h3 class="font-bold text-gray-800 text-sm">
-                        Nro de Interconsultas
-                    </h3>
-                    <p>{nroInter}</p>
-                </div>
-            </div>
-            <div class=" mt-4 gap-x-5 w-full pt-2 bg-gray-10">
-                {#if isOpenCreateEvolution}
-                    <div
-                        class="bg p-4 mb-3 md:mb-5 lg:mb-7 rounded-lg neumorphism bg-gray-50  lg:px-9"
-                    >
-                        <div class="">
-                            <div class="grid-cols-2 md:grid gap-x-5 mb-4">
-                                <Input
-                                    type="select"
-                                    required={true}
-                                    bind:value={$evolutionForm.status_id}
-                                    error={$evolutionForm.errors?.status_id}
-                                >
-                                    {#each localData.statutes as status (status.id)}
-                                        {#if status.id !== 4 && status.id !== 6}
-                                            <option value={status.id}
-                                                >{status.name}</option
-                                            >
-                                        {/if}
-                                        {#if status.id == 6}
-                                            <option value={status.id}
-                                                >{status.name}
-                                                {caseDetail.data
-                                                    .area_name}</option
-                                            >
-                                        {/if}
-                                    {/each}
-                                </Input>
-                                {#if $evolutionForm.status_id == "3"}
-                                    <div class="flex items-center">
-                                        <span class="mr-2 relative top-2">
-                                            a:
-                                        </span>
-
-                                        <Input
-                                            type="select"
-                                            required={true}
-                                            bind:value={$evolutionForm.area_id}
-                                            error={$evolutionForm.errors
-                                                ?.area_id}
-                                        >
-                                            {#each localData.areas as area (area.id)}
-                                                {#if area.id != caseDetail.data.area_id}
-                                                    <option value={area.id}
-                                                        >{area.name}</option
-                                                    >
-                                                {/if}
-                                            {/each}
-                                        </Input>
-                                    </div>
-                                {/if}
-                                {#if $evolutionForm.status_id == "3" && $evolutionForm.area_id == "7"}
+                <div class=" mt-4 gap-x-5 w-full pt-2 bg-gray-10">
+                    {#if isOpenCreateEvolution}
+                        <div
+                            class="bg p-4 mb-3 md:mb-5 lg:mb-7 rounded-lg neumorphism bg-gray-50 lg:px-9"
+                        >
+                            <div class="">
+                                <div class="grid-cols-2 md:grid gap-x-5 mb-4">
                                     <Input
-                                        type="text"
+                                        type="select"
                                         required={true}
-                                        label={"Hospital o ambulatorio *"}
-                                        bind:value={$evolutionForm.destiny}
-                                        error={$evolutionForm.errors?.destiny}
-                                    />
-                                {/if}
-                                <div
-                                    class="col-span-2 md:grid grid-cols-2 gap-x-4"
-                                >
-                                    {#if $evolutionForm.status_id != 6}
+                                        bind:value={$evolutionForm.status_id}
+                                        error={$evolutionForm.errors?.status_id}
+                                    >
+                                        {#each localData.statutes as status (status.id)}
+                                            {#if status.id !== 4 && status.id !== 6}
+                                                <option value={status.id}
+                                                    >{status.name}</option
+                                                >
+                                            {/if}
+                                            {#if status.id == 6}
+                                                <option value={status.id}
+                                                    >{status.name}
+                                                    {caseDetail.data
+                                                        .area_name}</option
+                                                >
+                                            {/if}
+                                        {/each}
+                                    </Input>
+                                    {#if $evolutionForm.status_id == "3"}
+                                        <div class="flex items-center">
+                                            <span class="mr-2 relative top-2">
+                                                a:
+                                            </span>
+
+                                            <Input
+                                                type="select"
+                                                required={true}
+                                                bind:value={
+                                                    $evolutionForm.area_id
+                                                }
+                                                error={$evolutionForm.errors
+                                                    ?.area_id}
+                                            >
+                                                {#each localData.areas as area (area.id)}
+                                                    {#if area.id != caseDetail.data.area_id}
+                                                        <option value={area.id}>
+                                                            {#if area.division_id == "1"}
+                                                                <span
+                                                                    class="text-green"
+                                                                    style="color: red"
+                                                                >
+                                                                    H -
+                                                                </span>
+                                                            {:else}
+                                                                <span
+                                                                    class="text-color3"
+                                                                >
+                                                                    E -
+                                                                </span>
+                                                            {/if}
+                                                            {area.name}
+                                                        </option>
+                                                    {/if}
+                                                {/each}
+                                            </Input>
+                                        </div>
+                                    {/if}
+                                    {#if $evolutionForm.status_id == "3" && $evolutionForm.area_id == "7"}
                                         <Input
-                                            type="date"
-                                            label={"Fecha " +
-                                                `${$evolutionForm.status_id == 3 ? "transferida" : ""}`}
+                                            type="text"
                                             required={true}
-                                            bind:value={$evolutionForm.departure_date}
+                                            label={"Hospital o ambulatorio *"}
+                                            bind:value={$evolutionForm.destiny}
                                             error={$evolutionForm.errors
-                                                ?.departure_date}
-                                        />
-                                        <Input
-                                            type="time"
-                                            required={true}
-                                            label={"Hora " +
-                                                `${$evolutionForm.status_id == 3 ? "transferida" : ""}`}
-                                            bind:value={$evolutionForm.departure_hour}
-                                            error={$evolutionForm.errors
-                                                ?.departure_hour}
+                                                ?.destiny}
                                         />
                                     {/if}
-                                </div>
-                            </div>
-
-                            <Input
-                            type="textarea"
-                            required={true}
-                            labelClasses={"font-semibold"}
-                            classes={"col-span-2"}
-                            label={"Evolución *"}
-                            bind:value={$evolutionForm.evolution}
-                            error={$evolutionForm.errors?.evolution}
-                        />
-                            <p class="font-semibold">Diagnóstico *</p>
-                            {#if $evolutionForm?.errors?.patient_condition_id}
-                            <p class="text-red block w-full">
-                                {$evolutionForm?.errors?.patient_condition_id}
-
-                            </p>
-                            {/if}
-                            <div class="flex gap-4 mb-3">
-                                {#each localData?.conditions || [] as condition (condition.id)}
-                                    <label
-                                        class={`py-1 pb-0 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$evolutionForm.patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
+                                    <div
+                                        class="col-span-2 md:grid grid-cols-2 gap-x-4"
                                     >
-                                        <div
-                                            class={`w-2 aspect-square rounded-full  condition${condition.id}`}
-                                        ></div>
-                                        <input
-                                            class="mr-3 hidden"
-                                            type="radio"
-                                            bind:group={$evolutionForm.patient_condition_id}
-                                            value={condition.id}
-                                            name="condition"
-                                            id=""
-                                        /><span>{condition.name}</span>
-                                    </label>
-                                {/each}
+                                        {#if $evolutionForm.status_id != 6}
+                                            <Input
+                                                type="date"
+                                                label={"Fecha " +
+                                                    `${$evolutionForm.status_id == 3 ? "transferida" : ""}`}
+                                                required={true}
+                                                on:change={(e) => {
+                                                    const selectedDate =
+                                                        new Date(
+                                                            e.target.value,
+                                                        );
+
+                                                    if (
+                                                        selectedDate <
+                                                        new Date(
+                                                            caseDetail.data?.entry_date,
+                                                        )
+                                                    ) {
+                                                        $evolutionForm.errors =
+                                                            {
+                                                                ...$evolutionForm.errors,
+                                                                departure_date:
+                                                                    "La fecha de salida no puede ser mayor a de ingreso",
+                                                            };
+                                                    } else {
+                                                        $evolutionForm.errors =
+                                                            {
+                                                                ...$evolutionForm.errors,
+                                                                departure_date:
+                                                                    null,
+                                                            }; // Clear the error
+                                                    }
+                                                    $evolutionForm.departure_date =
+                                                        e.target.value;
+                                                }}
+                                                value={$evolutionForm.departure_date}
+                                                error={$evolutionForm.errors
+                                                    ?.departure_date}
+                                            />
+                                            <Input
+                                                type="time"
+                                                required={true}
+                                                label={"Hora " +
+                                                    `${$evolutionForm.status_id == 3 ? "transferida" : ""}`}
+                                                on:input={(e) => {
+                                                    if (
+                                                        $evolutionForm.entry_date ==
+                                                        caseDetail.data
+                                                            ?.departure_date
+                                                    ) {
+                                                        if (
+                                                            e.target.value <
+                                                            caseDetail.data
+                                                                ?.entry_hour
+                                                        ) {
+                                                            $evolutionForm.errors =
+                                                                {
+                                                                    ...$evolutionForm.errors,
+                                                                    departure_hour:
+                                                                        "la hora de salida no puede ser menor a la de ingreso",
+                                                                };
+                                                        } else {
+                                                            $evolutionForm.errors =
+                                                                {
+                                                                    ...$evolutionForm.errors,
+                                                                    departure_hour:
+                                                                        null,
+                                                                }; // Clear the error
+                                                        }
+                                                    }
+                                                    $evolutionForm.departure_hour =
+                                                        e.target.value;
+                                                }}
+                                                value={$evolutionForm.departure_hour}
+                                                error={$evolutionForm.errors
+                                                    ?.departure_hour}
+                                            />
+                                        {/if}
+                                    </div>
+                                </div>
+
+                                <Input
+                                    type="textarea"
+                                    required={true}
+                                    labelClasses={"font-semibold"}
+                                    classes={"col-span-2"}
+                                    label={"Evolución *"}
+                                    bind:value={$evolutionForm.evolution}
+                                    error={$evolutionForm.errors?.evolution}
+                                />
+                                <p class="font-semibold">Diagnóstico *</p>
+                                {#if $evolutionForm?.errors?.patient_condition_id}
+                                    <p class="text-red block w-full">
+                                        {$evolutionForm?.errors
+                                            ?.patient_condition_id}
+                                    </p>
+                                {/if}
+                                <div class="flex gap-4 mb-3">
+                                    {#each localData?.conditions || [] as condition (condition.id)}
+                                        <label
+                                            class={`py-1 pb-0 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$evolutionForm.patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
+                                        >
+                                            <div
+                                                class={`w-2 aspect-square rounded-full  condition${condition.id}`}
+                                            ></div>
+                                            <input
+                                                class="mr-3 hidden"
+                                                type="radio"
+                                                bind:group={
+                                                    $evolutionForm.patient_condition_id
+                                                }
+                                                value={condition.id}
+                                                name="condition"
+                                                id=""
+                                            /><span>{condition.name}</span>
+                                        </label>
+                                    {/each}
+                                </div>
+
+                                <Input
+                                    type="textarea"
+                                    required={true}
+                                    labelClasses={"font-semibold"}
+                                    classes={"col-span-2"}
+                                    bind:value={$evolutionForm.diagnosis}
+                                    error={$evolutionForm?.errors?.diagnosis}
+                                />
                             </div>
-                            
+
                             <Input
                                 type="textarea"
                                 required={true}
-                                labelClasses={"font-semibold"}
                                 classes={"col-span-2"}
-                                bind:value={$evolutionForm.diagnosis}
-                                error={$evolutionForm?.errors?.diagnosis}
+                                labelClasses={"font-semibold"}
+                                label={"Orden médica *"}
+                                bind:value={$evolutionForm.treatment}
+                                error={$evolutionForm.errors?.treatment}
                             />
+                            <div class="flex justify-between items-center">
+                                <button
+                                    type="button"
+                                    class="hover:bg-gray-300 rounded-full p-2 px-3"
+                                    on:click={() =>
+                                        (isOpenCreateEvolution = false)}
+                                    >Cancelar</button
+                                >
+                                <input
+                                    type="submit"
+                                    value={$evolutionForm.processing
+                                        ? "Cargando..."
+                                        : "Guardar"}
+                                    class="bg-color3 text-white duration-200 mt-3 px-4 md:px-20 hover:bg-color4 hover:text-black font-bold py-3 rounded-md cursor-pointer"
+                                />
+                            </div>
+                        </div>
+                    {:else}
+                        <button
+                            on:click={(e) => (isOpenCreateEvolution = true)}
+                            class="btn_create inline-block p-2 px-3 mb-3 lg:mb-6 shadow-sm"
+                            >Crear nueva evolución</button
+                        >
+                    {/if}
+                </div>
+            </fieldset>
+        </form>
+        <ul>
+            {#each caseDetail.data.evolutions as evolution, i (evolution.id)}
+                <li
+                    class=" bg-gray-50 mb-4 border rounded-lg overflow-hidden neumorphism"
+                >
+                    <span
+                        class="md:flex items-center gap-2 py-3 px-2 sm:p-2 lg:px-4 lg:pr-6 justify-between"
+                    >
+                        <div
+                            class="md:flex text-center md:text-left flex-col sm:flex-row items-center gap-2 px-2 md:p-2 justify-between"
+                        >
+                            <StatusColor
+                                status={{
+                                    name: evolution.status_name,
+                                    id: evolution.status_id,
+                                }}
+                            />
+                            {#if evolution.status_id == 1 || evolution.status_id == 2}
+                                de
+                            {:else if evolution.status_id == 4 || evolution.status_id == 5}
+                                en
+                            {:else if evolution.status_id == 3}
+                                a
+                            {/if}
+                            {evolution.area_name}
+                        </div>
+                        <div class="flex gap-2 justify-center">
+                            {#if evolution.is_interconsult}
+                                <span
+                                    class="pl-4 pr-1 h-fit listType bg-color1 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
+                                >
+                                    IC
+                                </span>
+                            {:else if i != caseDetail.data.evolutions.length - 1}
+                                <span
+                                    class="pl-4 pr-1  h-fit listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
+                                >
+                                    EVOL
+                                </span>
+                            {/if}
+                            <span class="flex items-center">
+                                Dr(a)
+                                <a
+                                    href={`/admin/perfil/${evolution.user_id}`}
+                                    use:inertia
+                                    class="ml-1 cursor-pointer hover:underline hover:text-color1 block"
+                                >
+                                    {getFirstName(evolution.user_name)}
+                                    {getFirstName(evolution.user_last_name)}</a
+                                >
+                                <span class="text-xs ml-1 inline-block">
+                                    <span class="text-gray-500">el</span>
+                                    {evolution.formatted_created_at}
+                                </span>
+                            </span>
+                        </div>
+                    </span>
+
+                    <div class="bg-white p-4 lg:p-5 space-y-2">
+                        {#if evolution.status_id == 4}
+                            <div>
+                                <h3 class="font-semibold">Hora y fecha:</h3>
+                                <p class="text-dark">
+                                    El {caseDetail.data.formatted_entry_date}
+                                    {caseDetail.data.entry_hour}
+                                </p>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">
+                                    Motivo de consulta:
+                                </h3>
+                                <p class="text-dark">
+                                    {caseDetail.data.reason}
+                                </p>
+                            </div>
+                        {/if}
+                        {#if evolution.status_id !== 6 && evolution.status_id !== 4}
+                            <div>
+                                <h3 class="font-semibold">Hora y fecha:</h3>
+                                <p class="text-dark">
+                                    {evolution.formatted_departure_date}
+                                    {evolution.departure_hour}
+                                </p>
+                            </div>
+                        {/if}
+                        <div>
+                            {#if evolution.evolution != "Sin descripción" && evolution.evolution}
+                                <p class="text-dark">
+                                    {evolution.evolution}
+                                </p>
+                            {/if}
+                        </div>
+                        <div>
+                            <div class="flex">
+                                <h3 class="font-semibold">Diagnostico:</h3>
+
+                                <div>
+                                    <span
+                                        class={`ml-2 w-2 inline-block aspect-square rounded-full condition${evolution.patient_condition_id}`}
+                                    ></span>
+                                    <span class="opacity-90 uppercase text-xs"
+                                        >{evolution.patient_condition_name}</span
+                                    >
+                                </div>
+                            </div>
+                            {#if evolution.diagnosis}
+                                <p class="text-dark">
+                                    {evolution.diagnosis}
+                                </p>
+                            {/if}
                         </div>
 
-                        <Input
-                            type="textarea"
-                            required={true}
-                            classes={"col-span-2"}
-                            labelClasses={"font-semibold"}
-                            label={"Orden médica *"}
-                            bind:value={$evolutionForm.treatment}
-                            error={$evolutionForm.errors?.treatment}
-                        />
-                        <div class="flex justify-between items-center">
-                            <button
-                                type="button"
-                                class="hover:bg-gray-300 rounded-full p-2 px-3"
-                                on:click={() => (isOpenCreateEvolution = false)}
-                                >Cancelar</button
-                            >
-                            <input
-                                type="submit"
-                                value={$evolutionForm.processing
-                                    ? "Cargando..."
-                                    : "Guardar"}
-                                class="bg-color3 text-white duration-200 mt-3 px-4 md:px-20 hover:bg-color4 hover:text-black font-bold py-3 rounded-md cursor-pointer"
-                            />
+                        <div>
+                            {#if evolution.treatment}
+                                <h3 class="font-semibold">
+                                    Orden médica de ingreso:
+                                </h3>
+                                <p class="text-dark">
+                                    {evolution.treatment}
+                                </p>
+                            {/if}
                         </div>
                     </div>
-                {:else}
-                    <button
-                        on:click={(e) => (isOpenCreateEvolution = true)}
-                        class="btn_create inline-block p-2 px-3 mb-3 lg:mb-6 shadow-sm"
-                        >Crear nueva evolución</button
-                    >
-                {/if}
-            </div>
-            <ul>
-                {#each caseDetail.data.evolutions as evolution, i (evolution.id)}
-                    <li
-                        class=" bg-gray-50 mb-3 border rounded-lg overflow-hidden neumorphism"
-                    >
-                        <span
-                            class="md:flex items-center gap-2 py-3 px-2 sm:p-2  md:px-4 lg:pr-6 justify-between"
-                        >
-                            <div
-                                class="md:flex flex-col sm:flex-row items-center gap-2 px-2 md:p-2 justify-between"
-                            >
-                                <StatusColor
-                                    status={{
-                                        name: evolution.status_name,
-                                        id: evolution.status_id,
-                                    }}
-                                />
-                                {#if evolution.status_id == 1 || evolution.status_id == 2}
-                                    de
-                                {:else if evolution.status_id == 4 || evolution.status_id == 5}
-                                    en
-                                {:else if evolution.status_id == 3}
-                                    a
-                                {/if}
-                                {evolution.area_name}
-                            </div>
-                            <div class="flex gap-2 justify-center">
-                                {#if evolution.is_interconsult}
-                                    <span
-                                        class="pl-4 pr-1 listType bg-color1 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
-                                    >
-                                        IC
-                                    </span>
-                                {:else if i != caseDetail.data.evolutions.length - 1}
-                                    <span
-                                        class="pl-4 pr-1 listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
-                                    >
-                                        EVOL
-                                    </span>
-                                {/if}
-                                <span class="flex items-center">
-                                    Dr(a)
-                                    <a
-                                        href={`/admin/perfil/${evolution.user_id}`}
-                                        use:inertia
-                                        class="ml-1 cursor-pointer hover:underline hover:text-color1 block"
-                                    >
-                                        {getFirstName(evolution.user_name)}
-                                        {getFirstName(
-                                            evolution.user_last_name,
-                                        )}</a
-                                    >
-                                    <span class="text-xs ml-1 inline-block">
-                                        <span class="text-gray-500">el</span>
-                                        {evolution.formatted_created_at}
-                                    </span>
-                                </span>
-                            </div>
-                        </span>
-
-                        <div class="bg-white p-4 lg:p-5 space-y-2">
-                            {#if evolution.status_id == 4}
-                                <div>
-                                    <h3 class="font-semibold">Hora y fecha:</h3>
-                                    <p class="text-dark">
-                                        El {caseDetail.data
-                                            .formatted_entry_date}
-                                        {caseDetail.data.entry_hour}
-                                    </p>
-                                </div>
-                                <div>
-                                    <h3 class="font-semibold">
-                                        Motivo de consulta:
-                                    </h3>
-                                    <p class="text-dark">
-                                        {caseDetail.data.reason}
-                                    </p>
-                                </div>
-                            {/if}
-                            {#if evolution.status_id !== 6 && evolution.status_id !== 4}
-                                <div>
-                                    <h3 class="font-semibold">Hora y fecha:</h3>
-                                    <p class="text-dark">
-                                        {evolution.formatted_departure_date}
-                                        {evolution.departure_hour}
-                                    </p>
-                                </div>
-                            {/if}
-                            <div>
-                                {#if evolution.evolution != "Sin descripción"}
-                                    
-                                    <p class="text-dark">
-                                        {evolution.evolution}
-                                    </p>
-                                {/if}
-                            </div>
-                            <div>
-                                <div class="flex">
-                                    <h3 class="font-semibold">Diagnostico:</h3>
-
-                                    <div>
-                                        <span
-                                            class={`ml-2 w-2 inline-block aspect-square rounded-full condition${evolution.patient_condition_id}`}
-                                        ></span>
-                                        <span
-                                            class="opacity-90 uppercase text-xs"
-                                            >{evolution.patient_condition_name}</span
-                                        >
-                                    </div>
-                                </div>
-                                {#if evolution.diagnosis}
-                                    <p class="text-dark">
-                                        {evolution.diagnosis}
-                                    </p>
-                                {/if}
-                            </div>
-
-                            <div>
-                                {#if evolution.treatment}
-                                    <h3 class="font-semibold">
-                                        Orden médica de ingreso:
-                                    </h3>
-                                    <p class="text-dark">
-                                        {evolution.treatment}
-                                    </p>
-                                {/if}
-                            </div>
-                        </div>
-                    </li>
-                {/each}
-            </ul>
-        </fieldset>
-    </form>
+                </li>
+            {/each}
+        </ul>
+    </div>
 </div>
 <Alert />
 
 <style>
+    @media (max-width: 750px) {
+        legend::after,
+        legend::before {
+            bottom: 5px !important;
+            height: 13px;
+        }
+    }
     legend::after {
         content: " ";
         position: absolute;

@@ -16,7 +16,7 @@
     --color2: #397373;
     --color3: #6595bf;
     --color4: #c9ebf2;
-    --pink: #ffb4b4;
+    --pink: #ffa2a2;
     --black: #000000;
     --dark: #161616;
     --white: #ffffff;
@@ -29,6 +29,17 @@
     --zelle: #6a1ccd;
     --binance: #f3ba2f;
     --orange: #c77102;
+}
+
+.month {
+    grid-template-columns: repeat(7, 35px) !important;
+    font-size: 10px !important;
+}
+.calendar {
+    width: fit-content;
+}
+.calendar header {
+    margin-bottom: 0 !important;
 }
 .text-editor ul,
 .description ul {
@@ -87,6 +98,13 @@
     h1 {
         font-size: 16px;
     }
+    .month {
+        grid-template-columns: repeat(7, 1fr) !important;
+    }
+    .calendar header {
+        margin-bottom: 10px !important;
+    }
+    
 }
 @media (min-width: 750px) {
     /* … */
