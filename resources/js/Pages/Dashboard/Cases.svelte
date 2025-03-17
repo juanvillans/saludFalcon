@@ -54,7 +54,7 @@
         patient_address: "",
         municipality_id: 14,
         parish_id: 0,
-
+        user_specialty_name: $page.props.auth.user_specialty_name,
         user_id: $page.props.auth.user_id,
         user_name: $page.props.auth.name,
         user_last_name: $page.props.auth.last_name,
@@ -79,18 +79,18 @@
     let visulizateType = "table";
     // Check if 'visualizateTypeCases' exists in localStorage
     if (typeof localStorage !== "undefined") {
-    const storedValue = localStorage.getItem('visualizateTypeCases');
-    if (storedValue) {
-      visulizateType = storedValue; // Use the stored value if it exists
-    } else {
-      localStorage.setItem('visualizateTypeCases', visulizateType); // Save the default value
+        const storedValue = localStorage.getItem("visualizateTypeCases");
+        if (storedValue) {
+            visulizateType = storedValue; // Use the stored value if it exists
+        } else {
+            localStorage.setItem("visualizateTypeCases", visulizateType); // Save the default value
+        }
     }
-  }
 
     $: if (visulizateType) {
         if (typeof localStorage !== "undefined") {
-        localStorage.setItem('visualizateTypeCases', visulizateType);
-    }
+            localStorage.setItem("visualizateTypeCases", visulizateType);
+        }
     }
     let showModal = false;
 
@@ -141,7 +141,6 @@
                     ...$form,
                     ...res.data.patient,
                 };
-
             }
         } catch (err) {
             console.log(err);
@@ -198,9 +197,6 @@
 <svelte:head>
     <title>Historial médico</title>
 </svelte:head>
-
-    
-    
 
 <Modal bind:showModal modalClasses={"max-w-[560px]"}>
     <p slot="header" class="opacity-60">Registrar un nuevo caso</p>
@@ -389,9 +385,10 @@
                 class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
                 >DATOS DE LA EMERGENCIA</legend
             >
-            <div class="flex justify-between">
+            <div class="">
                 <button
                     type="button"
+                    class="w-full"
                     on:click={() => {
                         if ($page.props.auth.rol[0] == "admin") {
                             showModalDoctor = true;
@@ -404,30 +401,32 @@
                     <div class="mt-3 text-left">
                         <span class="text-left">Médico</span>
                     </div>
+
                     <div
-                        class="flex gap-2 items-center bg-gray-200 rounded-full hover:bg-gray-300 max-w-fit"
+                        class="flex gap-3 border rounded cursor-pointer hover:bg-gray-100 hover:border-dark p-2"
+                      
                     >
                         <span
-                            class="rounded-full overflow-hidden bg-color4 w-7 h-7 justify-center items-center flex"
+                            class="rounded-full overflow-hidden bg-color4 w h-9 justify-center items-center flex"
                         >
                             <iconify-icon icon="fa6-solid:user-doctor"
                             ></iconify-icon>
                         </span>
-                        {#if $form.user_id > 0}
-                            <p
-                                class="bg-gray-200 font-bold rounded-full text-left px-2"
-                            >
+
+                        <div>
+                            <p>
                                 <b>
-                                    {$form?.user_name}
-                                    {$form?.user_last_name}</b
+                                    {$form.user_name}
+                                    {$form.user_last_name}</b
                                 >
                             </p>
-                        {:else}
-                            <p class="text-sm">Selecciona un médico</p>
-                        {/if}
-                        <iconify-icon icon="iconamoon:arrow-down-2-duotone"
-                        ></iconify-icon>
+                            <span
+                                class="bg-gray-200 rounded-full px-2 py-1 text-sm"
+                                >{$form.user_specialty_name}</span
+                            >
+                        </div>
                     </div>
+                    
                 </button>
             </div>
 
@@ -692,7 +691,7 @@
         {/each}
     </ul>
 </Modal>
-<div class="flex  justify-between items-center">
+<div class="flex justify-between items-center">
     <button
         class="btn_create inline-block p-2 px-3"
         on:click={(e) => {
@@ -703,7 +702,7 @@
         }}
         title="Crear un nuevo caso"
     >
-        <span class="sm:hidden  text-2xl relative top-1 font-bold"
+        <span class="sm:hidden text-2xl relative top-1 font-bold"
             ><iconify-icon icon="ic:round-add"></iconify-icon></span
         >
         <span class="hidden sm:block"> Nuevo caso</span>
@@ -732,7 +731,9 @@
 <Table
     filtersOptions={{
         status: { label: "Estado", options: localData?.statutes || [] } || {},
-        specialty_id: { label: "Servicio tra.", options: localData?.specialties || [] } || {},
+        specialty_id:
+            { label: "Servicio tra.", options: localData?.specialties || [] } ||
+            {},
         area_id:
             { label: "Última area", options: localData?.areas || [] } || {},
         condition:
@@ -780,7 +781,7 @@
                                     a {row?.admitted_area_name}
                                 {/if} -->
                         <span class="inline-block flex">
-                            {#if row.current_status == 1 || row.current_status == 2 }
+                            {#if row.current_status == 1 || row.current_status == 2}
                                 de
                             {:else if row.current_status == 4 || row.current_status == 5}
                                 en
@@ -876,7 +877,7 @@
                 class={`relative w-full cursor-pointer bg-gray-100 p-2 md:p-5 rounded-md  hover:bg-color4 hover:bg-opacity-60 neumorphism2`}
             >
                 <span
-                    class="h-fit absolute right-0 top-0 text-center col-span-2  p-1 text-xs inline-block w-10 md:px-2"
+                    class="h-fit absolute right-0 top-0 text-center col-span-2 p-1 text-xs inline-block w-10 md:px-2"
                     >{row.id}</span
                 >
                 <div class="flex gap-1 items-center">
@@ -891,7 +892,7 @@
                         a {row?.admitted_area_name}
                     {/if} -->
                     <span class="inline-flex">
-                        {#if row.current_status == 1 || row.current_status == 2 }
+                        {#if row.current_status == 1 || row.current_status == 2}
                             de
                         {:else if row.current_status == 4 || row.current_status == 5}
                             en
@@ -904,7 +905,6 @@
                         <iconify-icon
                             icon="game-icons:duration"
                             class="text-gray-600 text-xs md:text-sm"
-                           
                         ></iconify-icon>
 
                         <p>
@@ -935,7 +935,7 @@
                         <small class="text-gray-500">C.I:</small>{row.user_ci}
                     </span>
                 </div>
-                <div class="mt-1 flex  gap-1.5">
+                <div class="mt-1 flex gap-1.5">
                     <iconify-icon
                         icon="emojione-monotone:speaking-head"
                         width="20"
@@ -943,7 +943,6 @@
                         class="text-gray-900"
                     ></iconify-icon>
                     <p>
-
                         {#if row?.reason.length > 200}
                             {row?.reason.slice(0, 200)}
                             <span
@@ -955,7 +954,7 @@
                         {/if}
                     </p>
                 </div>
-                <div class="mt-2 flex  gap-2">
+                <div class="mt-2 flex gap-2">
                     <div
                         class={`inline-block w-2 h-2 mr-2 relative top-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
                     ></div>
@@ -971,9 +970,13 @@
                         {/if}
                     </p>
                 </div>
-                <div class="mt-2  flex gap-2">
-
-                    <iconify-icon class="relative top-1 -left-1 text-color2" icon="ant-design:medicine-box-filled" width="20" height="20"></iconify-icon>
+                <div class="mt-2 flex gap-2">
+                    <iconify-icon
+                        class="relative top-1 -left-1 text-color2"
+                        icon="ant-design:medicine-box-filled"
+                        width="20"
+                        height="20"
+                    ></iconify-icon>
                     <p>
                         {#if row.treatment.length > 200}
                             {row.treatment.slice(0, 200)}
