@@ -153,7 +153,7 @@
         // Return the formatted time
         return `${hours}:${minutes} ${suffix}`;
     }
-
+    let showMoreDetails = window.innerWidth >= 1024;
     function formatDateSpanish(dateString) {
         const options = {
             year: "numeric",
@@ -219,8 +219,7 @@
 
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">
     <div
-        class=" overflow-y-auto lg:max-w-[330px] w-full lg:sticky top-0"
-        style="height: calc(100vh - 100px);"
+        class=" lg:overflow-y-auto lg:max-w-[330px] w-full lg:sticky top-0 userInfoDiv"
     >
         <form
             on:input={(e) => {
@@ -230,21 +229,22 @@
             }}
         >
             <fieldset
-                class=" px-5 mt-4 gap-x-5 text-black p-6 pt-2 border-color2 rounded-md"
+                class="px-0 md:px-5 mt-4 gap-x-5 text-black p-6 pt-2 border-color2 rounded-md"
             >
                 <legend
                     class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-gray-50 text-dark"
                     >Datos del usuario</legend
                 >
-                <label
-                    class="relative mx-auto mt-2 md:mt-4 row-span-3 mb-10 md:mb-10 w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px] cursor-pointer block"
+                <div class="flex gap-3 mt-2">
+                    <label
+                    class=" relative w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px]  gap-2 row-span-3  lg:mt-2 lg:mx-auto md:mb-2  cursor-pointer "
                 >
                     <input
                         type="file"
                         accept="image/*"
                         disabled={allowToEdit}
                         on:change={handleFileChange}
-                        class="hidden"
+                        class="hidden w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px]  object-cover border rounded"
                     />
                   
                     <!-- Display the selected image -->
@@ -252,109 +252,133 @@
                         <img
                             src={imagePreview}
                             alt="Preview"
-                            class="absolute w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px]  object-cover border rounded border-gray-500"
+                            class=" w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px]  object-cover border rounded border-gray-500"
                         />
                     {:else}
                         <img
-                            class="absolute w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px]  object-cover border rounded"
+                            class=" w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px]  object-cover border rounded"
                             src={`/storage/users/${$form.photo}?${new Date().getTime()}`} 
                             
                             alt=""
                             srcset=""
                         />
                     {/if}
-                    <div class="md:hidden">
-                        <p>
-                            {$form.name} {$form.last_name}
-                        </p>
-                    </div>
+                   
                 </label>
-                <Input
-                    type="text"
-                    required={true}
-                    label={"Nombres"}
-                    bind:value={$form.name}
-                    error={$form.errors?.name}
-                    disabled={allowToEdit}
-                />
-                <Input
-                    type="text"
-                    required={true}
-                    label={"Apellidos"}
-                    bind:value={$form.last_name}
-                    error={$form.errors?.last_name}
-                    disabled={allowToEdit}
-                />
-                {#if isAdmin}
+                
+                    <div class="lg:hidden">
+                        <p>
+                            <b>
+                                {$form.name} {$form.last_name}
+                            </b> 
+                        </p>
+                        <p>Especialista en {$form.user_specialty_name}</p>
+                        <p><span class="font-semibold">Matricula médica:</span> {$form.medical_license}</p>
+
+                        {#if !allowToEdit && !showMoreDetails}
+                        <button on:click={()=> {
+                            showMoreDetails = true
+                        }} type="button" title="Editar y ver más detalles" class=" border px-2 bg-gray-300 w-fit rounded border-gray-100 seeMore flex hover:cursor-pointer hover:font-bold">
+                            <p>Ver más</p>
+                            <iconify-icon
+                                icon="ic:outline-expand-more"
+                                width="24"
+                                height="24"
+                            ></iconify-icon>
+                        </button>
+                        {/if}
+                    </div>
+                </div>
+                
+                {#if showMoreDetails}
                     <Input
-                        type="email"
-                        label="correo"
-                        bind:value={$form.email}
-                        error={$form.errors?.email}
-                        disabled={allowToEdit}
-                    />
-                    <Input
-                        type="number"
+                        type="text"
                         required={true}
-                        label={"Cédula"}
-                        bind:value={$form.ci}
-                        error={$form.errors?.ci}
+                        label={"Nombres"}
+                        bind:value={$form.name}
+                        error={$form.errors?.name}
                         disabled={allowToEdit}
                     />
                     <Input
-                        type="tel"
-                        label={"Teléfono"}
-                        bind:value={$form.phone_number}
-                        error={$form.errors?.phone_number}
+                        type="text"
+                        required={true}
+                        label={"Apellidos"}
+                        bind:value={$form.last_name}
+                        error={$form.errors?.last_name}
                         disabled={allowToEdit}
                     />
-                {/if}
-                <Input
-                    type="select"
-                    required={true}
-                    label={"Tipo de Usuario"}
-                    bind:value={$form.role_name}
-                    error={$form.errors?.role_name}
-                    disabled={!isAdmin}
-                >
-                    <option value="doctor">Doctor</option>
-                    <option value="admin">Admin</option>
-                </Input>
-                <Input
-                    label={"Matrícula médica"}
-                    required={true}
-                    bind:value={$form.medical_license}
-                    error={$form.errors?.medical_license}
-                    disabled={allowToEdit}
-                />
-                {#if localData.specialties}
-                <Input  
-                    type="select" 
-                    required={true}
-                    label={"Servicio tratante"}
-                    bind:value={$form.specialty_id}
-                    error={$form.errors?.specialty_id}
-                    disabled={!isAdmin}
-                >
-                    {#each localData?.specialties || [] as speci (speci.id)}
-                        <option value={speci.id}>{speci.name}</option>
-                    {/each}
-                </Input>
+                    {#if isAdmin}
+                        <Input
+                            type="email"
+                            label="correo"
+                            bind:value={$form.email}
+                            error={$form.errors?.email}
+                            disabled={allowToEdit}
+                        />
+                        <Input
+                            type="number"
+                            required={true}
+                            label={"Cédula"}
+                            bind:value={$form.ci}
+                            error={$form.errors?.ci}
+                            disabled={allowToEdit}
+                        />
+                        <Input
+                            type="tel"
+                            label={"Teléfono"}
+                            bind:value={$form.phone_number}
+                            error={$form.errors?.phone_number}
+                            disabled={allowToEdit}
+                        />
+                    {/if}
+                    <Input
+                        type="select"
+                        required={true}
+                        label={"Tipo de Usuario"}
+                        bind:value={$form.role_name}
+                        error={$form.errors?.role_name}
+                        disabled={!isAdmin}
+                    >
+                        <option value="doctor">Doctor</option>
+                        <option value="admin">Admin</option>
+                    </Input>
+                    <Input
+                        label={"Matrícula médica"}
+                        required={true}
+                        bind:value={$form.medical_license}
+                        error={$form.errors?.medical_license}
+                        disabled={allowToEdit}
+                    />
+                    {#if localData.specialties}
+                    <Input  
+                        type="select" 
+                        required={true}
+                        label={"Servicio tratante"}
+                        bind:value={$form.specialty_id}
+                        error={$form.errors?.specialty_id}
+                        disabled={!isAdmin}
+                    >
+                        {#each localData?.specialties || [] as speci (speci.id)}
+                            <option value={speci.id}>{speci.name}</option>
+                        {/each}
+                    </Input>
+                    {/if}
+
+                    {#if isAdmin}
+                        <button type="button"
+                            class="py-1 px-4 mx-auto mt-3 rounded border border-gray-300 cursor-pointer"
+                            on:click={() => {
+                                handleDelete($form.id);
+                            }}> <iconify-icon
+                                        class="relative -bottom-0.5"
+                                        icon="material-symbols:delete-outline"
+                                    ></iconify-icon> Eliminar usuario</button
+                        >
+                    {/if}
                 {/if}
             </fieldset>
         </form>
 
-        {#if isAdmin}
-            <button
-                class="py-1 px-4 mx-auto mt-3 rounded border border-gray-300 cursor-pointer"
-                on:click={() => {
-                    handleDelete($form.id);
-                }}> <iconify-icon
-                            class="relative -bottom-0.5"
-                            icon="material-symbols:delete-outline"
-                        ></iconify-icon> Eliminar usuario</button
-            >
-        {/if}
     </div>
 
     <div class="w-full">
@@ -524,12 +548,21 @@
 <Alert />
 
 <style>
+  
     @media (max-width: 750px) {
         legend::after,
         legend::before {
             bottom: 5px !important;
             height: 13px;
         }
+        .userInfoDiv {
+            height: fit-content;
+        }
+    }
+    @media (min-width: 1024px) {
+        .userInfoDiv {
+              height: calc(100vh - 100px);
+          }
     }
     legend::after {
         content: " ";
