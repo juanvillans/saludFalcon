@@ -7,7 +7,7 @@ export function getDuration(
 ) {
    
     
-    if (status == "4" || status == "6") {
+    if (endDate == null) {
         const now = new Date();
         endDate = now.toISOString().split("T")[0];
         endTime = now.toTimeString().split(" ")[0].substring(0, 5);

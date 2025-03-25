@@ -275,7 +275,7 @@
                 >
                     <div value="" class="neumorphism2 p-3 rounded-2xl">
                         <h3 class="font-bold text-gray-800 text-sm">
-                            Duración en emergencia:
+                            Duración total:
                         </h3>
                         <p>
                             {getDuration(
@@ -289,7 +289,7 @@
                     </div>
                     <div value="" class="neumorphism2 p-3 rounded-2xl">
                         <h3 class="font-bold text-gray-800 text-sm">
-                            Servicio Tratante
+                            Servicio Tratante de ingreso
                         </h3>
                         <p>{nroInter}</p>
                     </div>
@@ -432,8 +432,8 @@
                                                     `${$evolutionForm.status_id == 3 ? "transferida" : ""}`}
                                                 on:input={(e) => {
                                                     if (
-                                                        $evolutionForm.entry_date ==
-                                                        caseDetail.data
+                                                        caseDetail.data?.entry_date ==
+                                                        $evolutionForm
                                                             ?.departure_date
                                                     ) {
                                                         if (

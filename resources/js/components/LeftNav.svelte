@@ -8,7 +8,7 @@
 
     const navPages = [
         {
-            icon: "healthicons:doctor-male",
+            icon: "material-symbols:id-card-outline",
             href: "/admin/usuarios",
             name: "Usuarios",
         },
