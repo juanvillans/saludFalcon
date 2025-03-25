@@ -37,6 +37,9 @@ class CaseResource extends JsonResource
             'user_name' => $this->user->name,
             'user_last_name' => $this->user->last_name,
             'user_ci' => $this->user->ci, 
+            'user_specialty_id' => $this->user->specialty->id ?? null,
+            'user_specialty_name' => $this->user->specialty->name ?? null, 
+
 
             "patient_id" => $this->patient->id,
             "patient_name" => $this->patient->name,
@@ -45,6 +48,7 @@ class CaseResource extends JsonResource
             "patient_phone_number" => $this->patient->phone_number ?? null,
             "patient_sex" => $this->patient->sex,
             "patient_date_birth" => $this->patient->date_birth ,
+            "patient_age" => $this->patient->age ,
             "patient_address" => $this->patient->address ?? null,
 
             

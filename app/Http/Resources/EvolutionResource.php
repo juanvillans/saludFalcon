@@ -22,6 +22,8 @@ class EvolutionResource extends JsonResource
             'user_id' => $this->user_id,
             'user_name' => $this->user->name,
             'user_last_name' => $this->user->last_name,
+            'user_specialty_id' => $this->user->specialty->id,
+            'user_specialty_name' => $this->user->specialty->name,
 
             'area_id' => $this->area_id,
             'area_name' => $this->area->name,

@@ -23,6 +23,7 @@ class EvolutionRequest extends FormRequest
     {
         return [
 
+            "evolution" => ['required'],
             "diagnosis" => ['required'],
             "treatment" => ['required'],
             "status_id" => ['required'],

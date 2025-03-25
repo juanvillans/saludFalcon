@@ -196,6 +196,7 @@ class UserController extends Controller
         $doctors = User::whereHas('roles',function ($query){
             $query->where('name','doctor');
         })
+        ->where('status',1)
         ->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($request->search) . '%'])->get();
 
         $doctors = new DoctorCollection($doctors);    

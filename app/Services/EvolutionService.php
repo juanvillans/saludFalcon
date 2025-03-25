@@ -94,8 +94,17 @@ class EvolutionService{
             'destiny' => $newEvolution->destiny,
         ]);
 
-        return 0;
+        return $newEvolution;
 
+    }
+
+    public function addInterConsult($case, $data){
+        
+        $evolution = $this->addEvolution($case, $data);
+        $evolution->is_interconsult = true;
+        $evolution->save();
+
+        return 0;
     }
 
 

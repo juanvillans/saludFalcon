@@ -60,6 +60,14 @@ class EmergencyCaseService
                     });
 
                 })
+                ->when($params['age'], function($query) use ($params){
+                    $query->where(function($query) use ($params) {
+                        $query->whereHas('patient', function ($query2) use ($params){
+                            $query2->where('age',$params['age']);
+                        });
+                    });
+
+                })
                 ->when($params['search'],function($query) use ($params){
 
                     $query->where(function($query) use ($params) {
@@ -126,6 +134,7 @@ class EmergencyCaseService
     }
 
     public function updatePatient($data, $patient){
+
         $patient->update([
             'ci' => $data['patient_ci'],
             'name' => $data['patient_name'],
@@ -133,6 +142,8 @@ class EmergencyCaseService
             'phone_number' => $data['patient_phone_number'],
             'sex' => $data['patient_sex'],
             'date_birth' => $data['patient_date_birth'],
+            'age' => $this->calculateAge($data['patient_date_birth']),
+            'search' => $data['patient_name'] . ' ' . $data['patient_last_name'] . $data['patient_ci'], 
         ]);
 
         return 0;
@@ -165,6 +176,8 @@ class EmergencyCaseService
                 'parish_id' => $data['parish_id'],
                 'address' => $data['patient_address'],
                 'search' => $data['patient_name'] . ' ' . $data['patient_last_name'] . $data['patient_ci'], 
+                'age' => $this->calculateAge($data['patient_date_birth']),
+
             ]);
 
 
@@ -200,6 +213,13 @@ class EmergencyCaseService
         }
     }
     
-   
+    function calculateAge($dateBirth): int
+    {
+        $date = Carbon::parse($dateBirth);
+        $today = Carbon::now();
+        
+        return $today->diffInYears($date);
+        
+    }
 
 }

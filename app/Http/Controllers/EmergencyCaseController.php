@@ -48,6 +48,8 @@ class EmergencyCaseController extends Controller
             'end_date' => $request->input('end_date') ?? null,
             'case_id' => $request->input('case_id') ?? null,
             'specialty_id' => $request->input('specialty_id') ?? null,
+            'age' => $request->input('age') ?? null,
+
         ];
 
         $emergencyCases = $this->emergencyCaseService->getCases($this->params);
@@ -67,6 +69,8 @@ class EmergencyCaseController extends Controller
                 'end_date' => $request->input('end_date') ?? '',
                 'case_id' => $request->input('case_id') ?? '',
                 'specialty_id' => $request->input('specialty_id') ?? '',
+                'age' => $request->input('age') ?? '',
+
             ]),
         ]);
 
@@ -179,7 +183,35 @@ class EmergencyCaseController extends Controller
         }
 
 
-        return 'OSKERS';
     }
+
+    public function addInterConsult(EvolutionRequest $request, EmergencyCase $case){
+
+        DB::beginTransaction();
+
+       try 
+       {
+           $data = $request->all();
+
+           $this->evolutionService->addInterConsult($case,$data);
+
+           DB::commit();
+
+           return redirect()->back()->with(['message' => 'Interconsulta añadida']);
+
+       }
+       catch (\Throwable $e)
+       {   
+           
+           DB::rollback();
+
+           Log::info(json_encode($e->getMessage(), JSON_PRETTY_PRINT));
+           
+           return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+       }
+
+
+       return 'OSKERS';
+   }
 
 }

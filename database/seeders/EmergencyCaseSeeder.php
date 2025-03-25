@@ -34,6 +34,7 @@ class EmergencyCaseSeeder extends Seeder
                 'phone_number' => "+58412".$i,
                 'sex' => $sexs[rand(0,1)],
                 'date_birth' => Carbon::createFromDate(2000, 12, 25),
+                'age' => 25,
                 'municipality_id' => 14,
                 'parish_id' => 37,
                 'address' => 'San José',

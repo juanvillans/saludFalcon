@@ -21,6 +21,7 @@ class Patient extends Model
         'municipality_id',
         'parish_id',
         'address',
+        'age',
         'search',
     ];
 
