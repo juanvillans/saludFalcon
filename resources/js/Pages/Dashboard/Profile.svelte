@@ -240,8 +240,12 @@
             label: "ID del caso",
             options: [],
         } || {},
- 
-
+        area_id:
+        {
+            type: "select",
+            label: "Area",
+            options: localData?.areas || [],
+        } || {},
 
     condition:
         {
@@ -546,7 +550,7 @@
                                             <p class="text-dark">
                                                 El {evolution.formatted_entry_date}
                                                 a las
-                                                {evolution.entry_hour}
+                                                {convertTo12HourFormat(evolution.entry_hour)}
                                             </p>
                                         </div>
                                         <div>
@@ -565,7 +569,7 @@
                                             </h3>
                                             <p class="text-dark">
                                                 {evolution.formatted_departure_date}
-                                                a las{evolution.departure_hour}
+                                                a las{convertTo12HourFormat(evolution.departure_hour)}
                                             </p>
                                         </div>
                                     {/if}
