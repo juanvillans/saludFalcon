@@ -274,7 +274,7 @@
                     class="col-span-2 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-5 md:mt-5"
                 >
                     <div value="" class="neumorphism2 p-3 rounded-2xl">
-                        <h3 class="font-bold text-gray-800 text-sm">
+                        <h3 class="font-bold text-gray-800 text-xs">
                             Duración total:
                         </h3>
                         <p>
@@ -288,19 +288,19 @@
                         </p>
                     </div>
                     <div value="" class="neumorphism2 p-3 rounded-2xl">
-                        <h3 class="font-bold text-gray-800 text-sm">
+                        <h3 class="font-bold text-gray-800 text-xs">
                             Servicio Tratante de ingreso
                         </h3>
                         <p>{nroInter}</p>
                     </div>
                     <div value="" class="neumorphism2 p-3 rounded-2xl">
-                        <h3 class="font-bold text-gray-800 text-sm">
+                        <h3 class="font-bold text-gray-800 text-xs">
                             Nro de evoluciones
                         </h3>
                         <p>{nroEvol}</p>
                     </div>
                     <div value="" class="neumorphism2 p-3 rounded-2xl">
-                        <h3 class="font-bold text-gray-800 text-sm">
+                        <h3 class="font-bold text-gray-800 text-xs">
                             Nro de Interconsultas
                         </h3>
                         <p>{nroInter}</p>

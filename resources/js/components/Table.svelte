@@ -167,8 +167,8 @@
                 {#if filterOption.type === "search"}
                     <input
                         value={filterClientData.case_id || ""}
-                        class="h-auto border-gray-400 bg-gray-200 border p-2 py-1 rounded max-w-[100px]"
-                        placeholder={"Buscar id"}
+                        class="h-auto border-gray-400 bg-gray-200 border p-2 py-1 rounded "
+                        placeholder={"🔍 Buscar id "}
                         type="search"
                         name=""
                         id=""
