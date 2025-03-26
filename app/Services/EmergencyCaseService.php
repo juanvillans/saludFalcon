@@ -31,11 +31,8 @@ class EmergencyCaseService
                 ->when($params['area_id'],function($query) use ($params){
                     $query->where('area_id', $params['area_id']);
                 })
-                ->when($params['area_id'],function($query) use ($params){
-                    $query->where('area_id', $params['area_id']);
-                })
                 ->when($params['case_id'],function($query) use ($params){
-                    $query->whereRaw('id LIKE ?', ['%' . $params['case_id'] . '%']);
+                    $query->where('id', $params['case_id']);
                 })
                 ->when(isset($params['start_date']) && isset($params['end_date']),function($query) use ($params){
                     

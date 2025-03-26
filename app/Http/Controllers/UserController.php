@@ -209,8 +209,21 @@ class UserController extends Controller
 
     public function myProfile(Request $request, $userID){
 
+        $params = [
+            'search' => $request->input('search') ?? null,
+            'page' => $request->input('page') ?? null,
+            'per_page' => $request->input('per_page') ?? null,
+            'status' => $request->input('status') ?? null,
+            'condition' => $request->input('condition') ?? null,
+            'area_id' => $request->input('area_id') ?? null,
+            'patient_ci' => $request->input('ci') ?? null,
+            'start_date' => $request->input('start_date') ?? null,
+            'end_date' => $request->input('end_date') ?? null,
+            'case_id' => $request->input('case_id') ?? null,
+
+        ];
         
-        $evolutions = $this->userService->getMyEvolutions($userID);
+        $evolutions = $this->userService->getMyEvolutions($userID, $params);
         $nroEvolutions = Evolution::where('user_id',$userID)->where('is_interconsult',0)->count();
         $nroInter = Evolution::where('user_id',$userID)->where('is_interconsult',1)->count();
         
@@ -223,6 +236,16 @@ class UserController extends Controller
                 'nroEvol' => $nroEvolutions,
                 'nroInter' => $nroInter,
                 'user' => new UserResource($user),
+                'filters' => array_filter([
+                'status' => $request->input('status') ?? '',
+                'condition' => $request->input('condition') ?? '',
+                'area_id' => $request->input('area_id') ?? '',
+                'search' => $request->input('search') ?? '',
+                'start_date' => $request->input('start_date') ?? '',
+                'end_date' => $request->input('end_date') ?? '',
+                'case_id' => $request->input('case_id') ?? '',
+
+            ]),
             ]
         ]);
     }

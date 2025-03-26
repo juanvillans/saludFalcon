@@ -6,6 +6,7 @@ use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\Evolution;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -147,10 +148,45 @@ class UserService
         
     }
 
-    public function getMyEvolutions($userID){
+    public function getMyEvolutions($userID, $params){
 
         $evolutions = Evolution::where('user_id',$userID)
-        ->with('emergencyCase', 'status', 'condition', 'area')
+        ->with('emergencyCase.patient', 'status', 'condition', 'area')
+        ->when($params['status'],function($query) use ($params){
+            $query->where('status_id', $params['status']);
+        })
+        ->when($params['condition'],function($query) use ($params){
+            $query->where('patient_condition_id', $params['condition']);
+        })
+        ->when($params['area_id'],function($query) use ($params){
+            $query->where('area_id', $params['area_id']);
+        })
+        ->when(isset($params['start_date']) && isset($params['end_date']),function($query) use ($params){
+                    
+            $startDateMillis = (int)$params['start_date']; 
+            $endDateMillis = (int)$params['end_date']; 
+        
+            $startDateSeconds = $startDateMillis / 1000;
+            $endDateSeconds = $endDateMillis / 1000;
+
+            $startDate = Carbon::createFromTimestamp($startDateSeconds)->startOfDay();
+            $endDate = Carbon::createFromTimestamp($endDateSeconds)->endOfDay();
+
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        })
+        ->when($params['case_id'],function($query) use ($params){
+            $query->where('id', $params['case_id']);
+        })
+        ->when($params['search'],function($query) use ($params){
+
+            $query->where(function($query) use ($params) {
+                
+                $query->whereHas('emergencyCase.patient', function($query2) use ($params) {
+                    $query2->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($params['search']) . '%']);
+                });
+
+            });
+        })
         ->orderBy('id','desc')
         ->paginate(25, ['*'], 'page', request()->get('page',1));
 
