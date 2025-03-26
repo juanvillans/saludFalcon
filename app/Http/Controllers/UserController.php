@@ -171,7 +171,7 @@ class UserController extends Controller
 
             $this->userService->changePassword($data);
 
-            return redirect()->back()->with(['message' => 'Contraseña actualizada con éxito']);
+            return redirect()->route('login')->with(['message' => 'Contraseña actualizada con éxito']);
             
         } catch (\Throwable $e) {
             
