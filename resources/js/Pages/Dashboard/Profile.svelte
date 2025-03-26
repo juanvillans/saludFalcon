@@ -226,7 +226,7 @@
     },
     date: {
         type: "date",
-        label: "Fecha de ingreso",
+        label: "Fecha del registro",
     },
     status:
         {
