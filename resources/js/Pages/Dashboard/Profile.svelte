@@ -219,6 +219,11 @@
 
 
 <Search filtersOptions={{
+    type_evolution: {
+        type: "select",
+        label: "Evolución o interconsultas",
+        options: [{id:true, name: "Interconsulta"}, {id:false, name: "Evolución"}]
+    },
     date: {
         type: "date",
         label: "Fecha de ingreso",
