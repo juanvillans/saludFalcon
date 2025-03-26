@@ -236,7 +236,9 @@ class UserController extends Controller
                 'nroEvol' => $nroEvolutions,
                 'nroInter' => $nroInter,
                 'user' => new UserResource($user),
-                'filters' => array_filter([
+                
+            ],
+            'filters' => array_filter([
                 'status' => $request->input('status') ?? '',
                 'condition' => $request->input('condition') ?? '',
                 'area_id' => $request->input('area_id') ?? '',
@@ -246,7 +248,6 @@ class UserController extends Controller
                 'case_id' => $request->input('case_id') ?? '',
 
             ]),
-            ]
         ]);
     }
 
