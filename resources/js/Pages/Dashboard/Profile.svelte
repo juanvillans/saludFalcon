@@ -8,7 +8,7 @@
     import { onMount } from "svelte";
     import axios from "axios";
     import debounce from "lodash/debounce";
-
+    import Search from "../../components/Search.svelte";
     export let data = [];
     export let areas = [];
 
@@ -216,6 +216,35 @@
         {getFirstName(data.user.data.last_name)}</title
     >
 </svelte:head>
+
+
+<Search filtersOptions={{
+    date: {
+        type: "date",
+        label: "Fecha de ingreso",
+    },
+    status:
+        {
+            type: "select",
+            label: "Estado",
+            options: localData?.statutes || [],
+        } || {},
+    case_id:
+        {
+            type: "search",
+            label: "ID del caso",
+            options: [],
+        } || {},
+ 
+
+
+    condition:
+        {
+            type: "select",
+            label: "Condición",
+            options: localData?.conditions || [],
+        } || {},
+}} />
 
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">
     <div

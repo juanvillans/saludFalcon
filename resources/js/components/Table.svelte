@@ -46,31 +46,7 @@
 
 <section class="w-full">
     <div class="flex md:items-center justify-end">
-        {#if filtersOptions}
-            <button
-                class="relative flex gap-2 hover:bg-gray-300 rounded-full p-2 px-3"
-                class:bg-gray-300={isFilterAply}
-                title="Busqueda de filtros"
-                on:click={(e) => {
-                    e.preventDefault();
-
-                    showModal = true;
-                }}
-            >
-                {#if isFilterAply}
-                    <div
-                        class="absolute bg-color1 h-2 w-2 rounded-full right-1 top-0"
-                    ></div>
-                {/if}
-                <span> Filtros </span>
-                <iconify-icon icon="mage:filter" width="24" height="24"
-                ></iconify-icon>
-            </button>
-        {/if}
-
-        {#if allowSearch}
-            <Search />
-        {/if}
+       
         {#if selectedRow?.status}
             <div class="flex gap-5 relative items-end">
                 {#if selectedRowOptions.editar}

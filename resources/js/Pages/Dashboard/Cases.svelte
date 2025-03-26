@@ -11,6 +11,7 @@
     import Pagination from "../../components/Pagination.svelte";
     import axios from "axios";
     import { onMount } from "svelte";
+    import Search from "../../components/Search.svelte";
     import { getDuration } from "../../components/getDuration.js";
 
     export let data = {};
@@ -723,44 +724,45 @@
     </div>
 </div>
 
-<Table
-    filtersOptions={{
-        date: {
-            type: "date",
-            label: "Fecha de ingreso",
-        },
-        status:
-            {
-                type: "select",
-                label: "Estado",
-                options: localData?.statutes || [],
-            } || {},
-        case_id:
-            {
-                type: "search",
-                label: "ID del caso",
-                options: [],
-            } || {},
-        specialty_id:
-            {
-                type: "select",
-                label: "Servicio tra.",
-                options: localData?.specialties || [],
-            } || {},
-        area_id:
-            {
-                type: "select",
-                label: "Última area",
-                options: localData?.areas || [],
-            } || {},
+<Search filtersOptions={{
+    date: {
+        type: "date",
+        label: "Fecha de ingreso",
+    },
+    status:
+        {
+            type: "select",
+            label: "Estado",
+            options: localData?.statutes || [],
+        } || {},
+    case_id:
+        {
+            type: "search",
+            label: "ID del caso",
+            options: [],
+        } || {},
+    specialty_id:
+        {
+            type: "select",
+            label: "Servicio tra.",
+            options: localData?.specialties || [],
+        } || {},
+    area_id:
+        {
+            type: "select",
+            label: "Última area",
+            options: localData?.areas || [],
+        } || {},
 
-        condition:
-            {
-                type: "select",
-                label: "Condición",
-                options: localData?.conditions || [],
-            } || {},
-    }}
+    condition:
+        {
+            type: "select",
+            label: "Condición",
+            options: localData?.conditions || [],
+        } || {},
+}} />
+<Table
+    
     {visulizateType}
 >
     <div slot="filterBox"></div>
