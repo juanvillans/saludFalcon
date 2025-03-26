@@ -4,7 +4,7 @@
 
     let pageName = "";
     $: userNav = false;
-    
+
     function toggleNavUser() {
         userNav = !userNav;
     }
@@ -26,14 +26,14 @@
                 document.body.removeEventListener("click", onClick);
             },
         };
-
     }
     const dictionaryPages = {
-        cases: 'Casos',
-        casedetail: 'Detalles del caso',
-        users: 'usuarios',
-        profile: 'Perfil',
-    }
+        cases: "Casos",
+        casedetail: "Detalles del caso",
+        users: "usuarios",
+        profile: "Perfil",
+        
+    };
 </script>
 
 <header class="  w-full text-color1">
@@ -46,7 +46,9 @@
                 href="/dashboard"
                 use:inertia
                 class="text-sm hidden md:inline font-bold"
-                >{dictionaryPages?.[$page.component.replace("Dashboard/", "").toLowerCase()].toUpperCase()}</a
+                >{dictionaryPages?.[
+                    $page.component.replace("Dashboard/", "").toLowerCase()
+                ].toUpperCase()}</a
             >
         </span>
         <!-- <div class="flex bg-color2  md:min-w-72 rounded-full items-center">
@@ -86,32 +88,36 @@
                 on:click={toggleNavUser}
                 class:blueShadow={userNav}
             >
-                <iconify-icon
-                    icon="solar:user-broken"
-                    class="text-2xl"
-                    class:text-green4={userNav}
+                <img
+                    class="bg-gray-400 w-8 aspect-square rounded-full object-cover"
+                    src={`/storage/users/${$page.props.auth.photo}}`}
+                    alt=""
                 />
             </div>
             {#if userNav}
                 <div
-                    class="absolute  w-fit rounded-lg flex items-center flex-col bg-color1 overflow-hidden  z-50 top-10 right-3 rounded-tr-none text-gray-100 shadow-xl"
+                    class="absolute w-fit rounded-lg flex items-center flex-col bg-color1 overflow-hidden z-50 top-10 right-3 rounded-tr-none text-gray-100 shadow-xl"
                 >
                     <a
-                    href={`/admin/perfil/${$page.props.auth.user_id}`}
-                    use:inertia
-                    class="p-2 py-3 px-4  w-full cursor-pointer hover:underline hover:text-gray-50 block whitespace-nowrap"
-                    >Mi perfil</a
-                >
+                        href={`/admin/perfil/${$page.props.auth.user_id}`}
+                        use:inertia
+                        class="p-2 py-3 px-4 w-full cursor-pointer hover:underline hover:text-gray-50 block whitespace-nowrap"
+                        >Mi perfil</a
+                    >
                     <a
                         href="/admin/cambiar-contraseña"
                         use:inertia
-                        class="p-2 py-3 px-4  w-full cursor-pointer hover:underline hover:text-gray-50 block whitespace-nowrap"
+                        class="p-2 py-3 px-4 w-full cursor-pointer hover:underline hover:text-gray-50 block whitespace-nowrap"
                         >Cambiar contraseña</a
                     >
                     <a
                         href="/admin/logout"
-                        class="p-3 pt-1 mt-2 bg-gray-300 text-dark  w-full cursor-pointer hover:underline hover:text-gray-500 block whitespace-nowrap"
-                        > <iconify-icon class="text-2xl  relative top-1.5" icon="solar:logout-line-duotone"></iconify-icon> Cerrar sesión</a
+                        class="p-3 pt-1 mt-2 bg-gray-300 text-dark w-full cursor-pointer hover:underline hover:text-gray-500 block whitespace-nowrap"
+                    >
+                        <iconify-icon
+                            class="text-2xl relative top-1.5"
+                            icon="solar:logout-line-duotone"
+                        ></iconify-icon> Cerrar sesión</a
                     >
                     <!-- <button on:click={authHandlers.logout} class="p-4 flex items-center text-rigth w-full justify-end hover:text-green4 gap-2 hover:font-bold hover:underline" >Cerrar sesión <iconify-icon icon="solar:logout-line-duotone" class="text-xl"></iconify-icon></button> -->
                 </div>
@@ -121,5 +127,4 @@
 </header>
 
 <style>
-  
 </style>

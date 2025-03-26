@@ -54,7 +54,7 @@
         patient_address: "",
         municipality_id: 14,
         parish_id: 0,
-        user_specialty_name: $page.props.auth.user_specialty_name,
+        user_specialty_name: $page.props.auth.specialty_name,
         user_id: $page.props.auth.user_id,
         user_name: $page.props.auth.name,
         user_last_name: $page.props.auth.last_name,
@@ -399,34 +399,29 @@
                     }}
                 >
                     <div class="mt-3 text-left">
-                        <span class="text-left">Médico</span>
+                        <span class="text-left">Médico y servico</span>
                     </div>
 
                     <div
-                        class="flex gap-3 border rounded cursor-pointer hover:bg-gray-100 hover:border-dark p-2"
-                      
+                        class=" border rounded cursor-pointer hover:bg-gray-100 hover:border-dark p-2"
                     >
-                        <span
-                            class="rounded-full overflow-hidden bg-color4 w h-9 justify-center items-center flex"
-                        >
-                            <iconify-icon icon="fa6-solid:user-doctor"
-                            ></iconify-icon>
-                        </span>
-
-                        <div>
-                            <p>
+                        <div class="flex gap-1.5">
+                            <img
+                                class="bg-gray-300 w-7 aspect-square rounded-full object-cover"
+                                src={`/storage/users/${$page.props.auth.photo}}`}
+                                alt=""
+                            />
+                            <p class="inline-block w-fit">
                                 <b>
                                     {$form.user_name}
                                     {$form.user_last_name}</b
                                 >
                             </p>
-                            <span
-                                class="bg-gray-200 rounded-full px-2 py-1 text-sm"
-                                >{$form.user_specialty_name}</span
-                            >
                         </div>
+                        <p class="bg-gray-200 rounded-full w-fit ml-7 relative -top-1 px-2 py-1 text-xs">
+                            {$form.user_specialty_name}
+                        </p>
                     </div>
-                    
                 </button>
             </div>
 
@@ -730,12 +725,10 @@
 
 <Table
     filtersOptions={{
-         date:
-            {
-                type: "date",
-                label: "Fecha de ingreso",
-
-            },
+        date: {
+            type: "date",
+            label: "Fecha de ingreso",
+        },
         status:
             {
                 type: "select",
@@ -760,14 +753,13 @@
                 label: "Última area",
                 options: localData?.areas || [],
             } || {},
-           
+
         condition:
             {
                 type: "select",
                 label: "Condición",
                 options: localData?.conditions || [],
             } || {},
-           
     }}
     {visulizateType}
 >

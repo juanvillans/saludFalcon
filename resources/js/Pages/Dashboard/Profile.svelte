@@ -9,9 +9,6 @@
     import axios from "axios";
     import debounce from "lodash/debounce";
 
-
- 
-
     export let data = [];
     export let areas = [];
 
@@ -78,7 +75,7 @@
     });
 
     let form = useForm(structuredClone(data.user.data));
-    $: console.log($form)
+    $: console.log($form);
     let localData = {};
 
     onMount(async () => {
@@ -115,7 +112,7 @@
             $form.photo = file;
             $form.post(
                 "/admin/perfil/picture/" + $form.id,
-                
+
                 {
                     onError: (errors) => {
                         if (errors.data) {
@@ -214,7 +211,10 @@
 </script>
 
 <svelte:head>
-    <title>Usuario {getFirstName(data.user.data.name)} {getFirstName(data.user.data.last_name)}</title>
+    <title
+        >Usuario {getFirstName(data.user.data.name)}
+        {getFirstName(data.user.data.last_name)}</title
+    >
 </svelte:head>
 
 <div class="flex flex-col lg:flex-row gap-2 md:gap-5">
@@ -235,150 +235,185 @@
                     class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-gray-50 text-dark"
                     >Datos del usuario</legend
                 >
-                <div class="flex gap-3 mt-2">
-                    <label
-                    class=" relative w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px]  gap-2 row-span-3  lg:mt-2 lg:mx-auto md:mb-2  cursor-pointer "
-                >
-                    <input
-                        type="file"
-                        accept="image/*"
-                        disabled={allowToEdit}
-                        on:change={handleFileChange}
-                        class="hidden w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px]  object-cover border rounded"
-                    />
-                  
-                    <!-- Display the selected image -->
-                    {#if imagePreview}
-                        <img
-                            src={imagePreview}
-                            alt="Preview"
-                            class=" w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px]  object-cover border rounded border-gray-500"
-                        />
-                    {:else}
-                        <img
-                            class=" w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px]  object-cover border rounded"
-                            src={`/storage/users/${$form.photo}?${new Date().getTime()}`} 
-                            
-                            alt=""
-                            srcset=""
-                        />
-                    {/if}
-                   
-                </label>
-                
-                    <div class="lg:hidden">
-                        <p>
-                            <b>
-                                {$form.name} {$form.last_name}
-                            </b> 
-                        </p>
-                        <p>Especialista en {$form.user_specialty_name}</p>
-                        <p><span class="font-semibold">Matricula médica:</span> {$form.medical_license}</p>
-
-                        {#if !allowToEdit && !showMoreDetails}
-                        <button on:click={()=> {
-                            showMoreDetails = true
-                        }} type="button" title="Editar y ver más detalles" class=" border px-2 bg-gray-300 w-fit rounded border-gray-100 seeMore flex hover:cursor-pointer hover:font-bold">
-                            <p>Ver más</p>
-                            <iconify-icon
-                                icon="ic:outline-expand-more"
-                                width="24"
-                                height="24"
-                            ></iconify-icon>
-                        </button>
-                        {/if}
-                    </div>
-                </div>
-                
-                {#if showMoreDetails}
-                    <Input
-                        type="text"
-                        required={true}
-                        label={"Nombres"}
-                        bind:value={$form.name}
-                        error={$form.errors?.name}
-                        disabled={allowToEdit}
-                    />
-                    <Input
-                        type="text"
-                        required={true}
-                        label={"Apellidos"}
-                        bind:value={$form.last_name}
-                        error={$form.errors?.last_name}
-                        disabled={allowToEdit}
-                    />
-                    {#if isAdmin}
-                        <Input
-                            type="email"
-                            label="correo"
-                            bind:value={$form.email}
-                            error={$form.errors?.email}
-                            disabled={allowToEdit}
-                        />
-                        <Input
-                            type="number"
-                            required={true}
-                            label={"Cédula"}
-                            bind:value={$form.ci}
-                            error={$form.errors?.ci}
-                            disabled={allowToEdit}
-                        />
-                        <Input
-                            type="tel"
-                            label={"Teléfono"}
-                            bind:value={$form.phone_number}
-                            error={$form.errors?.phone_number}
-                            disabled={allowToEdit}
-                        />
-                    {/if}
-                    <Input
-                        type="select"
-                        required={true}
-                        label={"Tipo de Usuario"}
-                        bind:value={$form.role_name}
-                        error={$form.errors?.role_name}
-                        disabled={!isAdmin}
-                    >
-                        <option value="doctor">Doctor</option>
-                        <option value="admin">Admin</option>
-                    </Input>
-                    <Input
-                        label={"Matrícula médica"}
-                        required={true}
-                        bind:value={$form.medical_license}
-                        error={$form.errors?.medical_license}
-                        disabled={allowToEdit}
-                    />
-                    {#if localData.specialties}
-                    <Input  
-                        type="select" 
-                        required={true}
-                        label={"Servicio tratante"}
-                        bind:value={$form.specialty_id}
-                        error={$form.errors?.specialty_id}
-                        disabled={!isAdmin}
-                    >
-                        {#each localData?.specialties || [] as speci (speci.id)}
-                            <option value={speci.id}>{speci.name}</option>
-                        {/each}
-                    </Input>
-                    {/if}
-
-                    {#if isAdmin}
-                        <button type="button"
-                            class="py-1 px-4 mx-auto mt-3 rounded border border-gray-300 cursor-pointer"
-                            on:click={() => {
-                                handleDelete($form.id);
-                            }}> <iconify-icon
-                                        class="relative -bottom-0.5"
-                                        icon="material-symbols:delete-outline"
-                                    ></iconify-icon> Eliminar usuario</button
+                {#if data.user.data.status == 0}
+                    <p>
+                        {getFirstName(data.user.data.name)}
+                        {getFirstName(data.user.data.last_name)}
+                    </p>
+                    <p>C.I: {data.user.data.ci}</p>
+                    <p class="mx-auto text-center mt-2">
+                        Este usuario fue eliminado
+                    </p>
+                {:else}
+                    <div class="flex gap-3 mt-2">
+                        <label
+                            class=" relative w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px] gap-2 row-span-3 lg:mt-2 lg:mx-auto md:mb-2 cursor-pointer"
                         >
+                            <input
+                                type="file"
+                                accept="image/*"
+                                disabled={allowToEdit}
+                                on:change={handleFileChange}
+                                class="hidden w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px] object-cover border rounded"
+                            />
+
+                            <!-- Display the selected image -->
+                            {#if imagePreview}
+                                <img
+                                    src={imagePreview}
+                                    alt="Preview"
+                                    class=" w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px] object-cover border rounded border-gray-500"
+                                />
+                            {:else}
+                                <img
+                                    class=" w-[120px] h-[150px] md:max-w-[180px] md:w-[180px] md:h-[218px] object-cover border rounded"
+                                    src={`/storage/users/${$form.photo}?${new Date().getTime()}`}
+                                    alt=""
+                                    srcset=""
+                                />
+                            {/if}
+                        </label>
+
+                        <div class="lg:hidden">
+                            <p>
+                                <b>
+                                    {$form.name}
+                                    {$form.last_name}
+                                </b>
+                            </p>
+                            <p>Especialista en {$form.user_specialty_name}</p>
+                            <p>
+                                <span class="font-semibold"
+                                    >Matricula médica:</span
+                                >
+                                {$form.medical_license}
+                            </p>
+
+                            {#if !allowToEdit && !showMoreDetails}
+                                <button
+                                    on:click={() => {
+                                        showMoreDetails = true;
+                                    }}
+                                    type="button"
+                                    title="Editar y ver más detalles"
+                                    class=" border px-2 bg-gray-300 w-fit rounded border-gray-100 seeMore flex hover:cursor-pointer hover:font-bold"
+                                >
+                                    <p>Ver más</p>
+                                    <iconify-icon
+                                        icon="ic:outline-expand-more"
+                                        width="24"
+                                        height="24"
+                                    ></iconify-icon>
+                                </button>
+                            {/if}
+                        </div>
+                    </div>
+
+                    {#if showMoreDetails}
+                        <Input
+                            type="text"
+                            required={true}
+                            label={"Nombres"}
+                            bind:value={$form.name}
+                            error={$form.errors?.name}
+                            disabled={allowToEdit}
+                        />
+                        <Input
+                            type="text"
+                            required={true}
+                            label={"Apellidos"}
+                            bind:value={$form.last_name}
+                            error={$form.errors?.last_name}
+                            disabled={allowToEdit}
+                        />
+                        {#if isAdmin}
+                            <Input
+                                type="email"
+                                label="correo"
+                                bind:value={$form.email}
+                                error={$form.errors?.email}
+                                disabled={allowToEdit}
+                            />
+                            <Input
+                                type="number"
+                                required={true}
+                                label={"Cédula"}
+                                bind:value={$form.ci}
+                                error={$form.errors?.ci}
+                                disabled={allowToEdit}
+                            />
+                            <Input
+                                type="tel"
+                                label={"Teléfono"}
+                                bind:value={$form.phone_number}
+                                error={$form.errors?.phone_number}
+                                disabled={allowToEdit}
+                            />
+                        {/if}
+                        <Input
+                            type="select"
+                            required={true}
+                            label={"Tipo de Usuario"}
+                            bind:value={$form.role_name}
+                            error={$form.errors?.role_name}
+                            disabled={!isAdmin}
+                        >
+                            <option value="doctor">Doctor</option>
+                            <option value="admin">Admin</option>
+                        </Input>
+                        <Input
+                            label={"Matrícula médica"}
+                            required={true}
+                            bind:value={$form.medical_license}
+                            error={$form.errors?.medical_license}
+                            disabled={allowToEdit}
+                        />
+                        {#if localData.specialties}
+                            <Input
+                                type="select"
+                                required={true}
+                                label={"Servicio tratante"}
+                                bind:value={$form.specialty_id}
+                                error={$form.errors?.specialty_id}
+                                disabled={!isAdmin}
+                            >
+                                {#each localData?.specialties || [] as speci (speci.id)}
+                                    <option value={speci.id}
+                                        >{speci.name}</option
+                                    >
+                                {/each}
+                            </Input>
+                        {/if}
+
+                        <hr class="mt-5 border-gray-400">
+                        {#if isTheSameUser}
+                            <a
+                                class="mt-4 py-1 px-4 mx-auto inline-block text-color1 hover:bg-gray-600 duration-75 hover:text-white rounded border border-color1 cursor-pointer"
+                                href="/admin/cambiar-contraseña"
+                                use:inertia>
+                                <iconify-icon class="" icon="carbon:password" width="16" height="16"></iconify-icon>
+                                Cambiar mi contraseña</a
+                            >
+                        {/if}
+
+                        {#if isAdmin}
+                            <button
+                                type="button"
+                                class="py-1 px-4 mx-auto mt-5 rounded border border-gray-300 cursor-pointer"
+                                on:click={() => {
+                                    handleDelete($form.id);
+                                }}
+                            >
+                                <iconify-icon
+                                    class="relative -bottom-0.5"
+                                    icon="material-symbols:delete-outline"
+                                ></iconify-icon> Eliminar usuario</button
+                            >
+                        {/if}
                     {/if}
                 {/if}
             </fieldset>
         </form>
-
     </div>
 
     <div class="w-full">
@@ -454,7 +489,8 @@
                                     {/if}
                                     <span class="flex items-center">
                                         <span class="text-xs">
-                                            <span class="text-gray-500">el</span>
+                                            <span class="text-gray-500">el</span
+                                            >
                                             {evolution.formatted_created_at}
                                         </span>
                                     </span>
@@ -464,9 +500,12 @@
                             <div class="bg-white p-3 md:p-4 lg:p-5 space-y-2">
                                 {#if evolution.status_id == 4}
                                     <div>
-                                        <h3 class="font-semibold">Fecha y hora:</h3>
+                                        <h3 class="font-semibold">
+                                            Fecha y hora:
+                                        </h3>
                                         <p class="text-dark">
-                                            El {evolution.formatted_entry_date} a las
+                                            El {evolution.formatted_entry_date} a
+                                            las
                                             {evolution.entry_hour}
                                         </p>
                                     </div>
@@ -481,23 +520,27 @@
                                 {/if}
                                 {#if evolution.status_id !== 6 && evolution.status_id !== 4}
                                     <div>
-                                        <h3 class="font-semibold">Fecha y hora:</h3>
+                                        <h3 class="font-semibold">
+                                            Fecha y hora:
+                                        </h3>
                                         <p class="text-dark">
-                                            {evolution.formatted_departure_date} a las{evolution.departure_hour}
+                                            {evolution.formatted_departure_date}
+                                            a las{evolution.departure_hour}
                                         </p>
                                     </div>
                                 {/if}
                                 <div>
                                     <div>
-                                    {#if evolution.evolution != "Sin descripción"}
-                                            
+                                        {#if evolution.evolution != "Sin descripción"}
                                             <p class="text-dark">
                                                 {evolution.evolution}
                                             </p>
                                         {/if}
                                     </div>
                                     <div class="flex">
-                                        <h3 class="font-semibold">Diagnostico:</h3>
+                                        <h3 class="font-semibold">
+                                            Diagnostico:
+                                        </h3>
 
                                         <div>
                                             <span
@@ -540,7 +583,6 @@
                         </div>
                     {/if}
                 </ul>
-
             {/if}
         </fieldset>
     </div>
@@ -548,7 +590,6 @@
 <Alert />
 
 <style>
-  
     @media (max-width: 750px) {
         legend::after,
         legend::before {
@@ -561,8 +602,8 @@
     }
     @media (min-width: 1024px) {
         .userInfoDiv {
-              height: calc(100vh - 100px);
-          }
+            height: calc(100vh - 100px);
+        }
     }
     legend::after {
         content: " ";
