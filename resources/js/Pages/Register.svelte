@@ -34,16 +34,16 @@
     });
 
     // Handle file selection
-  let imagePreview = '';
-  function handleFileChange(event) {
-    const file = event.target.files[0];
-    if (file) {
-      // Create a URL for the selected file
-      imagePreview = URL.createObjectURL(file);
-      // Update the form data
-      $formCreate.photo = file;
+    let imagePreview = "";
+    function handleFileChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+            // Create a URL for the selected file
+            imagePreview = URL.createObjectURL(file);
+            // Update the form data
+            $formCreate.photo = file;
+        }
     }
-  }
     let selectedRow = { status: false, id: 0 };
 
     document.addEventListener("keydown", ({ key }) => {
@@ -58,8 +58,6 @@
 
         $formCreate.post("/registrarse", {
             onError: (errors) => {
-                console.log(errors);
-
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
                 }
@@ -76,8 +74,6 @@
         });
     }
 
-    
- 
     let submitStatus = "Enviar solicitud";
 </script>
 
@@ -85,31 +81,33 @@
     <title>Usuarios</title>
 </svelte:head>
 
-<header class="flex  items-center gap-3 w-11/12 mx-auto pt-3">
-    <img src="/img/logoBlue.svg" alt="" srcset=""  class="1/2 w-10"/>
+<header class="flex items-center gap-3 w-11/12 mx-auto pt-3">
+    <img src="/img/logoBlue.svg" alt="" srcset="" class="1/2 w-10" />
 
     <h4>SALUDFALCÓN.COM</h4>
 </header>
-<div class="md:grid grid-cols-12 w-full top-0 fixed h-screen -z-10">
-    <div class="col-span-5 border-r-8 border-red"></div>
-    <div class="col-span-7 bg-color1 "></div>
+<div class="lg:grid grid-cols-12 w-full top-0 fixed h-screen -z-10">
+    <div class="col-span-6 border-r-8 border-red"></div>
+    <div class="col-span-6 bg-color1"></div>
 </div>
-<div class="w-11/12 mx-auto md:grid grid-cols-12 gap-4 z-50">
-    <div class="col-span-5 mt-10 ">
-
+<div class="mx-auto lg:grid grid-cols-12 gap-4 z-50">
+    <div class="col-span-6 mt-10 px-10">
         <h1 class="mt-3">Registrarme</h1>
-        <p>Una vez que envie la solicitud podrá inicar sesión si un usuario admin lo acepta</p>
+        <p>
+            Una vez que envie la solicitud podrá inicar sesión si un usuario
+            admin lo acepta
+        </p>
         <a
-        href="/"
-        class="mt-2 inline-block text-lg underline text-color1 mb-10"
-        use:inertia>Ya tengo cuenta, iniciar sesión</a
-    >
+            href="/"
+            class="mt-2 inline-block text-lg underline text-color1 mb-10"
+            use:inertia>Ya tengo cuenta, iniciar sesión</a
+        >
     </div>
     <form
         id="a-form"
         on:submit={handleSubmit}
         action=""
-        class="col-span-7 bg-color1  px-5 mt-2 z-50 md:grid  md:grid-cols-2 gap-x-5  p-6 md:pt-0 rounded-md"
+        class="col-span-6 md:px-16 xl:px-28 bg-color1 px-5 mt-2 z-50 sm:grid sm:grid-cols-2 gap-x-5 p-6 md:pt-0 rounded-md"
     >
         <div class="mt-4 col-span-2"></div>
         <Input
@@ -135,20 +133,35 @@
             bind:value={$formCreate.email}
             error={$formCreate.errors?.email}
         />
-        
-        <label class="relative  md:mt-4 row-span-3 mb-10 md:mb-7  h-[218px]  block">
+
+        <label
+            class="relative md:mt-4 row-span-3 mb-10 md:mb-7 h-[218px] block"
+        >
             <p class="mt-4 md:mt-0 text-white">Foto carnet</p>
-            <input type="file" accept="image/*" on:change={handleFileChange} class="hidden" />
+            <input
+                type="file"
+                accept="image/*"
+                on:change={handleFileChange}
+                class="hidden"
+            />
             <!-- Display the selected image -->
             {#if imagePreview}
-            <img src={imagePreview} alt="Preview" class="absolute w-[180px] max-w-[180px] h-[218px] object-cover border rounded border-gray-500" />
-            
+                <img
+                    src={imagePreview}
+                    alt="Preview"
+                    class="absolute w-[180px] max-w-[180px] h-[218px] object-cover border rounded border-gray-500"
+                />
             {:else}
-            <div class="rouded absolute w-[180px] max-w-[180px] h-[218px]  bg-gray-200 flex items-center justify-center cursor-pointer text-gray-300 hover:text-gray-500">
-                <iconify-icon class="" icon="tdesign:portrait" width="180" height="180"></iconify-icon>
-
-            </div>
-
+                <div
+                    class="rouded absolute w-[180px] max-w-[180px] h-[218px] bg-gray-200 flex items-center justify-center cursor-pointer text-gray-300 hover:text-gray-500"
+                >
+                    <iconify-icon
+                        class=""
+                        icon="tdesign:portrait"
+                        width="180"
+                        height="180"
+                    ></iconify-icon>
+                </div>
             {/if}
         </label>
         <Input
@@ -159,7 +172,7 @@
             bind:value={$formCreate.ci}
             error={$formCreate.errors?.ci}
         />
-        
+
         <Input
             type="tel"
             label={"Teléfono"}
@@ -187,14 +200,11 @@
             {/each}
         </Input>
 
-
         <input
             form="a-form"
             type="submit"
             value={$formCreate.processing ? "Cargando..." : submitStatus}
-            class="col-span-2 mt-3 hover:bg-color3 border-color1 border hover:text-white duration-200  w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
+            class="col-span-2 mt-3 hover:bg-color3 border-color1 border hover:text-white duration-200 w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
         />
-    
-       
     </form>
 </div>

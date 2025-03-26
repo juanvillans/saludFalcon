@@ -13,7 +13,31 @@
     export let nroEvol = 0;
     export let nroInter = 0;
     export let showMorePatientDetail = false;
-    let form = useForm(structuredClone(caseDetail.data));
+
+    function convert24To12(time24) {
+        const [hours, minutes] = time24.split(":").map(Number);
+        const period = hours >= 12 ? "PM" : "AM";
+        const hours12 = hours % 12 || 12;
+        return `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
+    }
+
+    let form = useForm(
+        structuredClone({
+            municipality_id: caseDetail.data.municipality_id,
+            municipality_name: caseDetail.data.municipality_name,
+            parish_id: caseDetail.data.parish_id,
+            parish_name: caseDetail.data.parish_name,
+            patient_address: caseDetail.data.patient_address,
+            patient_age: caseDetail.data.patient_age,
+            patient_ci: caseDetail.data.patient_ci,
+            patient_date_birth: caseDetail.data.patient_date_birth,
+            patient_id: caseDetail.data.patient_id,
+            patient_last_name: caseDetail.data.patient_last_name,
+            patient_name: caseDetail.data.patient_name,
+            patient_phone_number: caseDetail.data.patient_phone_number,
+            patient_sex: caseDetail.data.patient_sex,
+        }),
+    );
 
     const today = new Date();
     const formattedDate = today.toISOString().split("T")[0];
@@ -29,7 +53,16 @@
         destiny: "",
         evolution: "",
     });
+    let interconsultationForm = useForm(
+        structuredClone({
+            ...caseDetail.data.evolutions[
+                caseDetail.data.evolutions.length - 1
+            ],
+            evolution: "",
+        }),
+    );
     let localData = {};
+    console.log($form);
 
     onMount(async () => {
         try {
@@ -68,6 +101,7 @@
     }
 
     let isOpenCreateEvolution = false;
+    let isOpenCreateInterconsultation = false;
     function updateClient(event) {
         event.preventDefault();
         $form.clearErrors();
@@ -92,7 +126,7 @@
         event.preventDefault();
         $evolutionForm.clearErrors();
         $evolutionForm.post(
-            "/admin/casos/detalle-caso/" + $form.id + "/evolution",
+            "/admin/casos/detalle-caso/" + caseDetail.data.id + "/evolution",
             {
                 onError: (errors) => {
                     if (errors.data) {
@@ -106,6 +140,29 @@
                         message: "Guardado",
                     });
                     isOpenCreateEvolution = false;
+                },
+            },
+        );
+    }
+
+    function submitInterconsultation(event) {
+        event.preventDefault();
+        $interconsultationForm.clearErrors();
+        $interconsultationForm.post(
+            "/admin/casos/detalle-caso/" + caseDetail.data.id + "/interconsult",
+            {
+                onError: (errors) => {
+                    if (errors.data) {
+                        displayAlert({ type: "error", message: errors.data });
+                    }
+                },
+                onSuccess: (mensaje) => {
+                    $interconsultationForm.reset();
+                    displayAlert({
+                        type: "success",
+                        message: "Guardado",
+                    });
+                    isOpenCreateInterconsultation = false;
                 },
             },
         );
@@ -157,7 +214,6 @@
                         required={true}
                         label={"C.I *"}
                         bind:value={$form.patient_ci}
-                        on:input={() => ($form.cases = [])}
                         error={$form.errors.patient_ci}
                     />
                     <Input
@@ -307,7 +363,7 @@
                     </div>
                 </div>
                 <div class=" mt-4 gap-x-5 w-full pt-2 bg-gray-10">
-                    {#if isOpenCreateEvolution}
+                    {#if isOpenCreateEvolution && !isOpenCreateInterconsultation}
                         <div
                             class="bg p-4 mb-3 md:mb-5 lg:mb-7 rounded-lg neumorphism bg-gray-50 lg:px-9"
                         >
@@ -432,9 +488,9 @@
                                                     `${$evolutionForm.status_id == 3 ? "transferida" : ""}`}
                                                 on:input={(e) => {
                                                     if (
-                                                        caseDetail.data?.entry_date ==
-                                                        $evolutionForm
-                                                            ?.departure_date
+                                                        caseDetail.data
+                                                            ?.entry_date ==
+                                                        $evolutionForm?.departure_date
                                                     ) {
                                                         if (
                                                             e.target.value <
@@ -541,16 +597,79 @@
                                 />
                             </div>
                         </div>
-                    {:else}
+                    {/if}
+
+                    {#if !isOpenCreateEvolution && !isOpenCreateInterconsultation}
                         <button
-                            on:click={(e) => (isOpenCreateEvolution = true)}
+                            on:click={() => (isOpenCreateEvolution = true)}
                             class="btn_create inline-block p-2 px-3 mb-3 lg:mb-6 shadow-sm"
-                            >Crear nueva evolución</button
                         >
+                            Crear nueva evolución
+                        </button>
+                    {/if}
+                    {#if !isOpenCreateInterconsultation && !isOpenCreateEvolution}
+                        <button
+                            on:click={() => {
+                                isOpenCreateInterconsultation = true;
+                                setTimeout(() => {
+                                    console.log(
+                                        document.querySelector(
+                                            ".interconsultaInput",
+                                        ),
+                                    );
+
+                                    document
+                                        .querySelector(".interconsultaInput")
+                                        .focus();
+                                }, 200);
+                            }}
+                            class="btn_create2 inline-block p-2 ml-3 px-3 mb-3 lg:mb-6 shadow-sm"
+                        >
+                            Crear interconsulta
+                        </button>
                     {/if}
                 </div>
             </fieldset>
         </form>
+
+        <form on:submit={submitInterconsultation}>
+            <div class=" mt-4 gap-x-5 w-full pt-2 bg-gray-10">
+                {#if isOpenCreateInterconsultation}
+                    <div
+                        class="bg p-4 mb-3 md:mb-5 lg:mb-7 rounded-lg neumorphism bg-gray-50 lg:px-9"
+                    >
+                        <Input
+                            type="textarea"
+                            required={true}
+                            labelClasses={"font-semibold"}
+                            classes={"col-span-2 "}
+                            inputClasses={"interconsultaInput"}
+                            label={"Interconsulta *"}
+                            bind:value={$interconsultationForm.evolution}
+                            error={$interconsultationForm.errors?.evolution}
+                        />
+
+                        <div class="flex justify-between items-center">
+                            <button
+                                type="button"
+                                class="hover:bg-gray-300 rounded-full p-2 px-3"
+                                on:click={() =>
+                                    (isOpenCreateInterconsultation = false)}
+                                >Cancelar</button
+                            >
+                            <input
+                                type="submit"
+                                value={$interconsultationForm.processing
+                                    ? "Cargando..."
+                                    : "Guardar"}
+                                class="bg-color3 text-white duration-200 mt-3 px-4 md:px-20 hover:bg-color4 hover:text-black font-bold py-3 rounded-md cursor-pointer"
+                            />
+                        </div>
+                    </div>
+                {/if}
+            </div>
+        </form>
+
         <ul>
             {#each caseDetail.data.evolutions as evolution, i (evolution.id)}
                 <li
@@ -586,7 +705,7 @@
                                 </span>
                             {:else if i != caseDetail.data.evolutions.length - 1}
                                 <span
-                                    class="pl-4 pr-1  h-fit listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
+                                    class="pl-4 pr-1 h-fit listType bg-color3 font-bold pt-1.5 pb-0.5 text-xs text-white mr-2 uppercase"
                                 >
                                     EVOL
                                 </span>
@@ -610,32 +729,36 @@
                     </span>
 
                     <div class="bg-white p-4 lg:p-5 space-y-2">
-                        {#if evolution.status_id == 4}
-                            <div>
-                                <h3 class="font-semibold">Hora y fecha:</h3>
-                                <p class="text-dark">
-                                    El {caseDetail.data.formatted_entry_date}
-                                    {caseDetail.data.entry_hour}
-                                </p>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold">
-                                    Motivo de consulta:
-                                </h3>
-                                <p class="text-dark">
-                                    {caseDetail.data.reason}
-                                </p>
-                            </div>
+                        {#if !evolution.is_interconsult}
+                            {#if evolution.status_id == 4}
+                                <div>
+                                    <h3 class="font-semibold">Hora y fecha:</h3>
+                                    <p class="text-dark">
+                                        El {caseDetail.data
+                                            .formatted_entry_date} a la(s)
+                                        {convert24To12(caseDetail.data.entry_hour)}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">
+                                        Motivo de consulta:
+                                    </h3>
+                                    <p class="text-dark">
+                                        {caseDetail.data.reason}
+                                    </p>
+                                </div>
+                            {/if}
+                            {#if evolution.status_id !== 6 && evolution.status_id !== 4}
+                                <div>
+                                    <h3 class="font-semibold">Hora y fecha:</h3>
+                                    <p class="text-dark">
+                                        {evolution.formatted_departure_date} a la(s)
+                                        {convert24To12(evolution.departure_hour)}
+                                    </p>
+                                </div>
+                            {/if}
                         {/if}
-                        {#if evolution.status_id !== 6 && evolution.status_id !== 4}
-                            <div>
-                                <h3 class="font-semibold">Hora y fecha:</h3>
-                                <p class="text-dark">
-                                    {evolution.formatted_departure_date}
-                                    {evolution.departure_hour}
-                                </p>
-                            </div>
-                        {/if}
+
                         <div>
                             {#if evolution.evolution != "Sin descripción" && evolution.evolution}
                                 <p class="text-dark">
@@ -643,36 +766,40 @@
                                 </p>
                             {/if}
                         </div>
-                        <div>
-                            <div class="flex">
-                                <h3 class="font-semibold">Diagnostico:</h3>
 
-                                <div>
-                                    <span
-                                        class={`ml-2 w-2 inline-block aspect-square rounded-full condition${evolution.patient_condition_id}`}
-                                    ></span>
-                                    <span class="opacity-90 uppercase text-xs"
-                                        >{evolution.patient_condition_name}</span
-                                    >
+                        {#if !evolution.is_interconsult}
+                            <div>
+                                <div class="flex">
+                                    <h3 class="font-semibold">Diagnostico:</h3>
+
+                                    <div>
+                                        <span
+                                            class={`ml-2 w-2 inline-block aspect-square rounded-full condition${evolution.patient_condition_id}`}
+                                        ></span>
+                                        <span
+                                            class="opacity-90 uppercase text-xs"
+                                            >{evolution.patient_condition_name}</span
+                                        >
+                                    </div>
                                 </div>
+                                {#if evolution.diagnosis}
+                                    <p class="text-dark">
+                                        {evolution.diagnosis}
+                                    </p>
+                                {/if}
                             </div>
-                            {#if evolution.diagnosis}
-                                <p class="text-dark">
-                                    {evolution.diagnosis}
-                                </p>
-                            {/if}
-                        </div>
 
-                        <div>
-                            {#if evolution.treatment}
-                                <h3 class="font-semibold">
-                                    Orden médica de ingreso:
-                                </h3>
-                                <p class="text-dark">
-                                    {evolution.treatment}
-                                </p>
-                            {/if}
-                        </div>
+                            <div>
+                                {#if evolution.treatment}
+                                    <h3 class="font-semibold">
+                                        Orden médica de ingreso:
+                                    </h3>
+                                    <p class="text-dark">
+                                        {evolution.treatment}
+                                    </p>
+                                {/if}
+                            </div>
+                        {/if}
                     </div>
                 </li>
             {/each}

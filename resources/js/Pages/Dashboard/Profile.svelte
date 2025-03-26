@@ -385,13 +385,19 @@
                             </Input>
                         {/if}
 
-                        <hr class="mt-5 border-gray-400">
+                        <hr class="mt-5 border-gray-400" />
                         {#if isTheSameUser}
                             <a
                                 class="mt-4 py-1 px-4 mx-auto inline-block text-color1 hover:bg-gray-600 duration-75 hover:text-white rounded border border-color1 cursor-pointer"
                                 href="/admin/cambiar-contraseña"
-                                use:inertia>
-                                <iconify-icon class="" icon="carbon:password" width="16" height="16"></iconify-icon>
+                                use:inertia
+                            >
+                                <iconify-icon
+                                    class=""
+                                    icon="carbon:password"
+                                    width="16"
+                                    height="16"
+                                ></iconify-icon>
                                 Cambiar mi contraseña</a
                             >
                         {/if}
@@ -498,37 +504,37 @@
                             </span>
 
                             <div class="bg-white p-3 md:p-4 lg:p-5 space-y-2">
-                                {#if evolution.status_id == 4}
-                                    <div>
-                                        <h3 class="font-semibold">
-                                            Fecha y hora:
-                                        </h3>
-                                        <p class="text-dark">
-                                            El {evolution.formatted_entry_date} a
-                                            las
-                                            {evolution.entry_hour}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold">
-                                            Motivo de consulta:
-                                        </h3>
-                                        <p class="text-dark">
-                                            {evolution.reason}
-                                        </p>
-                                    </div>
-                                {/if}
-                                {#if evolution.status_id !== 6 && evolution.status_id !== 4}
-                                    <div>
-                                        <h3 class="font-semibold">
-                                            Fecha y hora:
-                                        </h3>
-                                        <p class="text-dark">
-                                            {evolution.formatted_departure_date}
-                                            a las{evolution.departure_hour}
-                                        </p>
-                                    </div>
-                                {/if}
+                                    {#if evolution.status_id == 4  && !evolution.is_interconsult}
+                                        <div>
+                                            <h3 class="font-semibold">
+                                                Fecha y hora:
+                                            </h3>
+                                            <p class="text-dark">
+                                                El {evolution.formatted_entry_date}
+                                                a las
+                                                {evolution.entry_hour}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold">
+                                                Motivo de consulta:
+                                            </h3>
+                                            <p class="text-dark">
+                                                {evolution.reason}
+                                            </p>
+                                        </div>
+                                    {/if}
+                                    {#if evolution.status_id !== 6 && evolution.status_id !== 4  && !evolution.is_interconsult}
+                                        <div>
+                                            <h3 class="font-semibold">
+                                                Fecha y hora:
+                                            </h3>
+                                            <p class="text-dark">
+                                                {evolution.formatted_departure_date}
+                                                a las{evolution.departure_hour}
+                                            </p>
+                                        </div>
+                                    {/if}
                                 <div>
                                     <div>
                                         {#if evolution.evolution != "Sin descripción"}
@@ -537,6 +543,8 @@
                                             </p>
                                         {/if}
                                     </div>
+
+                                    {#if !evolution.is_interconsult}
                                     <div class="flex">
                                         <h3 class="font-semibold">
                                             Diagnostico:
@@ -552,7 +560,8 @@
                                             >
                                         </div>
                                     </div>
-                                    {#if evolution.diagnosis}
+                                    {/if}
+                                    {#if evolution.diagnosis && !evolution.is_interconsult}
                                         <p class="text-dark">
                                             {evolution.diagnosis}
                                         </p>
@@ -560,7 +569,7 @@
                                 </div>
 
                                 <div>
-                                    {#if evolution.treatment}
+                                    {#if evolution.treatment && !evolution.is_interconsult}
                                         <h3 class="font-semibold">
                                             Orden médica de ingreso:
                                         </h3>

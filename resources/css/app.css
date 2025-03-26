@@ -243,8 +243,19 @@ h1 {
     position: relative;
     z-index: 1;
 }
+
+.btn_create2 {
+    border-radius: 8px;
+    background: var(--color1);
+    font-weight: bold;
+    color: var(--color4);
+    border: 1px solid var(--color4);
+    /* box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.075); */
+    position: relative;
+    z-index: 1;
+}
 @media (max-width: 350px) {
-    .btn_create {
+    .btn_create, .btn_create2 {
         bottom: 70px;
         right: 20px;
         position: fixed;
@@ -252,7 +263,7 @@ h1 {
 
     }
 }
-.btn_create:after {
+.btn_create:after, .btn_create2:after {
     position: absolute;
     content: "";
     width: 0;
@@ -271,12 +282,12 @@ h1 {
     color: #fff;
 }
 
-.btn_create:hover:after {
+.btn_create:hover:after, .btn_create2:hover:after {
     left: 0;
     width: 100%;
 }
 
-.btn_create:active {
+.btn_create:active, .btn_create2:active {
     top: 2px;
 }
 

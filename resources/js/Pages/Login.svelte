@@ -70,7 +70,7 @@
             
             <form
                 on:submit={handleSubmit}
-                class="md:min-w-[290px] py-7 px-4 md:px-6 lg:px-8 bg-gray-100 rounded-3xl md:h-full neumorphism"
+                class="md:min-w-[290px] py-7 px-4 md:px-6 lg:px-8 bg-gray-200 bg-opacity-30 rounded-3xl md:h-full neumorphism"
             >
                 <legend class="text-center opacity-70 mt-3 md:mt-7">INICIAR SESIÓN</legend>
                 <div>

@@ -27,16 +27,21 @@
             },
         };
     }
+
+    
     const dictionaryPages = {
         cases: "Casos",
         casedetail: "Detalles del caso",
         users: "usuarios",
         profile: "Perfil",
-        
+        changepassword: "Cambiar Contraseña"
     };
+    
+    console.log($page.component.replace("Dashboard/", ""));
+
 </script>
 
-<header class="  w-full text-color1">
+<header class="w-full text-color1">
     <nav
         class="flex justify-between items-center w-full max-h-32 py-2 gap-3 text-sm px-3 md:px-5"
     >
