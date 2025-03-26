@@ -156,7 +156,7 @@ class UserController extends Controller
 
     public function changePasswordIndex(){
         
-        return inertia('Dashboard/CambiarContraseña');
+        return inertia('Dashboard/ChangePassword');
     }
 
     public function changePassword(ChangePasswordRequest $request)
