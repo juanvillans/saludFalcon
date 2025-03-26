@@ -25,6 +25,11 @@ class EvolutionResource extends JsonResource
             'user_specialty_id' => $this->user->specialty->id,
             'user_specialty_name' => $this->user->specialty->name,
 
+            "patient_id" => $this->emergencyCase->patient->id,
+            "patient_name" => $this->emergencyCase->patient->name,
+            "patient_last_name" => $this->emergencyCase->patient->last_name,
+            "patient_ci" => $this->emergencyCase->patient->ci,
+
             'area_id' => $this->area_id,
             'area_name' => $this->area->name,
 
