@@ -11,13 +11,13 @@
     }, 300);
 
     let showModal = false;
-    let firstTime = true;
-
     export let filtersOptions = false;
     export let allowSearch = true;
     let isFilterAply = false;
+    let firstTime = true;
     let filterClientData;
     $: {
+        console.log($page.props)
         filterClientData = { ...$page.props.filters };
         isFilterAply = Object.keys(filterClientData).some(
             (value) => value != "search",
@@ -33,7 +33,7 @@
     };
 
     // $: $form, handleFilters()
-    $: console.log(filterClientData);
+    $: console.log({filterClientData});
 
     const handleFilters = () => {
         firstTime = false;
