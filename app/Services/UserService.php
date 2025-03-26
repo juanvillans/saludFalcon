@@ -7,6 +7,8 @@ use App\Http\Resources\UserResource;
 use App\Models\Evolution;
 use App\Models\User;
 use Exception;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -133,6 +135,13 @@ class UserService
 
         $user->password = Hash::make($data['newPassword']);
         $user->save();
+        $userID = $user->id;
+        
+        Auth::logout();
+        
+        DB::table('sessions')
+                ->where('user_id', $userID)
+                ->delete();
 
         return 0;
         
