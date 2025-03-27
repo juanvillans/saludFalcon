@@ -262,7 +262,22 @@ class UserController extends Controller
     }
 
     public function myProfilePaginate(Request $request, $userID){
-        $evolutions = $this->userService->getMyEvolutions($userID);
+
+        $params = [
+            'search' => $request->input('search') ?? null,
+            'page' => $request->input('page') ?? null,
+            'per_page' => $request->input('per_page') ?? null,
+            'status' => $request->input('status') ?? null,
+            'condition' => $request->input('condition') ?? null,
+            'area_id' => $request->input('area_id') ?? null,
+            'patient_ci' => $request->input('ci') ?? null,
+            'start_date' => $request->input('start_date') ?? null,
+            'end_date' => $request->input('end_date') ?? null,
+            'case_id' => $request->input('case_id') ?? null,
+
+        ];
+
+        $evolutions = $this->userService->getMyEvolutions($userID,$params);
         
         return response()->json(['data' => new EvolutionCollection($evolutions)]);
     }

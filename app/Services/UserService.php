@@ -150,6 +150,7 @@ class UserService
 
     public function getMyEvolutions($userID, $params){
 
+
         $evolutions = Evolution::where('user_id',$userID)
         ->with('emergencyCase.patient', 'status', 'condition', 'area')
         ->when($params['status'],function($query) use ($params){
@@ -209,7 +210,7 @@ class UserService
     private function handlePhoto($data){
 
         if (isset($data['photo']) && $data['photo']->isValid()) {
-            $fileName = $data['ci'] . '-profile.webp';
+            $fileName = $data['ci'] . '-profile.webp    ';
             $image = Image::make($data['photo']);
             
             $image->resize(180, null, function ($constraint) {

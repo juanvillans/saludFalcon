@@ -95,7 +95,7 @@
             >
                 <img
                     class="bg-gray-400 w-8 aspect-square rounded-full object-cover"
-                    src={`/storage/users/${$page.props.auth.photo}}`}
+                    src={`/storage/users/${$page.props.auth.photo}`}
                     alt=""
                 />
             </div>
