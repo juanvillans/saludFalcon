@@ -9,16 +9,16 @@
     const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
   
     const getDateFromToday = (days) => {
-      console.log(Date.now());
       
       return Date.now() - days * MILLISECONDS_IN_DAY;
     };
   
-    let startDate = "";
-    let endDate = today;
-    let dateFormat = 'MMM d, yyyy';
+    export let startDate = "";
+    export let endDate = today;
+    let dateFormat = 'd MMM, yyyy';
     let isOpen = false;
   
+    
     let formattedStartDate = '';
   
     const onClearDates = () => {

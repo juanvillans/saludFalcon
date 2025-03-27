@@ -17,7 +17,6 @@
     let firstTime = true;
     let filterClientData;
     $: {
-        console.log($page.props)
         filterClientData = { ...$page.props.filters };
         isFilterAply = Object.keys(filterClientData).some(
             (value) => value != "search",
@@ -26,14 +25,12 @@
     const changeDateFilter = (args) => {
         filterClientData = {
             ...filterClientData,
-            start_date: args.detail.startDate,
-            end_date: args.detail.endDate,
+            start_date: +args.detail.startDate,
+            end_date: +args.detail.endDate,
         };
         handleFilters();
     };
 
-    // $: $form, handleFilters()
-    $: console.log({filterClientData});
 
     const handleFilters = () => {
         firstTime = false;
@@ -152,7 +149,8 @@
                         {/each}
                     </select>
                 {:else if filterOption.type === "date"}
-                    <DateRange on:changeDateFilter={changeDateFilter} />
+                    <DateRange  startDate={Number(filterClientData?.start_date)}
+                    endDate={Number(filterClientData?.end_date)} on:changeDateFilter={changeDateFilter} />
                 {:else}
                     {#each filterOption.options as filter, i (filter.id)}
                         <button
