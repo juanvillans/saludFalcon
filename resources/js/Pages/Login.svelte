@@ -41,16 +41,16 @@
 <Alert />
 
     <section
-        class="md:overflow-clip dark:bg-gray-800 bg-white md:min-h-screen justify-center items-center px-2 relative"
+        class="sm:overflow-clip dark:bg-gray-800 bg-white sm:min-h-screen justify-center items-center px-2 relative"
     >
         <div
-            class="animate-slide-in bg-red w-[99%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%]"
+            class="animate-slide-in bg-red w-[99%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute sm:translate-x-[110%]"
         ></div>
         <div
-            class="delay-1 animate-slide-in bg-color1 w-[96.6%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%]"
+            class="delay-1 animate-slide-in bg-color1 w-[96.6%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute sm:translate-x-[110%]"
         ></div>
         <div
-            class="delay-2 animate-slide-in bg-gray-100 w-[92%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute translate-x-[110%] flex  flex-col md:flex-row md:justify-between p-3 md:p-5 lg:p-8 md:gap-5"
+            class="delay-2 animate-slide-in bg-gray-100 w-[92%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute sm:translate-x-[110%] flex  flex-col sm:flex-row sm:justify-between p-3 md:p-5 lg:p-8 md:gap-5"
         >
             <div class="relative">
                 <header class="flex  items-center gap-3">
@@ -58,11 +58,11 @@
 
                     <h4>SALUDFALCÓN.COM</h4>
                 </header>
-                <h1 class="text-color1  xl:text-3xl mt-2 lg:mt-6 xl:mt-12">
+                <h1 class="text-color1 sm:text-xl xl:text-3xl mt-2 lg:mt-6 xl:mt-12">
                     REGISTROS DE CASOS DE EMERGENCIA DEL HOSPITAL DR ALFREDO VAN
                     GRIEKEN
                 </h1>
-                <img class="w-28 md:w-40 lg:w-80 fixed -left-2 md:absolute bottom-0 " src="/img/doctor.png" alt="" srcset="" />
+                <img class="w-28 sm:w-40 lg:w-80 fixed -left-2 md:absolute bottom-0 " src="/img/doctor.png" alt="" srcset="" />
 
             <img src="/img/4logos.png" alt="" srcset=""  class="target fixed  md:absolute bottom-2 md:bottom-0 left-1/2 -translate-x-1/2 mx-auto mt-5 md:mt-12 lg:mt-16 max-w-[200px] md:max-w-[300px]"/>
 
@@ -70,7 +70,7 @@
             
             <form
                 on:submit={handleSubmit}
-                class="md:min-w-[290px] py-7 px-4 md:px-6 lg:px-8 bg-gray-200 bg-opacity-30 rounded-3xl md:h-full neumorphism"
+                class="sm:min-w-[290px] py-7 px-4 md:px-6 lg:px-8 bg-gray-200 bg-opacity-30 rounded-3xl md:h-full neumorphism"
             >
                 <legend class="text-center opacity-70 mt-3 md:mt-7">INICIAR SESIÓN</legend>
                 <div>
@@ -124,7 +124,7 @@
         }
     }
 
-    @media (min-width: 924px) {
+    @media (min-width: 640px) {
     .animate-slide-in {
         animation: slide-in 0.4s ease-out forwards;
     }
