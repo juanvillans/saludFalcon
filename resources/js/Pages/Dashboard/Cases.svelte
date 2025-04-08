@@ -409,7 +409,7 @@
                         <div class="flex gap-1.5">
                             <img
                                 class="bg-gray-300 w-7 aspect-square rounded-full object-cover"
-                                src={`/storage/users/${$page.props.auth.photo}}`}
+                                src={`/storage/users/${$page.props.auth.photo}`}
                                 alt=""
                             />
                             <p class="inline-block w-fit">

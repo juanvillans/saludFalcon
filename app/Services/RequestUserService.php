@@ -52,8 +52,8 @@ class RequestUserService
 
         $request->delete();
 
-        // Mail::to($dataToCreate['email'])->send(new RequestUserResponse());  
-        // Enviar Correo
+        Mail::to($dataToCreate['email'])->queue(new RequestUserResponse($dataToCreate));  
+        
         return 0;
 
     }

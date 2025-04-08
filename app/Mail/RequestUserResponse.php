@@ -17,9 +17,14 @@ class RequestUserResponse extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public $userData;
+    public $responseDate;
+    public $status;
+    public function __construct(array $userData, $status = true)
     {
-        //
+        $this->userData = $userData;
+        $this->responseDate = now()->format('d/m/Y H:i');
+        $this->status = $status;
     }
 
     /**
@@ -39,6 +44,9 @@ class RequestUserResponse extends Mailable
     {
         return new Content(
             view: 'mails.requestUserResponse',
+            with:[
+                'logoUrl' => asset('img/logoBlue.svg')
+                ]
         );
     }
 
