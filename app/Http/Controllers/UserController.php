@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RecoverPasswordRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\DoctorCollection;
@@ -285,7 +286,47 @@ class UserController extends Controller
 
     public function forgotPassword(ForgotPasswordRequest $data){
         
-        $this->userService->forgotPassword($data->ci);
+        try {
+
+            $this->userService->forgotPassword($data->ci);
+
+        } catch (\Exception $e) {
+
+            return redirect('/')->withErrors(['data' => $e->getMessage()]);
+            
+        }
+    }
+    
+    public function checkRecoverToken($token)
+    {   
+        try{
+            
+            $response = $this->userService->checkRecoverToken($token);
+
+            return inertia('ForgotPassword', [
+                'data' => $response
+            ]);
+
+        }catch( \Exception $e){
+
+            return redirect('/')->withErrors(['data' => $e->getMessage()]);
+
+        }
+    }
+
+    public function recoverPassword(RecoverPasswordRequest $request, $token){
+        
+        try{
+            
+            $this->userService->recoverPassword($request->all(), $token);
+
+            return redirect('/')->with(['message' => 'Contraseña actualizada con éxito']);
+
+        }catch( \Exception $e){
+
+            return redirect('/')->withErrors(['data' => $e->getMessage()]);
+
+        }
     }
 
     

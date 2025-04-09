@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
+use App\Mail\PasswordResetTokenMail;
 use App\Models\Evolution;
 use App\Models\User;
 use Carbon\Carbon;
@@ -12,9 +13,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
-
+use Illuminate\Support\Str;
 class UserService
 {	
     public function getUsers($params)
@@ -281,17 +283,58 @@ class UserService
 		if(!isset($user->id))
 			  throw new Exception('Cedula incorrecta o invalida',400);
 
-	   $token = Str::random(32);
+	   $token = Str::random(60);
+       $expiresAt = Carbon::now()->addMinutes(20);
 
+       DB::table('password_reset_tokens')->updateOrInsert(
+        ['user_id' => $user->id,
+         'email' => $user->email,
+        ],
+        ['token' => $token, 'created_at' => now(), 'expires_at' => $expiresAt]
+    );
 		
-		PasswordResetToken::create(['user_id' => $user->id, 'token'=> $token, 'created_at' => Carbon::now(), 'expires_at' => Carbon::now()->addMinutes(30)->format('Y-m-d H:i:s')]);
-
 
 		$dataToSend = ['token' => $token, 'user' => $user];
 
-		Mail::to($user->email)->queue(new RecoverPasswordMail($dataToSend));
+		Mail::to($user->email)->queue(new PasswordResetTokenMail($dataToSend));
 
 		return $user;
+    }
+
+    public function checkRecoverToken($token){
+                    
+        $record = DB::table('password_reset_tokens')
+                    ->where('token', $token)
+                    ->first();
+    
+        if(!isset($record->id))
+            return ['message' => 'Token invalido', 'status' => false];
+
+        if(Carbon::now()->gt($record->expires_at))
+            return ['message' => 'Token expirado', 'status' => false];
+        
+        return ['message' => 'OK', 'status' => true];
+    }
+
+    public function recoverPassword($data, $token){
+        
+        $record = DB::table('password_reset_tokens')
+                    ->where('token', $token)
+                    ->first();
+
+        if(!isset($record->id))
+            throw new Exception('Token invalido, solicite uno nuevamente', 400);
+
+        if(Carbon::now()->gt($record->expires_at))
+            throw new Exception('Token expirado, solicite uno nuevamente', 400);
+
+        if($data['new_password'] !== $data['confirm_password'])
+            throw new Exception('Las contraseñas no coinciden', 400);
+
+        $user = User::where('id', $record->user_id)->first();
+        $user->password = Hash::make($data['new_password']);
+        $user->save();
+
     }
     
 
