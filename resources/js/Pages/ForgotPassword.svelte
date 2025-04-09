@@ -46,13 +46,13 @@
     <div
         class="delay-2 animate-slide-in bg-gray-100 w-[92%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute sm:translate-x-[110%]  p-3 md:p-5 lg:p-8 md:gap-5"
     >
-        <header
+        <a href="/" use:inertia
             class="flex items-center gap-3 text-center justify-center mt-5 "
         >
             <img src="/img/logoBlue.svg" alt="" srcset="" class="1/2 w-10" />
 
-            <b>SALUDFALCÓN.COM</b>
-        </header>
+             <b>SALUDFALCÓN.COM</b>
+        </a>
         <p class="text-center mt-5 my-10">
             ¡Hola <b> Nacho Vidal</b>! Aquí puedes recuperar tu contraseña
         </p>
