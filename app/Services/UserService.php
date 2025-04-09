@@ -272,6 +272,27 @@ class UserService
 
         return 0;
     }
+
+    public function forgotPassword($ci){
+       
+        $user = User::where( 'ci', $ci )->first();
+
+                
+		if(!isset($user->id))
+			  throw new Exception('Cedula incorrecta o invalida',400);
+
+	   $token = Str::random(32);
+
+		
+		PasswordResetToken::create(['user_id' => $user->id, 'token'=> $token, 'created_at' => Carbon::now(), 'expires_at' => Carbon::now()->addMinutes(30)->format('Y-m-d H:i:s')]);
+
+
+		$dataToSend = ['token' => $token, 'user' => $user];
+
+		Mail::to($user->email)->queue(new RecoverPasswordMail($dataToSend));
+
+		return $user;
+    }
     
 
 }

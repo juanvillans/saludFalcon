@@ -21,6 +21,9 @@ Route::group(['middleware' => ['guest']], function () {
     
     // Welcome login
     Route::get('/', [AppController::class, 'loginForm'])->name('login');
+
+    Route::get('/forgot-password', [AppController::class, 'forgotPassword'])->name('login');
+
     // Post Login
     Route::post('/admin/login', [UserController::class, 'login']);
     
@@ -29,6 +32,8 @@ Route::group(['middleware' => ['guest']], function () {
     // Post register new user request 
     Route::post('/registrarse', [RequestUserController::class, 'store'])->name('requestUser.store');
 
+    // Forgot Password
+    Route::post('/olvidar-contraseña', [UserController::class, 'forgotPassword'])->name('forgotPassword');
 
 });
 

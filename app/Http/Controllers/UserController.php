@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangePasswordRequest;
+use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
@@ -280,6 +281,11 @@ class UserController extends Controller
         $evolutions = $this->userService->getMyEvolutions($userID,$params);
         
         return response()->json(['data' => new EvolutionCollection($evolutions)]);
+    }
+
+    public function forgotPassword(ForgotPasswordRequest $data){
+        
+        $this->userService->forgotPassword($data->ci);
     }
 
     
