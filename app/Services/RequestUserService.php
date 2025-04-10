@@ -9,6 +9,7 @@ use App\Models\RequestUser;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Intervention\Image\Facades\Image;
 
@@ -52,6 +53,8 @@ class RequestUserService
 
         // $request->delete();
 
+
+        Log::info(env('MAIL_USERNAME'));
         Mail::to($dataToCreate['email'])->queue(new RequestUserResponse($dataToCreate));  
         
         return 0;
