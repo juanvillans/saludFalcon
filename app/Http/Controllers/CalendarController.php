@@ -47,7 +47,7 @@ class CalendarController
         $structure = $this->calendarService->getStructureCalendar($this->params);
         
         return inertia('Dashboard/CreateCalendar',[
-            'data' => $structure,
+            'calendar' => $structure,
         ]);
     }
 
