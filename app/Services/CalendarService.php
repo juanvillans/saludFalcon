@@ -33,6 +33,21 @@ class CalendarService
 
         return new CalendarCollection($calendars);
     }
+
+    public function getStructureCalendar($params){
+
+        
+        return [
+            'headerInfo' => [
+                'today' => now(),
+                'month_year' => now()->locale('es')->isoFormat('MMMM YYYY'),
+            ]
+            ];
+    }
+
+    public function createCalendar($data){
+
+    }
 /* 
     public function createUser($data, $photo = true)
     {   
