@@ -43,7 +43,7 @@ class CalendarService
         // Generar la estructura
         return [
             'headerInfo' => [
-                'today' => now()->toDateString(),
+                'today' => now(),
                 'month_year' => $this->getMonthYearFormat($startWeek, $endWeek),
             ],
             'weekDays' => $this->generateWeekDays($startWeek)
