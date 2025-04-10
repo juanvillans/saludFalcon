@@ -156,7 +156,7 @@
         </div>
 
         <div>
-            <header class=" sticky top-0 pt-1 bg-gray-100 z-30 calendarHeader">
+            <header class="  pt-1 bg-gray-100 z-30 calendarHeader">
                 <div class="flex gap-4 items-center">
                     <!-- <h2 class="text-2xl">{data.headerInfo.month_year}</h2> -->
                 </div>
