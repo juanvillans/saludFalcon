@@ -20,7 +20,7 @@
     });
 
     let forgotPassword = useForm({
-        ci: null,
+        ci: "",
     });
     function focusInput() {
         document.querySelector("input[name='ci']").focus();
@@ -46,7 +46,7 @@
         console.log('h');
         
         if ($forgotPassword.ci.length < 6) {
-            displayAlert({ type: "error", message: "Escriba su Cédula de identida" });
+            displayAlert({ type: "error", message: "Escriba su Cédula" });
             return
         }
         $forgotPassword.clearErrors();
@@ -61,7 +61,7 @@
                 displayAlert({
                     type: "success",
                     message: "Se le envió un correo para cambiar su contraseña",
-                    time: "10000"
+                    time: 10000
                 });
             },
         });

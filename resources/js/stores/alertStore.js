@@ -5,7 +5,6 @@ export const alertInfo = writable({
     type: "info",
     title: "",
     message: "",
-    time: 5000
 })
 
 export function displayAlert(objParams) {
@@ -20,7 +19,7 @@ export function displayAlert(objParams) {
             title: "",
             message: "",
         })
-    }, time);
+    }, 5000);
     
 
     return () => {
