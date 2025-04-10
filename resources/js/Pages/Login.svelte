@@ -168,7 +168,7 @@
                 <p>Enviando link a su correo...</p>
             {:else}
             
-            <button on:click={handleForgetPsw} type="button" class="text-right w-full mt-2 p-1 hover:underline text-gray-800"> Olvidé mi contraseña</button>
+            <button on:click={handleForgetPsw} type="button" class="text-right block float-right mt-2 p-1 hover:underline text-gray-800"> Olvidé mi contraseña</button>
             {/if}
             <input
                 type="submit"

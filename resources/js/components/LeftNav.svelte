@@ -17,6 +17,11 @@
             href: "/admin/casos",
             name: "Casos",
         },
+        {
+            icon: "hugeicons:appointment-02",
+            href: "/admin/agenda",
+            name: "Citas",
+        },
     
         
     ];

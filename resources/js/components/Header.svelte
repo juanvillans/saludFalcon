@@ -34,7 +34,8 @@
         casedetail: "Detalles del caso",
         users: "usuarios",
         profile: "Perfil",
-        changepassword: "Cambiar Contraseña"
+        changepassword: "Cambiar Contraseña",
+        agenda: "Citas",
     };
     
     console.log($page.component.replace("Dashboard/", ""));
