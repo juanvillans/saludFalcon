@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Http\Resources\CalendarCollection;
 use App\Models\Calendar;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class CalendarService
 {	
@@ -36,17 +38,56 @@ class CalendarService
 
     public function getStructureCalendar($params){
 
-        
+        [$startWeek, $endWeek] = $this->getWeekRange($params);
+    
+        // Generar la estructura
         return [
             'headerInfo' => [
-                'today' => now(),
-                'month_year' => now()->locale('es')->isoFormat('MMMM YYYY'),
-            ]
-            ];
+                'today' => now()->toDateString(),
+                'month_year' => $this->getMonthYearFormat($startWeek, $endWeek),
+            ],
+            'weekDays' => $this->generateWeekDays($startWeek)
+        ];
     }
-
-    public function createCalendar($data){
-
+    
+    protected function getWeekRange($params)
+    {
+        $start = $params['start_week'] 
+            ? Carbon::parse($params['start_week'])
+            : now()->startOfWeek();
+        
+        $end = $params['end_week'] 
+            ? Carbon::parse($params['end_week'])
+            : now()->endOfWeek();
+    
+        return [$start, $end];
+    }
+    
+    protected function getMonthYearFormat(Carbon $start, Carbon $end): string
+    {
+        $start->locale('es');
+        $end->locale('es');
+        
+        if ($start->month === $end->month) {
+            return $start->isoFormat('MMMM YYYY');
+        }
+        return $start->isoFormat('MMMM').'-'.$end->isoFormat('MMMM YYYY');
+    }
+    
+    protected function generateWeekDays(Carbon $startWeek): array
+    {
+        $weekDays = [];
+        $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+        
+        foreach ($days as $index => $dayName) {
+            $currentDay = $startWeek->copy()->addDays($index);
+            $weekDays[$dayName] = [
+                'appointments' => [],
+                'current_day' => $currentDay
+            ];
+        }
+        
+        return $weekDays;
     }
 /* 
     public function createUser($data, $photo = true)
