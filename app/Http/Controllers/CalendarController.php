@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CalendarRequest;
 use App\Services\CalendarService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CalendarController
 {   
@@ -33,8 +36,43 @@ class CalendarController
         ]);
     }
 
-    public function create(){
+    public function create(Request $request){
+
+        $this->params = [
+            'start_week' => $request->input('start_week') ?? null,
+            'end_week' => $request->input('end_week') ?? null,
+
+        ];
+
+        $structure = $this->calendarService->getStructureCalendar($this->params);
         
-        return inertia('Dashboard/CreateCalendar');
+        return inertia('Dashboard/CreateCalendar',[
+            'calendar' => $structure,
+        ]);
+    }
+
+    public function store(CalendarRequest $request){
+        
+        DB::beginTransaction();
+
+        try 
+        {
+            $data = $request->all();
+
+            $this->calendarService->createCalendar($data);
+
+            DB::commit();
+
+            return redirect()->back()->with(['message' => 'Calendario creado con exito']);
+
+        }
+        catch (\Throwable $e)
+        {   
+            
+            DB::rollback();
+            Log::info('Error: ' . $e->getMessage() . ' --- Linea: ' . $e->getLine());
+            
+            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+        }
     }
 }
