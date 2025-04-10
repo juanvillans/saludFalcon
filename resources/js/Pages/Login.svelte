@@ -97,8 +97,7 @@
             <h1
                 class="text-color1 sm:text-xl xl:text-3xl mt-2 lg:mt-6 xl:mt-12"
             >
-                REGISTROS DE CASOS DE EMERGENCIA DEL HOSPITAL DR ALFREDO VAN
-                GRIEKEN
+                HOSPITAL DR ALFREDO VAN GRIEKEN
             </h1>
             <img
                 class="w-28 sm:w-40 lg:w-80 fixed -left-2 md:absolute bottom-0"
