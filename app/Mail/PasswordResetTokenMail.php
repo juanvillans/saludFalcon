@@ -8,23 +8,16 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use MailerSend\LaravelDriver\MailerSendTrait;
 
-class RequestUserResponse extends Mailable
+class PasswordResetTokenMail extends Mailable
 {
-    use Queueable, SerializesModels, MailerSendTrait;
+    use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public $userData;
-    public $responseDate;
-    public $status;
-    public function __construct(array $userData, $status = true)
+    public $data;
+
+    public function __construct(array $data)
     {
-        $this->userData = $userData;
-        $this->responseDate = now()->format('d/m/Y H:i');
-        $this->status = $status;
+        $this->data = $data;
     }
 
     /**
@@ -33,7 +26,7 @@ class RequestUserResponse extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Respuesta a solicitud de ingreso a emergencia',
+            subject: 'Recuperar contraseña',
         );
     }
 
@@ -43,10 +36,11 @@ class RequestUserResponse extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mails.requestUserResponse',
+            view: 'mails.passwordReset',
             with:[
-                'logoUrl' => asset('img/logoBlue.svg')
-                ]
+                'data' => $this->data,
+                'logoUrl' => asset('img/secretaria.png'),
+            ]
         );
     }
 

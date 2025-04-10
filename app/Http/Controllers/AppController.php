@@ -40,6 +40,8 @@ class AppController
         return response()->json(compact('municipalities','statutes','conditions','areas', 'specialties'));
     }
 
+   
+
 
    
 }

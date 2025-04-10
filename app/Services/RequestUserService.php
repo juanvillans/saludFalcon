@@ -44,16 +44,16 @@ class RequestUserService
     
         $request = RequestUser::find($requestID);
         $dataToCreate = $request->toArray();
-        $this->movePhoto($dataToCreate);
-        $dataToCreate['role_name'] = 'Doctor';
+        // $this->movePhoto($dataToCreate);
+        // $dataToCreate['role_name'] = 'Doctor';
         
-        $userService = new UserService;
-        $userService->createUser($dataToCreate, $this->NO_HANDLE_PHOTO);
+        // $userService = new UserService;
+        // $userService->createUser($dataToCreate, $this->NO_HANDLE_PHOTO);
 
-        $request->delete();
+        // $request->delete();
 
-        // Mail::to($dataToCreate['email'])->send(new RequestUserResponse());  
-        // Enviar Correo
+        Mail::to($dataToCreate['email'])->queue(new RequestUserResponse($dataToCreate));  
+        
         return 0;
 
     }
