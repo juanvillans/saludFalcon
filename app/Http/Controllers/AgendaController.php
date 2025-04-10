@@ -13,21 +13,21 @@ use Illuminate\Support\Facades\DB;
 
 class AgendaController extends Controller
 {   
-    private AgendaService $agendaService;
+    // private AgendaService $agendaService;
     private $params = [];
 
     public function __construct()
     {
-        $this->agendaService = new AgendaService;
+        // $this->agendaService = new AgendaService;
     }
 
     public function index()
     {
-        $specialties = $this->agendaService->getSpecialties();
+        // $specialties = $this->agendaService->getSpecialties();
         
         return inertia('Dashboard/Agenda',[
             'data' => [
-                'specialties' => $specialties,
+                'specialties' => null,
             ]
         ]);
     }
