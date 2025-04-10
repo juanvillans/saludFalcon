@@ -442,7 +442,7 @@
         : "editar";
     $: console.log(typePage);
     function updateUrl(type) {
-        const currentDate = calendar.calendar.mon.current_date;
+        const currentDate = calendar.weekDays.mon.current_date;
         const newUrl = `?startWeek=${currentDate}&to=${type}`;
         router.get(
             window.location.pathname,
@@ -457,7 +457,7 @@
 
     function updateShiftsForCalendar() {
         console.log($form.adjusted_availability);
-        Object.entries(calendar.calendar).forEach(([key, value], indx) => {
+        Object.entries(calendar.weekDays).forEach(([key, value], indx) => {
             let isItAjustedShift =
                 $form?.adjusted_availability.length > 0
                     ? $form?.adjusted_availability?.findIndex(
@@ -2414,7 +2414,7 @@
             >
                 <div class="w-10 max-w-[40px]"></div>
                 <ul class="flex listCalendarHeader">
-                    {#each Object.entries(calendar.calendar) as [day, values], indxDay (day)}
+                    {#each Object.entries(calendar.weekDays) as [day, values], indxDay (day)}
                         <li
                             class="flex flex-col justify-center text-center w-28"
                         >
@@ -2464,7 +2464,7 @@
             {#each Object.entries(shiftsForCalendar) as [day, shifts], indxDay (day)}
                 {#if shifts.length >= 1 && shifts[0].start != ""}
                     <div
-                        class={`gap-2 flex flex-col z-30 ${calendar.calendar[day].current_date < calendar.headerInfo.today.slice(0, 10) ? "opacity-40" : ""} `}
+                        class={`gap-2 flex flex-col z-30 ${calendar.weekDays[day].current_date < calendar.headerInfo.today.slice(0, 10) ? "opacity-40" : ""} `}
                     >
                         {#each shifts as shift, indx (day + "_" + indx)}
                             <div
@@ -2489,7 +2489,7 @@
                 {/if}
             {/each}
 
-            {#each Object.entries(calendar.calendar) as [day, values], indxDay (day)}
+            {#each Object.entries(calendar.weekDays) as [day, values], indxDay (day)}
                 {#each values.appointments as appointment, indx (day + "_" + indx)}
                     <!-- <Draggable>
                         <div
@@ -2500,7 +2500,7 @@
                         >
                             <div class=" z-50 px-1 w-full">
                                 <div
-                                    class={`cursor-pointer hover:bg-color1 text-center bg-color3 ${calendar.calendar[day].current_date < calendar.headerInfo.today ? "opacity-40" : ""}  w-[98%] h-full mx-auto p-1 rounded-lg ${$form.booked_appointment_settings.time_between_appointment < 5 ? "border-b-4 border-color4" : ""}`}
+                                    class={`cursor-pointer hover:bg-color1 text-center bg-color3 ${calendar.weekDays[day].current_date < calendar.headerInfo.today ? "opacity-40" : ""}  w-[98%] h-full mx-auto p-1 rounded-lg ${$form.booked_appointment_settings.time_between_appointment < 5 ? "border-b-4 border-color4" : ""}`}
                                 >
                                     <h4 class="text-white text-sm">
                                         {appointment.name.split(" ")[0]}
@@ -2521,7 +2521,7 @@
                         <div class=" z-40 px-1 w-full">
                             <!-- svelte-ignore a11y-click-events-have-key-events -->
                             <div
-                                class={`cursor-pointer hover:bg-color1 text-center bg-color3 ${calendar.calendar[day].current_date < calendar.headerInfo.today ? "opacity-40" : ""}  w-[98%] h-full mx-auto p-1 rounded-lg ${$form.booked_appointment_settings.time_between_appointment < 5 ? "border-b-4 border-color4" : ""}`}
+                                class={`cursor-pointer hover:bg-color1 text-center bg-color3 ${calendar.weekDays[day].current_date < calendar.headerInfo.today ? "opacity-40" : ""}  w-[98%] h-full mx-auto p-1 rounded-lg ${$form.booked_appointment_settings.time_between_appointment < 5 ? "border-b-4 border-color4" : ""}`}
                                 on:click={() => {
                                     showModalappointments = true;
                                     selectedAppointmentDetails = {
