@@ -31,7 +31,7 @@ class AgendaController extends Controller
             ]
         ]);
     }
-
+/* 
     public function service(Request $request, Service $service)
     {
         $dataToCreateService = $this->agendaService->getDataToCreateService();   
@@ -133,6 +133,6 @@ class AgendaController extends Controller
         }
 
     }
-
+*/
     
 }
