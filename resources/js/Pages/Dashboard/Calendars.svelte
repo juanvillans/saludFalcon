@@ -2,6 +2,7 @@
     import { inertia } from "@inertiajs/svelte";
     import Modal from "../../components/Modal.svelte";
     export let data = {};
+    console.log(data);
     let contentForModal;
     $: console.log(contentForModal);
     let showModal = false;

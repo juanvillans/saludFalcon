@@ -24,7 +24,7 @@ class CalendarController
         
         $calendars = $this->calendarService->getCalendars($this->params);
 
-        return inertia('Dashboard/Agenda',[
+        return inertia('Dashboard/Calendars',[
             'data' => [
                 'calendars' => $calendars,
             ]
