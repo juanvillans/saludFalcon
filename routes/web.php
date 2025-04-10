@@ -22,8 +22,7 @@ Route::group(['middleware' => ['guest']], function () {
     // Welcome login
     Route::get('/', [AppController::class, 'loginForm'])->name('login');
 
-    Route::get('/forgot-password', [AppController::class, 'forgotPassword'])->name('login');
-
+    
     // Post Login
     Route::post('/admin/login', [UserController::class, 'login']);
     
@@ -31,9 +30,11 @@ Route::group(['middleware' => ['guest']], function () {
     Route::get('/registrarse', [RequestUserController::class, 'create'])->name('requestUser.create');
     // Post register new user request 
     Route::post('/registrarse', [RequestUserController::class, 'store'])->name('requestUser.store');
-
+    
     // Forgot Password
     Route::post('/olvidar-contraseña', [UserController::class, 'forgotPassword'])->name('forgotPassword');
+    Route::get('/recuperar-contraseña/{token}', [UserController::class, 'checkRecoverToken'])->name('recoverPassword');
+    Route::post('/recuperar-contraseña/{token}', [UserController::class, 'recoverPassword'])->name('recoverPassword.post');
 
 });
 

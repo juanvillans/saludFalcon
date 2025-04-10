@@ -40,10 +40,7 @@ class AppController
         return response()->json(compact('municipalities','statutes','conditions','areas', 'specialties'));
     }
 
-    public function forgotPassword()
-    {
-        return inertia('ForgotPassword');
-    }
+   
 
 
    
