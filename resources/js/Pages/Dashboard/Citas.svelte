@@ -5,7 +5,7 @@
     import Input from "../../components/Input.svelte";
     import Modal from "../../components/Modal.svelte";
     import Calender from "../../components/Calender.svelte";
-    import Draggable from "../../components/Draggable.svelte";
+    // import Draggable from "../../components/Draggable.svelte";
     import Editor from "cl-editor/src/Editor.svelte";
     import { displayAlert } from "../../stores/alertStore";
 
