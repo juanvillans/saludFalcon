@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\PatientController;
@@ -51,9 +52,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::delete('/perfil/{user}', [UserController::class, 'destroy'])->name('profileDelete');
     Route::post('/perfil/picture/{user}', [UserController::class, 'updateProfilePicture'])->name('profilePictureUpdate');
     
-    
-
-    // 
+    // Cases paginate from my profile
     Route::get('/perfil/json/{userID}', [UserController::class, 'myProfilePaginate'])->name('perfil');
 
 
@@ -74,7 +73,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::post('/usuarios/solicitudes/rechazar/{requestID}', [RequestUserController::class, 'reject'])->name('requestUser.reject');
 
 
-    // Pacients 
+    // Cases 
     Route::get('/casos',[EmergencyCaseController::class,'index'])->middleware('permission:read-cases');
     Route::post('/casos',[EmergencyCaseController::class,'store'])->middleware('permission:create-cases');
     Route::get('/casos/detalle-caso/{case}',[EmergencyCaseController::class,'caseDetail'])->middleware('permission:read-cases')->name('caseDetail');
@@ -88,10 +87,12 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::get('/historial-medico/doctor',[UserController::class,'searchDoctor']);
     Route::get('/general-data',[AppController::class,'generalData']);
 
-    // Crea
-
+    // Update Patient Data
     Route::put('/historial-medico/detalle-paciente/{patient}',[EmergencyCaseController::class,'updatePatient']);
 
+
+    // Agenda
+    Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda');
 
 
     
