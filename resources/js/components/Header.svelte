@@ -37,10 +37,12 @@
         changepassword: "Cambiar Contraseña",
         calendars: "Citas",
         index: "home",
-        appointment: "Cita",
+        createcalendar: "Cita",
     };
     
-    console.log($page.component.replace("Dashboard/", ""));
+    console.log($page.component.replace("Dashboard/", ""), dictionaryPages?.[
+                    $page.component.replace("Dashboard/", "").toLowerCase()
+                ]);
 
 </script>
 

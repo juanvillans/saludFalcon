@@ -8,7 +8,7 @@
     // $: console.log(showModal);
 </script>
 
-<!-- <Modal bind:showModal>
+<Modal bind:showModal>
     <h2 slot="header" class="text-center">
         Citas de {contentForModal.specialty_name}
         <span class="text-gray-300 block">|</span>
@@ -48,7 +48,7 @@
             </a>
         {/each}
     </div>
-</Modal> -->
+</Modal>
 
 <a
     class="btn_create inline-block p-2 px-3"
