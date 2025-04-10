@@ -83,7 +83,7 @@ class CalendarService
             $currentDay = $startWeek->copy()->addDays($index);
             $weekDays[$dayName] = [
                 'appointments' => [],
-                'current_day' => $currentDay
+                'current_date' => $currentDay
             ];
         }
         
