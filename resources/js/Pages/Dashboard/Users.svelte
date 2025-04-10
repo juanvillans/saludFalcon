@@ -20,8 +20,6 @@
         }
     });
 
-    let instituteSpecialities = [];
-    let specialities = [];
     let dataTable = [];
     $: if (data) {
         if (data.requests) {
@@ -101,26 +99,6 @@
                     showModal = false;
                 },
             });
-        } else if (
-            submitStatus == "Editar" &&
-            $page.props.auth.permissions.find((p) => p == "update-users")
-        ) {
-            $formCreate.put(`/admin/usuarios/${$formCreate.id}`, {
-                onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
-                },
-                onSuccess: (mensaje) => {
-                    $formCreate.reset();
-                    displayAlert({
-                        type: "success",
-                        message: "Ok todo salió bien",
-                    });
-                    showModal = false;
-                    selectedRow = { status: false, id: 0, row: {} };
-                },
-            });
         }
     }
 
@@ -182,8 +160,6 @@
     }
 
     let submitStatus = "Crear";
-    let selectSpecialityModal = false;
-    let filteredSpecialities = [];
 
     function handleMouseDown() {
         selectingText = false; // Reset before mouse down

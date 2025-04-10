@@ -2,7 +2,6 @@
     import { inertia } from "@inertiajs/svelte";
     import Modal from "../../components/Modal.svelte";
     export let data = {};
-    console.log(data);
     let contentForModal;
     $: console.log(contentForModal);
     let showModal = false;
@@ -52,14 +51,16 @@
 </Modal> -->
 
 <a
-            class="btn_create inline-block p-2 px-3"
-            href="/admin/agenda/crear-cita" use:inertia 
-        >
-            <span class="sm:hidden  text-2xl relative top-1 font-bold"
-                ><iconify-icon icon="ic:round-add"></iconify-icon></span
-            >
-            <span class="hidden md:block"> Crear Cita</span>
-        </a>
+    class="btn_create inline-block p-2 px-3"
+    href="/admin/agenda/crear-calendario"
+    use:inertia
+>
+    <span class="sm:hidden text-2xl relative top-1 font-bold"
+        ><iconify-icon icon="ic:round-add"></iconify-icon></span
+    >
+    <span class="hidden md:block"> Crear calendario</span>
+</a>
+
 <!-- <main>
     <div class="specialties gap-5 md:gap-8 cursor-pointer">
         {#each data.specialties.data as speciality}
