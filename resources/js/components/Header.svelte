@@ -35,7 +35,9 @@
         users: "usuarios",
         profile: "Perfil",
         changepassword: "Cambiar Contraseña",
-        agenda: "Citas",
+        calendars: "Citas",
+        index: "home",
+        appointment: "Cita",
     };
     
     console.log($page.component.replace("Dashboard/", ""));

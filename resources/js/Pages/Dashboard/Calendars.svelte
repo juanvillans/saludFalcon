@@ -8,7 +8,7 @@
     // $: console.log(showModal);
 </script>
 
-<Modal bind:showModal>
+<!-- <Modal bind:showModal>
     <h2 slot="header" class="text-center">
         Citas de {contentForModal.specialty_name}
         <span class="text-gray-300 block">|</span>
@@ -48,11 +48,18 @@
             </a>
         {/each}
     </div>
-</Modal>
-<a href="/admin/agenda/crear-cita" use:inertia class="btn_create inline-block"
-    >Crear Cita</a
->
-<main>
+</Modal> -->
+
+<a
+            class="btn_create inline-block p-2 px-3"
+            href="/admin/agenda/crear-cita" use:inertia 
+        >
+            <span class="sm:hidden  text-2xl relative top-1 font-bold"
+                ><iconify-icon icon="ic:round-add"></iconify-icon></span
+            >
+            <span class="hidden md:block"> Crear Cita</span>
+        </a>
+<!-- <main>
     <div class="specialties gap-5 md:gap-8 cursor-pointer">
         {#each data.specialties.data as speciality}
             <button
@@ -70,7 +77,7 @@
             </button>
         {/each}
     </div>
-</main>
+</main> -->
 
 <style>
     main .specialties {
