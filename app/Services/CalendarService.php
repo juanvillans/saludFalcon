@@ -16,6 +16,7 @@ class CalendarService
         ->when($params['see_all'] == null,function($query) use ($params){
             $query->where('user_id', auth()->user()->id);
         })
+        ->with('user.specialty')
         ->orderBy('id','desc')
         ->get();
 
