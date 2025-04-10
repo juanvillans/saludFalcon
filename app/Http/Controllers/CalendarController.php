@@ -32,4 +32,9 @@ class CalendarController
             ]
         ]);
     }
+
+    public function create(){
+        
+        return inertia('Dashboard/CreateCalendar');
+    }
 }
