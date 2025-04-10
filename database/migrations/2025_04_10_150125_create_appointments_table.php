@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('agendas', function (Blueprint $table) {
+        Schema::create('appointments', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('calendar_id');
+            $table->unsignedBigInteger('patient_id');
+            $table->date('day_reserved');
+            $table->json('appointmen_data');
             $table->timestamps();
         });
     }
@@ -22,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('agendas');
+        Schema::dropIfExists('appointments');
     }
 };

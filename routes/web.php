@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\AppController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\RequestUserController;
@@ -92,7 +93,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 
 
     // Agenda
-    Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda');
+    Route::get('/agenda', [CalendarController::class, 'index'])->name('agenda');
 
 
     
