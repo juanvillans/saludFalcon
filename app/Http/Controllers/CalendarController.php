@@ -20,6 +20,8 @@ class CalendarController
 
         $this->params = [
             'see_all' => $request->input('see_all') ?? null,
+            'specialty_id' => $request->input('specialty_id') ?? null,
+
         ];     
         
         $calendars = $this->calendarService->getCalendars($this->params);
