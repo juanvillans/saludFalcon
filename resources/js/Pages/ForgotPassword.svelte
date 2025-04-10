@@ -2,7 +2,7 @@
     import { displayAlert } from "../stores/alertStore";
     import { useForm, inertia } from "@inertiajs/svelte";
     import Input from "../components/Input.svelte";
-
+    export let data;
     const emptyDataForm = {
         new_password: "",
         confirm_password: "",
@@ -30,7 +30,6 @@
             },
         });
     }
-    $: console.log(showPassword);
     let submitStatus = "Cambiar";
 </script>
 

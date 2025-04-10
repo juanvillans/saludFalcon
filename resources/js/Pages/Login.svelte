@@ -20,7 +20,7 @@
     });
 
     let forgotPassword = useForm({
-        ci: null,
+        ci: "",
     });
     function focusInput() {
         document.querySelector("input[name='ci']").focus();
@@ -46,7 +46,7 @@
         console.log('h');
         
         if ($forgotPassword.ci.length < 6) {
-            displayAlert({ type: "error", message: "Escriba su Cédula de identida" });
+            displayAlert({ type: "error", message: "Escriba su Cédula" });
             return
         }
         $forgotPassword.clearErrors();
@@ -55,6 +55,14 @@
                 if (errors.data) {
                     displayAlert({ type: "error", message: errors.data });
                 }
+            },
+            onSuccess: (mensaje) => {
+                $forgotPassword.reset();
+                displayAlert({
+                    type: "success",
+                    message: "Se le envió un correo para cambiar su contraseña",
+                    time: 10000
+                });
             },
         });
     }
@@ -157,10 +165,10 @@
                 </div>
             </div>
             {#if $forgotPassword.processing }
-                <p>Enviando correo...</p>
+                <p>Enviando link a su correo...</p>
             {:else}
             
-            <button on:click={handleForgetPsw} type="button" class="text-right w-full mt-2 p-1 hover:underline text-gray-800">Olvidé mi contraseña</button>
+            <button on:click={handleForgetPsw} type="button" class="text-right w-full mt-2 p-1 hover:underline text-gray-800"> Olvidé mi contraseña</button>
             {/if}
             <input
                 type="submit"
