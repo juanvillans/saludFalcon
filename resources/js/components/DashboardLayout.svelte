@@ -48,7 +48,7 @@
             <main  style={mainWidth}  class={`mx-auto  main_dashboard   relative md:px-10 duration-100 pb-10 pt-3`} >
                 <slot />
             </main>
-            <Footer />
+            <!-- <Footer /> -->
     
         </div>
         <LeftNav />

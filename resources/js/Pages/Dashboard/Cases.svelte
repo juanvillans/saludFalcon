@@ -151,8 +151,6 @@
     }, 280);
 
     const searchDoctor = debounce(async (search) => {
-        showModal = true;
-        prosecingSearchPatient = true; // Cambiar a verdadero antes de la búsqueda
 
         try {
             const res = await axios.get(`/admin/historial-medico/doctor`, {

@@ -62,7 +62,7 @@
 
                 
 <div class={`text-left   ${theme == "dark" ? "bg-color1 text-gray-100" : ''}${classes ? classes : "mt-3 w-full"} ${type === "textarea" ? "mt-1" : ""}`} >
-    <label for={label} class={`font-medium w-full text-gray-900  ${theme == "dark" ? "bg-color1 text-gray-100" : ''} ${labelClasses}`} {placeholder}>{label}</label>
+    <label for={label} class={` w-full text-gray-900  ${theme == "dark" ? "bg-color1 text-gray-100" : ''} ${labelClasses || "font-medium"}`} {placeholder}>{label}</label>
     <div class="relative w-full parent_div">
         {#if type === "textarea"}
             <textarea readonly={readOnly} class={`${inputClasses}  overflow-y-auto bg-gray-200 w-full p-3 py-4`} bind:value id={label} required={required} ></textarea>

@@ -3,52 +3,10 @@
     import Modal from "../../components/Modal.svelte";
     export let data = {};
     let contentForModal;
-    $: console.log(contentForModal);
+    $: console.log(data);
     let showModal = false;
     // $: console.log(showModal);
 </script>
-
-<Modal bind:showModal>
-    <h2 slot="header" class="text-center">
-        Citas de {contentForModal.specialty_name}
-        <span class="text-gray-300 block">|</span>
-    </h2> 
-    <div class="lg:grid lg:grid-cols-2 lg:gap-4">
-        {#each contentForModal.calendar as calendar}
-            <a use:inertia href={`/admin/agenda/cita/${calendar.id}`} class="border p-3 rounded-md mb-3 min-w-[290px] md:w-[420px] cursor-pointer hover:bg-gray-50 hover:border-dark">
-                <div class="flex justify-between">
-                    <h3 class="font-bold">{calendar.title}</h3>
-                    <button
-                        on:click|preventDefault={() => {
-                            console.log('eliminal')
-                        }}
-                        class="ml-3  px-3 hover:bg-gray-200 rounded-full"
-                    >
-                        <iconify-icon
-                            class="text-xl relative top-1"
-                            icon="ph:trash"
-                        ></iconify-icon>
-                    </button>
-                </div>
-                <div
-                    class="ml-2 mt-1.5 flex gap-2 items-center bg-gray-100 rounded-full max-w-fit pr-3"
-                >
-                    <span
-                        class="rounded-full overflow-hidden bg-color4 w-7 h-7 justify-center items-center flex"
-                    >
-                        <iconify-icon icon="fa6-solid:user-doctor"
-                        ></iconify-icon>
-                    </span>
-                    <p>{calendar.doctor_name} {calendar.doctor_last_name}</p>
-                </div>
-
-                <div class="description mt-3 text-gray-600">
-                    {@html calendar.description} 
-                </div>
-            </a>
-        {/each}
-    </div>
-</Modal>
 
 <a
     class="btn_create inline-block p-2 px-3"
@@ -61,25 +19,50 @@
     <span class="hidden md:block"> Crear calendario</span>
 </a>
 
-<!-- <main>
-    <div class="specialties gap-5 md:gap-8 cursor-pointer">
-        {#each data.specialties.data as speciality}
-            <button
-                class="cta"
-                on:click={() => {
-                    showModal = true;
-                    contentForModal = speciality;
-                }}
-            >
-                <span>{speciality.specialty_name}</span>
-                <svg width="13px" height="10px" viewBox="0 0 13 10">
-                    <path d="M1,5 L11,5"></path>
-                    <polyline points="8 1 12 5 8 9"></polyline>
-                </svg>
-            </button>
-        {/each}
-    </div>
-</main> -->
+<div class="mt-4 lg:grid lg:grid-cols-2 lg:gap-4 w-full gap-2">
+    {#each data.calendars.data as calendar}
+        <a
+            use:inertia
+            href={`/admin/agenda/calendario/${calendar.id}`}
+            class="neumorphism2 border p-3 rounded-lg mb-3 min-w-[290px] md:w-[420px] cursor-pointer bg-gray-50 hover:border-dark"
+        >
+            <div class="flex justify-between">
+                <h3 class="font-bold">{calendar.title}</h3>
+                <button
+                    on:click|preventDefault={() => {
+                        console.log("eliminal");
+                    }}
+                    class="ml-3 px-3 hover:bg-gray-200 rounded-full"
+                >
+                    <iconify-icon class="text-xl relative top-1" icon="ph:trash"
+                    ></iconify-icon>
+                </button>
+            </div>
+                <div class="flex gap-1.5">
+                    <img
+                        class="bg-gray-300 w-7 aspect-square rounded-full object-cover"
+                        src={`/storage/users/${calendar.user.photo}`}
+                        alt=""
+                    />
+                    <p class="inline-block w-fit">
+                        <span>
+                            {calendar.user.name}
+                            {calendar.user.last_name}</span
+                        >
+                    </p>
+                </div>
+                <p
+                    class="bg-gray-200 rounded-full w-fit ml-7 relative -top-1 px-2 py-1 text-xs"
+                >
+                    {calendar.user.specialty.name}
+                </p>
+
+            <div class="description mt-3 text-gray-600">
+                {@html calendar.description}
+            </div>
+        </a>
+    {/each}
+</div>
 
 <style>
     main .specialties {
