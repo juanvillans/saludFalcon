@@ -437,7 +437,7 @@
         .toLowerCase();
     // console.log({ currentDatabaseDay });
     let shiftsForCalendar = {};
-    let typePage = window.location.pathname.includes("crear-cita")
+    let typePage = window.location.pathname.includes("crear-calendario")
         ? "crear"
         : "editar";
     $: console.log(typePage);
@@ -463,7 +463,7 @@
                     ? $form?.adjusted_availability?.findIndex(
                           (arrDates) =>
                               arrDates.date.slice(0, 10) ==
-                              value.current_date.slice(0, 10),
+                              value.current_date?.slice(0, 10),
                       )
                     : -1;
             shiftsForCalendar = {
@@ -2419,14 +2419,15 @@
                             class="flex flex-col justify-center text-center w-28"
                         >
                             <p
-                                class={` ${values.current_date.slice(0, 10) == calendar.headerInfo.today.slice(0, 10) ? "text-color1 " : ""}`}
+                                class={` ${values.current_date?.slice(0, 10) == calendar.headerInfo.today.slice(0, 10) ? "text-color1 " : ""}`}
                             >
                                 {translateDays[day].toUpperCase()}
                             </p>
                             <p
-                                class={`text-2xl mx-auto w-12 aspect-square rounded-full flex items-center justify-center ${values.current_date.slice(0, 10) == calendar.headerInfo.today.slice(0, 10) ? "bg-color1 text-gray-50 " : ""}`}
+                                class={`text-2xl mx-auto w-12 aspect-square rounded-full flex items-center justify-center ${values.current_date?.slice(0, 10) == calendar.headerInfo.today.slice(0, 10) ? "bg-color1 text-gray-50 " : ""}`}
                             >
                                 {new Date(values.current_date).getUTCDate()}
+                                
                             </p>
                         </li>
                     {/each}
