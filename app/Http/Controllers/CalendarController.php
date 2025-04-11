@@ -63,7 +63,7 @@ class CalendarController
 
             DB::commit();
 
-            return redirect()->back()->with(['message' => 'Calendario creado con exito']);
+            return redirect('/admin/agenda')->with(['message' => 'Calendario creado con exito']);
 
         }
         catch (\Throwable $e)
