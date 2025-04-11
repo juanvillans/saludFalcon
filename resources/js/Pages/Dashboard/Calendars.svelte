@@ -23,7 +23,7 @@
     {#each data.calendars.data as calendar}
         <a
             use:inertia
-            href={`/admin/agenda/calendario/${calendar.id}`}
+            href={`/admin/agenda/ver-cita/${calendar.id}`}
             class="neumorphism2 border p-3 rounded-lg mb-3 min-w-[290px] md:w-[420px] cursor-pointer bg-gray-50 hover:border-dark"
         >
             <div class="flex justify-between">
