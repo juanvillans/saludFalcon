@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CalendarRequest;
+use App\Http\Resources\CalendarResource;
+use App\Models\Calendar;
 use App\Services\CalendarService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -74,5 +76,23 @@ class CalendarController
             
             return redirect()->back()->withErrors(['data' => $e->getMessage()]);
         }
+    }
+
+    public function show(Request $request, Calendar $calendar){
+
+        $this->params = [
+            'start_week' => $request->input('startWeek') ?? null,
+            'to' => $request->input('to') ?? null,
+
+        ];
+
+        $calendar->load('user.specialty');
+
+        $structure = $this->calendarService->getStructureCalendar($this->params);
+        
+        return inertia('Dashboard/CreateCalendar',[
+            'calendar' => $structure,
+            'data' => new CalendarResource($calendar),
+        ]); 
     }
 }

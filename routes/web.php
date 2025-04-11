@@ -96,6 +96,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::get('/agenda', [CalendarController::class, 'index'])->name('agenda');
     Route::get('/agenda/crear-calendario', [CalendarController::class, 'create'])->name('agenda.create');
     Route::post('/agenda/crear-calendario', [CalendarController::class, 'store'])->name('agenda.store');
+    Route::get('/agenda/ver-citas/{calendar}', [CalendarController::class, 'show'])->name('agenda.show');
 
 
 
