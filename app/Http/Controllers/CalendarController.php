@@ -39,8 +39,8 @@ class CalendarController
     public function create(Request $request){
 
         $this->params = [
-            'start_week' => $request->input('start_week') ?? null,
-            'end_week' => $request->input('end_week') ?? null,
+            'start_week' => $request->input('startWeek') ?? null,
+            'to' => $request->input('to') ?? null,
 
         ];
 

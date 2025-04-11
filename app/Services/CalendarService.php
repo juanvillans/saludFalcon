@@ -54,7 +54,7 @@ class CalendarService
         $calendar = Calendar::create(
             [
                 'user_id' => $data['user_id'],
-                'specialty_id' => $data['specialty_id'],
+                'specialty_id' => $data['user_specialty_id'],
                 'title' => $data['title'],
                 'description' => $data['description'],
                 'status' => $data['status'],
@@ -74,17 +74,26 @@ class CalendarService
     
     protected function getWeekRange($params)
     {
-        $start = $params['start_week'] 
-            ? Carbon::parse($params['start_week'])
+        // 1. Parseamos la fecha de inicio (o usamos la actual si no viene)
+        $startWeek = isset($params['start_week']) 
+            ? Carbon::parse($params['start_week'])->startOfWeek()
             : now()->startOfWeek();
-        
-        $end = $params['end_week'] 
-            ? Carbon::parse($params['end_week'])
-            : now()->endOfWeek();
-    
-        return [$start, $end];
+
+        // 2. Calculamos desplazamiento basado en 'to'
+        if (isset($params['to'])) {
+            $startWeek = match ($params['to']) {
+                'prev' => $startWeek->subWeek(),
+                'next' => $startWeek->addWeek(),
+                default => $startWeek,
+            };
+        }
+
+        // 3. Calculamos el final de semana
+        $endWeek = $startWeek->copy()->endOfWeek();
+
+        return [$startWeek, $endWeek];
     }
-    
+        
     protected function getMonthYearFormat(Carbon $start, Carbon $end): string
     {
         $start->locale('es');
