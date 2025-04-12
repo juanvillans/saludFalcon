@@ -24,10 +24,8 @@
     let defaulTtime_between_appointment = 30;
 
     export let data = {};
-    export let formDatabase = {};
     export let calendar = {};
-    console.log(data);
-    console.log(formDatabase);
+    console.log(data.data);
     console.log({ calendar });
 
     let acordion = {
@@ -263,18 +261,18 @@
         ],
     };
     // let defaultFrontCalendar =
-    let form = useForm(formDatabase?.data || defaultFrontForm);
-    // $form = ...formDatabase || ...defaultFrontForm  }
-    if (formDatabase?.data) {
-        $form.availability = JSON.parse($form.availability);
-        $form.adjusted_availability = JSON.parse($form.adjusted_availability);
-        $form.fields = JSON.parse($form.fields);
-        $form.programming_slot = JSON.parse($form.programming_slot);
-        $form.booked_appointment_settings = JSON.parse(
-            $form.booked_appointment_settings,
-        );
-        $form.duration_options = JSON.parse($form.duration_options);
-    }
+    let form = useForm(data?.data || defaultFrontForm);
+    // $form = ...data || ...defaultFrontForm  }
+    // if (data?.data) {
+    //     $form.availability = JSON.parse($form.availability);
+    //     $form.adjusted_availability = JSON.parse($form.adjusted_availability);
+    //     $form.fields = JSON.parse($form.fields);
+    //     $form.programming_slot = JSON.parse($form.programming_slot);
+    //     $form.booked_appointment_settings = JSON.parse(
+    //         $form.booked_appointment_settings,
+    //     );
+    //     $form.duration_options = JSON.parse($form.duration_options);
+    // }
     console.log({ $form });
     let optionValue = "";
     let searchedDoctors = [];
@@ -628,7 +626,7 @@
                     });
                     displayAlert({ type: "error", message: "error" });
 
-                    // $form.defaults({ ...page.props.formDatabase.data });
+                    // $form.defaults({ ...page.props.data.data });
                     $form.reset();
                 },
             });
@@ -647,7 +645,7 @@
                     });
                     displayAlert({ type: "error", message: "error" });
 
-                    $form.defaults({ ...page.props.formDatabase.data });
+                    $form.defaults({ ...page.props.data.data });
                     $form.reset();
                 },
             });
@@ -940,6 +938,7 @@
         on:click={() => {
             $form.fields = [...$form.fields, newItem];
             showModalForm = false;
+            newItem = { name: "", required: false };
         }}
         slot="btn_footer"
         type="button"
@@ -2123,10 +2122,9 @@
                                                         classes={"w-16 mt-0"}
                                                         inputClasses={"p-3 ray-50 w-16"}
                                                         bind:value={
-                                                            $form.max_appointment_per_day
+                                                            $form.booked_appointment_settings.max_appointment_per_day
                                                         }
-                                                        error={$form.errors
-                                                            ?.max_appointment_per_day}
+                                                       
                                                     />
                                                 </span>
                                             </div>
@@ -2255,7 +2253,7 @@
                                             {#each $form.fields as field (field)}
                                                 <span
                                                     class="bg-gray-200 bg-opacity-40 border border-gray-300 rounded-full px-3 py-1"
-                                                    >{field.name}*</span
+                                                    >{field.name} {field.required ? "*" : ""}</span
                                                 >
                                             {/each}
                                         </div>
@@ -2304,7 +2302,7 @@
             </form>
         {:else}
             <div>
-                <div class="border rounded p-3 panel-hover">
+                <div class="border rounded p-3 px-4 panel-hover">
                     <div class="flex justify-between">
                         <div class="flex items-center gap-3">
                             <span
@@ -2331,20 +2329,18 @@
                             </button>
                         </div>
                     </div>
-                    <div class="flex items-center">
-                        <h1>{$form.title}</h1>
-                        <span class="mx-2 mt-1.5">
-                            ({$form.specialty_name})</span
+                    <span class="text-lg mt-4 relative top-2 uppercase">
+                        {$form.specialty_name}</span
                         >
-                    </div>
+                        <h1>{$form.title}</h1>
                     <div class="flex gap-3">
                         <iconify-icon
                             icon="lets-icons:time-atack"
-                            class="mt-1 text-xl text-gray-500"
+                            class="mt- text-xl text-gray-500"
                         ></iconify-icon>
                         <p>Citas de {$form.duration_per_appointment} minutos</p>
                     </div>
-                    <div class="mt-3">
+                    <div class="mt-3 description">
                         {@html $form.description}
                     </div>
                 </div>
@@ -2372,7 +2368,7 @@
                     >
                         <iconify-icon
                             icon="iconamoon:arrow-left-2-bold"
-                            class="relative left-2"
+                            class="relative "
                         ></iconify-icon></a
                     >
                     <a
@@ -2382,7 +2378,7 @@
                     >
                         <iconify-icon
                             icon="iconamoon:arrow-right-2-bold"
-                            class="relative left-2"
+                            class="relative left"
                         ></iconify-icon></a
                     >
                 </div>
