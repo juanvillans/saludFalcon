@@ -27,7 +27,7 @@
             class="neumorphism2 block border p-3 rounded-lg mb-3 min-w-[290px] md:w-[420px] cursor-pointer bg-gray-50 hover:border-dark"
         >
             <div class="flex justify-between">
-                <h3 class="font-bold">{calendar.title}</h3>
+                <h3 class="font-bold uppercase">{calendar.title}</h3>
                 <!-- <button
                     on:click|preventDefault={() => {
                         console.log("eliminal");
@@ -41,20 +41,20 @@
                 <div class="flex gap-1.5">
                     <img
                         class="bg-gray-300 w-7 aspect-square rounded-full object-cover"
-                        src={`/storage/users/${calendar.user.photo}`}
+                        src={`/storage/users/${calendar.user_photo}`}
                         alt=""
                     />
                     <p class="inline-block w-fit">
                         <span>
-                            {calendar.user.name}
-                            {calendar.user.last_name}</span
+                            {calendar.user_name}
+                            {calendar.user_last_name}</span
                         >
                     </p>
                 </div>
                 <p
                     class="bg-gray-200 rounded-full w-fit ml-7 relative -top-1 px-2 py-1 text-xs"
                 >
-                    {calendar.user.specialty.name}
+                    {calendar.user_specialty_name}
                 </p>
 
             <div class="description mt-3 text-gray-600">

@@ -59,6 +59,7 @@
         user_id: $page.props.auth.user_id,
         user_name: $page.props.auth.name,
         user_last_name: $page.props.auth.last_name,
+        user_pohto: $page.props.auth.photo,
         reason: "",
         diagnosis: "",
         treatment: "",
@@ -407,7 +408,7 @@
                         <div class="flex gap-1.5">
                             <img
                                 class="bg-gray-300 w-7 aspect-square rounded-full object-cover"
-                                src={`/storage/users/${$page.props.auth.photo}`}
+                                src={`/storage/users/${$form.user_photo}`}
                                 alt=""
                             />
                             <p class="inline-block w-fit">

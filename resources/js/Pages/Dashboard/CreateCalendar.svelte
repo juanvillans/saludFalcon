@@ -39,7 +39,7 @@
     let showModalappointments = false;
     let showModalForm = false;
     let showModalDoctor = false;
-    let newItem = { name: "", required: false };
+    let newItem = { name: "", required: false, by_default: false };
 
     let defaultFrontForm = {
         status: true,
@@ -236,19 +236,19 @@
         description: "",
 
         fields: [
-            { name: "Nombre", required: true },
-            { name: "Apellido", required: true },
-            { name: "Correo", required: true },
-            { name: "Cédula", required: true },
-            { name: "Teléfono", required: true },
+            { name: "Nombre", required: true, by_default: true },
+            { name: "Apellido", required: true, by_default: true },
+            { name: "Correo", required: true, by_default: true },
+            { name: "Cédula", required: true, by_default: true },
+            { name: "Teléfono", required: true, by_default: true },
         ],
         time_available_type: 1,
-
         user_specialty_name: $page.props.auth.specialty_name,
         user_specialty_id: $page.props.auth.specialty_id,
         user_id: $page.props.auth.user_id,
         user_name: $page.props.auth.name,
         user_last_name: $page.props.auth.last_name,
+        user_photo: $page.props.auth.photo,
         duration_options: [
             { value: 15, label: "15 minutos" },
             { value: 30, label: "30 minutos" },
@@ -939,7 +939,7 @@
         on:click={() => {
             $form.fields = [...$form.fields, newItem];
             showModalForm = false;
-            newItem = { name: "", required: false };
+            newItem = { name: "", required: false, by_default: false, };
         }}
         slot="btn_footer"
         type="button"
@@ -2250,7 +2250,16 @@
                                             {#each $form.fields as field (field)}
                                                 <span
                                                     class="bg-gray-200 bg-opacity-40 border border-gray-300 rounded-full px-3 py-1"
-                                                    >{field.name} {field.required ? "*" : ""}</span
+                                                    >{field.name} {field.required ? "*" : ""}
+                                                    {#if !field.by_default}
+                                                    <button
+                                                    on:click={() =>{ 
+                                                      $form.fields = $form.fields.filter(objField => objField.name !== field.name)   
+                                                    }}>
+                                                        <iconify-icon icon="ph:trash"></iconify-icon>
+                                                    </button>
+                                                    {/if}
+                                                    </span
                                                 >
                                             {/each}
                                         </div>
@@ -2308,7 +2317,7 @@
                                 <iconify-icon icon="fa6-solid:user-doctor"
                                 ></iconify-icon>
                             </span>
-                            <p>{$form.doctor_name} {$form.doctor_last_name}</p>
+                            <p>{$form.user_name} {$form.user_last_name}</p>
                         </div>
                         <div class="flex gap-3">
                             <button
@@ -2327,7 +2336,7 @@
                         </div>
                     </div>
                     <span class="text-lg mt-4 relative top-2 uppercase">
-                        {$form.specialty_name}</span
+                        {$form.user_specialty_name}</span
                         >
                         <h1>{$form.title}</h1>
                     <div class="flex gap-3">
