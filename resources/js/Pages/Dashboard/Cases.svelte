@@ -192,6 +192,10 @@
             }
         }, 100);
     }
+
+    function handlesubmit() {
+        
+    }
 </script>
 
 <svelte:head>
@@ -611,10 +615,10 @@
             <Input
                 type="textarea"
                 required={true}
-                classes={"col-span-2"}
                 label={"Orden médica de ingreso *"}
-                bind:value={$form.treatment}
                 error={$form.errors?.treatment}
+                classes={"col-span-2"}
+                bind:value={$form.treatment}
             />
         </fieldset>
     </form>

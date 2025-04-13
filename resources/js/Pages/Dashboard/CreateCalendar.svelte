@@ -41,7 +41,7 @@
     let showModalDoctor = false;
     let newItem = { name: "", required: false, by_default: false };
     const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
     const futureDate = new Date(today);
     futureDate.setMonth(futureDate.getMonth() + 6);
@@ -281,6 +281,10 @@
     console.log({ $form });
     let optionValue = "";
     let searchedDoctors = [];
+    const debouncedUpdate = debounce(() => {
+        updateAllStartAppointmets();
+
+  }, 250);
 
     const searchDoctor = debounce(async (search) => {
         try {
@@ -481,7 +485,7 @@
     }
 
     function updateShiftsForCalendar() {
-        console.log($form.adjusted_availability);
+        // console.log($form.adjusted_availability);
         Object.entries(calendar.weekDays).forEach(([key, value], indx) => {
             let isItAjustedShift =
                 $form?.adjusted_availability.length > 0
@@ -636,7 +640,7 @@
                 },
             });
         } else {
-            $form.put(`${window.location.pathname}/${form.id}`, {
+            $form.put(`/admin/agenda/ver-citas/${form.id}`, {
                 // preserveState: true,
                 onError: (errors) => {
                     if (errors.data) {
@@ -2094,6 +2098,7 @@
                                                                 $form.booked_appointment_settings.time_between_appointment = 0;
                                                             }
                                                             updateAllStartAppointmets();
+
                                                         }}
                                                     />
                                                     <Input
@@ -2110,11 +2115,9 @@
                                                             defaulTtime_between_appointment}
                                                         on:change={(e) => {
                                                             $form.booked_appointment_settings.time_between_appointment =
-                                                                e.target.value;
+                                                                +e.target.value;
                                                             defaulTtime_between_appointment =
-                                                                $form
-                                                                    .booked_appointment_settings
-                                                                    .time_between_appointment;
+                                                                +e.target.value
                                                             updateAllStartAppointmets();
                                                         }}
                                                         error={$form.errors
@@ -2527,7 +2530,7 @@
             {/each}
 
             {#each Object.entries(calendar.weekDays) as [day, values], indxDay (day)}
-                {#each values.appointments as appointment, indx (day + "_" + indx)}
+                {#each Object.entries(values.appointments) as [time, appointment], indx (day + "_|" + indx)}
                     <!-- <Draggable>
                         <div
                             class="flex gap-3 w-28 h-12 absolute duration-300 z-50 px-0.5"

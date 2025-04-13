@@ -1,5 +1,5 @@
 <script>
-    import { useForm } from "@inertiajs/svelte";
+    import { useForm, router } from "@inertiajs/svelte";
     import { onMount, onDestroy } from "svelte";
     // import secretariaLogo from '$lib/images/logo_secretaria-circle-main.png';
     import Input from "../components/Input.svelte";
@@ -7,13 +7,14 @@
     import DatePicker from "../components/DatePicker.svelte";
     import Alert from "../components/Alert.svelte";
     import { displayAlert } from "../stores/alertStore";
+    import { each } from "svelte/internal";
     let showModal = false;
     let sourceDiv;
     let width = 0;
     let numberOfDays = 7;
     function updateWidth() {
         const screenZise = window.innerWidth;
-        console.log(screenZise);
+        // console.log(screenZise);
         if (screenZise <= 1220) {
             numberOfDays = 5;
         }
@@ -35,6 +36,35 @@
             width = sourceDiv.getBoundingClientRect().width;
         }
     }
+
+    let shiftsForCalendar = {};
+
+    function updateShiftsForCalendar() {
+        console.log(data.data.adjusted_availability);
+        // console.log($form.adjusted_availability);
+        Object.entries(calendar.weekDays).forEach(([key, value], indx) => {
+            let isItAjustedShift =
+                data.data?.adjusted_availability.length > 0
+                    ? data.data?.adjusted_availability?.findIndex(
+                          (arrDates) =>
+                              arrDates.date.slice(0, 10) ==
+                              value.current_date?.slice(0, 10),
+                      )
+                    : -1;
+            shiftsForCalendar = {
+                ...shiftsForCalendar,
+                [key.slice(0, 3)]:
+                    isItAjustedShift >= 0
+                        ? data.data.adjusted_availability[isItAjustedShift]
+                              .shifts
+                        : data.data.availability[key.slice(0, 3)],
+            };
+        });
+        console.log({ shiftsForCalendar });
+    }
+
+    $: frontCalendar, updateShiftsForCalendar();
+
     const translateDays = {
         mon: "Lun",
         tue: "Mar",
@@ -53,11 +83,10 @@
         window.removeEventListener("resize", updateWidth);
     });
 
-    let form = useForm({
-        ci: null,
-        password: null,
-    });
-    export let data = {
+    export let data = {};
+    console.log({ data });
+
+    let dataFront = {
         availableDays: {
             7: true,
             8: true,
@@ -68,6 +97,85 @@
         },
         today: "2024-10-01T04:00:00.000Z",
     };
+    export let calendar = {
+        weekDays: {
+            mon: {
+                appointments: {
+                    "08:00": {
+                        name: "juanito",
+                        last_name: "Perez",
+                        correo: "juanvillans16@gmail.com",
+                    },
+                },
+                current_date: "2025-04-07T04:00:00.000000Z",
+            },
+            tue: {
+                appointments: {
+                    "09:00": {
+                        name: "Juan",
+                        last_name: "Donquis",
+                        correo: "juanvillans16@gmail.com",
+                    },
+                },
+
+                current_date: "2025-04-08T04:00:00.000000Z",
+            },
+            wed: {
+                appointments: {
+                    "08:00": {
+                        name: "Douglas",
+                        last_name: "Villasmil",
+                        correo: "juanvillans16@gmail.com",
+                    },
+                    "09:00": {
+                        name: "Deivis",
+                        last_name: "Donquis",
+                        correo: "juanvillans16@gmail.com",
+                    },
+                },
+
+                current_date: "2025-05-07T04:00:00.000Z",
+            },
+            thu: {
+                appointments: {},
+
+                current_date: "2025-04-10T04:00:00.000000Z",
+            },
+            fri: {
+                appointments: {},
+
+                current_date: "2025-04-11T04:00:00.000000Z",
+            },
+            sat: {
+                appointments: {
+                    "08:00": {
+                        name: "juanito",
+                        last_name: "Perez",
+                        correo: "juanvillans16@gmail.com",
+                    },
+                },
+
+                current_date: "2025-04-12T04:00:00.000000Z",
+            },
+            sun: {
+                appointments: {},
+
+                current_date: "2025-04-13T04:00:00.000000Z",
+            },
+        },
+    };
+    const formFields = {};
+    data.data.fields.forEach((field) => {
+        formFields[field.name] = ""; // Initialize each field with an empty string
+    });
+    let form = useForm({
+        appointment_data: formFields,
+        calendar_id: "",
+        day_reserved: "",
+        time_reserved: "",
+    });
+    $: console.log({ formFields, $form });
+
     let frontCalendar = [];
     function getNextNDays(startDate, n) {
         console.log({ startDate });
@@ -82,6 +190,9 @@
                 weekday: nextDate.toLocaleDateString("es-VE", {
                     weekday: "short",
                 }),
+                EnglishWeekday: nextDate.toLocaleDateString("en-US", {
+                    weekday: "short",
+                }),
                 day: nextDate.toLocaleDateString("es-VE", {
                     day: "numeric",
                 }),
@@ -90,29 +201,78 @@
 
         frontCalendar = result;
         focusedDate = startDate;
+        updateCalendar();
         return result;
     }
-    let focusedDate = data.today;
-    getNextNDays("2024-10-01T04:00:00.000Z", numberOfDays);
-    $: console.log({ frontCalendar });
+
+    function updateCalendar(type) {
+        router.get(
+            window.location.pathname,
+            {
+                start_date: frontCalendar[0].date,
+                end_date: frontCalendar[frontCalendar.length - 1].date,
+            },
+            {
+                onSuccess: (page) => {
+                    updateShiftsForCalendar();
+                },
+            },
+        );
+    }
+
+    let focusedDate = dataFront.today;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    getNextNDays(today, numberOfDays);
+    $: console.log({ calendar, data, frontCalendar });
+
+    function convertTo12HourFormat(time24) {
+        const [hours, minutes] = time24.split(":").map(Number);
+        const suffix = hours >= 12 ? "PM" : "AM";
+        const hours12 = hours % 12 || 12; // If hours is 0, set it to 12
+        const formattedMinutes = String(minutes).padStart(2, "0");
+        return `${hours12}:${formattedMinutes} ${suffix}`;
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+        $form.clearErrors();
+
+        $form.post(`${window.location.pathname}`, {
+            // preserveState: true,
+            onError: (errors) => {
+                if (errors.data) {
+                    displayAlert({ type: "error", message: errors.data });
+                }
+            },
+            onSuccess: (page) => {
+                displayAlert({
+                    type: "success",
+                    message: "Ok todo salió bien",
+                });
+                displayAlert({ type: "error", message: "error" });
+
+                // $form.defaults({ ...page.props.data.data });
+                $form.reset();
+            },
+        });
+    }
 </script>
 
 <Alert />
-<section class=" min-h-screen">
-    <header class=" border-b flex p-4">
+<section class=" min-h-screen w-11/12 mx-auto max-w-[1480px]">
+    <header class=" border-b flex gap-5 xl:gap-10 p-4">
         <div class="flex gap-3">
-            <span
-                class="rounded-full overflow-hidden bg-color4 w-12 h-12 justify-center items-center flex"
-            >
-                <iconify-icon icon="fa6-solid:user-doctor"></iconify-icon>
-            </span>
+            <img
+                class="bg-gray-300 w-10 h-10 block aspect-square rounded-full object-cover"
+                src={`/storage/users/${data.data.user_photo}`}
+                alt=""
+            />
 
             <div class="mt-1">
-                <p><b class="text-xl"> Doctor Kilo</b></p>
                 <p>
-                    <span
-                        class="bg-gray-200 rounded-full px-2 py-1 text-opacity-80"
-                        >Ginecólogo</span
+                    <b class="text-xl"
+                        >{data.data.user_name} {data.data.user_last_name}</b
                     >
                 </p>
             </div>
@@ -123,7 +283,9 @@
                 <span class="text-2xl">Titulo de la cita</span>
             </h1>
             <div class="flex gap-3">
-                <iconify-icon icon="lets-icons:time-atack" class="mt-1 text-xl text-gray-500"
+                <iconify-icon
+                    icon="lets-icons:time-atack"
+                    class="mt-1 text-xl text-gray-500"
                 ></iconify-icon>
                 <p>Citas de 60 minutos</p>
             </div>
@@ -138,14 +300,14 @@
                 showDatePickerAlways={true}
                 withInput={false}
                 thereIsAvailable={(date) => {
-                    if (data.availableDays[date]) {
+                    if (dataFront.availableDays[date]) {
                         return true;
                     } else {
                         false;
                     }
                 }}
                 isAllowed={(date) => {
-                    console.log(date);
+                    // console.log(date);
                     const millisecs = date.getTime();
                     if (millisecs + 25 * 3600 * 1000 < Date.now()) return false;
                     if (millisecs > Date.now() + 3600 * 24 * 45 * 10000)
@@ -158,7 +320,7 @@
         <div>
             <header class="  pt-1 bg-gray-100 z-30 calendarHeader">
                 <div class="flex gap-4 items-center">
-                    <!-- <h2 class="text-2xl">{data.headerInfo.month_year}</h2> -->
+                    <!-- <h2 class="text-2xl">{dataFront.headerInfo.month_year}</h2> -->
                 </div>
 
                 <div class="py-5 w-max pt-10 flex">
@@ -178,28 +340,40 @@
                     >
                     <ul class="flex listCalendarHeader gap-2">
                         {#each frontCalendar as objDate (objDate.day)}
-                            <li
-                                class="flex flex-col justify-center text-center w-28"
-                            >
+                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                            <li class="flex flex-col text-center w-28">
                                 <p
-                                    class={` ${objDate.date == data.today ? "text-color1 " : ""}`}
+                                    class={` ${objDate.date == dataFront.today ? "text-color1 " : ""}`}
                                 >
                                     {objDate.weekday.toUpperCase()}
                                 </p>
                                 <p
-                                    class={`text-2xl mx-auto w-12 aspect-square rounded-full flex items-center justify-center ${objDate.date == data.today ? "bg-color1 text-gray-50 " : ""}`}
+                                    class={`text-2xl mx-auto w-12 aspect-square rounded-full flex items-center justify-center ${objDate.date == dataFront.today ? "bg-color1 text-gray-50 " : ""}`}
                                 >
                                     {objDate.day}
                                 </p>
                                 <div class="grid gap-2 mt-7">
-                                    <button
-                                        class="py-2 border-color1 border rounded hover:bg-color3 duration-75 hover:text-white bg-color4"
-                                        >8:00AM</button
-                                    >
-                                    <button
-                                        class="py-2 border-color1 border rounded hover:bg-color3 duration-75 hover:text-white bg-color4"
-                                        >9:00AM</button
-                                    >
+                                    {#each shiftsForCalendar[objDate.EnglishWeekday.toLowerCase()] as shift, indx (objDate.day + "_" + indx)}
+                                        {#each shift.appointments as appointment, i ("start_app" + "_" + i)}
+                                            {#if !calendar.weekDays[objDate.EnglishWeekday.toLowerCase().slice(0, 3)]?.appointments[appointment.start_appo]}
+                                                <button
+                                                    on:click={() => {
+                                                        showModal = true;
+                                                        $form.day_reserved =
+                                                            objDate.date;
+                                                        $form.time_reserved =
+                                                            appointment.start_appo;
+                                                        $form.calendar_id =
+                                                            data.data.id;
+                                                    }}
+                                                    class="py-2 border-color1 border rounded hover:bg-color3 duration-75 hover:text-white bg-color4"
+                                                    >{convertTo12HourFormat(
+                                                        appointment.start_appo,
+                                                    )}</button
+                                                >
+                                            {/if}
+                                        {/each}
+                                    {/each}
                                 </div>
                             </li>
                         {/each}
@@ -225,3 +399,37 @@
         </div>
     </body>
 </section>
+
+<Modal
+    bind:showModal
+    onClose={() => {
+        // handleCloseCustomTime();
+    }}
+>
+    <p slot="header" class="font-bold text-lg text-gray-500">
+        Llena los campos para reservar tu cita
+    </p>
+
+    <form id="a-form" on:submit={handleSubmit}>
+        {#each data.data.fields as field}
+            <Input
+                required={field.required}
+                label={field.name}
+                error={$form.errors?.[field.name]}
+                bind:value={$form[field.name]}
+            />
+        {/each}
+    </form>
+    <button
+        on:click={() => {
+            // $form.fields = [...$form.fields, newItem];
+            // showModalForm = false;
+            // newItem = { name: "", required: false, by_default: false };
+        }}
+        slot="btn_footer"
+        form="a-form"
+        type="submit"
+        class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
+        value={$form.processing ? "Cargando..." : "Reservar"}>Hecho</button
+    >
+</Modal>

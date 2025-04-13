@@ -24,10 +24,10 @@
         <a
             use:inertia
             href={`/admin/agenda/ver-citas/${calendar.id}`}
-            class="neumorphism2 block border p-3 rounded-lg mb-3 min-w-[290px] md:w-[420px] cursor-pointer bg-gray-50 hover:border-dark"
+            class="neumorphism2 block border overflow-hidden rounded-lg mb-3 min-w-[290px] md:w-[420px] cursor-pointer bg-gray-50 hover:border-dark"
         >
-            <div class="flex justify-between">
-                <h3 class="font-bold uppercase">{calendar.title}</h3>
+        <h3 class="font-bold uppercase py-2 px-3  bg-gray-100 w-full">{calendar.title}</h3>
+            <div class="p-3">
                 <!-- <button
                     on:click|preventDefault={() => {
                         console.log("eliminal");
@@ -37,7 +37,6 @@
                     <iconify-icon class="text-xl relative top-1" icon="ph:trash"
                     ></iconify-icon>
                 </button> -->
-            </div>
                 <div class="flex gap-1.5">
                     <img
                         class="bg-gray-300 w-7 aspect-square rounded-full object-cover"
@@ -60,6 +59,8 @@
             <div class="description mt-3 text-gray-600">
                 {@html calendar.description}
             </div>
+        </div>
+
         </a>
     {/each}
 </div>
