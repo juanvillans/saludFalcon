@@ -40,7 +40,12 @@
     let showModalForm = false;
     let showModalDoctor = false;
     let newItem = { name: "", required: false, by_default: false };
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
 
+    const futureDate = new Date(today);
+    futureDate.setMonth(futureDate.getMonth() + 6);
+    let itWasChangeIntervalDate = false
     let defaultFrontForm = {
         status: true,
         title: "",
@@ -212,11 +217,11 @@
         programming_slot: {
             available_now_check: 1,
             interval_date: {
-                start_now_check: false,
-                custom_start_date: "2024-12-30T00:00:00Z",
+                start_now_check: true,
+                custom_start_date: today,
 
-                end_never_check: false,
-                custom_end_date: "2024-09-09T00:00:00Z",
+                end_never_check: true,
+                custom_end_date: futureDate,
             },
             allow_max_reservation_time_before_appointment: true,
             allow_min_reservation_time_before_appointment: true,
@@ -460,11 +465,10 @@
     function updateUrl(type) {
         let currentDate = calendar.weekDays.mon.current_date;
         if (type == "today") {
-            const today = new Date();
-            today.setUTCHours(0, 0, 0, 0); // Set time to 00:00:00 UTC
-
+            // Set time to 00:00:00 UTC
             currentDate = today.toISOString();
         }
+
         router.get(
             window.location.pathname,
             { startWeek: currentDate, to: type == "today" ? "" : type },
@@ -693,6 +697,10 @@
 
     let prev_programming_slot;
     let openedLeftSection = typePage == "crear" ? "form" : "panel";
+
+ 
+
+
 </script>
 
 <Modal
@@ -758,7 +766,25 @@
 <Modal
     bind:showModal={showModalFranja}
     onClose={() => {
-        prev_programming_slot = $form.programming_slot;
+        if (
+            !itWasChangeIntervalDate === true
+        ) {
+            
+            $form.programming_slot.available_now_check = 1;
+            $form.programming_slot = {
+                ...$form.programming_slot,
+                interval_date: {
+                    start_now_check: true,
+                    custom_start_date: today,
+    
+                    end_never_check: true,
+                    custom_end_date: futureDate,
+                },
+            }
+        itWasChangeIntervalDate= false
+        // Your logic here
+    }
+        prev_programming_slot = structuredClone($form.programming_slot) ;
     }}
 >
     <p slot="header" class="font-bold text-lg text-gray-500">
@@ -785,7 +811,7 @@
             name="time_available_type"
             value={false}
         />
-        <span>
+        <span class:opacity-50={$form.programming_slot.interval_date.start_now_check}>
             <DatePicker
                 on:datechange={(d) => {
                     console.log(d.detail);
@@ -826,7 +852,7 @@
             name="termina"
             value={false}
         />
-        <span>
+        <span class:opacity-50={$form.programming_slot.interval_date.end_never_check}>
             <DatePicker
                 on:datechange={(d) => {
                     $form.programming_slot.interval_date.end_never_check = false;
@@ -847,11 +873,14 @@
 
     <button
         on:click={() => {
-            ($form.programming_slot = prev_programming_slot(
-                ($form.prev_value_duration_per_appointment = valueFixed),
-            )),
-                ($form.duration_per_appointment = valueFixed),
-                (showModal = false);
+            itWasChangeIntervalDate = true
+            showModalFranja = false;
+
+            // ($form.programming_slot = prev_programming_slot(
+            //     ($form.prev_value_duration_per_appointment = valueFixed),
+            // )),
+            //     ($form.duration_per_appointment = valueFixed),
+            //     (showModal = false);
         }}
         slot="btn_footer"
         type="button"
@@ -939,7 +968,7 @@
         on:click={() => {
             $form.fields = [...$form.fields, newItem];
             showModalForm = false;
-            newItem = { name: "", required: false, by_default: false, };
+            newItem = { name: "", required: false, by_default: false };
         }}
         slot="btn_footer"
         type="button"
@@ -1524,6 +1553,7 @@
                                                             0
                                                         ) {
                                                             showModalFranja = true;
+                                                            itWasChangeIntervalDate = false
                                                         }
                                                     }}
                                                 />
@@ -1539,6 +1569,17 @@
                                                     >
                                                 </div>
                                             </label>
+                                            {#if !$form.programming_slot.interval_date.start_now_check || !$form.programming_slot.interval_date.end_never_check}
+                                            <button
+                                            type="button"
+                                            on:click={() => {
+                                                showModalFranja = true
+                                               }}
+                                            for="date1"
+                                            class="cursor-pointer ml-4 text-color2 font-bold p-1 px-3 rounded hover:bg-color2 hover:bg-opacity-10 inline-block"
+                                            >Cambiar Fechas</button
+                                        >
+                                        {/if}
 
                                             <small
                                                 class="mt-4 mb-2 inline-block"
@@ -1827,7 +1868,11 @@
                                                                     </button>
                                                                     {#if indxShift == 0}
                                                                         <button
-                                                                            on:click={() => addAdjustShift(indxDate, adjust_date)}
+                                                                            on:click={() =>
+                                                                                addAdjustShift(
+                                                                                    indxDate,
+                                                                                    adjust_date,
+                                                                                )}
                                                                             type="button"
                                                                             class="cursor-pointer hover:font-bold hover:bg-gray-200 rounded-full"
                                                                             title="Añadir otro turno a este día"
@@ -1907,7 +1952,7 @@
                                                             }}
                                                             type="button"
                                                             class="relative cursor-pointer hover:font-bold hover:bg-gray-200 rounded-full"
-                                                            title="Añadir otro turno a este díassssssss"
+                                                            title="Añadir otro turno a este días"
                                                         >
                                                             <iconify-icon
                                                                 icon="gala:add"
@@ -2123,9 +2168,10 @@
                                                         classes={"w-16 mt-0"}
                                                         inputClasses={"p-3 ray-50 w-16"}
                                                         bind:value={
-                                                            $form.booked_appointment_settings.max_appointment_per_day
+                                                            $form
+                                                                .booked_appointment_settings
+                                                                .max_appointment_per_day
                                                         }
-                                                       
                                                     />
                                                 </span>
                                             </div>
@@ -2170,12 +2216,7 @@
                                         confirmación.</small
                                     >
                                     <Editor
-                                        actions={[
-                                            "i",
-                                            "u",
-                                            "ol",
-                                            "ul",
-                                        ]}
+                                        actions={["i", "u", "ol", "ul"]}
                                         html={$form.description}
                                         on:change={(evt) => {
                                             descriptionLength =
@@ -2250,17 +2291,27 @@
                                             {#each $form.fields as field (field)}
                                                 <span
                                                     class="bg-gray-200 bg-opacity-40 border border-gray-300 rounded-full px-3 py-1"
-                                                    >{field.name} {field.required ? "*" : ""}
+                                                    >{field.name}
+                                                    {field.required ? "*" : ""}
                                                     {#if !field.by_default}
-                                                    <button
-                                                    on:click={() =>{ 
-                                                      $form.fields = $form.fields.filter(objField => objField.name !== field.name)   
-                                                    }}>
-                                                        <iconify-icon icon="ph:trash"></iconify-icon>
-                                                    </button>
+                                                        <button
+                                                            on:click={() => {
+                                                                $form.fields =
+                                                                    $form.fields.filter(
+                                                                        (
+                                                                            objField,
+                                                                        ) =>
+                                                                            objField.name !==
+                                                                            field.name,
+                                                                    );
+                                                            }}
+                                                        >
+                                                            <iconify-icon
+                                                                icon="ph:trash"
+                                                            ></iconify-icon>
+                                                        </button>
                                                     {/if}
-                                                    </span
-                                                >
+                                                </span>
                                             {/each}
                                         </div>
 
@@ -2337,8 +2388,8 @@
                     </div>
                     <span class="text-lg mt-4 relative top-2 uppercase">
                         {$form.user_specialty_name}</span
-                        >
-                        <h1>{$form.title}</h1>
+                    >
+                    <h1>{$form.title}</h1>
                     <div class="flex gap-3">
                         <iconify-icon
                             icon="lets-icons:time-atack"
@@ -2374,7 +2425,7 @@
                     >
                         <iconify-icon
                             icon="iconamoon:arrow-left-2-bold"
-                            class="relative "
+                            class="relative"
                         ></iconify-icon></a
                     >
                     <a
