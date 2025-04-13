@@ -56,7 +56,7 @@ class CalendarService
         } else {
 
             $startWeek = Carbon::parse($params['start_date'])->startOfDay();
-            $endWeek = Carbon::parse($params['endate'])->endOfDay();
+            $endWeek = Carbon::parse($params['end_date'])->endOfDay();
         }
 
         return [
