@@ -49,6 +49,25 @@ class CalendarService
         ];
     }
 
+    public function getDinamicStructureCalendar($params)
+    {   
+        if ($params['start_date'] === null || $params['end_date'] === null) {
+            [$startWeek, $endWeek] = $this->getWeekRange([]); 
+        } else {
+
+            $startWeek = Carbon::parse($params['start_date'])->startOfDay();
+            $endWeek = Carbon::parse($params['endate'])->endOfDay();
+        }
+
+        return [
+            'headerInfo' => [
+                'today' => now(),
+                'month_year' => $this->getMonthYearFormat($startWeek, $endWeek),
+            ],
+            'weekDays' => $this->generateWeekDays($startWeek)
+        ];
+    }
+
     public function createCalendar($data){
         
         $calendar = Calendar::create(

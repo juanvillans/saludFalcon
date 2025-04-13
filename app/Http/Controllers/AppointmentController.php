@@ -26,14 +26,14 @@ class AppointmentController extends Controller
 
 
         $this->params = [
-            'start_week' => $request->input('startWeek') ?? null,
-            'to' => $request->input('to') ?? null,
+            'start_date' => $request->input('start_date') ?? null,
+            'end_date' => $request->input('end_date') ?? null,
 
         ];
 
         $calendar->load('user.specialty');
 
-        $structure = $this->calendarService->getStructureCalendar($this->params);
+        $structure = $this->calendarService->getDinamicStructureCalendar($this->params);
 
 
         return inertia('BookAppointment', [
