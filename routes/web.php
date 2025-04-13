@@ -25,7 +25,7 @@ Route::group(['middleware' => ['guest']], function () {
     Route::get('/', [AppController::class, 'loginForm'])->name('login');
 
     // Book appointment
-    Route::get('/citas', [AppController::class, 'appointment'])->name('login');
+    Route::get('/citas/{calendar}', [AppController::class, 'appointment'])->name('login');
 
 
     

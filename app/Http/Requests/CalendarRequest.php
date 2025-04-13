@@ -31,7 +31,7 @@ class CalendarRequest extends FormRequest
             'duration_per_appointment' => 'required|integer|min:1',
             'availability' => 'required|array',
 
-            'adjusted_availability' => 'required|array',
+            'adjusted_availability' => 'sometimes|array',
 
             'duration_options' => 'required|array',
 
