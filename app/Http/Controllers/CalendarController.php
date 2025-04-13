@@ -113,10 +113,10 @@ class CalendarController
 
         $calendar->load('user.specialty');
 
-        $structure = $this->calendarService->getStructureCalendar($this->params);
+        // $structure = $this->calendarService->getStructureCalendar($this->params);
         
         return inertia('Dashboard/CreateCalendar',[
-            'calendar' => $structure,
+            // 'calendar' => $structure,
             'data' => new CalendarResource($calendar),
         ]); 
     }

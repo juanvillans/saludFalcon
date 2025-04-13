@@ -12,12 +12,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('appointments', function (Blueprint $table) {
+            
             $table->id();
             $table->unsignedBigInteger('calendar_id');
             $table->unsignedBigInteger('patient_id');
             $table->date('day_reserved');
-            $table->json('appointmen_data');
+            $table->string('time_reserved');
+            $table->json('appointment_data');
             $table->timestamps();
+
+            $table->foreign('calendar_id')
+            ->references('id')
+            ->on('calendars')
+            ->onDelete('cascade');
+
+            $table->foreign('patient_id')
+            ->references('id')
+            ->on('patients')
+            ->onDelete('cascade');
         });
     }
 

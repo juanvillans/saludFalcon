@@ -31,9 +31,9 @@ class AppointmentController extends Controller
 
         ];
 
-        $calendar->load('user.specialty');
+        $calendar->load('user.specialty', 'appointments');
 
-        $structure = $this->calendarService->getDinamicStructureCalendar($this->params);
+        $structure = $this->calendarService->getDinamicStructureCalendar($this->params, $calendar);
 
 
         return inertia('BookAppointment', [

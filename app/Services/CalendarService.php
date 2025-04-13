@@ -49,22 +49,20 @@ class CalendarService
         ];
     }
 
-    public function getDinamicStructureCalendar($params)
+    public function getDinamicStructureCalendar($params, $calendar)
     {   
-        if ($params['start_date'] === null || $params['end_date'] === null) {
-            [$startWeek, $endWeek] = $this->getWeekRange([]); 
-        } else {
+        $startWeek = now()->startOfWeek();
+        $endWeek = $startWeek->copy()->endOfWeek();
+
+        if ($params['start_date'] != null || $params['end_date'] != null) {
 
             $startWeek = Carbon::parse($params['start_date'])->startOfDay();
             $endWeek = Carbon::parse($params['end_date'])->endOfDay();
         }
 
         return [
-            'headerInfo' => [
-                'today' => now(),
-                'month_year' => $this->getMonthYearFormat($startWeek, $endWeek),
-            ],
-            'weekDays' => $this->generateWeekDays($startWeek)
+       
+            'weekDays' => $this->generateDinamicWeekDays($startWeek, $endWeek, $calendar)
         ];
     }
 
@@ -156,6 +154,47 @@ class CalendarService
                 'appointments' => [],
                 'current_date' => $currentDay
             ];
+        }
+        
+        return $weekDays;
+    }
+
+
+    protected function generateDinamicWeekDays(Carbon $startDate, Carbon $endDate, Calendar $calendar)
+    {
+        $weekDays = [];
+        $endDate = $endDate ?? $startDate->copy();
+        
+        $dayNames = [
+            1 => 'mon', 2 => 'tue', 3 => 'wed',
+            4 => 'thu', 5 => 'fri', 6 => 'sat', 7 => 'sun'
+        ];
+        
+        $currentDate = $startDate->copy()->startOfDay(); 
+        
+        while ($currentDate->lte($endDate)) { 
+            $appointments = $calendar->appointments()
+                ->whereDate('day_reserved', $currentDate)
+                ->get();
+    
+            if ($appointments->isNotEmpty()) { 
+                $dayOfWeek = $currentDate->dayOfWeekIso;
+                $dayKey = $dayNames[$dayOfWeek] . '_' . $currentDate->format('Y-m-d');
+    
+                $appointmentsObject = new \stdClass();
+                
+                foreach ($appointments as $appointment) {
+                    $timeKey = $appointment->time_reserved;
+                    $appointmentsObject->$timeKey = $appointment->appointment_data;
+                }
+                
+                $weekDays[$dayKey] = (object) [
+                    'appointments' => $appointmentsObject,
+                    'current_date' => $currentDate->copy(),
+                ];
+            }
+            
+            $currentDate = $currentDate->addDay(); 
         }
         
         return $weekDays;

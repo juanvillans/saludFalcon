@@ -55,4 +55,9 @@ class Calendar extends Model
         return $query->where('status', true);
     }
 
+    public function appointments(){
+        
+        return $this->hasMany(Appointment::class);
+    }
+
 }
