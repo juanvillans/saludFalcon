@@ -71,6 +71,27 @@ class CalendarService
         return $calendar;
         
     }
+
+    public function updateCalendar($data, $calendar){
+
+        $calendar->update([
+            'user_id' => $data['user_id'],
+            'specialty_id' => $data['user_specialty_id'],
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'status' => $data['status'],
+            'duration_per_appointment' => $data['duration_per_appointment'],
+            'duration_options' => $data['duration_options'],
+            'availability' => $data['availability'],
+            'adjusted_availability' => $data['adjusted_availability'],
+            'programming_slot' => $data['programming_slot'],
+            'booked_appointment_settings' => $data['booked_appointment_settings'],
+            'fields' => $data['fields'],
+        ]);
+
+        return $calendar;
+        
+    }
     
     protected function getWeekRange($params)
     {

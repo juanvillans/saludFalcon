@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\AppController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\PatientController;
@@ -25,9 +26,8 @@ Route::group(['middleware' => ['guest']], function () {
     Route::get('/', [AppController::class, 'loginForm'])->name('login');
 
     // Book appointment
-    Route::get('/citas/{calendar}', [AppController::class, 'appointment']);
-
-
+    
+    
     
     // Post Login
     Route::post('/admin/login', [UserController::class, 'login']);
@@ -43,6 +43,8 @@ Route::group(['middleware' => ['guest']], function () {
     Route::post('/recuperar-contraseña/{token}', [UserController::class, 'recoverPassword'])->name('recoverPassword.post');
 
 });
+
+Route::get('/citas/{calendar}', [AppointmentController::class, 'showCalendar']);
 
 Route::get('/admin/logout', [UserController::class, 'logout'])->middleware('auth')->name('logout');  
 
@@ -101,6 +103,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::get('/agenda/crear-calendario', [CalendarController::class, 'create'])->name('agenda.create');
     Route::post('/agenda/crear-calendario', [CalendarController::class, 'store'])->name('agenda.store');
     Route::get('/agenda/ver-citas/{calendar}', [CalendarController::class, 'show'])->name('agenda.show');
+    Route::put('/agenda/ver-citas/{calendar}', [CalendarController::class, 'update'])->name('agenda.update');
+
 
 
 

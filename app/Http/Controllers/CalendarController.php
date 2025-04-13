@@ -78,6 +78,31 @@ class CalendarController
         }
     }
 
+    public function update(CalendarRequest $request, Calendar $calendar){
+        
+        DB::beginTransaction();
+
+        try 
+        {
+            $data = $request->all();
+
+            $this->calendarService->updateCalendar($data, $calendar);
+
+            DB::commit();
+
+            return redirect('/admin/agenda')->with(['message' => 'Calendario actualizado con exito']);
+
+        }
+        catch (\Throwable $e)
+        {   
+            
+            DB::rollback();
+            Log::info('Error: ' . $e->getMessage() . ' --- Linea: ' . $e->getLine());
+            
+            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+        }
+    }
+
     public function show(Request $request, Calendar $calendar){
 
         $this->params = [

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CalendarResource;
 use App\Models\Area;
 use App\Models\Calendar;
 use App\Models\Municipality;
@@ -11,7 +10,6 @@ use App\Models\Specialty;
 use App\Models\StatusCase;
 use Illuminate\Support\Facades\Request;
 use Inertia\Response;
-use App\Services\CalendarService;
 
 class AppController 
 {   
@@ -43,14 +41,6 @@ class AppController
         return response()->json(compact('municipalities','statutes','conditions','areas', 'specialties'));
     }
 
-    public function appointment(Calendar $calendar){
-
-        return inertia('BookAppointment', [
-            
-            'data' => new CalendarResource($calendar),
-        ]);
-
-    }
 
    
 

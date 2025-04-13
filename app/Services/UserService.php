@@ -212,7 +212,7 @@ class UserService
     private function handlePhoto($data){
 
         if (isset($data['photo']) && $data['photo']->isValid()) {
-            $fileName = $data['ci'] . '-profile.webp    ';
+            $fileName = $data['ci'] . '-profile.webp';
             $image = Image::make($data['photo']);
             
             $image->resize(180, null, function ($constraint) {
