@@ -22,10 +22,23 @@ class AppointmentController extends Controller
     }
 
 
-    public function showCalendar(Calendar $calendar){
+    public function showCalendar(Request $request, Calendar $calendar){
+
+
+        $this->params = [
+            'start_week' => $request->input('startWeek') ?? null,
+            'to' => $request->input('to') ?? null,
+
+        ];
+
+        $calendar->load('user.specialty');
+
+        $structure = $this->calendarService->getStructureCalendar($this->params);
+
 
         return inertia('BookAppointment', [
             
+            'calendar' => $structure,
             'data' => new CalendarResource($calendar),
         ]);
 
