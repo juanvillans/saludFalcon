@@ -608,6 +608,7 @@
     }
 
     function handleSubmit(event) {
+        $form.title = $form.title?.toUpperCase();
         event.preventDefault();
         $form.clearErrors();
         // console.log({ $form });
@@ -2170,14 +2171,10 @@
                                     >
                                     <Editor
                                         actions={[
-                                            "b",
                                             "i",
                                             "u",
                                             "ol",
                                             "ul",
-                                            "left",
-                                            "center",
-                                            "justify",
                                         ]}
                                         html={$form.description}
                                         on:change={(evt) => {

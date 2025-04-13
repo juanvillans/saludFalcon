@@ -19,16 +19,16 @@
     <span class="hidden md:block"> Crear calendario</span>
 </a>
 
-<div class="mt-4 lg:grid lg:grid-cols-2 lg:gap-4 w-full gap-2">
+<div class="mt-4 lg:grid lg:grid-cols-2 xl:grid-cols-3  lg:gap-4 w-full gap-2">
     {#each data.calendars.data as calendar}
         <a
             use:inertia
             href={`/admin/agenda/ver-citas/${calendar.id}`}
-            class="neumorphism2 border p-3 rounded-lg mb-3 min-w-[290px] md:w-[420px] cursor-pointer bg-gray-50 hover:border-dark"
+            class="neumorphism2 block border p-3 rounded-lg mb-3 min-w-[290px] md:w-[420px] cursor-pointer bg-gray-50 hover:border-dark"
         >
             <div class="flex justify-between">
                 <h3 class="font-bold">{calendar.title}</h3>
-                <button
+                <!-- <button
                     on:click|preventDefault={() => {
                         console.log("eliminal");
                     }}
@@ -36,7 +36,7 @@
                 >
                     <iconify-icon class="text-xl relative top-1" icon="ph:trash"
                     ></iconify-icon>
-                </button>
+                </button> -->
             </div>
                 <div class="flex gap-1.5">
                     <img
