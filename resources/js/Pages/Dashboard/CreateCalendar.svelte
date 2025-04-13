@@ -458,7 +458,7 @@
         .toLowerCase();
     // console.log({ currentDatabaseDay });
     let shiftsForCalendar = {};
-    let typePage = window.location.pathname.includes("crear-calendario")
+    let typePage = window.location.pathname.toLowerCase().includes("crear")
         ? "crear"
         : "editar";
     $: console.log(typePage);
@@ -695,7 +695,7 @@
         };
     }
 
-    let prev_programming_slot;
+    let prev_interval_date;
     let openedLeftSection = typePage == "crear" ? "form" : "panel";
 
  
@@ -773,18 +773,13 @@
             $form.programming_slot.available_now_check = 1;
             $form.programming_slot = {
                 ...$form.programming_slot,
-                interval_date: {
-                    start_now_check: true,
-                    custom_start_date: today,
-    
-                    end_never_check: true,
-                    custom_end_date: futureDate,
-                },
+                interval_date: 
+                    structuredClone(prev_interval_date),
             }
         itWasChangeIntervalDate= false
         // Your logic here
+        prev_interval_date = structuredClone($form.programming_slot.interval_date);
     }
-        prev_programming_slot = structuredClone($form.programming_slot) ;
     }}
 >
     <p slot="header" class="font-bold text-lg text-gray-500">
@@ -876,8 +871,8 @@
             itWasChangeIntervalDate = true
             showModalFranja = false;
 
-            // ($form.programming_slot = prev_programming_slot(
-            //     ($form.prev_value_duration_per_appointment = valueFixed),
+            // ($form.programming_slot = prev_interval_date(
+            //     ($form.prev_value_duration_per_appointment.interval_date = valueFixed),
             // )),
             //     ($form.duration_per_appointment = valueFixed),
             //     (showModal = false);
@@ -1553,6 +1548,8 @@
                                                             0
                                                         ) {
                                                             showModalFranja = true;
+                                                            prev_interval_date = structuredClone($form.programming_slot.interval_date);
+
                                                             itWasChangeIntervalDate = false
                                                         }
                                                     }}
@@ -1574,6 +1571,8 @@
                                             type="button"
                                             on:click={() => {
                                                 showModalFranja = true
+                                            prev_interval_date = structuredClone($form.programming_slot.interval_date);
+
                                                }}
                                             for="date1"
                                             class="cursor-pointer ml-4 text-color2 font-bold p-1 px-3 rounded hover:bg-color2 hover:bg-opacity-10 inline-block"
