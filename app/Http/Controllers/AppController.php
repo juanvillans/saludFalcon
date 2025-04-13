@@ -45,12 +45,11 @@ class AppController
 
     public function appointment(Calendar $calendar){
 
-        return inertia('BookAppointment');
-
-        return inertia('Dashboard/CreateCalendar',[
+        return inertia('BookAppointment', [
             
             'data' => new CalendarResource($calendar),
-        ]); 
+        ]);
+
     }
 
    
