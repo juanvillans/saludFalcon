@@ -7,14 +7,15 @@
     import DatePicker from "../components/DatePicker.svelte";
     import Alert from "../components/Alert.svelte";
     import { displayAlert } from "../stores/alertStore";
-    import { each } from "svelte/internal";
+    import debounce from "lodash/debounce";
+
     let showModal = false;
     let sourceDiv;
     let width = 0;
     let numberOfDays = 7;
     function updateWidth() {
-        const screenZise = window.innerWidth;
-        // console.log(screenZise);
+        const screenZise = document.documentElement.clientWidth;
+        console.log(screenZise);
         if (screenZise <= 1220) {
             numberOfDays = 5;
         }
@@ -24,12 +25,14 @@
         if (screenZise <= 900) {
             numberOfDays = 3;
         }
-        if (screenZise <= 730) {
+        if (screenZise <= 820) {
             numberOfDays = 2;
         }
         if (screenZise >= 1220) {
             numberOfDays = 7;
         }
+        console.log(numberOfDays);
+
         getNextNDays(focusedDate, numberOfDays);
 
         if (sourceDiv) {
@@ -49,18 +52,29 @@
     export let data = {};
     console.log({ data });
     let form;
+    const debouncedUpdate = debounce(updateWidth, 300);
 
     onMount(() => {
         updateWidth(); // Set the initial width
-        window.addEventListener("resize", updateWidth);
+        window.addEventListener("resize", debouncedUpdate);
 
         const formFields = {};
         data.data.fields.forEach((field) => {
-            formFields[field.name] = ""; // Initialize once
+            formFields[field.name.toLocaleLowerCase()] = ""; // Initialize once
         });
 
         form = useForm({
-            appointment_data: formFields,
+            patient_id: null,
+            appointment_data: {
+                ...formFields,
+                name: "",
+                last_name: "",
+                ci: "",
+                sex: "Masculino",
+                date_birth: "",
+                phone_number: "",
+                email: "",
+            },
             calendar_id: "",
             day_reserved: "",
             time_reserved: "",
@@ -68,10 +82,8 @@
     });
 
     onDestroy(() => {
-        window.removeEventListener("resize", updateWidth);
+        window.removeEventListener("resize", debouncedUpdate);
     });
-
-
 
     let dataFront = {
         availableDays: {
@@ -173,7 +185,7 @@
 
     $: frontCalendar, updateShiftsForCalendar();
 
-    $: console.log({  $form });
+    $: console.log({ $form });
 
     let frontCalendar = [];
     function getNextNDays(startDate, n) {
@@ -261,34 +273,36 @@
 </script>
 
 <Alert />
-<section class=" min-h-screen w-11/12 mx-auto max-w-[1480px]">
-    <header class=" border-b flex gap-5 xl:gap-10 p-4">
+<section class=" min-h-screen sm:w-11/12 mx-auto max-w-[1480px]">
+    <header class=" border-b md:flex gap-5 xl:gap-10 p-4">
         <div class="flex gap-3">
             <img
-                class="bg-gray-300 w-10 h-10 block aspect-square rounded-full object-cover"
+                class="bg-gray-300 w-7 h-7 md:w-10 md:h-10 block aspect-square rounded-full object-cover"
                 src={`/storage/users/${data.data.user_photo}`}
                 alt=""
             />
 
             <div class="mt-1">
                 <p>
-                    <b class="text-xl"
+                    <b class="md:text-xl"
                         >{data.data.user_name} {data.data.user_last_name}</b
                     >
                 </p>
             </div>
         </div>
-        <div>
-            <h1 class="text-2xl mx-auto">
-                <span class="text-dark opacity-60">Ginecologia: </span>
-                <span class="text-2xl">Titulo de la cita</span>
+        <div class="flex md:block">
+            <h1 class=" md:text-2xl mx-auto uppercase">
+                <span class="text-dark opacity-60 block text-md relative top-2"
+                    >{data.data.user_specialty_name}
+                </span>
+                <span class="text-xl md:text-2xl">{data.data.title}</span>
             </h1>
             <div class="flex gap-3">
                 <iconify-icon
                     icon="lets-icons:time-atack"
                     class="mt-1 text-xl text-gray-500"
                 ></iconify-icon>
-                <p>Citas de 60 minutos</p>
+                <p>Citas de {data.data.duration_per_appointment} minutos</p>
             </div>
         </div>
     </header>
@@ -344,12 +358,12 @@
                             <!-- svelte-ignore a11y-click-events-have-key-events -->
                             <li class="flex flex-col text-center w-28">
                                 <p
-                                    class={` ${objDate.date == dataFront.today ? "text-color1 " : ""}`}
+                                    class={`text-sm lg:text-md ${objDate.date == dataFront.today ? "text-color1 " : ""}`}
                                 >
                                     {objDate.weekday.toUpperCase()}
                                 </p>
                                 <p
-                                    class={`text-2xl mx-auto w-12 aspect-square rounded-full flex items-center justify-center ${objDate.date == dataFront.today ? "bg-color1 text-gray-50 " : ""}`}
+                                    class={`text-lg lg:text-2xl mx-auto w-12 aspect-square rounded-full flex items-center justify-center ${objDate.date == dataFront.today ? "bg-color1 text-gray-50 " : ""}`}
                                 >
                                     {objDate.day}
                                 </p>
@@ -367,7 +381,7 @@
                                                         $form.calendar_id =
                                                             data.data.id;
                                                     }}
-                                                    class="py-2 border-color1 border rounded hover:bg-color3 duration-75 hover:text-white bg-color4"
+                                                    class="text-sm xl:text-md py-2 border-color1 border rounded hover:bg-color3 duration-75 hover:text-white bg-color4"
                                                     >{convertTo12HourFormat(
                                                         appointment.start_appo,
                                                     )}</button
@@ -412,12 +426,95 @@
     </p>
 
     <form id="a-form" on:submit={handleSubmit}>
+        <Input
+            required={true}
+            type={"number"}
+            label={"C.I *"}
+            name={"ci"}
+            min={100000}
+            placeholder={"Minimo 6 números"}
+            on:wheel={(e) => document.activeElement.blur()}
+            bind:value={$form.ci}
+            error={$form.errors?.ci}
+        />
+        <Input
+            type="text"
+            required={true}
+            label={"Nombres *"}
+            bind:value={$form.appointment_data.name}
+            readOnly={$form.appointment_data.patient_id}
+            error={$form.errors?.name}
+        />
+        <Input
+            type="text"
+            required={true}
+            label={"Apellidos *"}
+            bind:value={$form.appointment_data.last_name}
+            readOnly={$form.appointment_data.patient_id}
+            error={$form.errors?.last_name}
+        />
+
+        <Input
+            type="date"
+            label={"Fecha de Nacimiento*"}
+            bind:value={$form.appointment_data.date_birth}
+            readOnly={$form.appointment_data.patient_id}
+            required={true}
+            error={$form.errors?.date_birth}
+        />
+        <Input
+            type="tel"
+            label={"Teléfono *"}
+            readOnly={$form.appointment_data.patient_id}
+            required={true}
+            bind:value={$form.appointment_data.phone_number}
+            error={$form.errors?.phone_number}
+        />
+
+        <Input
+            type="email"
+            label={"Correo*"}
+            bind:value={$form.appointment_data.email}
+            readOnly={$form.appointment_data.email}
+            required={true}
+            error={$form.errors?.email}
+        />
+        <div class="flex flex-col mt-6">
+            <label class="py-1 cursor-pointer hover:bg-gray-100">
+                <input
+                    class="mr-3 inline-block"
+                    type="radio"
+                    bind:group={$form.appointment_data.sex}
+                    value="Masculino"
+                    name="sex"
+                    id=""
+                    required
+                /><span class:font-bold={$form.sex == "Masculino"}
+                    >Masculino</span
+                >
+            </label>
+
+            <label class="py-1 cursor-pointer hover:bg-gray-100">
+                <input
+                    class="mr-3 inline-block"
+                    type="radio"
+                    bind:group={$form.appointment_data.sex}
+                    value="Femenino"
+                    name="sex"
+                    id=""
+                    required
+                /><span
+                    class:font-bold={$form.appointment_data.sex == "Femenino"}
+                    >Femenino</span
+                >
+            </label>
+        </div>
         {#each data.data.fields as field}
             <Input
                 required={field.required}
                 label={`${field.name} ${field.required ? "*" : ""}`}
-                error={$form.errors?.[field.name]}
-                bind:value={$form.appointment_data[field.name]}
+                error={$form.errors?.[field.name.toLocaleLowerCase()]}
+                bind:value={$form.appointment_data[field.name.toLocaleLowerCase()]}
             />
         {/each}
     </form>

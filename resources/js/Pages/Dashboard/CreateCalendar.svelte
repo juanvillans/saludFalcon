@@ -244,13 +244,7 @@
 
         description: "",
 
-        fields: [
-            { name: "Nombre", required: true, by_default: true },
-            { name: "Apellido", required: true, by_default: true },
-            { name: "Correo", required: true, by_default: true },
-            { name: "Cédula", required: true, by_default: true },
-            { name: "Teléfono", required: true, by_default: true },
-        ],
+        fields: [],
         time_available_type: 1,
         user_specialty_name: $page.props.auth.specialty_name,
         user_specialty_id: $page.props.auth.specialty_id,
@@ -1595,21 +1589,21 @@
                                                     </p>
                                                     <span class="block text-sm">
                                                         {#if !$form.programming_slot.interval_date.start_now_check}
-                                                        Empieza el {new Date(
-                                                            $form.programming_slot.interval_date.custom_start_date,
-                                                        ).toLocaleDateString(
-                                                            "es-VE",
-                                                            optionsFormatDate,
-                                                        )}
-                                                    {/if}
-                                                    {#if !$form.programming_slot.interval_date.end_never_check}
-                                                        · Termina el {new Date(
-                                                            $form.programming_slot.interval_date.custom_end_date,
-                                                        ).toLocaleDateString(
-                                                            "es-VE",
-                                                            optionsFormatDate,
-                                                        )}
-                                                    {/if}
+                                                            Empieza el {new Date(
+                                                                $form.programming_slot.interval_date.custom_start_date,
+                                                            ).toLocaleDateString(
+                                                                "es-VE",
+                                                                optionsFormatDate,
+                                                            )}
+                                                        {/if}
+                                                        {#if !$form.programming_slot.interval_date.end_never_check}
+                                                            · Termina el {new Date(
+                                                                $form.programming_slot.interval_date.custom_end_date,
+                                                            ).toLocaleDateString(
+                                                                "es-VE",
+                                                                optionsFormatDate,
+                                                            )}
+                                                        {/if}
                                                     </span>
                                                     {#if $form.programming_slot.interval_date.start_now_check && $form.programming_slot.interval_date.end_never_check}
                                                         <small
@@ -2342,8 +2336,43 @@
                                     </div>
                                     {#if acordion.form}
                                         <div
-                                            class="flex w-full flex-wrap gap-3 mt-1"
+                                            class="flex w-full flex-wrap gap-3 text-sm mt-1"
                                         >
+                                            <span
+                                                class="bg-gray-200 bg-opacity-40 border border-gray-300 rounded-full px-3 py-1"
+                                            >
+                                                Cédula *
+                                            </span>
+                                            <span
+                                                class="bg-gray-200 bg-opacity-40 border border-gray-300 rounded-full px-3 py-1"
+                                            >
+                                                Nombres *
+                                            </span>
+                                            <span
+                                                class="bg-gray-200 bg-opacity-40 border border-gray-300 rounded-full px-3 py-1"
+                                            >
+                                                Apellidos *
+                                            </span>
+                                            <span
+                                                class="bg-gray-200 bg-opacity-40 border border-gray-300 rounded-full px-3 py-1"
+                                            >
+                                                F. de nacimiento*
+                                            </span>
+                                            <span
+                                                class="bg-gray-200 bg-opacity-40 border border-gray-300 rounded-full px-3 py-1"
+                                            >
+                                                Teléfono *
+                                            </span>
+                                            <span
+                                                class="bg-gray-200 bg-opacity-40 border border-gray-300 rounded-full px-3 py-1"
+                                            >
+                                                Correo *
+                                            </span>
+                                            <span
+                                                class="bg-gray-200 bg-opacity-40 border border-gray-300 rounded-full px-3 py-1"
+                                            >
+                                                Sexo *
+                                            </span>
                                             {#each $form.fields as field (field)}
                                                 <span
                                                     class="bg-gray-200 bg-opacity-40 border border-gray-300 rounded-full px-3 py-1"
@@ -2378,7 +2407,8 @@
                                             for="date1"
                                             class="block cursor-pointer text-color2 font-bold p-1 px-3 rounded hover:bg-color2 hover:bg-opacity-10 mt-3"
                                             ><iconify-icon
-                                                class="mr-1"
+                                            title="Quitar"
+                                                class="mr-1 relative top-0.5"
                                                 icon="gala:add"
                                             ></iconify-icon> Añadir campo</button
                                         >
