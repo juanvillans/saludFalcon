@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BookAppointment;
+use App\Http\Requests\BookAppointmentRequest;
 use App\Http\Requests\CreateAppointmentRequest;
 use App\Http\Resources\CalendarResource;
 use App\Models\Calendar;
@@ -16,9 +18,12 @@ class AppointmentController extends Controller
 
     private $params = [];
     private $calendarService;
+    private $appointmentService;
+
 
     public function __construct(){
         $this->calendarService = new CalendarService;
+        $this->appointmentService = new AppointmentService;
     }
 
 
@@ -41,6 +46,32 @@ class AppointmentController extends Controller
             'calendar' => $structure,
             'data' => new CalendarResource($calendar),
         ]);
+
+    }
+
+    public function bookAppointment(BookAppointmentRequest $request, Calendar $calendar){
+
+
+        DB::beginTransaction();
+
+        try 
+        {
+            $data = $request->all();
+
+            $this->appointmentService->bookAppointment($data, $calendar);
+
+            DB::commit();
+
+            return redirect()->back()->with(['message' => 'Cita reservada con éxito']);
+
+        }
+        catch (\Throwable $e)
+        {   
+            
+            DB::rollback();
+            
+            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+        }
 
     }
 

@@ -22,6 +22,7 @@ class Patient extends Model
         'parish_id',
         'address',
         'age',
+        'email',
         'search',
     ];
 
