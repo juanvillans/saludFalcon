@@ -37,34 +37,7 @@
         }
     }
 
-    let shiftsForCalendar = {};
-
-    function updateShiftsForCalendar() {
-        console.log(data.data.adjusted_availability);
-        // console.log($form.adjusted_availability);
-        Object.entries(calendar.weekDays).forEach(([key, value], indx) => {
-            let isItAjustedShift =
-                data.data?.adjusted_availability.length > 0
-                    ? data.data?.adjusted_availability?.findIndex(
-                          (arrDates) =>
-                              arrDates.date.slice(0, 10) ==
-                              value.current_date?.slice(0, 10),
-                      )
-                    : -1;
-            shiftsForCalendar = {
-                ...shiftsForCalendar,
-                [key.slice(0, 3)]:
-                    isItAjustedShift >= 0
-                        ? data.data.adjusted_availability[isItAjustedShift]
-                              .shifts
-                        : data.data.availability[key.slice(0, 3)],
-            };
-        });
-        console.log({ shiftsForCalendar });
-    }
-
-    $: frontCalendar, updateShiftsForCalendar();
-
+    
     const translateDays = {
         mon: "Lun",
         tue: "Mar",
@@ -98,72 +71,100 @@
         today: "2024-10-01T04:00:00.000Z",
     };
     export let calendar = {
-        weekDays: {
-            mon: {
-                appointments: {
-                    "08:00": {
-                        name: "juanito",
-                        last_name: "Perez",
-                        correo: "juanvillans16@gmail.com",
-                    },
-                },
-                current_date: "2025-04-07T04:00:00.000000Z",
-            },
-            tue: {
-                appointments: {
-                    "09:00": {
-                        name: "Juan",
-                        last_name: "Donquis",
-                        correo: "juanvillans16@gmail.com",
-                    },
-                },
+        // weekDays: {
+        //     mon: {
+        //         appointments: {
+        //             "08:00": {
+        //                 name: "juanito",
+        //                 last_name: "Perez",
+        //                 correo: "juanvillans16@gmail.com",
+        //             },
+        //         },
+        //         current_date: "2025-04-07T04:00:00.000000Z",
+        //     },
+        //     tue: {
+        //         appointments: {
+        //             "09:00": {
+        //                 name: "Juan",
+        //                 last_name: "Donquis",
+        //                 correo: "juanvillans16@gmail.com",
+        //             },
+        //         },
 
-                current_date: "2025-04-08T04:00:00.000000Z",
-            },
-            wed: {
-                appointments: {
-                    "08:00": {
-                        name: "Douglas",
-                        last_name: "Villasmil",
-                        correo: "juanvillans16@gmail.com",
-                    },
-                    "09:00": {
-                        name: "Deivis",
-                        last_name: "Donquis",
-                        correo: "juanvillans16@gmail.com",
-                    },
-                },
+        //         current_date: "2025-04-08T04:00:00.000000Z",
+        //     },
+        //     wed: {
+        //         appointments: {
+        //             "08:00": {
+        //                 name: "Douglas",
+        //                 last_name: "Villasmil",
+        //                 correo: "juanvillans16@gmail.com",
+        //             },
+        //             "09:00": {
+        //                 name: "Deivis",
+        //                 last_name: "Donquis",
+        //                 correo: "juanvillans16@gmail.com",
+        //             },
+        //         },
 
-                current_date: "2025-05-07T04:00:00.000Z",
-            },
-            thu: {
-                appointments: {},
+        //         current_date: "2025-05-07T04:00:00.000Z",
+        //     },
+        //     thu: {
+        //         appointments: {},
 
-                current_date: "2025-04-10T04:00:00.000000Z",
-            },
-            fri: {
-                appointments: {},
+        //         current_date: "2025-04-10T04:00:00.000000Z",
+        //     },
+        //     fri: {
+        //         appointments: {},
 
-                current_date: "2025-04-11T04:00:00.000000Z",
-            },
-            sat: {
-                appointments: {
-                    "08:00": {
-                        name: "juanito",
-                        last_name: "Perez",
-                        correo: "juanvillans16@gmail.com",
-                    },
-                },
+        //         current_date: "2025-04-11T04:00:00.000000Z",
+        //     },
+        //     sat: {
+        //         appointments: {
+        //             "08:00": {
+        //                 name: "juanito",
+        //                 last_name: "Perez",
+        //                 correo: "juanvillans16@gmail.com",
+        //             },
+        //         },
 
-                current_date: "2025-04-12T04:00:00.000000Z",
-            },
-            sun: {
-                appointments: {},
+        //         current_date: "2025-04-12T04:00:00.000000Z",
+        //     },
+        //     sun: {
+        //         appointments: {},
 
-                current_date: "2025-04-13T04:00:00.000000Z",
-            },
-        },
+        //         current_date: "2025-04-13T04:00:00.000000Z",
+        //     },
+        // },
     };
+    let shiftsForCalendar = {};
+
+    function updateShiftsForCalendar() {
+        console.log(data.data.adjusted_availability);
+        // console.log($form.adjusted_availability);
+        frontCalendar.forEach((obj, indx) => {
+            let isItAjustedShift =
+                data.data?.adjusted_availability.length > 0
+                    ? data.data?.adjusted_availability?.findIndex(
+                          (arrDates) =>
+                              arrDates.date.slice(0, 10) ==
+                              obj.date?.slice(0, 10),
+                      )
+                    : -1;
+            shiftsForCalendar = {
+                ...shiftsForCalendar,
+                [obj.EnglishWeekday]:
+                    isItAjustedShift >= 0
+                        ? data.data.adjusted_availability[isItAjustedShift]
+                              .shifts
+                        : data.data.availability[obj.EnglishWeekday],
+            };
+        });
+        console.log({ shiftsForCalendar });
+    }
+
+    $: frontCalendar, updateShiftsForCalendar();
+
     const formFields = {};
     data.data.fields.forEach((field) => {
         formFields[field.name] = ""; // Initialize each field with an empty string
@@ -192,7 +193,7 @@
                 }),
                 EnglishWeekday: nextDate.toLocaleDateString("en-US", {
                     weekday: "short",
-                }),
+                }).toLocaleLowerCase(),
                 day: nextDate.toLocaleDateString("es-VE", {
                     day: "numeric",
                 }),
@@ -353,9 +354,9 @@
                                     {objDate.day}
                                 </p>
                                 <div class="grid gap-2 mt-7">
-                                    {#each shiftsForCalendar[objDate.EnglishWeekday.toLowerCase()] as shift, indx (objDate.day + "_" + indx)}
+                                    {#each shiftsForCalendar?.[objDate.EnglishWeekday] as shift, indx (objDate.day + "_" + indx)}
                                         {#each shift.appointments as appointment, i ("start_app" + "_" + i)}
-                                            {#if !calendar.weekDays[objDate.EnglishWeekday.toLowerCase().slice(0, 3)]?.appointments[appointment.start_appo]}
+                                            {#if !calendar.weekDays[objDate.EnglishWeekday]?.appointments[appointment.start_appo]}
                                                 <button
                                                     on:click={() => {
                                                         showModal = true;
