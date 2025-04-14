@@ -31,6 +31,12 @@
         if (screenZise <= 770) {
             numberOfDays = 4;
         }
+        if (screenZise <= 576) {
+            numberOfDays = 3;
+        }
+        if (screenZise <= 450) {
+            numberOfDays = 2;
+        }
         if (screenZise >= 1220) {
             numberOfDays = 7;
         }
@@ -310,8 +316,8 @@
         </div>
     </header>
 
-    <body class="md:flex justify-between">
-        <div class="sticky top-1">
+    <body class="md:flex justify-between pt-1 pl-1.5 bg-gray-100">
+        <div class=" md:sticky top-1">
             <DatePicker
                 on:datechange={(e) => getNextNDays(e.detail, numberOfDays)}
                 selected={focusedDate}
@@ -336,7 +342,7 @@
         </div>
 
         <div>
-            <header class="  pt-1 bg-gray-100 z-30 calendarHeader">
+            <header class="pt-60  md:pt-1 bg-gray-100 z-30 calendarHeader">
                 <div class="flex gap-4 items-center">
                     <!-- <h2 class="text-2xl">{dataFront.headerInfo.month_year}</h2> -->
                 </div>
@@ -437,7 +443,7 @@
             min={100000}
             placeholder={"Minimo 6 números"}
             on:wheel={(e) => document.activeElement.blur()}
-            bind:value={$form.ci}
+            bind:value={$form.appointment_data.ci}
             error={$form.errors?.ci}
         />
         <Input
