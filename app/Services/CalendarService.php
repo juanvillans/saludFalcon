@@ -36,7 +36,7 @@ class CalendarService
         return new CalendarCollection($calendars);
     }
 
-    public function getStructureCalendar($params){
+    public function getStructureCalendar($params, $calendar){
 
         [$startWeek, $endWeek] = $this->getWeekRange($params);
     
@@ -45,7 +45,7 @@ class CalendarService
                 'today' => now(),
                 'month_year' => $this->getMonthYearFormat($startWeek, $endWeek),
             ],
-            'weekDays' => $this->generateWeekDays($startWeek)
+            'weekDays' => $this->generateWeekDays($startWeek, $calendar)
         ];
     }
 
@@ -143,15 +143,33 @@ class CalendarService
         return $start->isoFormat('MMMM').'-'.$end->isoFormat('MMMM YYYY');
     }
     
-    protected function generateWeekDays(Carbon $startWeek): array
+    protected function generateWeekDays(Carbon $startWeek, $calendar)
     {
         $weekDays = [];
         $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
         
         foreach ($days as $index => $dayName) {
             $currentDay = $startWeek->copy()->addDays($index);
-            $weekDays[$dayName] = [
-                'appointments' => [],
+
+            $appointmentsObject = [];
+
+            $appointments = $calendar->appointments()
+            ->whereDate('day_reserved',$currentDay)
+            ->get();
+
+            if($appointments->isNotEmpty()){
+
+                $appointmentsObject = new \stdClass();
+
+
+                foreach ($appointments as $appointment) {
+                    $timeKey = $appointment->time_reserved;
+                    $appointmentsObject->$timeKey = $appointment->appointment_data;
+                }
+            }
+
+            $weekDays[$dayName] = (object)[
+                'appointments' => $appointmentsObject,
                 'current_date' => $currentDay
             ];
         }

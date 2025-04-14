@@ -111,9 +111,9 @@ class CalendarController
 
         ];
 
-        $calendar->load('user.specialty');
+        $calendar->load('user.specialty', 'appointments');
 
-        $structure = $this->calendarService->getStructureCalendar($this->params);
+        $structure = $this->calendarService->getStructureCalendar($this->params, $calendar);
         
         return inertia('Dashboard/CreateCalendar',[
             'calendar' => $structure,
