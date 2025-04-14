@@ -25,6 +25,7 @@ class CalendarResource extends JsonResource
             'availability' => $this->availability,
             'adjusted_availability' => $this->adjusted_availability,
             'booked_appointment_settings' => $this->booked_appointment_settings,
+            'programming_slot' => $this->programming_slot,
             'fields' => $this->fields,
             'user_id' => $this->user->id,
             'user_name' => $this->user->name,
