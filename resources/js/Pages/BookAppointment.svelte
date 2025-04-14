@@ -37,7 +37,6 @@
         }
     }
 
-    
     const translateDays = {
         mon: "Lun",
         tue: "Mar",
@@ -47,17 +46,32 @@
         sat: "Sáb",
         sun: "Dom",
     };
+    export let data = {};
+    console.log({ data });
+    let form;
+
     onMount(() => {
         updateWidth(); // Set the initial width
         window.addEventListener("resize", updateWidth);
+
+        const formFields = {};
+        data.data.fields.forEach((field) => {
+            formFields[field.name] = ""; // Initialize once
+        });
+
+        form = useForm({
+            appointment_data: formFields,
+            calendar_id: "",
+            day_reserved: "",
+            time_reserved: "",
+        });
     });
 
     onDestroy(() => {
         window.removeEventListener("resize", updateWidth);
     });
 
-    export let data = {};
-    console.log({ data });
+
 
     let dataFront = {
         availableDays: {
@@ -90,7 +104,6 @@
         //                 correo: "juanvillans16@gmail.com",
         //             },
         //         },
-
         //         current_date: "2025-04-08T04:00:00.000000Z",
         //     },
         //     wed: {
@@ -106,17 +119,14 @@
         //                 correo: "juanvillans16@gmail.com",
         //             },
         //         },
-
         //         current_date: "2025-05-07T04:00:00.000Z",
         //     },
         //     thu: {
         //         appointments: {},
-
         //         current_date: "2025-04-10T04:00:00.000000Z",
         //     },
         //     fri: {
         //         appointments: {},
-
         //         current_date: "2025-04-11T04:00:00.000000Z",
         //     },
         //     sat: {
@@ -127,12 +137,10 @@
         //                 correo: "juanvillans16@gmail.com",
         //             },
         //         },
-
         //         current_date: "2025-04-12T04:00:00.000000Z",
         //     },
         //     sun: {
         //         appointments: {},
-
         //         current_date: "2025-04-13T04:00:00.000000Z",
         //     },
         // },
@@ -165,17 +173,7 @@
 
     $: frontCalendar, updateShiftsForCalendar();
 
-    const formFields = {};
-    data.data.fields.forEach((field) => {
-        formFields[field.name] = ""; // Initialize each field with an empty string
-    });
-    let form = useForm({
-        appointment_data: formFields,
-        calendar_id: "",
-        day_reserved: "",
-        time_reserved: "",
-    });
-    $: console.log({ formFields, $form });
+    $: console.log({  $form });
 
     let frontCalendar = [];
     function getNextNDays(startDate, n) {
@@ -191,9 +189,11 @@
                 weekday: nextDate.toLocaleDateString("es-VE", {
                     weekday: "short",
                 }),
-                EnglishWeekday: nextDate.toLocaleDateString("en-US", {
-                    weekday: "short",
-                }).toLocaleLowerCase(),
+                EnglishWeekday: nextDate
+                    .toLocaleDateString("en-US", {
+                        weekday: "short",
+                    })
+                    .toLocaleLowerCase(),
                 day: nextDate.toLocaleDateString("es-VE", {
                     day: "numeric",
                 }),
@@ -356,7 +356,7 @@
                                 <div class="grid gap-2 mt-7">
                                     {#each shiftsForCalendar?.[objDate.EnglishWeekday] as shift, indx (objDate.day + "_" + indx)}
                                         {#each shift.appointments as appointment, i ("start_app" + "_" + i)}
-                                            {#if !calendar.weekDays[objDate.EnglishWeekday+"_"+objDate.date.slice(0,10)]?.appointments[appointment.start_appo]}
+                                            {#if !calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)]?.appointments[appointment.start_appo]}
                                                 <button
                                                     on:click={() => {
                                                         showModal = true;
@@ -417,7 +417,7 @@
                 required={field.required}
                 label={`${field.name} ${field.required ? "*" : ""}`}
                 error={$form.errors?.[field.name]}
-                bind:value={$form[field.name]}
+                bind:value={$form.appointment_data[field.name]}
             />
         {/each}
     </form>
