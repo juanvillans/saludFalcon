@@ -22,7 +22,11 @@
         $form.adjusted_availability[indx].date = d.detail.toISOString();
     };
     let defaulTtime_between_appointment = 30;
-
+    const optionsFormatDate = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    };
     export let data = {};
     export let calendar = {};
     console.log(data.data);
@@ -45,7 +49,7 @@
 
     const futureDate = new Date(today);
     futureDate.setMonth(futureDate.getMonth() + 6);
-    let itWasChangeIntervalDate = false
+    let itWasChangeIntervalDate = false;
     let defaultFrontForm = {
         status: true,
         title: "",
@@ -227,7 +231,7 @@
             allow_min_reservation_time_before_appointment: true,
 
             max_reservation_time_before_appointment: 60,
-            min_reservation_time_before_appointment: 40,
+            min_reservation_time_before_appointment: 3,
         },
         adjusted_availability: [],
         booked_appointment_settings: {
@@ -283,8 +287,7 @@
     let searchedDoctors = [];
     const debouncedUpdate = debounce(() => {
         updateAllStartAppointmets();
-
-  }, 250);
+    }, 250);
 
     const searchDoctor = debounce(async (search) => {
         try {
@@ -631,28 +634,27 @@
                 onSuccess: (page) => {
                     displayAlert({
                         type: "success",
-                        message: "Ok todo salió bien",
+                        message: "Calendario creado con éxito",
                     });
-                    displayAlert({ type: "error", message: "error" });
 
                     // $form.defaults({ ...page.props.data.data });
                     $form.reset();
                 },
             });
         } else {
-            $form.put(`/admin/agenda/ver-citas/${form.id}`, {
+            $form.put(`/admin/agenda/ver-citas/${$form.id}`, {
                 // preserveState: true,
                 onError: (errors) => {
-                    if (errors.data) {
-                        displayAlert({ type: "error", message: errors.data });
-                    }
+                    displayAlert({
+                        type: "error",
+                        message: errors.data || "algo salió mal",
+                    });
                 },
                 onSuccess: (page) => {
                     displayAlert({
                         type: "success",
-                        message: "Ok todo salió bien",
+                        message: "Actualizado",
                     });
-                    displayAlert({ type: "error", message: "error" });
 
                     $form.defaults({ ...page.props.data.data });
                     $form.reset();
@@ -701,10 +703,6 @@
 
     let prev_interval_date;
     let openedLeftSection = typePage == "crear" ? "form" : "panel";
-
- 
-
-
 </script>
 
 <Modal
@@ -770,20 +768,18 @@
 <Modal
     bind:showModal={showModalFranja}
     onClose={() => {
-        if (
-            !itWasChangeIntervalDate === true
-        ) {
-            
+        if (!itWasChangeIntervalDate === true) {
             $form.programming_slot.available_now_check = 1;
             $form.programming_slot = {
                 ...$form.programming_slot,
-                interval_date: 
-                    structuredClone(prev_interval_date),
-            }
-        itWasChangeIntervalDate= false
-        // Your logic here
-        prev_interval_date = structuredClone($form.programming_slot.interval_date);
-    }
+                interval_date: structuredClone(prev_interval_date),
+            };
+            itWasChangeIntervalDate = false;
+            // Your logic here
+            prev_interval_date = structuredClone(
+                $form.programming_slot.interval_date,
+            );
+        }
     }}
 >
     <p slot="header" class="font-bold text-lg text-gray-500">
@@ -810,7 +806,10 @@
             name="time_available_type"
             value={false}
         />
-        <span class:opacity-50={$form.programming_slot.interval_date.start_now_check}>
+        <span
+            class:opacity-50={$form.programming_slot.interval_date
+                .start_now_check}
+        >
             <DatePicker
                 on:datechange={(d) => {
                     console.log(d.detail);
@@ -851,7 +850,10 @@
             name="termina"
             value={false}
         />
-        <span class:opacity-50={$form.programming_slot.interval_date.end_never_check}>
+        <span
+            class:opacity-50={$form.programming_slot.interval_date
+                .end_never_check}
+        >
             <DatePicker
                 on:datechange={(d) => {
                     $form.programming_slot.interval_date.end_never_check = false;
@@ -872,7 +874,7 @@
 
     <button
         on:click={() => {
-            itWasChangeIntervalDate = true
+            itWasChangeIntervalDate = true;
             showModalFranja = false;
 
             // ($form.programming_slot = prev_interval_date(
@@ -1036,7 +1038,7 @@
     </ul>
 </Modal>
 <section
-    class="flex gap-4 justify-between bg-gray-50 rounded-xl overflow-hidden overflow-y-auto srolabbleForm citeContainer"
+    class="flex gap-4 justify-between bg-gray-50 rounded-xl overflow-hidden overflow-y-scroll srolabbleForm citeContainer"
 >
     <div class="min-w-[450px] w-[470px] sticky top-0 srolabbleForm">
         {#if openedLeftSection == "form"}
@@ -1480,7 +1482,7 @@
                             </fieldset>
 
                             <fieldset
-                                class="mt-2 border-b border-gray-300 pb-4 flex gap-4"
+                                class="mt-2 border-b border-gray-300 pb-4 flex gap-2"
                             >
                                 <span>
                                     <iconify-icon
@@ -1506,8 +1508,31 @@
                                                     que se puede agendar una
                                                     cita
                                                 {:else}
-                                                    Desde 60 días de antelación
-                                                    hasta 4 horas antes
+                                                    Desde {$form
+                                                        .programming_slot
+                                                        .max_reservation_time_before_appointment}
+                                                    días de antelación hasta {$form
+                                                        .programming_slot
+                                                        .min_reservation_time_before_appointment}
+                                                    horas antes
+                                                    <span class="block text-sm">
+                                                        {#if !$form.programming_slot.interval_date.start_now_check}
+                                                            Empieza el {new Date(
+                                                                $form.programming_slot.interval_date.custom_start_date,
+                                                            ).toLocaleDateString(
+                                                                "es-VE",
+                                                                optionsFormatDate,
+                                                            )}
+                                                        {/if}
+                                                        {#if !$form.programming_slot.interval_date.end_never_check}
+                                                            · Termina el {new Date(
+                                                                $form.programming_slot.interval_date.custom_end_date,
+                                                            ).toLocaleDateString(
+                                                                "es-VE",
+                                                                optionsFormatDate,
+                                                            )}
+                                                        {/if}
+                                                    </span>
                                                 {/if}
                                             </small>
                                         </div>
@@ -1552,9 +1577,14 @@
                                                             0
                                                         ) {
                                                             showModalFranja = true;
-                                                            prev_interval_date = structuredClone($form.programming_slot.interval_date);
+                                                            prev_interval_date =
+                                                                structuredClone(
+                                                                    $form
+                                                                        .programming_slot
+                                                                        .interval_date,
+                                                                );
 
-                                                            itWasChangeIntervalDate = false
+                                                            itWasChangeIntervalDate = false;
                                                         }
                                                     }}
                                                 />
@@ -1563,26 +1593,51 @@
                                                         Fechas de inicio y
                                                         finalización
                                                     </p>
-                                                    <small
-                                                        >Limita el intervalo de
-                                                        fechas en todas las
-                                                        citas</small
-                                                    >
+                                                    <span class="block text-sm">
+                                                        {#if !$form.programming_slot.interval_date.start_now_check}
+                                                        Empieza el {new Date(
+                                                            $form.programming_slot.interval_date.custom_start_date,
+                                                        ).toLocaleDateString(
+                                                            "es-VE",
+                                                            optionsFormatDate,
+                                                        )}
+                                                    {/if}
+                                                    {#if !$form.programming_slot.interval_date.end_never_check}
+                                                        · Termina el {new Date(
+                                                            $form.programming_slot.interval_date.custom_end_date,
+                                                        ).toLocaleDateString(
+                                                            "es-VE",
+                                                            optionsFormatDate,
+                                                        )}
+                                                    {/if}
+                                                    </span>
+                                                    {#if $form.programming_slot.interval_date.start_now_check && $form.programming_slot.interval_date.end_never_check}
+                                                        <small
+                                                            >Limita el intervalo
+                                                            de fechas en todas
+                                                            las citas</small
+                                                        >
+                                                    {/if}
                                                 </div>
                                             </label>
-                                            {#if !$form.programming_slot.interval_date.start_now_check || !$form.programming_slot.interval_date.end_never_check}
-                                            <button
-                                            type="button"
-                                            on:click={() => {
-                                                showModalFranja = true
-                                            prev_interval_date = structuredClone($form.programming_slot.interval_date);
 
-                                               }}
-                                            for="date1"
-                                            class="cursor-pointer ml-4 text-color2 font-bold p-1 px-3 rounded hover:bg-color2 hover:bg-opacity-10 inline-block"
-                                            >Cambiar Fechas</button
-                                        >
-                                        {/if}
+                                            {#if !$form.programming_slot.interval_date.start_now_check || !$form.programming_slot.interval_date.end_never_check}
+                                                <button
+                                                    type="button"
+                                                    on:click={() => {
+                                                        showModalFranja = true;
+                                                        prev_interval_date =
+                                                            structuredClone(
+                                                                $form
+                                                                    .programming_slot
+                                                                    .interval_date,
+                                                            );
+                                                    }}
+                                                    for="date1"
+                                                    class="cursor-pointer ml-4 text-color2 font-bold p-1 px-3 rounded hover:bg-color2 hover:bg-opacity-10 inline-block"
+                                                    >Cambiar Fechas</button
+                                                >
+                                            {/if}
 
                                             <small
                                                 class="mt-4 mb-2 inline-block"
@@ -1661,7 +1716,7 @@
                             </fieldset>
 
                             <fieldset
-                                class="mt-2 border-b border-gray-300 pb-4 flex gap-1"
+                                class="mt-2 border-b border-gray-300 pb-4 flex gap-2"
                             >
                                 <span class="pt-2">
                                     <iconify-icon
@@ -2022,7 +2077,7 @@
                                 </section>
                             </fieldset>
 
-                            <fieldset class="mt-2 pb-4 flex gap-4">
+                            <fieldset class="mt-2 pb-4 flex gap-2">
                                 <span>
                                     <iconify-icon
                                         class="pt-2"
@@ -2098,7 +2153,6 @@
                                                                 $form.booked_appointment_settings.time_between_appointment = 0;
                                                             }
                                                             updateAllStartAppointmets();
-
                                                         }}
                                                     />
                                                     <Input
@@ -2117,7 +2171,7 @@
                                                             $form.booked_appointment_settings.time_between_appointment =
                                                                 +e.target.value;
                                                             defaulTtime_between_appointment =
-                                                                +e.target.value
+                                                                +e.target.value;
                                                             updateAllStartAppointmets();
                                                         }}
                                                         error={$form.errors
@@ -2193,7 +2247,7 @@
                                     type="text"
                                     required={true}
                                     label={"Titulo"}
-                                    labelClasses={" w-11/12"}
+                                    labelClasses={"font-bold w-11/12"}
                                     inputClasses={"text-2xl  p-1 px-3 bg-gray-200 w-11/12 "}
                                     bind:value={$form.title}
                                     error={$form.errors?.title}
@@ -2465,7 +2519,6 @@
                             <p
                                 class={`text-2xl mx-auto w-12 aspect-square rounded-full flex items-center justify-center ${values.current_date?.slice(0, 10) == calendar.headerInfo.today.slice(0, 10) ? "bg-color3 text-gray-50 " : ""}`}
                             >
-                            
                                 {new Date(values.current_date).getUTCDate()}
                             </p>
                         </li>
@@ -2590,7 +2643,20 @@
         height: calc(100vh - 100px);
     }
     .srolabbleForm::-webkit-scrollbar-track {
-        background: red !important;
+        background: transparent !important;
+    }
+    .srolabbleForm::-webkit-scrollbar {
+        width: 10px; /* width of the entire scrollbar */
+    }
+
+    .srolabbleForm::-webkit-scrollbar-track {
+        background: transparent; /* color of the tracking area */
+    }
+
+    .srolabbleForm::-webkit-scrollbar-thumb {
+        background-color: #b9c3cc; /* color of the scroll thumb */
+        border-radius: 20px; /* roundness of the scroll thumb */
+        /* border: 3px solid orange;  creates padding around scroll thumb */
     }
     .calendarHeader:before {
         content: "";
