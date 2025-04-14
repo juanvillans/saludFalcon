@@ -356,7 +356,7 @@
                                 <div class="grid gap-2 mt-7">
                                     {#each shiftsForCalendar?.[objDate.EnglishWeekday] as shift, indx (objDate.day + "_" + indx)}
                                         {#each shift.appointments as appointment, i ("start_app" + "_" + i)}
-                                            {#if !calendar.weekDays[objDate.EnglishWeekday]?.appointments[appointment.start_appo]}
+                                            {#if !calendar.weekDays[objDate.EnglishWeekday+"_"+objDate.date.slice(0,10)]?.appointments[appointment.start_appo]}
                                                 <button
                                                     on:click={() => {
                                                         showModal = true;
@@ -415,7 +415,7 @@
         {#each data.data.fields as field}
             <Input
                 required={field.required}
-                label={field.name}
+                label={`${field.name} ${field.required ? "*" : ""}`}
                 error={$form.errors?.[field.name]}
                 bind:value={$form[field.name]}
             />
