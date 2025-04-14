@@ -25,8 +25,11 @@
         if (screenZise <= 900) {
             numberOfDays = 3;
         }
-        if (screenZise <= 820) {
+        if (screenZise <= 814) {
             numberOfDays = 2;
+        }
+        if (screenZise <= 770) {
+            numberOfDays = 4;
         }
         if (screenZise >= 1220) {
             numberOfDays = 7;
@@ -338,7 +341,7 @@
                     <!-- <h2 class="text-2xl">{dataFront.headerInfo.month_year}</h2> -->
                 </div>
 
-                <div class="py-5 w-max pt-10 flex">
+                <div class="py-5 w-max pt-10 flex mx-auto">
                     <button
                         class="text-2xl text-gray-900 rounded-full aspect-square hover:bg-gray-200 flex items-center w-12 h-12"
                         on:click={() => {
@@ -475,7 +478,7 @@
             type="email"
             label={"Correo*"}
             bind:value={$form.appointment_data.email}
-            readOnly={$form.appointment_data.email}
+            readOnly={$form.appointment_data.patient_id}
             required={true}
             error={$form.errors?.email}
         />
