@@ -2465,6 +2465,7 @@
                             <p
                                 class={`text-2xl mx-auto w-12 aspect-square rounded-full flex items-center justify-center ${values.current_date?.slice(0, 10) == calendar.headerInfo.today.slice(0, 10) ? "bg-color3 text-gray-50 " : ""}`}
                             >
+                            
                                 {new Date(values.current_date).getUTCDate()}
                             </p>
                         </li>
