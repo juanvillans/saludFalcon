@@ -41,7 +41,7 @@
         if (screenZise >= 1220) {
             numberOfDays = 7;
         }
-        console.log(numberOfDays);
+        console.log({focusedDate, numberOfDays});
 
         getNextNDays(focusedDate, numberOfDays);
 
@@ -51,21 +51,43 @@
     }
 
     const translateDays = {
-        mon: "Lun",
-        tue: "Mar",
-        wed: "Mié",
-        thu: "Jue",
-        fri: "Vie",
-        sat: "Sáb",
-        sun: "Dom",
+         Lun: "mon",
+         Mar: "tue",
+         Mié: "wed",
+         Jue: "thu",
+         Vie: "fri",
+         Sáb: "sat",
+         Dom: "sun",
     };
     export let data = {};
+    export let calendar = {};
     console.log({ data });
     let form;
     const debouncedUpdate = debounce(updateWidth, 300);
 
+    function getTodayInVenezuelaISO() {
+    const now = new Date();
+
+    // Obtener la fecha y hora actual en Caracas en formato ISO YYYY-MM-DD
+    const formatter = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Caracas",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    });
+
+    const parts = formatter.formatToParts(now);
+    const venezuelaDateString = `${parts.find(p => p.type === "year").value}-${parts.find(p => p.type === "month").value}-${parts.find(p => p.type === "day").value}`;
+
+    // Convertirla a Date en zona horaria local (UTC, pero representando Caracas)
+    const venezuelaDate = new Date(`${venezuelaDateString}T00:00:00-04:00`);
+    return venezuelaDate.toISOString(); // Esta es la fecha en formato ISO UTC representando Caracas
+}
+
+    const today =  getTodayInVenezuelaISO();
+    $: focusedDate = today;
+
     onMount(() => {
-        updateWidth(); // Set the initial width
         window.addEventListener("resize", debouncedUpdate);
 
         const formFields = {};
@@ -84,12 +106,24 @@
                 date_birth: "",
                 phone_number: "",
                 email: "",
-                end_date: ""
+                end_date: "",
             },
             calendar_id: "",
             day_reserved: "",
             time_reserved: "",
         });
+
+        const now = new Date();
+
+        // Adjust for Venezuela's UTC-4 offset (Caracas time)
+        const venezuelaTime = new Date(now.getTime() - 4 * 60 * 60 * 1000); // Subtract 4 hours
+
+        // Format to ISO string (UTC representation)
+        // getNextNDays(today, numberOfDays);
+        focusedDate = today;
+        console.log({today});
+        updateWidth(); // Set the initial width
+
     });
 
     onDestroy(() => {
@@ -108,67 +142,7 @@
         today: "2024-10-01T04:00:00.000Z",
     };
 
-    export let calendar = {
-        // weekDays: {
-        //     mon: {
-        //         appointments: {
-        //             "08:00": {
-        //                 name: "juanito",
-        //                 last_name: "Perez",
-        //                 correo: "juanvillans16@gmail.com",
-        //             },
-        //         },
-        //         current_date: "2025-04-07T04:00:00.000000Z",
-        //     },
-        //     tue: {
-        //         appointments: {
-        //             "09:00": {
-        //                 name: "Juan",
-        //                 last_name: "Donquis",
-        //                 correo: "juanvillans16@gmail.com",
-        //             },
-        //         },
-        //         current_date: "2025-04-08T04:00:00.000000Z",
-        //     },
-        //     wed: {
-        //         appointments: {
-        //             "08:00": {
-        //                 name: "Douglas",
-        //                 last_name: "Villasmil",
-        //                 correo: "juanvillans16@gmail.com",
-        //             },
-        //             "09:00": {
-        //                 name: "Deivis",
-        //                 last_name: "Donquis",
-        //                 correo: "juanvillans16@gmail.com",
-        //             },
-        //         },
-        //         current_date: "2025-05-07T04:00:00.000Z",
-        //     },
-        //     thu: {
-        //         appointments: {},
-        //         current_date: "2025-04-10T04:00:00.000000Z",
-        //     },
-        //     fri: {
-        //         appointments: {},
-        //         current_date: "2025-04-11T04:00:00.000000Z",
-        //     },
-        //     sat: {
-        //         appointments: {
-        //             "08:00": {
-        //                 name: "juanito",
-        //                 last_name: "Perez",
-        //                 correo: "juanvillans16@gmail.com",
-        //             },
-        //         },
-        //         current_date: "2025-04-12T04:00:00.000000Z",
-        //     },
-        //     sun: {
-        //         appointments: {},
-        //         current_date: "2025-04-13T04:00:00.000000Z",
-        //     },
-        // },
-    };
+    
     let shiftsForCalendar = {};
 
     function updateShiftsForCalendar() {
@@ -208,13 +182,15 @@
         for (let i = 0; i <= n - 1; i++) {
             const nextDate = new Date(start);
             nextDate.setDate(start.getDate() + i);
+            console.log({start, nextDate,});
+            
             result.push({
                 date: nextDate.toISOString(), // Format as YYYY-MM-DD
                 weekday: nextDate.toLocaleDateString("es-VE", {
                     weekday: "short",
                 }),
                 EnglishWeekday: nextDate
-                    .toLocaleDateString("en-US", {
+                    .toLocaleDateString("en", {
                         weekday: "short",
                     })
                     .toLocaleLowerCase(),
@@ -231,7 +207,7 @@
     }
 
     function updateCalendar(type) {
-        isThereSomeAppointment = "loading"
+        isThereSomeAppointment = "loading";
         router.get(
             window.location.pathname,
             {
@@ -246,22 +222,12 @@
                     } else {
                         isThereSomeAppointment = false;
                     }
-                    console.log(document.querySelector(".bookButton"));
+                    showModal = false;
                 },
             },
         );
     }
 
-    let focusedDate = dataFront.today;
-    const now = new Date();
-
-    // Adjust for Venezuela's UTC-4 offset (Caracas time)
-    const venezuelaTime = new Date(now.getTime() - 4 * 60 * 60 * 1000); // Subtract 4 hours
-
-    // Format to ISO string (UTC representation)
-    const today = venezuelaTime.toISOString(); // "2025-04-14T04:00:00.000Z"
-    getNextNDays(today, numberOfDays);
-    console.log(today);
 
     $: console.log({ calendar, data, frontCalendar });
 
@@ -287,8 +253,12 @@
             onSuccess: (page) => {
                 displayAlert({
                     type: "success",
-           
-            message: "Su cita es el "+ $form.day_reserved.slice(0,10) + " a las " + convertTo12HourFormat($form.time_reserved),
+
+                    message:
+                        "Su cita es el " +
+                        $form.day_reserved.slice(0, 10) +
+                        " a las " +
+                        convertTo12HourFormat($form.time_reserved),
                 });
 
                 // $form.defaults({ ...page.props.data.data });
@@ -311,7 +281,6 @@
         const newMinutes = String(date.getMinutes()).padStart(2, "0");
         return `${newHours}:${newMinutes}`;
     }
-    
 </script>
 
 <Alert />
@@ -428,7 +397,12 @@
                                                                 appointment.start_appo;
                                                             $form.calendar_id =
                                                                 data.data.id;
-                                                            $form.appointment_data.end_time = addMinutes(appointment.start_appo, data.data.duration_per_appointment)
+                                                            $form.appointment_data.end_time =
+                                                                addMinutes(
+                                                                    appointment.start_appo,
+                                                                    data.data
+                                                                        .duration_per_appointment,
+                                                                );
                                                         }}
                                                         class="bookButton font-semibold text-sm xl:text-md py-2 border-color1 border rounded hover:bg-color3 duration-75 hover:text-white bg-color4"
                                                         >{convertTo12HourFormat(
@@ -441,17 +415,23 @@
                                     {/if}
                                 </div>
                             </li>
-                            {/each}
-                            {#if isThereSomeAppointment === false }
-                                <li class="absolute left-1/2 top-24 md:top-36 -translate-x-1/2 text-center w-full">
-                                    <p>
-                                        No hay citas disponibles durante estos dias
-                                    </p>
+                        {/each}
+                        {#if isThereSomeAppointment === false}
+                            <li
+                                class="absolute left-1/2 top-24 md:top-36 -translate-x-1/2 text-center w-full"
+                            >
+                                <p>
+                                    No hay citas disponibles durante estos dias
+                                </p>
 
-                                    <button type="button" class="text-color3 font-semibold p-2">Ir a la siguiente fecha disponible</button>
-                                </li>
-                            {/if}
-                        </ul>
+                                <button
+                                    type="button"
+                                    class="text-color3 font-semibold p-2"
+                                    >Ir a la siguiente fecha disponible</button
+                                >
+                            </li>
+                        {/if}
+                    </ul>
                     <button
                         on:click={() => {
                             const start = new Date(
