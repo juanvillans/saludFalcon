@@ -2638,8 +2638,8 @@
 
                     <div
                         class="flex gap-3 w-28 h-12 absolute duration-300 z-40 px-0.5"
-                        style={`top: ${GetTop(appointment.start)}px; left: ${40 + (112 * indxDay + 1)}px; 
-                            height: ${GetHeight(appointment.start, appointment.end) * 48}px
+                        style={`top: ${GetTop(time)}px; left: ${40 + (112 * indxDay + 1)}px; 
+                            height: ${GetHeight(time, appointment.end_time) * 48}px
                            `}
                     >
                         <div class=" z-40 px-1 w-full">
