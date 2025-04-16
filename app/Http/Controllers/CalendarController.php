@@ -6,6 +6,7 @@ use App\Http\Requests\CalendarRequest;
 use App\Http\Resources\CalendarResource;
 use App\Models\Calendar;
 use App\Services\CalendarService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -43,10 +44,12 @@ class CalendarController
         $this->params = [
             'start_week' => $request->input('startWeek') ?? null,
             'to' => $request->input('to') ?? null,
-
         ];
 
-        $structure = $this->calendarService->getStructureCalendar($this->params);
+        $dateRange = $this->calendarService->getWeekRange($this->params);
+
+
+        $structure = $this->calendarService->getDinamicStructureCalendar($dateRange);
         
         return inertia('Dashboard/CreateCalendar',[
             'calendar' => $structure,
@@ -111,9 +114,11 @@ class CalendarController
 
         ];
 
+        $dateRange = $this->calendarService->getWeekRange($this->params);
+
         $calendar->load('user.specialty', 'appointments');
 
-        $structure = $this->calendarService->getStructureCalendar($this->params, $calendar);
+        $structure = $this->calendarService->getDinamicStructureCalendar($dateRange, $calendar);
         
         return inertia('Dashboard/CreateCalendar',[
             'calendar' => $structure,
