@@ -41,7 +41,7 @@
         if (screenZise >= 1220) {
             numberOfDays = 7;
         }
-        console.log({focusedDate, numberOfDays});
+        console.log({ focusedDate, numberOfDays });
 
         getNextNDays(focusedDate, numberOfDays);
 
@@ -51,13 +51,13 @@
     }
 
     const translateDays = {
-         Lun: "mon",
-         Mar: "tue",
-         Mié: "wed",
-         Jue: "thu",
-         Vie: "fri",
-         Sáb: "sat",
-         Dom: "sun",
+        Lun: "mon",
+        Mar: "tue",
+        Mié: "wed",
+        Jue: "thu",
+        Vie: "fri",
+        Sáb: "sat",
+        Dom: "sun",
     };
     export let data = {};
     export let calendar = {};
@@ -66,28 +66,46 @@
     const debouncedUpdate = debounce(updateWidth, 300);
 
     function getTodayInVenezuelaISO() {
-    const now = new Date();
+        const now = new Date();
 
-    // Obtener la fecha y hora actual en Caracas en formato ISO YYYY-MM-DD
-    const formatter = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "America/Caracas",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-    });
+        // Obtener la fecha y hora actual en Caracas en formato ISO YYYY-MM-DD
+        const formatter = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "America/Caracas",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        });
 
-    const parts = formatter.formatToParts(now);
-    const venezuelaDateString = `${parts.find(p => p.type === "year").value}-${parts.find(p => p.type === "month").value}-${parts.find(p => p.type === "day").value}`;
+        const parts = formatter.formatToParts(now);
+        const venezuelaDateString = `${parts.find((p) => p.type === "year").value}-${parts.find((p) => p.type === "month").value}-${parts.find((p) => p.type === "day").value}`;
 
-    // Convertirla a Date en zona horaria local (UTC, pero representando Caracas)
-    const venezuelaDate = new Date(`${venezuelaDateString}T00:00:00-04:00`);
-    return venezuelaDate.toISOString(); // Esta es la fecha en formato ISO UTC representando Caracas
-}
+        // Convertirla a Date en zona horaria local (UTC, pero representando Caracas)
+        const venezuelaDate = new Date(`${venezuelaDateString}T00:00:00-04:00`);
+        return venezuelaDate.toISOString(); // Esta es la fecha en formato ISO UTC representando Caracas
+    }
 
-    const today =  getTodayInVenezuelaISO();
+    const today = getTodayInVenezuelaISO();
     $: focusedDate = today;
 
+    export let serverTime = "13:40"; // Default fallback
+    let currentTime = serverTime;
+    let interval;
+
+    function syncTime() {
+        // Option 1: Client-side update only
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        currentTime = `${hours}:${minutes}`;
+
+        // Option 2: Fetch fresh time from backend (uncomment if needed)
+        // Inertia.reload({ only: ['serverTime'] });
+    }
+
     onMount(() => {
+        syncTime(); // Initial sync
+        interval = setInterval(syncTime, 60000);
+
         window.addEventListener("resize", debouncedUpdate);
 
         const formFields = {};
@@ -121,12 +139,13 @@
         // Format to ISO string (UTC representation)
         // getNextNDays(today, numberOfDays);
         focusedDate = today;
-        console.log({today});
+        console.log({ today });
         updateWidth(); // Set the initial width
-
     });
 
     onDestroy(() => {
+        if (interval) clearInterval(interval);
+
         window.removeEventListener("resize", debouncedUpdate);
     });
 
@@ -142,7 +161,6 @@
         today: "2024-10-01T04:00:00.000Z",
     };
 
-    
     let shiftsForCalendar = {};
 
     function updateShiftsForCalendar() {
@@ -182,8 +200,8 @@
         for (let i = 0; i <= n - 1; i++) {
             const nextDate = new Date(start);
             nextDate.setDate(start.getDate() + i);
-            console.log({start, nextDate,});
-            
+            console.log({ start, nextDate });
+
             result.push({
                 date: nextDate.toISOString(), // Format as YYYY-MM-DD
                 weekday: nextDate.toLocaleDateString("es-VE", {
@@ -227,7 +245,6 @@
             },
         );
     }
-
 
     $: console.log({ calendar, data, frontCalendar });
 
@@ -282,30 +299,100 @@
         return `${newHours}:${newMinutes}`;
     }
 
-    export let serverTime = '00:00'; // Default fallback
-  let currentTime = serverTime;
-  let interval;
+    function isTimeDifferenceSufficient(
+        currentTime24,
+        currentDate,
+        futureTime24,
+        futureDate,
+    ) {
+        // Parse current datetime
+        const [currentHours, currentMinutes] = currentTime24
+            .split(":")
+            .map(Number);
+        const currentDateTime = new Date(currentDate);
+        currentDateTime.setHours(currentHours, currentMinutes, 0, 0);
 
-  // Update time every minute (60,000 ms)
-  onMount(() => {
-    syncTime(); // Initial sync
-    interval = setInterval(syncTime, 60000);
-  });
+        // Parse future datetime
+        const [futureHours, futureMinutes] = futureTime24
+            .split(":")
+            .map(Number);
+        const futureDateTime = new Date(futureDate);
+        futureDateTime.setHours(futureHours, futureMinutes, 0, 0);
 
-  onDestroy(() => {
-    if (interval) clearInterval(interval);
-  });
+        // Calculate difference in milliseconds
+        const diffMs = futureDateTime - currentDateTime;
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
 
-  function syncTime() {
-    // Option 1: Client-side update only
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    currentTime = `${hours}:${minutes}`;
+        // Handle past dates (difference is negative)
+        if (diffMs < 0) {
+            return false; // Future time is in the past
+        }
+        // Check day threshold (if specified)
+        if (
+            data.data.programming_slot
+                .allow_max_reservation_time_before_appointment == true &&
+            diffDays >
+                data.data.programming_slot
+                    .max_reservation_time_before_appointment
+        ) {
+            return false;
+        }
+        if (
+            data.data.programming_slot
+                .allow_min_reservation_time_before_appointment == false
+        )
+            return true;
 
-    // Option 2: Fetch fresh time from backend (uncomment if needed)
-    // Inertia.reload({ only: ['serverTime'] });
-  }
+        // Convert threshold hours to milliseconds
+        const thresholdMs =
+            data.data.programming_slot.min_reservation_time_before_appointment *
+            60 *
+            60 *
+            1000;
+
+        // Compare difference with threshold
+        console.log(
+            { currentTime24, currentDate, futureTime24, futureDate },
+            diffMs >= thresholdMs,
+        );
+
+        return diffMs >= thresholdMs;
+    }
+
+    function validateDay(calendarDate) {
+        if (calendarDate < today.slice(0, 10)) {
+            return false;
+        }
+
+        if (
+            data.data.programming_slot.available_now_check == 0 &&
+            !data.data.programming_slot.interval_date.start_now_check &&
+            data.data.programming_slot.interval_date.custom_start_date.slice(
+                0,
+                10,
+            ) > calendarDate
+        ) {
+            console.log(data.data.programming_slot.interval_date);
+            return false;
+        }
+        console.log(
+            data.data.programming_slot.interval_date.custom_end_date,
+            today,
+        );
+
+        if (
+            data.data.programming_slot.available_now_check == 0 &&
+            !data.data.programming_slot.interval_date.end_never_check &&
+            data.data.programming_slot.interval_date.custom_end_date.slice(
+                0,
+                10,
+            ) < calendarDate
+        ) {
+            return false;
+        }
+
+        return true;
+    }
 </script>
 
 <Alert />
@@ -409,10 +496,10 @@
                                     {objDate.day}
                                 </p>
                                 <div class="grid gap-2 mt-7">
-                                    {#if objDate.date.slice(0, 10) >= today.slice(0, 10)}
+                                    {#if validateDay(objDate.date.slice(0, 10))}
                                         {#each shiftsForCalendar?.[objDate.EnglishWeekday] as shift, indx (objDate.day + "_" + indx)}
                                             {#each shift.appointments as appointment, i ("start_app" + "_" + i)}
-                                                {#if   !calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)]?.appointments[appointment.start_appo]}
+                                                {#if isTimeDifferenceSufficient(currentTime, today.slice(0, 10), appointment.start_appo, objDate.date.slice(0, 10)) && calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)].nro_appointments < data.data.booked_appointment_settings.max_appointment_per_day && !calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)]?.appointments[appointment.start_appo]}
                                                     <button
                                                         on:click={() => {
                                                             showModal = true;
