@@ -482,6 +482,7 @@
     }
 
     function updateShiftsForCalendar() {
+        shiftsForCalendar = {}
         // console.log($form.adjusted_availability);
         Object.entries(calendar.weekDays).forEach(([key, value], indx) => {
             let isItAjustedShift =
@@ -500,7 +501,7 @@
                         : $form.availability[key.slice(0,3)],
             };
         });
-        console.log({ shiftsForCalendar });
+        console.log({ shiftsForCalendar, calendar });
     }
     // let searchDoctor = "";
 
@@ -2588,7 +2589,7 @@
             {#each Object.entries(shiftsForCalendar) as [day, shifts], indxDay (day)}
                 {#if shifts.length >= 1 && shifts[0].start != ""}
                     <div
-                        class={`gap-2 flex flex-col z-30 ${calendar.weekDays[day].current_date < calendar.headerInfo.today.slice(0, 10) ? "opacity-40" : ""} `}
+                        class={`gap-2 flex flex-col z-30 ${calendar.weekDays[day]?.current_date < calendar.headerInfo.today.slice(0, 10) ? "opacity-40" : ""} `}
                     >
                     {day}
                         {#each shifts as shift, indx (day + "_" + indx)}
