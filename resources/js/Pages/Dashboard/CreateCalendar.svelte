@@ -908,7 +908,7 @@
                 class="bg-color2 absolute -left-5 shadow-inner bottom-0 rounded-r-full text-white w-max px-2 font-bold h-16 flex items-center"
             >
                 <p class="">
-                    {convertTo12HourFormat(selectedAppointmentDetails.start)}
+                    {convertTo12HourFormat(selectedAppointmentDetails.start_time)}
                 </p>
             </div>
         </div>
@@ -2637,20 +2637,21 @@
                     </Draggable> -->
 
                     <div
-                        class="flex gap-3 w-28 h-12 absolute duration-300 z-40 px-0.5"
+                        class="flex gap-3 w-28 h-12 absolute duration-300 z-40 px-0.5 "
                         style={`top: ${GetTop(time)}px; left: ${40 + (112 * indxDay + 1)}px; 
                             height: ${GetHeight(time, appointment.end_time) * 48}px
                            `}
                     >
-                        <div class=" z-40 px-1 w-full">
+                        <div class=" z-40 px-1 w-full ">
                             <!-- svelte-ignore a11y-click-events-have-key-events -->
                             <div
-                                class={`cursor-pointer hover:bg-color3 text-center bg-color3 ${calendar.weekDays[day].current_date < calendar.headerInfo.today ? "opacity-40" : ""}  w-[98%] h-full mx-auto p-1 rounded-lg ${$form.booked_appointment_settings.time_between_appointment < 5 ? "border-b-4 border-color4" : ""}`}
+                                class={`cursor-pointer hover:bg-color3 text-center bg-color3 ${calendar.weekDays[day].current_date < calendar.headerInfo.today ? "opacity-40" : ""}  w-[98%] h-full mx-auto p-1 rounded-lg `}
                                 on:click={() => {
                                     showModalappointments = true;
                                     selectedAppointmentDetails = {
                                         ...appointment,
                                         date: values.current_date,
+                                        start_time: time,
                                     };
                                 }}
                             >
