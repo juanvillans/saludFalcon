@@ -165,7 +165,7 @@ class CalendarService
             
             $appointmentsObject = $dailyAppointments->isNotEmpty() 
                 ? (object) $dailyAppointments->map->first()->all()
-                : null;
+                : (object) [];
             
             $weekDays[$dayKey] = (object) [
                 'appointments' => $appointmentsObject,
