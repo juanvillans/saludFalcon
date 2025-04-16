@@ -281,6 +281,31 @@
         const newMinutes = String(date.getMinutes()).padStart(2, "0");
         return `${newHours}:${newMinutes}`;
     }
+
+    export let serverTime = '00:00'; // Default fallback
+  let currentTime = serverTime;
+  let interval;
+
+  // Update time every minute (60,000 ms)
+  onMount(() => {
+    syncTime(); // Initial sync
+    interval = setInterval(syncTime, 60000);
+  });
+
+  onDestroy(() => {
+    if (interval) clearInterval(interval);
+  });
+
+  function syncTime() {
+    // Option 1: Client-side update only
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    currentTime = `${hours}:${minutes}`;
+
+    // Option 2: Fetch fresh time from backend (uncomment if needed)
+    // Inertia.reload({ only: ['serverTime'] });
+  }
 </script>
 
 <Alert />
@@ -387,7 +412,7 @@
                                     {#if objDate.date.slice(0, 10) >= today.slice(0, 10)}
                                         {#each shiftsForCalendar?.[objDate.EnglishWeekday] as shift, indx (objDate.day + "_" + indx)}
                                             {#each shift.appointments as appointment, i ("start_app" + "_" + i)}
-                                                {#if !calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)]?.appointments[appointment.start_appo]}
+                                                {#if   !calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)]?.appointments[appointment.start_appo]}
                                                     <button
                                                         on:click={() => {
                                                             showModal = true;

@@ -462,9 +462,9 @@
     let typePage = window.location.pathname.toLowerCase().includes("crear")
         ? "crear"
         : "editar";
-    $: console.log(typePage);
+
     function updateUrl(type) {
-        let currentDate = calendar.weekDays.mon.current_date;
+        let currentDate = Object.values(calendar.weekDays)[0].current_date;
         if (type == "today") {
             // Set time to 00:00:00 UTC
             currentDate = today.toISOString();
@@ -497,7 +497,7 @@
                 [key]:
                     isItAjustedShift >= 0
                         ? $form.adjusted_availability[isItAjustedShift].shifts
-                        : $form.availability[key],
+                        : $form.availability[key.slice(0,3)],
             };
         });
         console.log({ shiftsForCalendar });
@@ -2544,7 +2544,7 @@
                             <p
                                 class={` ${values.current_date?.slice(0, 10) == calendar.headerInfo.today.slice(0, 10) ? "text-color3 " : ""}`}
                             >
-                                {translateDays[day].toUpperCase()}
+                                {translateDays[day.slice(0,3)].toUpperCase()}
                             </p>
                             <p
                                 class={`text-2xl mx-auto w-12 aspect-square rounded-full flex items-center justify-center ${values.current_date?.slice(0, 10) == calendar.headerInfo.today.slice(0, 10) ? "bg-color3 text-gray-50 " : ""}`}
@@ -2590,6 +2590,7 @@
                     <div
                         class={`gap-2 flex flex-col z-30 ${calendar.weekDays[day].current_date < calendar.headerInfo.today.slice(0, 10) ? "opacity-40" : ""} `}
                     >
+                    {day}
                         {#each shifts as shift, indx (day + "_" + indx)}
                             <div
                                 class="flex gap-3 w-28 h-12 absolute duration-300 z-30 px-0.5"
