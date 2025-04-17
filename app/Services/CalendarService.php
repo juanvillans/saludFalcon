@@ -152,9 +152,15 @@ class CalendarService
             ? $calendar->appointments()
                 ->whereBetween('day_reserved', [$startDate, $endDate])
                 ->get()
-                ->groupBy(['day_reserved', 'time_reserved'])
+                ->groupBy([
+                    function ($item) {
+                    return Carbon::parse($item->day_reserved)->format('Y-m-d');
+                },
+                'time_reserved'
+                ])
             : collect();
         
+
         for ($currentDate = $startDate->copy(); $currentDate->lte($endDate); $currentDate->addDay()) {
 
             $dayOfWeek = $currentDate->dayOfWeekIso;
@@ -170,6 +176,7 @@ class CalendarService
             $weekDays[$dayKey] = (object) [
                 'appointments' => $appointmentsObject,
                 'current_date' => $currentDate->copy(),
+                'nro_appointments' => $dailyAppointments->count(),
             ];
         }
         

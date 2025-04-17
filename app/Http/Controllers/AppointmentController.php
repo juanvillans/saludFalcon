@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Services\CalendarService;
+use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
 {
@@ -51,6 +52,7 @@ class AppointmentController extends Controller
 
     public function bookAppointment(BookAppointmentRequest $request, Calendar $calendar){
 
+       
 
         DB::beginTransaction();
 
@@ -70,6 +72,8 @@ class AppointmentController extends Controller
             
             DB::rollback();
             
+            Log::info('Error agendando cita: ' . $e->getMessage());
+
             return redirect()->back()->withErrors(['data' => $e->getMessage()]);
         }
 

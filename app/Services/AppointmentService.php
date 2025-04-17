@@ -13,13 +13,15 @@ class AppointmentService
 
         $patient = $this->searchPatient($data);
 
-        Appointment::create([
+
+        $appointment = Appointment::create([
             'calendar_id' => $calendar->id,
             'patient_id' => $patient->id,
             'day_reserved' => Carbon::parse($data['day_reserved']),
             'time_reserved' => $data['time_reserved'],
             'appointment_data' => $data['appointment_data']
         ]);
+
     }
 
     private function searchPatient($data){
