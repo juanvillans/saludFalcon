@@ -67,6 +67,16 @@ class AppointmentService
         
         $this->haveAnotherReservationActive($patient, $calendar);
 
+        $this->isBetweenInterval($data, $calendar);
+
+        $this->isMaximumDaysInAdvance($data, $calendar);
+
+        $this->isMinimumHoursInAdvance($data, $calendar);
+
+        $this->checkMaxAppointmentsPerDay($data, $calendar);
+
+        $this->isDateAvailable($data, $calendar);
+
 
     }
 
@@ -91,6 +101,116 @@ class AppointmentService
         if(isset($appointment->id))
             throw new Exception("Usted ya tiene una cita reservada para el dia: " . $appointment->day_reserved, 400);
         
+        return 0;
+    }
+
+    private function isBetweenInterval($data, $calendar){
+        
+        $programminSlot = $calendar->programming_slot;
+
+        if($programminSlot['interval_date']['start_now_check'] == false){
+            
+            $registerDate = Carbon::parse($data['day_reserved']);
+            $customStartDate = Carbon::parse($programminSlot['interval_date']['custom_start_date']);
+
+            if($registerDate->lte($customStartDate))
+                throw new Exception("El dia a reservar debe ser posterior al dia: " . $customStartDate->format('Y-m-d'), 400);
+
+        }
+
+        if($programminSlot['interval_date']['end_now_check'] == false){
+            
+            $registerDate = Carbon::parse($data['day_reserved']);
+            $customEndDate = Carbon::parse($programminSlot['interval_date']['custom_end_date']);
+
+            if($registerDate->gte($customEndDate))
+                throw new Exception("El dia a reservar debe ser anterior al dia: " . $customEndDate->format('Y-m-d'), 400);
+                    
+        }
+
+        return 0;
+
+    }
+
+    private function isMaximumDaysInAdvance($data, $calendar){
+
+        $programminSlot = $calendar->programming_slot;
+
+        if($programminSlot['allow_max_reservation_time_before_appointment'] == false)
+            return 0;
+
+        $maxDays = $programminSlot['max_reservation_time_before_appointment'];
+        $registerDate = Carbon::parse($data['day_reserved']);
+        $today = Carbon::now();
+
+        if ($today->diffInDays($registerDate, false) > $maxDays) {
+            throw new Exception("No puede reservar una cita con mas de " . $maxDays . ' dias de diferencia', 400);
+        }
+
+        return 0;
+
+    }
+
+    private function isMinimumHoursInAdvance($data, $calendar){
+
+        $programminSlot = $calendar->programming_slot;
+
+        if($programminSlot['allow_min_reservation_time_before_appointment'] == false)
+            return 0;
+
+        $minHours = $programminSlot['min_reservation_time_before_appointment'];
+        
+        $registerDate = Carbon::parse($data['day_reserved'])
+        ->setTimeFromTimeString($data['time_reserved']);
+
+        $today = Carbon::now();
+
+        if ($today->diffInHours($registerDate, false) < $minHours) {
+            throw new Exception("No puede reservar una cita con menos de " . $minHours . ' horas de diferencia', 400);
+            
+        }
+
+        return 0;
+
+    }
+
+    private function checkMaxAppointmentsPerDay($data, $calendar){
+        
+        $appointmentSettings = $calendar->booked_appointment_settings;
+        $maxAppointmentsPerDay = $appointmentSettings['max_appointment_per_day'];
+        $CANCELLED_BY_PATIENT = 4;
+        $CANCELLED_BY_DOCTOR = 5;
+        $registerDate = Carbon::parse($data['day_reserved'])->format('Y-m-d');
+
+        $appointments = Appointment::where('calendar_id', $calendar->id)
+        ->whereDate('day_reserved', $registerDate)
+        ->where('status','!=',$CANCELLED_BY_PATIENT)
+        ->where('status','!=',$CANCELLED_BY_DOCTOR)
+        ->count();
+
+        if($maxAppointmentsPerDay <= $appointments )
+            throw new Exception("Este dia alcanzado el maximo numero de reservas, intente con otro dia", 400);
+        
+        return 0;
+
+    }
+
+    private function isDateAvailable($data, $calendar){
+        
+        $registerDate = Carbon::parse($data['day_reserved'])->format('Y-m-d');
+        $CANCELLED_BY_PATIENT = 4;
+        $CANCELLED_BY_DOCTOR = 5;
+
+        $appointment = Appointment::where('calendar_id', $calendar->id)
+        ->whereDate('day_reserved', $registerDate)
+        ->where('time_reserved', $data['time_reserved'])
+        ->where('status','!=',$CANCELLED_BY_PATIENT)
+        ->where('status','!=',$CANCELLED_BY_DOCTOR)
+        ->first();
+
+        if(isset($appointment->id))
+            throw new Exception("Este dia y hora ya tiene una cita reservada", 400);
+            
         return 0;
     }
 
