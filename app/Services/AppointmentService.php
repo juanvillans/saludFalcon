@@ -29,6 +29,17 @@ class AppointmentService
 
     }
 
+    public function cancelAppointmentFromDoctor($appointment){
+        
+        $CANCELLED_BY_DOCTOR = 5;
+
+        $appointment->update(['status' => $CANCELLED_BY_DOCTOR]);
+        
+        // Send Email to patient and doctor
+
+        return 0;
+    }
+
     private function searchPatient($data){
         
         $patientData = $data['appointment_data'];

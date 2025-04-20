@@ -6,6 +6,7 @@ use App\Http\Requests\BookAppointment;
 use App\Http\Requests\BookAppointmentRequest;
 use App\Http\Requests\CreateAppointmentRequest;
 use App\Http\Resources\CalendarResource;
+use App\Models\Appointment;
 use App\Models\Calendar;
 use App\Services\AppointmentService;
 use Illuminate\Http\Request;
@@ -75,6 +76,30 @@ class AppointmentController extends Controller
             Log::info('Error agendando cita: ' . $e->getMessage());
 
             return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+        }
+
+    }
+
+    public function cancelAppointmentFromDoctor(Appointment $appointment){
+
+        DB::beginTransaction();
+
+        try{
+
+            $this->appointmentService->cancelAppointmentFromDoctor($appointment);
+            DB::commit();
+
+            return redirect()->back()->with(['message' => 'Cita cancelada con éxito']);
+            
+
+        }catch(\Exception $e){
+
+            DB::rollback();
+
+            Log::info('Error eliminando cita: ' . $e->getMessage());
+
+            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+
         }
 
     }
