@@ -5,13 +5,18 @@ namespace App\Services;
 use App\Models\Appointment;
 use App\Models\Patient;
 use Carbon\Carbon;
+use Exception;
 
 class AppointmentService
 {	
 
     public function bookAppointment($data, $calendar){
 
+
+        
         $patient = $this->searchPatient($data);
+
+        $this->applyValidations($data,$calendar, $patient);
 
 
         $appointment = Appointment::create([
@@ -45,15 +50,48 @@ class AppointmentService
         ]);
 
         return $patient;
-}
+    }
 
-function calculateAge($dateBirth): int
-    {
+    public function calculateAge($dateBirth){
+
         $date = Carbon::parse($dateBirth);
         $today = Carbon::now();
         
         return $today->diffInYears($date);
         
+    }
+
+    private function applyValidations($data, $calendar, $patient){
+
+        $this->isPastDate($data);
+        
+        $this->haveAnotherReservationActive($patient, $calendar);
+
+
+    }
+
+    private function isPastDate($data){
+
+        if(Carbon::parse($data['day_reserved'])->lte(Carbon::yesterday()) )
+            throw new Exception("El dia a reservar debe ser posterior al dia de ayer", 400);
+        
+        return 0;
+
+    }
+
+    private function haveAnotherReservationActive($patient, $calendar){
+
+        $PENDING_STATUS = 1;
+
+        $appointment = Appointment::where('patient_id', $patient->id)
+        ->where('calendar_id', $calendar->id)
+        ->where('status', $PENDING_STATUS)
+        ->first();
+
+        if(isset($appointment->id))
+            throw new Exception("Usted ya tiene una cita reservada para el dia: " . $appointment->day_reserved, 400);
+        
+        return 0;
     }
 
 
