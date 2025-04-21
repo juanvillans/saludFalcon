@@ -29,7 +29,7 @@ class AppointmentController extends Controller
     }
 
 
-    public function showCalendar(Calendar $calendar, $calendarMonth = false, Request $request){
+    public function showCalendar(Calendar $calendar, $calendarMonth = null, Request $request){
 
 
         $this->params = [
@@ -43,7 +43,7 @@ class AppointmentController extends Controller
 
 
 
-        if($calendarMonth){
+        if($calendarMonth != null){
             return inertia('BookAppointment', [
             
                 'calendar_month' => $structure,
