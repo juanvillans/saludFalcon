@@ -147,7 +147,7 @@
         focusedDate = today;
         console.log({ today });
         updateWidth(); // Set the initial width
-        checkForAvailableDays(focusedDate)
+        // checkForAvailableDays(focusedDate)
     });
 
     onDestroy(() => {
@@ -225,7 +225,8 @@
             prevDate.getFullYear() == nextDate.getFullYear() &&
             prevDate.getMonth() !== nextDate.getMonth()
         ) {
-            checkForAvailableDays(startDate);
+            updateCalendar(true);
+
         } else {
             updateCalendar();
         }
@@ -320,13 +321,14 @@
 
     $: console.log(availableDays);
 
-     function updateCalendar(type) {
+     function updateCalendar(type = false) {
         console.log("0ayyyyyyyy");
         
         isThereSomeAppointment = "loading";
         router.get(
             window.location.pathname,
-            {
+            {   
+                calendar_month: type,
                 start_date: frontCalendar[0].date,
                 end_date: frontCalendar[frontCalendar.length - 1].date,
             },
