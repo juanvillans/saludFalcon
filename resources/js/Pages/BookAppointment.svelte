@@ -275,7 +275,7 @@
         let [start_date, end_date] = getMonthBoundaries(dateString);
 
         router.get(
-            window.location.pathname + "/calendar_month " ,
+            window.location.pathname ,
             {
                 start_date,
                 end_date,
@@ -291,11 +291,7 @@
                         console.log(data.data.availability[date.slice(0, 3)]);
                         let value = calendar_month.weekDays[date];
                         if (
-                            validateDay(value.current_date.slice(0, 10)) &&
-                            value.nro_appointments <
-                                data.data.booked_appointment_settings
-                                    .max_appointment_per_day &&
-                            today <= value.current_date
+                            validateDay(value.current_date.slice(0, 10)) 
                         ) {
                             if (dateHashMap[value.current_date.slice(0, 10)]) {
                                 copyAvailableDays[
@@ -314,6 +310,7 @@
 
                     
                     }
+                   
 
                     availableDays = structuredClone({ ...copyAvailableDays });
                 },
@@ -324,6 +321,8 @@
     $: console.log(availableDays);
 
      function updateCalendar(type) {
+        console.log("0ayyyyyyyy");
+        
         isThereSomeAppointment = "loading";
         router.get(
             window.location.pathname,
@@ -457,9 +456,13 @@
         return diffMs >= thresholdMs;
     }
 
-    function validateDay(calendarDate) {
+    function validateDay(calendarDate, weekDay) {
         if (calendarDate < today.slice(0, 10)) {
             return false;
+        }
+
+        if (! calendar.weekDays[objDate[weekDay] + "_" + calendarDate]?.nro_appointments < data.data.booked_appointment_settings.max_appointment_per_day) {
+            return false
         }
 
         if (
@@ -591,7 +594,7 @@
                                     {#if validateDay(objDate.date.slice(0, 10))}
                                         {#each shiftsForCalendar?.[objDate.EnglishWeekday] as shift, indx (objDate.day + "_" + indx)}
                                             {#each shift.appointments as appointment, i ("start_app" + "_" + i)}
-                                                {#if isTimeDifferenceSufficient(currentTime, today.slice(0, 10), appointment.start_appo, objDate.date.slice(0, 10)) && calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)]?.nro_appointments < data.data.booked_appointment_settings.max_appointment_per_day && !calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)]?.appointments[appointment.start_appo]}
+                                                {#if isTimeDifferenceSufficient(currentTime, today.slice(0, 10), appointment.start_appo, objDate.date.slice(0, 10)) && !calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)]?.appointments[appointment.start_appo]}
                                                     <button
                                                         on:click={() => {
                                                             showModal = true;
