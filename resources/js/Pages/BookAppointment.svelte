@@ -291,7 +291,7 @@
                         console.log(data.data.availability[date.slice(0, 3)]);
                         let value = calendar_month.weekDays[date];
                         if (
-                            validateDay(value.current_date.slice(0, 10)) 
+                            validateDay(value.current_date.slice(0, 10), date.slice(0,3)) 
                         ) {
                             if (dateHashMap[value.current_date.slice(0, 10)]) {
                                 copyAvailableDays[
@@ -591,7 +591,7 @@
                                     {objDate.day}
                                 </p>
                                 <div class="grid gap-2 mt-7">
-                                    {#if validateDay(objDate.date.slice(0, 10))}
+                                    {#if validateDay(objDate.date.slice(0, 10)), objDate.EnglishWeekday}
                                         {#each shiftsForCalendar?.[objDate.EnglishWeekday] as shift, indx (objDate.day + "_" + indx)}
                                             {#each shift.appointments as appointment, i ("start_app" + "_" + i)}
                                                 {#if isTimeDifferenceSufficient(currentTime, today.slice(0, 10), appointment.start_appo, objDate.date.slice(0, 10)) && !calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)]?.appointments[appointment.start_appo]}
