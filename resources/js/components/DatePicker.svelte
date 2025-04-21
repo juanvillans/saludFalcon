@@ -27,6 +27,7 @@
     });
     // props
     export let thereIsAvailable = ()  => false;
+    export let availableDays = {}
     export let isAllowed = () => true;
     export let selected = new Date();
     export let withInput = true
@@ -160,7 +161,7 @@
                 date={new Date(selected)}
                 {withInput}
                 {isAllowed}
-                {thereIsAvailable}
+                {availableDays}
                 on:datechange={onDateChange}
             />
         </div>

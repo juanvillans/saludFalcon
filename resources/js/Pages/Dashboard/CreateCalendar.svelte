@@ -47,6 +47,13 @@
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    function getFirstName(firstName) {
+        console.log(firstName);
+        
+        const parts = firstName.split(" ");
+        return parts[0];
+    }
+
     const futureDate = new Date(today);
     futureDate.setMonth(futureDate.getMonth() + 6);
     let itWasChangeIntervalDate = false;
@@ -1503,13 +1510,20 @@
                                                     que se puede agendar una
                                                     cita
                                                 {:else}
-                                                    Desde {$form
-                                                        .programming_slot
-                                                        .max_reservation_time_before_appointment}
-                                                    días de antelación hasta {$form
+
+                                                {#if $form.programming_slot.allow_max_reservation_time_before_appointment}
+                                                Desde {$form
+                                                    .programming_slot
+                                                    .max_reservation_time_before_appointment}
+                                                días de antelación
+                                                {/if}
+                                                {#if $form.programming_slot.allow_min_reservation_time_before_appointment}
+                                                    hasta {$form
                                                         .programming_slot
                                                         .min_reservation_time_before_appointment}
                                                     horas antes
+                                                    
+                                                {/if}
                                                     <span class="block text-sm">
                                                         {#if !$form.programming_slot.interval_date.start_now_check}
                                                             Empieza el {new Date(
@@ -2641,7 +2655,7 @@
                     <div
                         class="flex gap-3 w-28 h-12 absolute duration-300 z-40 px-0.5 "
                         style={`top: ${GetTop(time)}px; left: ${40 + (112 * indxDay + 1)}px; 
-                            height: ${GetHeight(time, appointment.end_time) * 48}px
+                            height: ${GetHeight(time, appointment.appointment_data.end_time) * 48}px
                            `}
                     >
                         <div class=" z-40 px-1 w-full ">
@@ -2658,8 +2672,8 @@
                                 }}
                             >
                                 <h4 class="text-white text-sm">
-                                    {appointment.name.split(" ")[0]}
-                                    {appointment.last_name.split(" ")[0]}
+                                    {getFirstName(appointment.appointment_data.name)}
+                                    {getFirstName(appointment.appointment_data.last_name)}
                                 </h4>
                                 <span class="invisible"></span>
                             </div>
