@@ -29,7 +29,7 @@ class AppointmentController extends Controller
     }
 
 
-    public function showCalendar(Request $request, Calendar $calendar, $calendarMonth = false){
+    public function showCalendar(Calendar $calendar, $calendarMonth = false, Request $request){
 
 
         $this->params = [
