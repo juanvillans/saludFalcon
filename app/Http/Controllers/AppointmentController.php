@@ -29,7 +29,7 @@ class AppointmentController extends Controller
     }
 
 
-    public function showCalendar(Request $request, Calendar $calendar){
+    public function showCalendar(Request $request, Calendar $calendar, $calendarMonth = false){
 
 
         $this->params = [
@@ -41,7 +41,6 @@ class AppointmentController extends Controller
 
         $structure = $this->calendarService->getDinamicStructureCalendar($this->params, $calendar);
 
-        $calendarMonth = $request->input('calendar_month') ?? false;
 
 
         if($calendarMonth){
