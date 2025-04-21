@@ -29,7 +29,7 @@ class AppointmentController extends Controller
     }
 
 
-    public function showCalendar(Calendar $calendar, $calendarMonth = null, Request $request){
+    public function showCalendar(Request $request, Calendar $calendar){
 
 
         $this->params = [
@@ -41,21 +41,17 @@ class AppointmentController extends Controller
 
         $structure = $this->calendarService->getDinamicStructureCalendar($this->params, $calendar);
 
+        $calendarMonth = $request->input('calendar_month') ?? null;
 
+        if($calendarMonth)
+            $calendarMonth = $this->calendarService->getDaysAvailableOfMonth($this->params, $calendar);
+        
 
-        if($calendarMonth != null){
-            return inertia('BookAppointment', [
-            
-                'calendar_month' => $structure,
-                'data' => new CalendarResource($calendar),
-            ]);    
-        }else{
-            return inertia('BookAppointment', [
-            
-                'calendar' => $structure,
-                'data' => new CalendarResource($calendar),
-            ]);
-        }
+        return inertia('BookAppointment', [
+            'calendar_month' => $calendarMonth,    
+            'calendar' => $structure,
+            'data' => new CalendarResource($calendar),
+        ]);
 
         
 

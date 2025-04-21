@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\CalendarCollection;
+use App\Models\Appointment;
 use App\Models\Calendar;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -107,6 +108,7 @@ class CalendarService
         ];
     }
     
+    
     public function getWeekRange($params)
     {
         $startWeek = isset($params['start_week']) 
@@ -181,6 +183,67 @@ class CalendarService
         }
         
         return $weekDays;
+    }
+
+    public function getDaysAvailableOfMonth($params, $calendar){
+
+        if($params['start_date'] == null)
+            return null;
+
+        $month = Carbon::parse($params['start_date']);
+        $firstDay = $month->copy()->startOfMonth();
+        $lastDay = $month->copy()->endOfMonth();
+
+        $appointments = Appointment::whereBetween('day_reserved', [
+            $firstDay->format('Y-m-d'), 
+            $lastDay->format('Y-m-d')
+        ])
+        ->where('calendar_id', $calendar->id)
+        ->get();
+
+        $availability = [];
+        $currentDay = $firstDay->copy();
+        
+        while ($currentDay->lte($lastDay)) {
+
+            $dayOfMonth = $currentDay->day;
+            $dayOfWeek = strtolower($currentDay->format('D')); 
+            $dateStr = $currentDay->format('Y-m-d');
+
+            $adjustedDay = collect($calendar->adjusted_availability)->firstWhere('date', 'like', $dateStr ."%");
+
+            if ($adjustedDay) {
+                $shifts = $adjustedDay['shifts'] ?? [];
+                $hasAppointments = $this->checkAppointments($dateStr, $shifts, $appointments);
+            } else{
+                
+                $regularAvailability = $availability[$dayOfWeek] ?? [];
+                $hasAppointments = $this->checkAppointments($dateStr, $regularAvailability, $appointments);
+            }
+
+            $currentDay->addDay(); 
+        }
+
+    }
+
+    private function checkAppointments($date, $shifts, $appointments) {
+
+        if (empty($shifts)) return false;
+    
+        $bookedHours = collect($shifts)
+            ->flatMap(function ($shift) {
+                return collect($shift['appointments'] ?? [])
+                    ->pluck('start_appo')
+                    ->toArray();
+            })
+            ->toArray();
+    
+        $hasAppointments = $appointments
+            ->whereDate('day_reserved', $date)
+            ->whereIn('time_reserved', $bookedHours)
+            ->isNotEmpty();
+    
+        return $hasAppointments;
     }
 
 

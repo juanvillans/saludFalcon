@@ -129,7 +129,7 @@ class AppointmentService
 
         }
 
-        if($programminSlot['interval_date']['end_now_check'] == false){
+        if($programminSlot['interval_date']['end_never_check'] == false){
             
             $registerDate = Carbon::parse($data['day_reserved']);
             $customEndDate = Carbon::parse($programminSlot['interval_date']['custom_end_date']);
