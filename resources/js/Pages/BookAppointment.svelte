@@ -672,10 +672,18 @@
         // handleCloseCustomTime();
     }}
 >
-    <div slot="header" class="font-bold text-lg text-gray-500">
-        Llena los campos para reservar tu cita 
+    <div slot="header" class="font-bold text-sm ">
+        <p class="text-gray-500">
+            Llena los campos para reservar tu cita 
+
+        </p>
         <p>
-            <!-- el {$form.d} -->
+            El {new Date($form.day_reserved).toLocaleDateString("es-VE", {
+                weekday: "short",
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            })} a las {convertTo12HourFormat($form.time_reserved)}
         </p>
     </div>
 
