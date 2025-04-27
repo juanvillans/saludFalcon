@@ -9,7 +9,9 @@
     let showModal = false;
     // $: console.log(showModal);
     function deleteCalendar(id) {
-        if (!window.confirm("eliminar este calendario"))
+        if (!window.confirm("eliminar este calendario")) {
+            return
+        }
         router.delete(`/admin/agenda/ver-citas/${id}`, {
             // preserveState: true,
             onError: (errors) => {
