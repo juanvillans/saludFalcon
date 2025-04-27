@@ -81,6 +81,19 @@ class CalendarService
         
     }
 
+    public function deleteCalendar($calendar){
+        
+        $calendar->load('appointments');
+        $calendar->appointments->update([
+            'status' => 5
+        ]);
+
+        $calendar->update(['status' => 2]);
+
+        return 0;
+        
+    }
+
 
     /* ----------------------------- Functions to build calendar -------------------------- */
     public function getDinamicStructureCalendar($params, $calendar = null)

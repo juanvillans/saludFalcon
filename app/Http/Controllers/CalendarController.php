@@ -125,4 +125,29 @@ class CalendarController
             'data' => new CalendarResource($calendar),
         ]); 
     }
+
+    public function destroy(Calendar $calendar){
+
+        DB::beginTransaction();
+
+        try 
+        {
+
+            $this->calendarService->deleteCalendar($calendar);
+
+            DB::commit();
+
+            return redirect('/admin/agenda')->with(['message' => 'Calendario eliminado con con exito']);
+
+        }
+        catch (\Exception $e)
+        {   
+            
+            DB::rollback();
+            Log::info('Error: ' . $e->getMessage() . ' --- Linea: ' . $e->getLine());
+            
+            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
+        }
+
+    }
 }

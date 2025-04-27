@@ -8,6 +8,7 @@ use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\RequestUserController;
 use App\Http\Controllers\UserController;
+use App\Models\Calendar;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -107,6 +108,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     
     Route::get('/agenda/ver-citas/{calendar}', [CalendarController::class, 'show'])->name('agenda.show');
     Route::put('/agenda/ver-citas/{calendar}', [CalendarController::class, 'update'])->name('agenda.update');
+    Route::delete('/agenda/ver-citas/{calendar}', [CalendarController::class, 'destroy'])->name('agenda.destroy');
+
     
     Route::delete('/agenda/ver-citas/{calendar}/{appointment}', [AppointmentController::class, 'cancelAppointmentFromDoctor'])->name('agenda.cancel-appointment-doctor');
 
