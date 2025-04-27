@@ -318,9 +318,9 @@
         );
     }
 
-    $: console.log(availableDays);
+    // $: console.log(availableDays);
 
-     function updateCalendar(type = false) {
+     function updateCalendar(type) {
       
         if (type) {
             calendar_month = {}

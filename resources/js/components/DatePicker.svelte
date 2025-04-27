@@ -46,7 +46,7 @@
         month = new Date(selected).getMonth();
         year = new Date(selected).getFullYear();
         formattedDate = new Date(selected).toLocaleDateString("es-VE", options);
-        // console.log(formattedDate)
+        console.log(availableDays)
     }
     let datePickerPosition = "below"; // 'above' or 'below'
     let inputElement; // Reference for the input element
