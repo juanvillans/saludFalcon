@@ -1,13 +1,16 @@
 <script>
-    import { inertia } from "@inertiajs/svelte";
+    import { inertia, router } from "@inertiajs/svelte";
     import Modal from "../../components/Modal.svelte";
+    import Alert from "../../components/Alert.svelte";
+    import { displayAlert } from "../../stores/alertStore";
     export let data = {};
     let contentForModal;
     $: console.log(data);
     let showModal = false;
     // $: console.log(showModal);
     function deleteCalendar(id) {
-        router.put(`/admin/agenda/ver-citas/${id}`, {
+        if (!window.confirm("eliminar este calendario"))
+        router.delete(`/admin/agenda/ver-citas/${id}`, {
             // preserveState: true,
             onError: (errors) => {
                 displayAlert({
@@ -47,7 +50,7 @@
                 <h3 class="font-bold uppercase">{calendar.title}</h3>
                 <button
                     title="Eliminar"
-                    on:click={deleteCalendar}
+                    on:click|preventDefault|stopPropagation={()=> deleteCalendar(calendar.id)}
                     class="delete_button"
                 >
                     <iconify-icon icon="ph:trash"></iconify-icon>
@@ -157,7 +160,7 @@
     .delete_button {
         display: none;
     }
-    article:hover button {
+    a:hover button {
         display: block;
     }
 </style>
