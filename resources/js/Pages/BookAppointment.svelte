@@ -62,7 +62,6 @@
     export let data = {};
     export let calendar = {};
     export let calendar_month = {};
-    console.log({ data });
     let form;
     const debouncedUpdate = debounce(updateWidth, 300);
 
@@ -228,7 +227,7 @@
             updateCalendar(true);
 
         } else {
-            updateCalendar();
+            updateCalendar(false);
         }
         return result;
     }
@@ -323,12 +322,14 @@
 
      function updateCalendar(type = false) {
       
-        
+        if (type) {
+            calendar_month = {}
+        }
         isThereSomeAppointment = "loading";
         router.get(
             window.location.pathname,
             {   
-                calendar_month: true,
+                calendar_month: type,
                 start_date: frontCalendar[0].date,
                 end_date: frontCalendar[frontCalendar.length - 1].date,
             },
@@ -459,11 +460,13 @@
     }
 
     function validateDay(calendarDate, weekDay) {
+        console.log(calendarDate, weekDay);
+        
         if (calendarDate < today.slice(0, 10)) {
             return false;
         }
 
-        if (! calendar.weekDays[weekDay + "_" + calendarDate]?.nro_appointments < data.data.booked_appointment_settings.max_appointment_per_day) {
+        if (data.data.booked_appointment_settings.allow_max_appointment_per_day && calendar.weekDays[weekDay + "_" + calendarDate]?.nro_appointments >= data.data.booked_appointment_settings.max_appointment_per_day){
             return false
         }
 
@@ -543,7 +546,7 @@
                     selected={focusedDate}
                     showDatePickerAlways={true}
                     withInput={false}
-                    bind:availableDays
+                    bind:availableDays={calendar_month}
                     isAllowed={(date) => {
                         // console.log(date);
                         const millisecs = date.getTime();
@@ -593,7 +596,7 @@
                                     {objDate.day}
                                 </p>
                                 <div class="grid gap-2 mt-7">
-                                    {#if validateDay(objDate.date.slice(0, 10)), objDate.EnglishWeekday}
+                                    {#if validateDay(objDate.date.slice(0, 10), objDate.EnglishWeekday)}
                                         {#each shiftsForCalendar?.[objDate.EnglishWeekday] as shift, indx (objDate.day + "_" + indx)}
                                             {#each shift.appointments as appointment, i ("start_app" + "_" + i)}
                                                 {#if isTimeDifferenceSufficient(currentTime, today.slice(0, 10), appointment.start_appo, objDate.date.slice(0, 10)) && !calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)]?.appointments[appointment.start_appo]}
@@ -669,11 +672,14 @@
         // handleCloseCustomTime();
     }}
 >
-    <p slot="header" class="font-bold text-lg text-gray-500">
-        Llena los campos para reservar tu cita
-    </p>
+    <div slot="header" class="font-bold text-lg text-gray-500">
+        Llena los campos para reservar tu cita 
+        <p>
+            <!-- el {$form.d} -->
+        </p>
+    </div>
 
-    <form id="a-form" on:submit={handleSubmit}>
+    <form id="a-form" on:submit={handleSubmit} class="grid grid-cols-2 gap-x-4">
         <Input
             required={true}
             type={"number"}

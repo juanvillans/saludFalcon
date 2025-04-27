@@ -6,6 +6,23 @@
     $: console.log(data);
     let showModal = false;
     // $: console.log(showModal);
+    function deleteCalendar(id) {
+        router.delete(`/admin/agenda/ver-citas/${id}`, {
+            // preserveState: true,
+            onError: (errors) => {
+                displayAlert({
+                    type: "error",
+                    message: errors.data || "algo salió mal",
+                });
+            },
+            onSuccess: (page) => {
+                displayAlert({
+                    type: "success",
+                    message: "Eliminado",
+                });
+            },
+        });
+    }
 </script>
 
 <a
@@ -19,14 +36,23 @@
     <span class="hidden md:block"> Crear calendario</span>
 </a>
 
-<div class="mt-4 lg:grid lg:grid-cols-2 xl:grid-cols-3  lg:gap-4 w-full gap-2">
+<div class="mt-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 w-full gap-2">
     {#each data.calendars.data as calendar}
         <a
             use:inertia
             href={`/admin/agenda/ver-citas/${calendar.id}`}
             class="neumorphism2 block border overflow-hidden rounded-lg mb-3 min-w-[290px] md:w-[420px] cursor-pointer bg-gray-50 hover:border-dark"
         >
-        <h3 class="font-bold uppercase py-2 px-3  bg-gray-100 w-full">{calendar.title}</h3>
+            <header class="py-2 px-3 bg-gray-100 w-full flex justify-between">
+                <h3 class="font-bold uppercase">{calendar.title}</h3>
+                <button
+                    title="Eliminar"
+                    on:click|preventDefault|stopPropagation={()=> deleteCalendar(calendar.id)}
+                    class="delete_button"
+                >
+                    <iconify-icon icon="ph:trash"></iconify-icon>
+                </button>
+            </header>
             <div class="p-3">
                 <!-- <button
                     on:click|preventDefault={() => {
@@ -56,14 +82,13 @@
                     {calendar.user_specialty_name}
                 </p>
 
-            <div class="description mt-3 text-gray-600">
-                {@html calendar.description}
+                <div class="description mt-3 text-gray-600">
+                    {@html calendar.description}
+                </div>
             </div>
-        </div>
-
         </a>
     {/each}
-</div>
+    </div>
 
 <style>
     main .specialties {
@@ -128,5 +153,11 @@
 
     .cta:active {
         transform: scale(0.96);
+    }
+    .delete_button {
+        display: none;
+    }
+    a:hover button {
+        display: block;
     }
 </style>
