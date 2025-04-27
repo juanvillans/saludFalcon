@@ -42,11 +42,11 @@ class AppointmentController extends Controller
 
 
         $structure = $this->calendarService->getDinamicStructureCalendar($this->params, $calendar);
-        $calendarMonth = null;
 
         $calendarMonth = $request->input('calendar_month') ?? null;
+        $getCalendarMonth = ($calendarMonth !== "false" && $calendarMonth !== null);
 
-        if($calendarMonth){
+        if($getCalendarMonth){
             $calendarMonth = $this->calendarService->getDaysAvailableOfMonth($this->params, $calendar);
             
             return inertia('BookAppointment', [
@@ -55,7 +55,6 @@ class AppointmentController extends Controller
                 'data' => new CalendarResource($calendar),
             ]);
         }
-
         return inertia('BookAppointment', [
             'calendar' => $structure,
             'data' => new CalendarResource($calendar),
