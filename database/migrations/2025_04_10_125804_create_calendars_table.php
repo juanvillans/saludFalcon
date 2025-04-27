@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('title');
             $table->string('description');
-            $table->integer('status')->default(1); // 1 for Available, 0 for Not
+            $table->integer('status')->default(1); // 1 for Available, 0 for Not 
             $table->integer('duration_per_appointment');
             $table->json('duration_options');
             $table->json('availability');
