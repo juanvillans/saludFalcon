@@ -186,70 +186,90 @@ class CalendarService
     }
 
     public function getDaysAvailableOfMonth($params, $calendar)
-{
-    if ($params['start_date'] == null) {
-        return null;
-    }
-
-    $month = Carbon::parse($params['start_date']);
-    $firstDay = $month->copy()->startOfMonth();
-    $lastDay = $month->copy()->endOfMonth();
-
-    $appointments = Appointment::whereBetween('day_reserved', [
-        $firstDay->format('Y-m-d'), 
-        $lastDay->format('Y-m-d')
-    ])
-    ->where('calendar_id', $calendar->id)
-    ->get();
-
-    $availability = [];
-    $currentDay = $firstDay->copy();
-    
-    while ($currentDay->lte($lastDay)) {
-        $dayOfMonth = $currentDay->day;
-        $dayOfWeek = strtolower($currentDay->format('D')); 
-        $dateStr = $currentDay->format('Y-m-d');
-
-        $adjustedDay = collect($calendar->adjusted_availability)->firstWhere('date', 'like', $dateStr ."%");
-
-        if ($adjustedDay) {
-            $shifts = $adjustedDay['shifts'] ?? [];
-            $hasAvailability = !empty($shifts) && !$this->checkAppointments($dateStr, $shifts, $appointments);
-        } else {
-            $regularAvailability = $calendar->availability[$dayOfWeek] ?? [];
-            $hasAvailability = !empty($regularAvailability) && !$this->checkAppointments($dateStr, $regularAvailability, $appointments);
+    {
+        if ($params['start_date'] == null) {
+            return null;
         }
-
-        $availability[$dayOfMonth] = $hasAvailability;
-        $currentDay->addDay(); 
+    
+        $month = Carbon::parse($params['start_date']);
+        $firstDay = $month->copy()->startOfMonth();
+        $lastDay = $month->copy()->endOfMonth();
+    
+        // Obtener las fechas límite de programación
+        $programmingSlot = $calendar->programming_slot ?? [];
+        $startDate = $programmingSlot['interval_date']['start_now_check'] ?? false 
+            ? Carbon::parse($calendar->created_at)->startOfDay()
+            : Carbon::parse($programmingSlot['interval_date']['custom_start_date'] ?? null)->startOfDay();
+        
+        $endDate = $programmingSlot['interval_date']['end_never_check'] ?? false
+            ? null // No hay fecha final
+            : Carbon::parse($programmingSlot['interval_date']['custom_end_date'] ?? null)->endOfDay();
+    
+        $appointments = Appointment::whereBetween('day_reserved', [
+            $firstDay->format('Y-m-d'), 
+            $lastDay->format('Y-m-d')
+        ])
+        ->where('calendar_id', $calendar->id)
+        ->get();
+    
+        $availability = [];
+        $currentDay = $firstDay->copy();
+        
+        while ($currentDay->lte($lastDay)) {
+            $dayOfMonth = $currentDay->day;
+            $dayOfWeek = strtolower($currentDay->format('D')); 
+            $dateStr = $currentDay->format('Y-m-d');
+            $currentDate = $currentDay->copy()->startOfDay();
+    
+            // Verificar si la fecha está dentro del rango permitido
+            $isWithinRange = $currentDate->gte($startDate) && 
+                            ($endDate === null || $currentDate->lte($endDate));
+    
+            if (!$isWithinRange) {
+                $availability[$dayOfMonth] = false;
+                $currentDay->addDay();
+                continue;
+            }
+    
+            $adjustedDay = collect($calendar->adjusted_availability)->firstWhere('date', 'like', $dateStr ."%");
+    
+            if ($adjustedDay) {
+                $shifts = $adjustedDay['shifts'] ?? [];
+                $hasAvailability = !empty($shifts) && !$this->checkAppointments($dateStr, $shifts, $appointments);
+            } else {
+                $regularAvailability = $calendar->availability[$dayOfWeek] ?? [];
+                $hasAvailability = !empty($regularAvailability) && !$this->checkAppointments($dateStr, $regularAvailability, $appointments);
+            }
+    
+            $availability[$dayOfMonth] = $hasAvailability;
+            $currentDay->addDay(); 
+        }
+    
+        return $availability;
     }
-
-    return $availability;
-}
-
-private function checkAppointments($date, $shifts, $appointments) {
-    if (empty($shifts)) return false;
-
-    $bookedHours = collect($shifts)
-        ->flatMap(function ($shift) {
-            return collect($shift['appointments'] ?? [])
-                ->pluck('start_appo')
-                ->toArray();
-        })
-        ->toArray();
-
-    // Convertir la fecha de comparación a formato Carbon si no lo está
-    $date = Carbon::parse($date)->startOfDay();
-
-    $hasAppointments = $appointments
-        ->filter(function ($appointment) use ($date) {
-            return Carbon::parse($appointment->day_reserved)->startOfDay()->eq($date);
-        })
-        ->whereIn('time_reserved', $bookedHours)
-        ->isNotEmpty();
-
-    return $hasAppointments;
-}
+    
+    private function checkAppointments($date, $shifts, $appointments) {
+        if (empty($shifts)) return false;
+    
+        $bookedHours = collect($shifts)
+            ->flatMap(function ($shift) {
+                return collect($shift['appointments'] ?? [])
+                    ->pluck('start_appo')
+                    ->toArray();
+            })
+            ->toArray();
+    
+        $date = Carbon::parse($date)->startOfDay();
+    
+        $hasAppointments = $appointments
+            ->filter(function ($appointment) use ($date) {
+                return Carbon::parse($appointment->day_reserved)->startOfDay()->eq($date);
+            })
+            ->whereIn('time_reserved', $bookedHours)
+            ->isNotEmpty();
+    
+        return $hasAppointments;
+    }
 
 
 }
