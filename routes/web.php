@@ -48,6 +48,8 @@ Route::group(['middleware' => ['guest']], function () {
 Route::get('/citas/{calendar}', [AppointmentController::class, 'showCalendar']);
 Route::post('/citas/{calendar}', [AppointmentController::class, 'bookAppointment']);
 
+Route::get('/citas/{token}', [AppointmentController::class, 'cancelAppointmentFromDoctor'])->name('agenda.cancel-appointment-patient');
+
 
 Route::get('/admin/logout', [UserController::class, 'logout'])->middleware('auth')->name('logout');  
 

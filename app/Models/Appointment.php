@@ -17,6 +17,7 @@ class Appointment extends Model
         'time_reserved',
         'appointment_data',
         'status',
+        'token',
     ];
    
     public function calendar()
