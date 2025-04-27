@@ -322,7 +322,7 @@
     $: console.log(availableDays);
 
      function updateCalendar(type = false) {
-        console.log("0ayyyyyyyy");
+      
         
         isThereSomeAppointment = "loading";
         router.get(
