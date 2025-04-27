@@ -61,10 +61,16 @@
     };
     export let data = {};
     export let calendar = {};
+    export let calendar_month = {};
     console.log({ data });
     let form;
     const debouncedUpdate = debounce(updateWidth, 300);
 
+    $: dateHashMap = data.data.adjusted_availability.reduce((map, obj) => {
+        map[obj.date.slice(0, 10)] = obj;
+        return map;
+    }, {});
+    $: console.log({ dateHashMap });
     function getTodayInVenezuelaISO() {
         const now = new Date();
 
@@ -141,6 +147,7 @@
         focusedDate = today;
         console.log({ today });
         updateWidth(); // Set the initial width
+        // checkForAvailableDays(focusedDate)
     });
 
     onDestroy(() => {
@@ -149,22 +156,15 @@
         window.removeEventListener("resize", debouncedUpdate);
     });
 
+    let availableDays = {};
     let dataFront = {
-        availableDays: {
-            7: true,
-            8: true,
-            9: true,
-            10: true,
-            14: true,
-            15: true,
-        },
         today: "2024-10-01T04:00:00.000Z",
     };
 
     let shiftsForCalendar = {};
 
     function updateShiftsForCalendar() {
-        console.log(data.data.adjusted_availability);
+        // console.log(data.data.adjusted_availability);
         // console.log($form.adjusted_availability);
         frontCalendar.forEach((obj, indx) => {
             let isItAjustedShift =
@@ -184,7 +184,7 @@
                         : data.data.availability[obj.EnglishWeekday],
             };
         });
-        console.log({ shiftsForCalendar });
+        // console.log({ shiftsForCalendar });
     }
 
     $: frontCalendar, updateShiftsForCalendar();
@@ -193,14 +193,14 @@
 
     let frontCalendar = [];
     function getNextNDays(startDate, n) {
-        console.log({ startDate });
+        // console.log({ startDate });
         const result = [];
         const start = new Date(startDate);
 
         for (let i = 0; i <= n - 1; i++) {
             const nextDate = new Date(start);
             nextDate.setDate(start.getDate() + i);
-            console.log({ start, nextDate });
+            // console.log({ start, nextDate });
 
             result.push({
                 date: nextDate.toISOString(), // Format as YYYY-MM-DD
@@ -217,18 +217,118 @@
                 }),
             });
         }
-
+        let prevDate = new Date(focusedDate);
+        let nextDate = new Date(startDate);
         frontCalendar = result;
         focusedDate = startDate;
-        updateCalendar();
+        if (
+            prevDate.getFullYear() == nextDate.getFullYear() &&
+            prevDate.getMonth() !== nextDate.getMonth()
+        ) {
+            updateCalendar(true);
+
+        } else {
+            updateCalendar();
+        }
         return result;
     }
 
-    function updateCalendar(type) {
+    function getMonthBoundaries(dateString) {
+        const date = new Date(dateString);
+
+        if (isNaN(date.getTime())) {
+            throw new Error("Invalid date string");
+        }
+
+        // Get first moment of month in local time (Venezuela UTC-4)
+        const firstDay = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            1,
+            0,
+            0,
+            0,
+            0,
+        );
+
+        // Get last moment of month in local time (23:59:59.999)
+        const lastDay = new Date(
+            date.getFullYear(),
+            date.getMonth() + 1,
+            0,
+            23,
+            59,
+            59,
+            999,
+        );
+
+        // Convert to ISO format (UTC) without timezone offset
+        return [
+            new Date(
+                firstDay.getTime() - firstDay.getTimezoneOffset() * 60000,
+            ).toISOString(),
+            new Date(
+                lastDay.getTime() - lastDay.getTimezoneOffset() * 60000,
+            ).toISOString(),
+        ];
+    }
+     function checkForAvailableDays(dateString) {
+        let [start_date, end_date] = getMonthBoundaries(dateString);
+
+        router.get(
+            window.location.pathname ,
+            {
+                start_date,
+                end_date,
+                calendar_month: true,
+            },
+            {
+                // except: ['calendar'],
+                onSuccess: (page) => {
+                    // console.log({calendar});
+                    let copyAvailableDays = {};
+                    availableDays = {};
+                    for (const date in calendar_month.weekDays) {
+                        console.log(data.data.availability[date.slice(0, 3)]);
+                        let value = calendar_month.weekDays[date];
+                        if (
+                            validateDay(value.current_date.slice(0, 10), date.slice(0,3)) 
+                        ) {
+                            if (dateHashMap[value.current_date.slice(0, 10)]) {
+                                copyAvailableDays[
+                                    Number(value.current_date.slice(8, 10))
+                                ] =
+                                    dateHashMap[value.current_date.slice(0, 10)]
+                                        .shifts.length > 0;
+
+                                continue;
+                            }
+                            copyAvailableDays[
+                                        Number(value.current_date.slice(8, 10))
+                                    ] = data.data.availability[date.slice(0, 3)]
+                                    .length !== 0
+                        }
+
+                    
+                    }
+                   
+
+                    availableDays = structuredClone({ ...copyAvailableDays });
+                },
+            },
+        );
+    }
+
+    $: console.log(availableDays);
+
+     function updateCalendar(type = false) {
+        console.log("0ayyyyyyyy");
+        
         isThereSomeAppointment = "loading";
         router.get(
             window.location.pathname,
-            {
+            {   
+                calendar_month: true,
                 start_date: frontCalendar[0].date,
                 end_date: frontCalendar[frontCalendar.length - 1].date,
             },
@@ -240,7 +340,6 @@
                     } else {
                         isThereSomeAppointment = false;
                     }
-                    showModal = false;
                 },
             },
         );
@@ -351,17 +450,21 @@
             1000;
 
         // Compare difference with threshold
-        console.log(
-            { currentTime24, currentDate, futureTime24, futureDate },
-            diffMs >= thresholdMs,
-        );
+        // console.log(
+        //     { currentTime24, currentDate, futureTime24, futureDate },
+        //     diffMs >= thresholdMs,
+        // );
 
         return diffMs >= thresholdMs;
     }
 
-    function validateDay(calendarDate) {
+    function validateDay(calendarDate, weekDay) {
         if (calendarDate < today.slice(0, 10)) {
             return false;
+        }
+
+        if (! calendar.weekDays[weekDay + "_" + calendarDate]?.nro_appointments < data.data.booked_appointment_settings.max_appointment_per_day) {
+            return false
         }
 
         if (
@@ -372,7 +475,7 @@
                 10,
             ) > calendarDate
         ) {
-            console.log(data.data.programming_slot.interval_date);
+            // console.log(data.data.programming_slot.interval_date);
             return false;
         }
         console.log(
@@ -440,13 +543,7 @@
                     selected={focusedDate}
                     showDatePickerAlways={true}
                     withInput={false}
-                    thereIsAvailable={(date) => {
-                        if (dataFront.availableDays[date]) {
-                            return true;
-                        } else {
-                            false;
-                        }
-                    }}
+                    bind:availableDays
                     isAllowed={(date) => {
                         // console.log(date);
                         const millisecs = date.getTime();
@@ -496,10 +593,10 @@
                                     {objDate.day}
                                 </p>
                                 <div class="grid gap-2 mt-7">
-                                    {#if validateDay(objDate.date.slice(0, 10))}
+                                    {#if validateDay(objDate.date.slice(0, 10)), objDate.EnglishWeekday}
                                         {#each shiftsForCalendar?.[objDate.EnglishWeekday] as shift, indx (objDate.day + "_" + indx)}
                                             {#each shift.appointments as appointment, i ("start_app" + "_" + i)}
-                                                {#if isTimeDifferenceSufficient(currentTime, today.slice(0, 10), appointment.start_appo, objDate.date.slice(0, 10)) && calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)].nro_appointments < data.data.booked_appointment_settings.max_appointment_per_day && !calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)]?.appointments[appointment.start_appo]}
+                                                {#if isTimeDifferenceSufficient(currentTime, today.slice(0, 10), appointment.start_appo, objDate.date.slice(0, 10)) && !calendar.weekDays[objDate.EnglishWeekday + "_" + objDate.date.slice(0, 10)]?.appointments[appointment.start_appo]}
                                                     <button
                                                         on:click={() => {
                                                             showModal = true;
