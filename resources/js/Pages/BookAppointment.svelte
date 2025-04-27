@@ -60,7 +60,7 @@
     };
     export let data = {};
     export let calendar = {};
-    export let calendar_month = {};
+    export let calendar_month = null;
     let form;
     const debouncedUpdate = debounce(updateWidth, 300);
 
