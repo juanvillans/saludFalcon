@@ -49,7 +49,7 @@
     $: cells = getDateRows(month, year).map((c) => ({
         value: c,
         allowed: allow(year, month, c),
-        availabled: availableDays[c] || false ,
+        availabled: availableDays?.[c] || false ,
     }));
     // $: console.log({cells})
 </script>

@@ -41,7 +41,6 @@
         if (screenZise >= 1220) {
             numberOfDays = 7;
         }
-        console.log({ focusedDate, numberOfDays });
 
         getNextNDays(focusedDate, numberOfDays);
 
@@ -65,11 +64,6 @@
     let form;
     const debouncedUpdate = debounce(updateWidth, 300);
 
-    $: dateHashMap = data.data.adjusted_availability.reduce((map, obj) => {
-        map[obj.date.slice(0, 10)] = obj;
-        return map;
-    }, {});
-    $: console.log({ dateHashMap });
     function getTodayInVenezuelaISO() {
         const now = new Date();
 
@@ -144,7 +138,6 @@
         // Format to ISO string (UTC representation)
         // getNextNDays(today, numberOfDays);
         focusedDate = today;
-        console.log({ today });
         updateWidth(); // Set the initial width
         // checkForAvailableDays(focusedDate)
     });
@@ -227,7 +220,9 @@
             updateCalendar(true);
 
         } else {
-            updateCalendar(false);
+            console.log(calendar_month);
+            
+            updateCalendar(calendar_month == null);
         }
         return result;
     }
@@ -271,56 +266,11 @@
             ).toISOString(),
         ];
     }
-     function checkForAvailableDays(dateString) {
-        let [start_date, end_date] = getMonthBoundaries(dateString);
-
-        router.get(
-            window.location.pathname ,
-            {
-                start_date,
-                end_date,
-                calendar_month: true,
-            },
-            {
-                // except: ['calendar'],
-                onSuccess: (page) => {
-                    // console.log({calendar});
-                    let copyAvailableDays = {};
-                    availableDays = {};
-                    for (const date in calendar_month.weekDays) {
-                        console.log(data.data.availability[date.slice(0, 3)]);
-                        let value = calendar_month.weekDays[date];
-                        if (
-                            validateDay(value.current_date.slice(0, 10), date.slice(0,3)) 
-                        ) {
-                            if (dateHashMap[value.current_date.slice(0, 10)]) {
-                                copyAvailableDays[
-                                    Number(value.current_date.slice(8, 10))
-                                ] =
-                                    dateHashMap[value.current_date.slice(0, 10)]
-                                        .shifts.length > 0;
-
-                                continue;
-                            }
-                            copyAvailableDays[
-                                        Number(value.current_date.slice(8, 10))
-                                    ] = data.data.availability[date.slice(0, 3)]
-                                    .length !== 0
-                        }
-
-                    
-                    }
-                   
-
-                    availableDays = structuredClone({ ...copyAvailableDays });
-                },
-            },
-        );
-    }
 
     // $: console.log(availableDays);
 
      function updateCalendar(type) {
+      console.log({type});
       
         if (type) {
             calendar_month = {}
@@ -460,7 +410,6 @@
     }
 
     function validateDay(calendarDate, weekDay) {
-        console.log(calendarDate, weekDay);
         
         if (calendarDate < today.slice(0, 10)) {
             return false;
@@ -481,10 +430,6 @@
             // console.log(data.data.programming_slot.interval_date);
             return false;
         }
-        console.log(
-            data.data.programming_slot.interval_date.custom_end_date,
-            today,
-        );
 
         if (
             data.data.programming_slot.available_now_check == 0 &&
