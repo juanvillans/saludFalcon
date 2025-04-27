@@ -328,7 +328,7 @@
         router.get(
             window.location.pathname,
             {   
-                calendar_month: type,
+                calendar_month: true,
                 start_date: frontCalendar[0].date,
                 end_date: frontCalendar[frontCalendar.length - 1].date,
             },
@@ -463,7 +463,7 @@
             return false;
         }
 
-        if (! calendar.weekDays[objDate[weekDay] + "_" + calendarDate]?.nro_appointments < data.data.booked_appointment_settings.max_appointment_per_day) {
+        if (! calendar.weekDays[weekDay + "_" + calendarDate]?.nro_appointments < data.data.booked_appointment_settings.max_appointment_per_day) {
             return false
         }
 

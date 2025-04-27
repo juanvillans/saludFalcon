@@ -29,37 +29,35 @@ class AppointmentController extends Controller
     }
 
 
-    public function showCalendar(Calendar $calendar, $calendarMonth = null, Request $request){
+    public function showCalendar(Request $request, Calendar $calendar){
 
 
         $this->params = [
             'start_date' => $request->input('start_date') ?? null,
             'end_date' => $request->input('end_date') ?? null,
+            'calendar_month' => $request->input('calendar_month') ?? null,
         ];
 
         $calendar->load('user.specialty', 'appointments');
 
+
         $structure = $this->calendarService->getDinamicStructureCalendar($this->params, $calendar);
+        $calendarMonth = null;
 
+        $calendarMonth = $request->input('calendar_month') ?? null;
 
-
-        if($calendarMonth != null){
-            return inertia('BookAppointment', [
-            
-                'calendar_month' => $structure,
-                'data' => new CalendarResource($calendar),
-            ]);    
-        }else{
-            return inertia('BookAppointment', [
-            
-                'calendar' => $structure,
-                'data' => new CalendarResource($calendar),
-            ]);
-        }
-
+        if($calendarMonth)
+            $calendarMonth = $this->calendarService->getDaysAvailableOfMonth($this->params, $calendar);
         
 
-    }
+        return inertia('BookAppointment', [
+            'calendar_month' => $calendarMonth,    
+            'calendar' => $structure,
+            'data' => new CalendarResource($calendar),
+        ]);
+
+    }  
+
 
     public function bookAppointment(BookAppointmentRequest $request, Calendar $calendar){
 

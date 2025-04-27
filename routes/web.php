@@ -44,7 +44,7 @@ Route::group(['middleware' => ['guest']], function () {
 
 });
 
-Route::get('/citas/{calendar}/{calendarMonth?}', [AppointmentController::class, 'showCalendar']);
+Route::get('/citas/{calendar}', [AppointmentController::class, 'showCalendar']);
 Route::post('/citas/{calendar}', [AppointmentController::class, 'bookAppointment']);
 
 
