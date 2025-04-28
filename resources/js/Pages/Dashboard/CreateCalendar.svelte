@@ -6,6 +6,7 @@
     import Calender from "../../components/Calender.svelte";
     import debounce from "lodash/debounce";
     import axios from "axios";
+    import fetchLocalData from "../../components/localData";
 
     // import Draggable from "../../components/Draggable.svelte";
     import Editor from "cl-editor/src/Editor.svelte";
@@ -21,6 +22,15 @@
     const onDateChange = (d, indx) => {
         $form.adjusted_availability[indx].date = d.detail.toISOString();
     };
+    let localData = {};
+    onMount(async () => {
+        try {
+            localData = await fetchLocalData();
+            // console.log(fetchLocalData())
+        } catch (error) {
+            console.error("Error loading data:", error);
+        }
+    });
     let defaulTtime_between_appointment = 30;
     const optionsFormatDate = {
         year: "numeric",
@@ -42,7 +52,6 @@
     let showModalFranja = false;
     let showModalappointments = false;
     let showModalForm = false;
-    let showModalDoctor = false;
     let newItem = { name: "", required: false, by_default: false };
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -58,6 +67,7 @@
     futureDate.setMonth(futureDate.getMonth() + 6);
     let itWasChangeIntervalDate = false;
     let defaultFrontForm = {
+        specialty_id: 1,
         status: true,
         duration_per_appointment: 60,
         availability: {
@@ -252,12 +262,7 @@
 
         fields: [],
         time_available_type: 1,
-        user_specialty_name: $page.props.auth.specialty_name,
-        user_specialty_id: $page.props.auth.specialty_id,
-        user_id: $page.props.auth.user_id,
-        user_name: $page.props.auth.name,
-        user_last_name: $page.props.auth.last_name,
-        user_photo: $page.props.auth.photo,
+       
         duration_options: [
             { value: 15, label: "15 minutos" },
             { value: 30, label: "30 minutos" },
@@ -978,72 +983,13 @@
     >
 </Modal>
 
-<Modal bind:showModal={showModalDoctor}>
-    <div class=" top-3 flex items-center">
-        <span class="absolute">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5 mx-3 text-gray-400"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                />
-            </svg>
-        </span>
-
-        <input
-            type="search"
-            placeholder="Buscar por nombre o CI"
-            on:input={(e) => {
-                searchDoctor(e.target.value);
-            }}
-            id="searchDoctor"
-            class=" block w-full py-1.5 pr-5 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
-        />
-    </div>
-    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-3">
-        {#each searchedDoctors as doctor (doctor.user_id)}
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <li
-                class="flex gap-3 border rounded cursor-pointer hover:bg-gray-100 hover:border-dark p-4"
-                on:click={() => {
-                    if ($page.props.auth.rol[0] == "admin") {
-                        $form = { ...$form, ...doctor };
-                        showModalDoctor = false;
-                    }
-                }}
-            >
-                <span
-                    class="rounded-full overflow-hidden bg-color4 w-9 h-9 justify-center items-center flex"
-                >
-                    <iconify-icon icon="fa6-solid:user-doctor"></iconify-icon>
-                </span>
-
-                <div class="mt-1">
-                    <p>
-                        <b> {doctor.user_name} {doctor.user_last_name}</b> - {doctor.user_ci}
-                    </p>
-                    <span class="bg-gray-200 rounded-full px-2 py-1 text-sm"
-                        >{doctor.user_specialty_name}</span
-                    >
-                </div>
-            </li>
-        {/each}
-    </ul>
-</Modal>
 <section
     class="flex gap-4 justify-between bg-gray-50 rounded-xl overflow-hidden overflow-y-scroll srolabbleForm citeContainer"
 >
-    <div class="min-w-[450px] w-[470px] sticky top-0 srolabbleForm">
+    <div class="min-w-[440px] max-w-[440px] sticky top-0 srolabbleForm">
         {#if openedLeftSection == "form"}
             <form
-                class=" bg-gray-100 pl-0 rounded pt-5 sticky top-1 h srolabbleForm overflow-x-hidden pr-2"
+                class=" bg-gray-100 pl-0 rounded pt-5 sticky top-1 h srolabbleForm overflow-x-hidden pr-0"
                 action=""
                 on:submit={handleSubmit}
                 style="height: calc(100vh - 80px)"
@@ -1064,65 +1010,19 @@
                                 <h2>CONFIGURAR CITAS DISPONIBLES</h2>
 
                                 <Input
-                                    type="text"
-                                    required={true}
-                                    label={"Titulo"}
-                                    labelClasses={"font-bold w-11/12 mb-3"}
+                                type="select"
+                                required={true}
+                                label={"Servicio"}
+                                labelClasses={"font-bold w-11/12"}
                                     inputClasses={"text-2xl  p-1 px-3 bg-gray-200 w-11/12 "}
-                                   
-                                />
-                                <div class="flex justify-between">
-                                    <button
-                                        type="button"
-                                        class="w-full"
-                                        on:click={() => {
-                                            if (
-                                                $page.props.auth.rol[0] ==
-                                                "admin"
-                                            ) {
-                                                showModalDoctor = true;
-                                                setTimeout(() => {
-                                                    document
-                                                        .querySelector(
-                                                            "#searchDoctor",
-                                                        )
-                                                        .focus();
-                                                }, 150);
-                                            }
-                                        }}
-                                    >
-                                        <div
-                                            class="mt-3 text-left font-semibold"
-                                        >
-                                            <span class="text-left"
-                                                >Médico y servico</span
-                                            >
-                                        </div>
-
-                                        <div
-                                            class=" border rounded cursor-pointer hover:bg-gray-100 hover:border-dark p-2"
-                                        >
-                                            <div class="flex gap-1.5">
-                                                <img
-                                                    class="bg-gray-300 w-7 aspect-square rounded-full object-cover"
-                                                    src={`/storage/users/${$page.props.auth.photo}`}
-                                                    alt=""
-                                                />
-                                                <p class="inline-block w-fit">
-                                                    <span>
-                                                        {$form.user_name}
-                                                        {$form.user_last_name}</span
-                                                    >
-                                                </p>
-                                            </div>
-                                            <p
-                                                class="bg-gray-200 rounded-full w-fit ml-7 relative -top-1 px-2 py-1 text-xs"
-                                            >
-                                                {$form.user_specialty_name}
-                                            </p>
-                                        </div>
-                                    </button>
-                                </div>
+                                bind:value={$form.specialty_id}
+                                error={$form.errors?.specialty_id}
+                            >
+                                {#each localData.specialties || [] as speci (speci.id)}
+                                    <option class="text-lg py-1" value={speci.id}>{speci.name}</option>
+                                {/each}
+                            </Input>
+                                
                             </fieldset>
 
                             <fieldset
@@ -1738,13 +1638,13 @@
                                         fechas concretas</small
                                     >
                                     <ul
-                                        class="flex flex-col space-y-2 relative -left-3"
+                                        class="flex flex-col space-y-2 relative -left-4"
                                     >
                                         {#each $form.adjusted_availability as adjust_date, indxDate}
                                             <li
                                                 class="flex gap-2 justify-between mb-3"
                                             >
-                                                <span class="h-max">
+                                                <span class="h-max text-sm">
                                                     <DatePicker
                                                         on:datechange={(e) =>
                                                             onDateChange(
@@ -1798,14 +1698,14 @@
                                                     >
                                                         {#each adjust_date.shifts as shift, indxShift}
                                                             <div
-                                                                class="flex gap-3"
+                                                                class="flex gap-2"
                                                             >
                                                                 <span
                                                                     class="flex w-48 items-center justify-between bg-gray-200"
                                                                 >
                                                                     <Input
                                                                         type="select"
-                                                                        classes={"mt-0 border-none flex-auto text-center"}
+                                                                        classes={"mt-0 text-sm border-none flex-auto text-center"}
                                                                         bind:value={
                                                                             $form
                                                                                 .adjusted_availability[
@@ -1834,7 +1734,7 @@
                                                                                 );
                                                                             // Array.from({ length: calculateAppointments(GetHeight(shift.start, shift.end), $form.duration_per_appointment / 60, $form.booked_appointment_settings.time_between_appointment / 60) }, (_, index) => index)
                                                                         }}
-                                                                        inputClasses={"bg-gray-200 p-3 px-2 border-none appearance-none"}
+                                                                        inputClasses={"bg-gray-200 text-sm p-3 px-2 border-none appearance-none"}
                                                                     >
                                                                         {#each optionsShift as shiftOption (shiftOption.value)}
                                                                             {#if indxShift == 0 || shiftOption.value >= adjust_date.shifts[indxShift - 1]?.end}
@@ -1853,8 +1753,8 @@
                                                                     </span>
                                                                     <Input
                                                                         type="select"
-                                                                        classes={"mt-0 flex-auto text-center"}
-                                                                        inputClasses={"bg-gray-200 p-3  px-2 border-none appearance-none"}
+                                                                        classes={"mt-0 text-sm flex-auto text-center"}
+                                                                        inputClasses={"text-sm bg-gray-200 p-3  px-2 border-none appearance-none"}
                                                                         bind:value={
                                                                             $form
                                                                                 .adjusted_availability[
@@ -2255,7 +2155,8 @@
                                     label={"Titulo"}
                                     labelClasses={"font-bold w-11/12"}
                                     inputClasses={"text-2xl  p-1 px-3 bg-gray-200 w-11/12 "}
-                                  
+                                    bind:value={$form.title}
+                                    error={$form.errors?.title}
                                 />
                             </fieldset>
                             <fieldset
