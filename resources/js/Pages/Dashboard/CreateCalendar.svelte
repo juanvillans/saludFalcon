@@ -59,7 +59,6 @@
     let itWasChangeIntervalDate = false;
     let defaultFrontForm = {
         status: true,
-        title: "",
         duration_per_appointment: 60,
         availability: {
             mon: [
@@ -621,7 +620,6 @@
     }
 
     function handleSubmit(event) {
-        $form.title = $form.title?.toUpperCase();
         event.preventDefault();
         $form.clearErrors();
         // console.log({ $form });
@@ -1071,8 +1069,7 @@
                                     label={"Titulo"}
                                     labelClasses={"font-bold w-11/12 mb-3"}
                                     inputClasses={"text-2xl  p-1 px-3 bg-gray-200 w-11/12 "}
-                                    bind:value={$form.title}
-                                    error={$form.errors?.title}
+                                   
                                 />
                                 <div class="flex justify-between">
                                     <button
@@ -2258,8 +2255,7 @@
                                     label={"Titulo"}
                                     labelClasses={"font-bold w-11/12"}
                                     inputClasses={"text-2xl  p-1 px-3 bg-gray-200 w-11/12 "}
-                                    bind:value={$form.title}
-                                    error={$form.errors?.title}
+                                  
                                 />
                             </fieldset>
                             <fieldset
