@@ -2150,14 +2150,18 @@
                                 <h2>CONFIGURAR CITAS DISPONIBLES</h2>
 
                                 <Input
-                                    type="text"
-                                    required={true}
-                                    label={"Titulo"}
-                                    labelClasses={"font-bold w-11/12"}
+                                type="select"
+                                required={true}
+                                label={"Servicio"}
+                                labelClasses={"font-bold w-11/12"}
                                     inputClasses={"text-2xl  p-1 px-3 bg-gray-200 w-11/12 "}
-                                    bind:value={$form.title}
-                                    error={$form.errors?.title}
-                                />
+                                bind:value={$form.specialty_id}
+                                error={$form.errors?.specialty_id}
+                            >
+                                {#each localData.specialties || [] as speci (speci.id)}
+                                    <option class="text-lg py-1" value={speci.id}>{speci.name}</option>
+                                {/each}
+                            </Input>
                             </fieldset>
                             <fieldset
                                 class="mt-2 border-b border-gray-300 pb-4 flex gap-1 text-editor"
