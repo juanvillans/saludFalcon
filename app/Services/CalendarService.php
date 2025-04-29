@@ -27,9 +27,7 @@ class CalendarService
         
         $calendar = Calendar::create(
             [
-                'user_id' => $data['user_id'],
-                'specialty_id' => $data['user_specialty_id'],
-                'title' => $data['title'],
+                'specialty_id' => $data['specialty_id'],
                 'description' => $data['description'],
                 'status' => $data['status'],
                 'duration_per_appointment' => $data['duration_per_appointment'],

@@ -23,9 +23,7 @@ class CalendarRequest extends FormRequest
     {
         return [
 
-            'user_id' => 'required|integer|exists:users,id',
-            'user_specialty_id' => 'required|integer|exists:specialties,id',
-            'title' => 'required|string|max:255',
+            'specialty_id' => 'required|integer|exists:specialties,id',
             'description' => 'required|string',
             'status' => 'boolean',
             'duration_per_appointment' => 'required|integer|min:1',
