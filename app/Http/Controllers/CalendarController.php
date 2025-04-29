@@ -52,11 +52,11 @@ class CalendarController
         $structure = $this->calendarService->getDinamicStructureCalendar($dateRange);
         
         $specialtyService = new SpecialtyService;
-        $servicesAvailable = $specialtyService->getSpecialtiesWithoutCalendar();
+        $specialtiesAvailable = $specialtyService->getSpecialtiesWithoutCalendar();
 
         
         return inertia('Dashboard/CreateCalendar',[
-            'services' => $servicesAvailable, 
+            'specialties' => $specialtiesAvailable, 
             'calendar' => $structure,
         ]);
     }
