@@ -121,7 +121,7 @@ class CalendarController
 
         $dateRange = $this->calendarService->getWeekRange($this->params);
 
-        $calendar->load('user.specialty', 'appointments');
+        $calendar->load('specialty', 'appointments');
 
         $structure = $this->calendarService->getDinamicStructureCalendar($dateRange, $calendar);
         
