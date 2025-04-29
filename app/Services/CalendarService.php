@@ -12,7 +12,7 @@ class CalendarService
 {	
 
 
-    public function getCalendars($params)
+    public function getCalendars($params = null)
     {
         $calendars = Calendar::query()
         ->where('status',1)

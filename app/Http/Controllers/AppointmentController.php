@@ -28,6 +28,17 @@ class AppointmentController extends Controller
         $this->appointmentService = new AppointmentService;
     }
 
+    public function index(Request $request){
+
+        
+        $calendars = $this->calendarService->getCalendars();
+
+        return inertia('Appointments',[
+            'calendars' => $calendars,
+        ]);
+
+    }
+
 
     public function showCalendar(Request $request, Calendar $calendar){
 

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mail\PatientNewAppointmentEmail;
 use App\Models\Appointment;
+use App\Models\Calendar;
 use App\Models\Patient;
 use Carbon\Carbon;
 use Exception;
@@ -13,6 +14,8 @@ use Illuminate\Support\Str;
 
 class AppointmentService
 {	
+
+    
 
     public function bookAppointment($data, $calendar){
 
