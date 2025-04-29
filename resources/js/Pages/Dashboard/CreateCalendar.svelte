@@ -6,7 +6,6 @@
     import Calender from "../../components/Calender.svelte";
     import debounce from "lodash/debounce";
     import axios from "axios";
-    import fetchLocalData from "../../components/localData";
 
     // import Draggable from "../../components/Draggable.svelte";
     import Editor from "cl-editor/src/Editor.svelte";
@@ -22,15 +21,7 @@
     const onDateChange = (d, indx) => {
         $form.adjusted_availability[indx].date = d.detail.toISOString();
     };
-    let localData = {};
-    onMount(async () => {
-        try {
-            localData = await fetchLocalData();
-            // console.log(fetchLocalData())
-        } catch (error) {
-            console.error("Error loading data:", error);
-        }
-    });
+    
     let defaulTtime_between_appointment = 30;
     const optionsFormatDate = {
         year: "numeric",
@@ -38,9 +29,10 @@
         day: "numeric",
     };
     export let data = {};
+    export let specialties = {};
     export let calendar = {};
     console.log(data.data);
-    console.log({ calendar });
+    console.log({ specialties });
 
     let acordion = {
         franja: false,
@@ -1018,7 +1010,7 @@
                                 bind:value={$form.specialty_id}
                                 error={$form.errors?.specialty_id}
                             >
-                                {#each localData.specialties || [] as speci (speci.id)}
+                                {#each specialties || [] as speci (speci.id)}
                                     <option class="text-lg py-1" value={speci.id}>{speci.name}</option>
                                 {/each}
                             </Input>
@@ -2158,7 +2150,7 @@
                                 bind:value={$form.specialty_id}
                                 error={$form.errors?.specialty_id}
                             >
-                                {#each localData.specialties || [] as speci (speci.id)}
+                                {#each specialties || [] as speci (speci.id)}
                                     <option class="text-lg py-1" value={speci.id}>{speci.name}</option>
                                 {/each}
                             </Input>
