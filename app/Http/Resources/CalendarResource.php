@@ -16,7 +16,6 @@ class CalendarResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
             'description' => $this->description,
             'status' => (bool)$this->status,
             'status_name' => $this->status ? 'Disponible' : 'No disponible',
@@ -27,12 +26,8 @@ class CalendarResource extends JsonResource
             'booked_appointment_settings' => $this->booked_appointment_settings,
             'programming_slot' => $this->programming_slot,
             'fields' => $this->fields,
-            'user_id' => $this->user->id,
-            'user_name' => $this->user->name,
-            'user_last_name' => $this->user->last_name,
-            'user_photo' => $this->user->photo,
-            'user_specialty_id' => $this->user->specialty->id,
-            'user_specialty_name' => $this->user->specialty->name,
+            'specialty_id' => $this->specialty->id,
+            'specialty_name' => $this->specialty->name,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];

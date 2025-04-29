@@ -10,9 +10,7 @@ class Calendar extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
         'specialty_id',
-        'title',
         'description',
         'status',
         'duration_per_appointment',
@@ -33,12 +31,6 @@ class Calendar extends Model
         'booked_appointment_settings' => 'array',
         'fields' => 'array',
     ];
-
-    public function user(){
-
-        return $this->belongsTo(User::class);
-    
-    }
 
     public function specialty(){
         

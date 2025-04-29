@@ -16,32 +16,14 @@ class Specialty extends Model
 
     public $timestamps = false;
 
-    public function users()
-    {
-        return $this->belongsToMany(User::class);
+    public function users(){
+
+        return $this->hasMany(User::class);
     }
 
-    public function services()
-    {
-        return $this->hasMany(Service::class);
-    }
+    public function calendar(){
 
-    public function doctors()
-    {
-        return $this->belongsToMany(User::class,'services','specialty_id','user_id')
-        ->withPivot(
-            'id',
-            'user_id',
-            'specialty_id',
-            'title',
-            'duration_per_appointment',
-            'duration_options',
-            'availability',
-            'adjusted_availability',
-            'programming_slot',
-            'booked_appointment_settings',
-            'description',
-            'fields',
-        );       
+        return $this->hasOne(Calendar::class);
+
     }
 }

@@ -14,8 +14,13 @@ return new class extends Migration
         Schema::create('calendars', function (Blueprint $table) {
            
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->string('title');
+
+            $table->unsignedBigInteger('specialty_id');
+            $table->foreign('specialty_id')
+            ->references('id')
+            ->on('specialties')
+            ->onDelete('cascade');
+
             $table->string('description');
             $table->integer('status')->default(1); // 1 for Available, 0 for Not 
             $table->integer('duration_per_appointment');
@@ -26,11 +31,8 @@ return new class extends Migration
             $table->json('booked_appointment_settings');
             $table->json('fields');
 
-            $table->foreign('user_id')
-            ->references('id')
-            ->on('users')
-            ->onDelete('cascade');
             $table->timestamps();
+
         });
     }
 

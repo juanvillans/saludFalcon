@@ -44,10 +44,7 @@ class User extends Authenticatable
         return $this->belongsTo(Specialty::class);
     }
 
-    // public function services()
-    // {
-    //     return $this->hasMany(Service::class);
-    // }
+    
     
 
 }

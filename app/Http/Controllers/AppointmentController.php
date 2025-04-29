@@ -134,7 +134,6 @@ class AppointmentController extends Controller
             //     'data' => $response,
             // ]);
 
-            // just a test
             
 
         }catch(\Exception $e){

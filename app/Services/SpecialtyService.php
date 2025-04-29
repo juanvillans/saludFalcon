@@ -16,7 +16,7 @@ class SpecialtyService
 
     public function getSpecialties($params)
     {
-        $users = Specialty::query()
+        $specialties = Specialty::query()
         ->when($params['search']??null,function($query, $search){
             
             $query->where('name','like','%' . $search . '%');
@@ -27,7 +27,7 @@ class SpecialtyService
         })
         ->get();
 
-        return $users;
+        return $specialties;
     }
 
 
@@ -36,6 +36,14 @@ class SpecialtyService
         $specialty->update(['status' => 1]);
 
         return 0;
+    }
+
+    public function getSpecialtiesWithoutCalendar(){
+
+        $specialties = Specialty::doesntHave('calendar')->get();
+
+        return $specialties;
+
     }
     
 

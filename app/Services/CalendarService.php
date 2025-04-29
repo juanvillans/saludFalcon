@@ -16,21 +16,7 @@ class CalendarService
     {
         $calendars = Calendar::query()
         ->where('status',1)
-        ->when($params['see_all'] == null,function($query) use ($params){
-            $query->where('user_id', auth()->user()->id);
-        })
-        ->when($params['see_all'] !== null, function($query) use ($params){
-            
-            if(auth()->user()->hasRole('admin') && isset($params['specialty_id'])){
-                $query->whereHas('user',function($query2) use ($params){
-                    $query2->where('specialty_id', $params['specialty_id']);
-                });
-            }
-            else
-                $query->where('user_id', auth()->user()->id);
-
-        })
-        ->with('user.specialty')
+        ->with('specialty')
         ->orderBy('id','desc')
         ->get();
 
