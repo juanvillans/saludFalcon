@@ -133,6 +133,8 @@ class AppointmentController extends Controller
             // return inertia('BookAppointment', [
             //     'data' => $response,
             // ]);
+
+            // just a test
             
 
         }catch(\Exception $e){
