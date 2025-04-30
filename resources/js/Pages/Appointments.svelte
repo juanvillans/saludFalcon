@@ -7,7 +7,7 @@
 
 <div class="p-5 lg:p-10 lg:pt-5">
     <header
-        class=" overflow-hidden h-fit relative w-full max-w-[1400px] mx-auto bg-color1 rounded-3xl"
+        class=" overflow-hidden h-fit relative w-full max-w-[1400px] mx-auto bg- rounded-3xl"
     >
         <div class="absolute top-0 left-0 z-10 flex flex-col justify-between h-full pl-5 pt-5">
             <a href="#" class="text-white flex gap-3 items-center">
@@ -40,10 +40,10 @@
         <div class="circle absolute right-28 -bottom-52 w-96 z-20 block aspect-square rounded-full"></div>
     </header>
 
-    <body class="mt-7 flex gap-7 md:gap-10 overflow-hidden">
+    <body class="mt-7 flex  gap-7 md:gap-7 overflow-hidden max-w-[1400px] mx-auto">
         {#each calendars.data as calendar (calendar.id)}
             
-        <a href='/citas/{calendar.id}' use:inertia   class="bg-color1 block rounded-md p-4 relative max-w-[350px]">
+        <a href='/citas/{calendar.id}' use:inertia   class="calendar hover:shadow-2xl hover:brightness-110 bg-color1 block rounded-md p-4 relative max-w-[350px]">
             <h3 class="text-white font-bold uppercase">{calendar.specialty_name}</h3>
 
             <p class="text-opacity-50 text-white flex justify-end items-center gap-3 text-right w-full"> <iconify-icon
@@ -57,6 +57,9 @@
 </div>
 
 <style>
+    /* .calendar {
+        min-width: 300px;
+    } */
     .biggest-text {
         font-size: 12vw;
         line-height: 12vw;

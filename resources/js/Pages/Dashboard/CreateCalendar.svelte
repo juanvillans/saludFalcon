@@ -21,7 +21,7 @@
     const onDateChange = (d, indx) => {
         $form.adjusted_availability[indx].date = d.detail.toISOString();
     };
-    
+
     let defaulTtime_between_appointment = 30;
     const optionsFormatDate = {
         year: "numeric",
@@ -50,7 +50,7 @@
 
     function getFirstName(firstName) {
         console.log(firstName);
-        
+
         const parts = firstName.split(" ");
         return parts[0];
     }
@@ -254,7 +254,7 @@
 
         fields: [],
         time_available_type: 1,
-       
+
         duration_options: [
             { value: 15, label: "15 minutos" },
             { value: 30, label: "30 minutos" },
@@ -485,7 +485,7 @@
     }
 
     function updateShiftsForCalendar() {
-        shiftsForCalendar = {}
+        shiftsForCalendar = {};
         // console.log($form.adjusted_availability);
         Object.entries(calendar.weekDays).forEach(([key, value], indx) => {
             let isItAjustedShift =
@@ -501,7 +501,7 @@
                 [key]:
                     isItAjustedShift >= 0
                         ? $form.adjusted_availability[isItAjustedShift].shifts
-                        : $form.availability[key.slice(0,3)],
+                        : $form.availability[key.slice(0, 3)],
             };
         });
         console.log({ shiftsForCalendar, calendar });
@@ -911,7 +911,9 @@
                 class="bg-color2 absolute -left-5 shadow-inner bottom-0 rounded-r-full text-white w-max px-2 font-bold h-16 flex items-center"
             >
                 <p class="">
-                    {convertTo12HourFormat(selectedAppointmentDetails.start_time)}
+                    {convertTo12HourFormat(
+                        selectedAppointmentDetails.start_time,
+                    )}
                 </p>
             </div>
         </div>
@@ -1002,19 +1004,25 @@
                                 <h2>CONFIGURAR CITAS DISPONIBLES</h2>
 
                                 <Input
-                                type="select"
-                                required={true}
-                                label={"Servicio"}
-                                labelClasses={"font-bold w-11/12"}
+                                    type="select"
+                                    required={true}
+                                    label={"Servicio"}
+                                    labelClasses={"font-bold w-11/12"}
                                     inputClasses={"text-2xl  p-1 px-3 bg-gray-200 w-11/12 "}
-                                bind:value={$form.specialty_id}
-                                error={$form.errors?.specialty_id}
-                            >
-                                {#each specialties || [] as speci (speci.id)}
-                                    <option class="text-lg py-1" value={speci.id}>{speci.name}</option>
-                                {/each}
-                            </Input>
-                                
+                                    bind:value={$form.specialty_id}
+                                    error={$form.errors?.specialty_id}
+                                >
+                                    {#each specialties || [] as speci (speci.id)}
+                                        <option
+                                            class="text-lg py-1"
+                                            value={speci.id}
+                                            >{speci.name}</option
+                                        >
+                                    {/each}
+                                    {#if typePage == "editar"}
+                                        <option class="text-lg py-1" value={$form.specialty_id}>{$form.specialty_name}</option>
+                                    {/if}
+                                </Input>
                             </fieldset>
 
                             <fieldset
@@ -1399,20 +1407,18 @@
                                                     que se puede agendar una
                                                     cita
                                                 {:else}
-
-                                                {#if $form.programming_slot.allow_max_reservation_time_before_appointment}
-                                                Desde {$form
-                                                    .programming_slot
-                                                    .max_reservation_time_before_appointment}
-                                                días de antelación
-                                                {/if}
-                                                {#if $form.programming_slot.allow_min_reservation_time_before_appointment}
-                                                    hasta {$form
-                                                        .programming_slot
-                                                        .min_reservation_time_before_appointment}
-                                                    horas antes
-                                                    
-                                                {/if}
+                                                    {#if $form.programming_slot.allow_max_reservation_time_before_appointment}
+                                                        Desde {$form
+                                                            .programming_slot
+                                                            .max_reservation_time_before_appointment}
+                                                        días de antelación
+                                                    {/if}
+                                                    {#if $form.programming_slot.allow_min_reservation_time_before_appointment}
+                                                        hasta {$form
+                                                            .programming_slot
+                                                            .min_reservation_time_before_appointment}
+                                                        horas antes
+                                                    {/if}
                                                     <span class="block text-sm">
                                                         {#if !$form.programming_slot.interval_date.start_now_check}
                                                             Empieza el {new Date(
@@ -2068,8 +2074,8 @@
                                                         on:change={(e) => {
                                                             $form.booked_appointment_settings.time_between_appointment =
                                                                 +e.target.value;
-                                                            defaulTtime_between_appointment =
-                                                                +e.target.value;
+                                                            // defaulTtime_between_appointment =
+                                                            //     +e.target.value;
                                                             updateAllStartAppointmets();
                                                         }}
                                                         error={$form.errors
@@ -2142,18 +2148,25 @@
                                 <h2>CONFIGURAR CITAS DISPONIBLES</h2>
 
                                 <Input
-                                type="select"
-                                required={true}
-                                label={"Servicio"}
-                                labelClasses={"font-bold w-11/12"}
+                                    type="select"
+                                    required={true}
+                                    label={"Servicio"}
+                                    labelClasses={"font-bold w-11/12"}
                                     inputClasses={"text-2xl  p-1 px-3 bg-gray-200 w-11/12 "}
-                                bind:value={$form.specialty_id}
-                                error={$form.errors?.specialty_id}
-                            >
-                                {#each specialties || [] as speci (speci.id)}
-                                    <option class="text-lg py-1" value={speci.id}>{speci.name}</option>
-                                {/each}
-                            </Input>
+                                    bind:value={$form.specialty_id}
+                                    error={$form.errors?.specialty_id}
+                                >
+                                    {#each specialties || [] as speci (speci.id)}
+                                        <option
+                                            class="text-lg py-1"
+                                            value={speci.id}
+                                            >{speci.name}</option
+                                        >
+                                    {/each}
+                                    {#if typePage == "editar"}
+                                        <option class="text-lg py-1" value={$form.specialty_id}>{$form.specialty_name}</option>
+                                    {/if}
+                                </Input>
                             </fieldset>
                             <fieldset
                                 class="mt-2 border-b border-gray-300 pb-4 flex gap-1 text-editor"
@@ -2315,7 +2328,7 @@
                                             for="date1"
                                             class="block cursor-pointer text-color2 font-bold p-1 px-3 rounded hover:bg-color2 hover:bg-opacity-10 mt-3"
                                             ><iconify-icon
-                                            title="Quitar"
+                                                title="Quitar"
                                                 class="mr-1 relative top-0.5"
                                                 icon="gala:add"
                                             ></iconify-icon> Añadir campo</button
@@ -2353,17 +2366,9 @@
             </form>
         {:else}
             <div>
-                <div class="border rounded p-3 px-4 panel-hover">
+                <div class="neumorphism rounded py-5 px-4 panel-hover">
                     <div class="flex justify-between">
-                        <div class="flex items-center gap-3">
-                            <span
-                                class="rounded-full overflow-hidden bg-color4 w-9 h-9 justify-center items-center flex"
-                            >
-                                <iconify-icon icon="fa6-solid:user-doctor"
-                                ></iconify-icon>
-                            </span>
-                            <p>{$form.user_name} {$form.user_last_name}</p>
-                        </div>
+                        <h1>{$form.specialty_name}</h1>
                         <div class="flex gap-3">
                             <button
                                 title="Eliminar"
@@ -2380,19 +2385,19 @@
                             </button>
                         </div>
                     </div>
-                    <span class="text-lg mt-4 relative top-2 uppercase">
-                        {$form.user_specialty_name}</span
-                    >
-                    <h1>{$form.title}</h1>
-                    <div class="flex gap-3">
+                    <div class="flex gap-5">
                         <iconify-icon
                             icon="lets-icons:time-atack"
                             class="mt- text-xl text-gray-500"
                         ></iconify-icon>
                         <p>Citas de {$form.duration_per_appointment} minutos</p>
                     </div>
-                    <div class="mt-3 description">
-                        {@html $form.description}
+                    <div class="mt-3 description flex gap-2">
+                        <iconify-icon icon="pajamas:text-description"
+                        ></iconify-icon>
+                        <div>
+                            {@html $form.description}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2452,7 +2457,7 @@
                             <p
                                 class={` ${values.current_date?.slice(0, 10) == calendar.headerInfo.today.slice(0, 10) ? "text-color3 " : ""}`}
                             >
-                                {translateDays[day.slice(0,3)].toUpperCase()}
+                                {translateDays[day.slice(0, 3)].toUpperCase()}
                             </p>
                             <p
                                 class={`text-2xl mx-auto w-12 aspect-square rounded-full flex items-center justify-center ${values.current_date?.slice(0, 10) == calendar.headerInfo.today.slice(0, 10) ? "bg-color3 text-gray-50 " : ""}`}
@@ -2498,7 +2503,7 @@
                     <div
                         class={`gap-2 flex flex-col z-30 ${calendar.weekDays[day]?.current_date < calendar.headerInfo.today.slice(0, 10) ? "opacity-40" : ""} `}
                     >
-                    {day}
+                        {day}
                         {#each shifts as shift, indx (day + "_" + indx)}
                             <div
                                 class="flex gap-3 w-28 h-12 absolute duration-300 z-30 px-0.5"
@@ -2546,12 +2551,12 @@
                     </Draggable> -->
 
                     <div
-                        class="flex gap-3 w-28 h-12 absolute duration-300 z-40 px-0.5 "
+                        class="flex gap-3 w-28 h-12 absolute duration-300 z-40 px-0.5"
                         style={`top: ${GetTop(time)}px; left: ${40 + (112 * indxDay + 1)}px; 
                             height: ${GetHeight(time, appointment.appointment_data.end_time) * 48}px
                            `}
                     >
-                        <div class=" z-40 px-1 w-full ">
+                        <div class=" z-40 px-1 w-full">
                             <!-- svelte-ignore a11y-click-events-have-key-events -->
                             <div
                                 class={`cursor-pointer hover:bg-color3 text-center bg-color3 ${calendar.weekDays[day].current_date < calendar.headerInfo.today ? "opacity-40" : ""}  w-[98%] h-full mx-auto p-1 rounded-lg `}
@@ -2565,8 +2570,12 @@
                                 }}
                             >
                                 <h4 class="text-white text-sm">
-                                    {getFirstName(appointment.appointment_data.name)}
-                                    {getFirstName(appointment.appointment_data.last_name)}
+                                    {getFirstName(
+                                        appointment.appointment_data.name,
+                                    )}
+                                    {getFirstName(
+                                        appointment.appointment_data.last_name,
+                                    )}
                                 </h4>
                                 <span class="invisible"></span>
                             </div>

@@ -8,6 +8,7 @@
     import Alert from "../components/Alert.svelte";
     import { displayAlert } from "../stores/alertStore";
     import debounce from "lodash/debounce";
+    import axios from "axios";
 
     let showModal = false;
     let sourceDiv;
@@ -218,10 +219,9 @@
             prevDate.getMonth() !== nextDate.getMonth()
         ) {
             updateCalendar(true);
-
         } else {
             console.log(calendar_month);
-            
+
             updateCalendar(calendar_month == null);
         }
         return result;
@@ -269,16 +269,16 @@
 
     // $: console.log(availableDays);
 
-     function updateCalendar(type) {
-      console.log({type});
-      
+    function updateCalendar(type) {
+        console.log({ type });
+
         if (type) {
-            calendar_month = {}
+            calendar_month = {};
         }
         isThereSomeAppointment = "loading";
         router.get(
             window.location.pathname,
-            {   
+            {
                 calendar_month: type,
                 start_date: frontCalendar[0].date,
                 end_date: frontCalendar[frontCalendar.length - 1].date,
@@ -410,13 +410,17 @@
     }
 
     function validateDay(calendarDate, weekDay) {
-        
         if (calendarDate < today.slice(0, 10)) {
             return false;
         }
 
-        if (data.data.booked_appointment_settings.allow_max_appointment_per_day && calendar.weekDays[weekDay + "_" + calendarDate]?.nro_appointments >= data.data.booked_appointment_settings.max_appointment_per_day){
-            return false
+        if (
+            data.data.booked_appointment_settings
+                .allow_max_appointment_per_day &&
+            calendar.weekDays[weekDay + "_" + calendarDate]?.nro_appointments >=
+                data.data.booked_appointment_settings.max_appointment_per_day
+        ) {
+            return false;
         }
 
         if (
@@ -444,32 +448,55 @@
 
         return true;
     }
+
+    let prosecingSearchPatient = false;
+
+    const searchPatient = debounce(async (ci) => {
+        prosecingSearchPatient = true; // Cambiar a verdadero antes de la búsqueda
+
+        try {
+            const res = await axios.get(`/admin/historial-medico`, {
+                params: { ci },
+            });
+
+            if (res.data.patient == null) {
+                $form.patient_id = null;
+                return;
+            } else {
+                // $form.patient_id = res.data.patient.patient_id;
+                // console.log(res.data.patient);
+                $form = {
+                    ...$form,
+                    patient_id : res.data.patient.patient_id,
+                    appointment_data: {
+                        ...$form.appointment_data,
+                        name: res.data.patient.patient_name,
+                        last_name: res.data.patient.patient_last_name,
+                        ci: res.data.patient.patient_ci,
+                        sex: res.data.patient.patient_sex,
+                        date_birth: res.data.patient.patient_date_birth,
+                        phone_number: res.data.patient.patient_phone_number,
+                        // email: res.data.patient.patient_email,
+
+                    },
+                };
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            prosecingSearchPatient = false; // Cambiar a falso después de la búsqueda
+        }
+    }, 280);
 </script>
 
 <Alert />
 <section class=" min-h-screen sm:w-11/12 mx-auto max-w-[1480px]">
     <header class=" border-b md:flex gap-5 xl:gap-10 p-4">
-        <div class="flex gap-3">
-            <img
-                class="bg-gray-300 w-7 h-7 md:w-10 md:h-10 block aspect-square rounded-full object-cover"
-                src={`/storage/users/${data.data.user_photo}`}
-                alt=""
-            />
-
-            <div class="mt-1">
-                <p>
-                    <b class="md:text-xl"
-                        >{data.data.user_name} {data.data.user_last_name}</b
-                    >
-                </p>
-            </div>
-        </div>
         <div class="">
             <h1 class="text-lg md:text-2xl mx-auto uppercase">
-                <span class="text-dark opacity-60 block text-md relative top-2"
-                    >{data.data.user_specialty_name}
-                </span>
-                <span class="text-xl md:text-2xl">{data.data.title}</span>
+                <span class="text-xl md:text-2xl"
+                    >{data.data.specialty_name}</span
+                >
             </h1>
             <div class="flex gap-1">
                 <iconify-icon
@@ -477,6 +504,15 @@
                     class="text-xl text-gray-500"
                 ></iconify-icon>
                 <p>Citas de {data.data.duration_per_appointment} minutos</p>
+            </div>
+        </div>
+        <div class="max-w-[400px] flex gap-1">
+            <iconify-icon
+                icon="pajamas:text-description"
+                class="relative top-1 mr-2"
+            ></iconify-icon>
+            <div class="description">
+                {@html data.data.description}
             </div>
         </div>
     </header>
@@ -617,11 +653,8 @@
         // handleCloseCustomTime();
     }}
 >
-    <div slot="header" class="font-bold text-sm ">
-        <p class="text-gray-500">
-            Llena los campos para reservar tu cita 
-
-        </p>
+    <div slot="header" class="font-bold text-sm">
+        <p class="text-gray-500">Llena los campos para reservar tu cita</p>
         <p>
             El {new Date($form.day_reserved).toLocaleDateString("es-VE", {
                 weekday: "short",
@@ -633,6 +666,34 @@
     </div>
 
     <form id="a-form" on:submit={handleSubmit} class="grid grid-cols-2 gap-x-4">
+        {#if $form?.appointment_data.ci.toString().length >= 6}
+            <div class="w-full col-span-2 h-6 overflow-hidden text-center">
+                {#if prosecingSearchPatient}
+                    <iconify-icon
+                        class="text-3xl"
+                        icon="eos-icons:three-dots-loading"
+                    ></iconify-icon>
+                {:else if $form?.patient_id !== null}
+                    <span
+                        class="flex items-center gap-2 text-center mx-auto justify-center"
+                    >
+                        <iconify-icon
+                            class="text-2xl text-color3"
+                            icon="iconoir:settings-profiles"
+                        ></iconify-icon>
+                        <small>Paciente Registrado con historia</small>
+                    </span>
+                {:else}
+                    <span
+                        class="flex items-center gap-2 text-center mx-auto justify-center"
+                    >
+                        <iconify-icon class="text-3xl" icon="clarity:new-line"
+                        ></iconify-icon>
+                        <small>Nuevo paciente sin historia</small>
+                    </span>
+                {/if}
+            </div>
+        {/if}
         <Input
             required={true}
             type={"number"}
@@ -642,6 +703,14 @@
             placeholder={"Minimo 6 números"}
             on:wheel={(e) => document.activeElement.blur()}
             bind:value={$form.appointment_data.ci}
+            on:input={(e) => {
+                prosecingSearchPatient = true;
+                $form.patient_id = null;
+                $form.cases = [];
+                if ($form.appointment_data.ci.toString().length >= 6) {
+                    searchPatient($form.appointment_data.ci);
+                }
+            }}
             error={$form.errors?.ci}
         />
         <Input
@@ -649,7 +718,7 @@
             required={true}
             label={"Nombres *"}
             bind:value={$form.appointment_data.name}
-            readOnly={$form.appointment_data.patient_id}
+            readOnly={$form.patient_id}
             error={$form.errors?.name}
         />
         <Input
@@ -657,7 +726,7 @@
             required={true}
             label={"Apellidos *"}
             bind:value={$form.appointment_data.last_name}
-            readOnly={$form.appointment_data.patient_id}
+            readOnly={$form.patient_id}
             error={$form.errors?.last_name}
         />
 
@@ -665,14 +734,14 @@
             type="date"
             label={"Fecha de Nacimiento*"}
             bind:value={$form.appointment_data.date_birth}
-            readOnly={$form.appointment_data.patient_id}
+            readOnly={$form.patient_id}
             required={true}
             error={$form.errors?.date_birth}
         />
         <Input
             type="tel"
             label={"Teléfono *"}
-            readOnly={$form.appointment_data.patient_id}
+            readOnly={$form.patient_id}
             required={true}
             bind:value={$form.appointment_data.phone_number}
             error={$form.errors?.phone_number}
@@ -682,7 +751,6 @@
             type="email"
             label={"Correo*"}
             bind:value={$form.appointment_data.email}
-            readOnly={$form.appointment_data.patient_id}
             required={true}
             error={$form.errors?.email}
         />
@@ -737,6 +805,6 @@
         form="a-form"
         type="submit"
         class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
-        value={$form.processing ? "Cargando..." : "Reservar"}>Hecho</button
+        value={$form.processing ? "Cargando..." : "Reservar"}>{$form.processing ? "Cargando..." : "Reservar"}</button
     >
 </Modal>
