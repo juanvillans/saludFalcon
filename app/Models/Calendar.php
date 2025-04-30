@@ -23,7 +23,7 @@ class Calendar extends Model
     ];
 
     protected $casts = [
-        'status' => 'boolean',
+        'status' => 'integer',
         'duration_options' => 'array',
         'availability' => 'array',
         'adjusted_availability' => 'array',

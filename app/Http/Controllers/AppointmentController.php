@@ -49,6 +49,15 @@ class AppointmentController extends Controller
             'calendar_month' => $request->input('calendar_month') ?? null,
         ];
 
+        if($calendar->status != 1){
+            
+            return inertia('BookAppointment', [
+                'calendar' => null,
+                'data' => null,
+            ]);
+        }
+            
+
         $calendar->load('specialty', 'appointments');
 
 

@@ -17,8 +17,8 @@ class CalendarResource extends JsonResource
         return [
             'id' => $this->id,
             'description' => $this->description,
-            'status' => (bool)$this->status,
-            'status_name' => $this->status ? 'Disponible' : 'No disponible',
+            'status' => $this->status == 1?true:false,
+            'status_name' => $this->status == 1 ? 'Disponible' : 'No disponible',
             'duration_per_appointment' => $this->duration_per_appointment,
             'duration_options' => $this->duration_options,
             'availability' => $this->availability,

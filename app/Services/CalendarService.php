@@ -71,7 +71,7 @@ class CalendarService
         ->update(['status' => 5]);
 
         $calendar->update(['status' => 2]);
-
+        
         return 0;
         
     }
