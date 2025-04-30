@@ -49,7 +49,7 @@ class AppointmentController extends Controller
             'calendar_month' => $request->input('calendar_month') ?? null,
         ];
 
-        $calendar->load('user.specialty', 'appointments');
+        $calendar->load('specialty', 'appointments');
 
 
         $structure = $this->calendarService->getDinamicStructureCalendar($this->params, $calendar);
