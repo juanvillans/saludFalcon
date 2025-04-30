@@ -124,8 +124,12 @@ class CalendarController
         $calendar->load('specialty', 'appointments');
 
         $structure = $this->calendarService->getDinamicStructureCalendar($dateRange, $calendar);
+
+        $specialtyService = new SpecialtyService;
+        $specialtiesAvailable = $specialtyService->getSpecialtiesWithoutCalendar();
         
         return inertia('Dashboard/CreateCalendar',[
+            'specialties' => $specialtiesAvailable, 
             'calendar' => $structure,
             'data' => new CalendarResource($calendar),
         ]); 

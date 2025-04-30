@@ -75,7 +75,7 @@
         <p>Recibirás un recordatorio un día antes de tu cita.</p>
 
         <p>Si necesitas cancelar o reprogramar tu cita, puedes hacerlo haciendo clic en el siguiente botón:</p>
-        <a href="{{ route('agenda.cancel-appointment-patient', ['appointment' => $appointmentData['id']]) }}" class="button button-cancel">Cancelar Cita</a>
+        <a href="{{ route('agenda.cancel-appointment-patient', ['token' => $appointment->token]) }}" class="button button-cancel">Cancelar Cita</a>
         
         <p>O copia esta URL en tu navegador:<br>
         <small>{{ route('agenda.cancel-appointment-patient', ['token' => $appointment->token ]) }}</small></p>
