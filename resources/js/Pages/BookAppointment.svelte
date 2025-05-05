@@ -11,6 +11,7 @@
     import axios from "axios";
 
     let showModal = false;
+    let showModalSuccess = false;
     let sourceDiv;
     let width = 0;
     let numberOfDays = 7;
@@ -327,6 +328,7 @@
                         " a las " +
                         convertTo12HourFormat($form.time_reserved),
                 });
+                showModal = false
 
                 // $form.defaults({ ...page.props.data.data });
                 $form.reset();

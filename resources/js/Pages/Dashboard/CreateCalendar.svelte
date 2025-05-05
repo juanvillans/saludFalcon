@@ -44,7 +44,7 @@
     let showModalFranja = false;
     let showModalappointments = false;
     let showModalForm = false;
-    let newItem = { name: "", required: false, by_default: false };
+    let newItem = { name: "", required: false, is_custom: true };
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -598,7 +598,8 @@
         $form.adjusted_availability = newAdjustedAvaibility;
     }
     let selectedAppointmentDetails = {};
-
+    $: console.log({selectedAppointmentDetails});
+    
     function convertTo12HourFormat(time24) {
         // Split the input into hours and minutes
         const [hours, minutes] = time24.split(":").map(Number);
@@ -890,8 +891,19 @@
 <Modal bind:showModal={showModalappointments}>
     <div slot="header">
         <h2 class="text-lg font-bold text-center">
-            {selectedAppointmentDetails.name}
-            {selectedAppointmentDetails.last_name}
+            {#if selectedAppointmentDetails.appointment_data.sex == "Femenino"}
+            <span class="text-pink text-2xl relative top-2">
+                <iconify-icon icon="fa-solid:female"
+                ></iconify-icon>
+            </span>
+        {:else}
+            <span class="text-color3 text-2xl">
+                <iconify-icon icon="fa-solid:male"
+                ></iconify-icon>
+            </span>
+        {/if}
+            {selectedAppointmentDetails.appointment_data.name}
+            {selectedAppointmentDetails.appointment_data.last_name}
         </h2>
         <p class="font-bold text-color2 text-center">
             El {new Date(selectedAppointmentDetails.date).toLocaleDateString(
@@ -919,7 +931,7 @@
         </div>
         <ul class="ml-24">
             <li class="flex items-center text-right justify-end gap-2 mb-2">
-                {selectedAppointmentDetails.ci}
+                {selectedAppointmentDetails.appointment_data.ci}
                 <span
                     class="bg-color2 w-8 aspect-square rounded-full flex items-center justify-center text-white p-1"
                     ><iconify-icon icon="teenyicons:id-solid"
@@ -927,7 +939,7 @@
                 >
             </li>
             <li class="flex items-center text-right justify-end gap-2 mb-2">
-                {selectedAppointmentDetails.email}
+                {selectedAppointmentDetails.appointment_data.email}
                 <span
                     class="bg-color2 w-8 aspect-square rounded-full flex items-center justify-center text-white p-1"
                     ><iconify-icon icon="iconamoon:email-duotone"
@@ -935,12 +947,30 @@
                 >
             </li>
             <li class="flex items-center text-right justify-end gap-2 mb-2">
-                {selectedAppointmentDetails.phone}
+                {selectedAppointmentDetails.appointment_data.phone_number}
                 <span
                     class="bg-color2 w-8 aspect-square rounded-full flex items-center justify-center text-white p-1"
                     ><iconify-icon icon="ri:phone-fill"></iconify-icon></span
                 >
             </li>
+            <li class="flex items-center text-right justify-end gap-2 mb-2">
+                56 años
+                <span 
+                class="bg-color2 w-8 aspect-square rounded-full flex items-center justify-center text-white p-1"
+                >
+                    <iconify-icon icon="iwwa:year" ></iconify-icon>
+
+                </span>
+                
+            </li>
+        </ul>
+        <ul>
+            {#each $form.fields as field,i (field.name + i)}
+                    <li>
+                        <b>{field.name}:</b>
+                        <p>{selectedAppointmentDetails.appointment_data?.[field.name]}</p>
+                    </li>
+            {/each}
         </ul>
     </div>
 </Modal>
@@ -968,7 +998,7 @@
         on:click={() => {
             $form.fields = [...$form.fields, newItem];
             showModalForm = false;
-            newItem = { name: "", required: false, by_default: false };
+            newItem = { name: "", required: false, is_custom: true };
         }}
         slot="btn_footer"
         type="button"
@@ -2299,7 +2329,7 @@
                                                     class="bg-gray-200 bg-opacity-40 border border-gray-300 rounded-full px-3 py-1"
                                                     >{field.name}
                                                     {field.required ? "*" : ""}
-                                                    {#if !field.by_default}
+                                                    {#if field.is_custom}
                                                         <button
                                                             on:click={() => {
                                                                 $form.fields =
