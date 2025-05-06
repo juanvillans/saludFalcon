@@ -428,7 +428,23 @@
             width = sourceDiv.getBoundingClientRect().width;
         }
     }
+    export let serverTime = "13:40"; // Default fallback
+    let currentTime = serverTime;
+    let interval;
+
+    function syncTime() {
+        // Option 1: Client-side update only
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        currentTime = `${hours}:${minutes}`;
+
+        // Option 2: Fetch fresh time from backend (uncomment if needed)
+        // Inertia.reload({ only: ['serverTime'] });
+    }
     onMount(() => {
+        syncTime(); // Initial sync
+        interval = setInterval(syncTime, 60000);
         updateWidth(); // Set the initial width
         window.addEventListener("resize", updateWidth);
     });
@@ -598,8 +614,8 @@
         $form.adjusted_availability = newAdjustedAvaibility;
     }
     let selectedAppointmentDetails = {};
-    $: console.log({selectedAppointmentDetails});
-    
+    $: console.log({ selectedAppointmentDetails });
+
     function convertTo12HourFormat(time24) {
         // Split the input into hours and minutes
         const [hours, minutes] = time24.split(":").map(Number);
@@ -617,6 +633,24 @@
         return `${hours12}:${formattedMinutes} ${suffix}`;
     }
 
+    function deleteAppointment(calendarId, appointmentId){
+        router.delete(`/admin/agenda/ver-citas/${calendarId}/${appointmentId}`, {
+            onError: (errors) => {
+                    displayAlert({
+                        type: "error",
+                        message: errors.data || "algo salió mal",
+                    });
+                },
+                onSuccess: (page) => {
+                    displayAlert({
+                        type: "success",
+                        message: "Cita eliminada",
+                    });
+
+                },
+        })
+
+    }
     function handleSubmit(event) {
         event.preventDefault();
         $form.clearErrors();
@@ -888,24 +922,25 @@
     >
 </Modal>
 
-<Modal bind:showModal={showModalappointments}>
+<Modal bind:showModal={showModalappointments} showCancelButton={false}>
     <div slot="header">
-        <h2 class="text-lg font-bold text-center">
+        <h2
+            class="text-lg font-bold text-center flex items-center gap-2 capitalize"
+        >
             {#if selectedAppointmentDetails.appointment_data.sex == "Femenino"}
-            <span class="text-pink text-2xl relative top-2">
-                <iconify-icon icon="fa-solid:female"
-                ></iconify-icon>
-            </span>
-        {:else}
-            <span class="text-color3 text-2xl">
-                <iconify-icon icon="fa-solid:male"
-                ></iconify-icon>
-            </span>
-        {/if}
+                <span class="text-pink text-2xl relative top-1">
+                    <iconify-icon icon="fa-solid:female"></iconify-icon>
+                </span>
+            {:else}
+                <span class="text-color3 text-2xl relative top-1">
+                    <iconify-icon icon="fa-solid:male"></iconify-icon>
+                </span>
+            {/if}
             {selectedAppointmentDetails.appointment_data.name}
             {selectedAppointmentDetails.appointment_data.last_name}
         </h2>
-        <p class="font-bold text-color2 text-center">
+        <p class="font-bold text-xs">Cita de {$form.specialty_name}</p>
+        <p class="font-bold text-sm">
             El {new Date(selectedAppointmentDetails.date).toLocaleDateString(
                 "es-VE",
                 {
@@ -917,62 +952,68 @@
             )}
         </p>
     </div>
-    <div class="flex gap-5 h-28 relative">
-        <div class="h-full w-full text-color2">
-            <div
-                class="bg-color2 absolute -left-5 shadow-inner bottom-0 rounded-r-full text-white w-max px-2 font-bold h-16 flex items-center"
+    <!-- <div class="flex gap-5 h-28 relative"> -->
+    <ul>
+        <li class="flex items-center gap-2 mb-2">
+            <span
+                class="bg-color1 w-8 aspect-square rounded-full flex items-center justify-center text-white p-1"
+                ><iconify-icon icon="teenyicons:id-solid"></iconify-icon></span
             >
-                <p class="">
-                    {convertTo12HourFormat(
-                        selectedAppointmentDetails.start_time,
-                    )}
+            {selectedAppointmentDetails.appointment_data.ci}
+        </li>
+        <li class="flex items-center gap-2 mb-2">
+            <span
+                class="bg-color1 w-8 aspect-square rounded-full flex items-center justify-center text-white p-1"
+                ><iconify-icon icon="iconamoon:email-duotone"
+                ></iconify-icon></span
+            >
+            {selectedAppointmentDetails.appointment_data.email}
+        </li>
+        <li class="flex items-center gap-2 mb-2">
+            <span
+                class="bg-color1 w-8 aspect-square rounded-full flex items-center justify-center text-white p-1"
+                ><iconify-icon icon="ri:phone-fill"></iconify-icon></span
+            >
+            {selectedAppointmentDetails.appointment_data.phone_number}
+        </li>
+        <li class="flex items-center gap-2 mb-2">
+            <span
+                class="bg-color1 w-8 aspect-square rounded-full flex items-center justify-center text-white p-1"
+            >
+                <iconify-icon icon="iwwa:year"></iconify-icon>
+            </span>
+            56 años
+        </li>
+        {#each $form.fields as field, i (field.name + i)}
+            <li class="flex items-center gap-2 mb-2">
+                <b>{field.name}:</b>
+                <p>
+                    {selectedAppointmentDetails.appointment_data?.[field.name]}
                 </p>
-            </div>
+            </li>
+        {/each}
+    </ul>
+    <button  on:click={(e) => {
+        if (window.confirm("¿Está seguro de eliminar esta cita reservada?")) {
+            deleteAppointment(selectedAppointmentDetails.calendar_id, selectedAppointmentDetails.id)
+        }
+    }}
+    class="mt-4 bg-red text-white px-2 py-0.5 rounded-md flex items-center gap-1 bg-opacity-75">
+        <iconify-icon icon="ph:trash" 
+           
+        ></iconify-icon> <span>Eliminar cita</span></button
+    >
+    <div class="h-full w-full text-color2">
+        <div
+            class="gradient float-right shadow-inner bottom-0 rounded-t-full text-white w-max px-3 font-bold h-16 flex items-center"
+        >
+            <p class="">
+                {convertTo12HourFormat(selectedAppointmentDetails.start_time)}
+            </p>
         </div>
-        <ul class="ml-24">
-            <li class="flex items-center text-right justify-end gap-2 mb-2">
-                {selectedAppointmentDetails.appointment_data.ci}
-                <span
-                    class="bg-color2 w-8 aspect-square rounded-full flex items-center justify-center text-white p-1"
-                    ><iconify-icon icon="teenyicons:id-solid"
-                    ></iconify-icon></span
-                >
-            </li>
-            <li class="flex items-center text-right justify-end gap-2 mb-2">
-                {selectedAppointmentDetails.appointment_data.email}
-                <span
-                    class="bg-color2 w-8 aspect-square rounded-full flex items-center justify-center text-white p-1"
-                    ><iconify-icon icon="iconamoon:email-duotone"
-                    ></iconify-icon></span
-                >
-            </li>
-            <li class="flex items-center text-right justify-end gap-2 mb-2">
-                {selectedAppointmentDetails.appointment_data.phone_number}
-                <span
-                    class="bg-color2 w-8 aspect-square rounded-full flex items-center justify-center text-white p-1"
-                    ><iconify-icon icon="ri:phone-fill"></iconify-icon></span
-                >
-            </li>
-            <li class="flex items-center text-right justify-end gap-2 mb-2">
-                56 años
-                <span 
-                class="bg-color2 w-8 aspect-square rounded-full flex items-center justify-center text-white p-1"
-                >
-                    <iconify-icon icon="iwwa:year" ></iconify-icon>
-
-                </span>
-                
-            </li>
-        </ul>
-        <ul>
-            {#each $form.fields as field,i (field.name + i)}
-                    <li>
-                        <b>{field.name}:</b>
-                        <p>{selectedAppointmentDetails.appointment_data?.[field.name]}</p>
-                    </li>
-            {/each}
-        </ul>
     </div>
+
+    <!-- </div> -->
 </Modal>
 
 <Modal
@@ -1050,7 +1091,11 @@
                                         >
                                     {/each}
                                     {#if typePage == "editar"}
-                                        <option class="text-lg py-1" value={$form.specialty_id}>{$form.specialty_name}</option>
+                                        <option
+                                            class="text-lg py-1"
+                                            value={$form.specialty_id}
+                                            >{$form.specialty_name}</option
+                                        >
                                     {/if}
                                 </Input>
                             </fieldset>
@@ -2194,7 +2239,11 @@
                                         >
                                     {/each}
                                     {#if typePage == "editar"}
-                                        <option class="text-lg py-1" value={$form.specialty_id}>{$form.specialty_name}</option>
+                                        <option
+                                            class="text-lg py-1"
+                                            value={$form.specialty_id}
+                                            >{$form.specialty_name}</option
+                                        >
                                     {/if}
                                 </Input>
                             </fieldset>
@@ -2533,7 +2582,14 @@
                     <div
                         class={`gap-2 flex flex-col z-30 ${calendar.weekDays[day]?.current_date < calendar.headerInfo.today.slice(0, 10) ? "opacity-40" : ""} `}
                     >
-                        {day}
+                        {#if calendar.weekDays[day]?.current_date.slice(0, 10) == calendar.headerInfo.today.slice(0, 10)}
+                            <div
+                                class="flex timeLine gap-3 bg-red w-28 h-12 absolute duration-300 z-50 px-0.5"
+                                style={`top: ${GetTop(currentTime)}px; left: ${40 + (112 * indxDay + 1)}px; 
+                                    height: 1px
+                                   `}
+                            ></div>
+                        {/if}
                         {#each shifts as shift, indx (day + "_" + indx)}
                             <div
                                 class="flex gap-3 w-28 h-12 absolute duration-300 z-30 px-0.5"
@@ -2546,7 +2602,7 @@
                                 >
                                     {#each shift?.appointments as xxx}
                                         <div
-                                            class={`bg-color3 bg-opacity-30 w-[98%] mx-auto h-full rounded-lg ${$form.booked_appointment_settings.time_between_appointment < 5 ? "border-b-4 border-color4" : ""}`}
+                                            class={`bg-color3 bg-opacity-50 w-[98%] mx-auto h-full rounded-lg ${$form.booked_appointment_settings.time_between_appointment < 5 ? "border-b-4 border-color4" : ""}`}
                                             style={`margin-bottom: ${(+$form.booked_appointment_settings.time_between_appointment / 60) * 48}px ;height: ${(GetHeight(shift.start, shift.end) * 48) / ((GetHeight(shift.start, shift.end) * 60) / $form.duration_per_appointment)}px`}
                                         ></div>
                                     {/each}
@@ -2618,6 +2674,14 @@
 </section>
 
 <style>
+    .gradient {
+        background: #6595bf;
+        background: linear-gradient(
+            0deg,
+            rgba(101, 149, 191, 0.72) 0%,
+            rgba(1, 17, 64, 1) 59%
+        );
+    }
     .citeContainer {
         height: calc(100vh - 100px);
     }
@@ -2672,5 +2736,16 @@
             0% 70%,
             0% 30%
         );
+    }
+    .timeLine::before {
+        content: "";
+        background: rgb(206, 0, 0);
+        position: relative;
+        width: 8px;
+        height: 8px;
+        border-radius: 400px;
+        top: -3.5px;
+        z-index: 100 !important;
+        left: 102px;
     }
 </style>

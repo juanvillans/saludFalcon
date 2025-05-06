@@ -23,6 +23,7 @@
   </script>
   
   {#if showModal}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <dialog
       bind:this={dialog}
       on:close={() => {
@@ -33,7 +34,8 @@
       class={`p-0 rounded-xl min-w-[300px] ${modalClasses}`}
     >
       <Alert />
-      <div class="p-3 sm:p-6 pb-5" on:click|stopPropagation>
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <div class="p-2 sm:p-6 pb-5" on:click|stopPropagation>
         <div class="sticky top-0 flex w-full items-center bg-white z-50">
           <slot name="header" />
           <button style="font-size: 16px;" class="ml-auto p-1" on:click={() => dialog.close()}>
