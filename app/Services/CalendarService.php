@@ -146,6 +146,7 @@ class CalendarService
         $allAppointments = $calendar 
             ? $calendar->appointments()
                 ->whereBetween('day_reserved', [$startDate, $endDate])
+                ->whereNotIn('status',[4,5])
                 ->get()
                 ->groupBy([
                     function ($item) {

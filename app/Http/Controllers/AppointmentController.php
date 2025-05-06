@@ -115,7 +115,7 @@ class AppointmentController extends Controller
 
     }
 
-    public function cancelAppointmentFromDoctor(Appointment $appointment){
+    public function cancelAppointmentFromDoctor(Calendar $calendar, Appointment $appointment){
 
         DB::beginTransaction();
 
