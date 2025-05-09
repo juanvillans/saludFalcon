@@ -25,6 +25,7 @@ Route::group(['middleware' => ['guest']], function () {
     
     // Welcome login
     Route::get('/', [AppController::class, 'loginForm'])->name('login');
+    Route::get('/nalgas', [AppController::class, 'nalgas'])->name('nalgas');
 
     // Book appointment
     
