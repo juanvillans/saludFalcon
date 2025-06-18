@@ -15,6 +15,7 @@ return [
     |
     */
 
+
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
@@ -23,12 +24,13 @@ return [
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['*', 'X-APP-KEY'],
 
     'exposed_headers' => [],
 
     'max_age' => 0,
 
     'supports_credentials' => false,
+
 
 ];
