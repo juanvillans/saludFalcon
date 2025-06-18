@@ -119,34 +119,5 @@ class AppointmentController extends Controller
 
     }
 
-    public function cancelAppointmentFromPatient($token){
-
-        DB::beginTransaction();
-
-        try{
-
-            $response = $this->appointmentService->cancelAppointmentFromPatient($token);
-            DB::commit();
-
-            return 0;
-
-            // return inertia('BookAppointment', [
-            //     'data' => $response,
-            // ]);
-            
-
-        }catch(\Exception $e){
-
-            DB::rollback();
-
-            Log::info('Error cancelando cita: ' . $e->getMessage());
-
-            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
-
-        }
-    }
-
-    
-
 
 }

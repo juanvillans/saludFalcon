@@ -2,14 +2,10 @@
 
 namespace App\Services;
 
-use App\Mail\PatientNewAppointmentEmail;
 use App\Models\Appointment;
 use App\Models\Patient;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
-
 
 class AppointmentService
 {	
@@ -28,12 +24,8 @@ class AppointmentService
             'patient_id' => $patient->id,
             'day_reserved' => Carbon::parse($data['day_reserved']),
             'time_reserved' => $data['time_reserved'],
-            'appointment_data' => $data['appointment_data'],
-            'token' => Str::uuid()->toString()
+            'appointment_data' => $data['appointment_data']
         ]);
-
-
-        Mail::to($data['appointment_data']['email'])->queue(new PatientNewAppointmentEmail($appointment, $calendar));
 
     }
 
@@ -43,27 +35,10 @@ class AppointmentService
 
         $appointment->update(['status' => $CANCELLED_BY_DOCTOR]);
         
-        // Send Email to patient
+        // Send Email to patient and doctor
 
         return 0;
     }
-
-    public function cancelAppointmentFromPatient($token){
-
-        $appointment = Appointment::where('token', $token)
-        ->first();
-
-        if($appointment){
-            $appointment->update(['status' => 4]);
-            return 'OK';
-        }
-        else{
-            return null;
-        }
-
-    }
-
-
 
     private function searchPatient($data){
         

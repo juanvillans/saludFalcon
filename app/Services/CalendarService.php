@@ -83,8 +83,10 @@ class CalendarService
 
     public function deleteCalendar($calendar){
         
-        Appointment::where('calendar_id', $calendar->id)
-        ->update(['status' => 5]);
+        $calendar->load('appointments');
+        $calendar->appointments->update([
+            'status' => 5
+        ]);
 
         $calendar->update(['status' => 2]);
 
