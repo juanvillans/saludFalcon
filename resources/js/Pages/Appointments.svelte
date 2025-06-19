@@ -50,7 +50,7 @@
                 icon="lets-icons:time-atack"
             ></iconify-icon>Citas de {calendar.duration_per_appointment} min</p>
             <img src="/img/blueBlup.png" alt="" srcset="" class="absolute left-0 bottom-10">
-            <img src="/img/redBlup.png" alt="" srcset="" class="absolute right-4 top-10">
+            <img src="/img/redBlup.png" alt="" srcset="" class="absolute right-0 top-10">
         </a>
         {/each}
        
