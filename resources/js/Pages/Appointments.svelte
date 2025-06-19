@@ -2,7 +2,7 @@
     export let calendars;
     console.log(calendars);
     import { inertia } from "@inertiajs/svelte";
-    
+     
 </script>
 
 <div class="p-5 lg:p-10 lg:pt-5 bg-gray-50">
