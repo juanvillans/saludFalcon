@@ -44,7 +44,7 @@
 <div class="mt-4 card_container w-full">
     {#each data.calendars.data as calendar}
         <a
-            use:inertia
+            use:inertia={{ prefetch: true }}
             href={`/admin/agenda/ver-citas/${calendar.id}`}
             class="neumorphism2 block border overflow-hidden rounded-lg mb-3  cursor-pointer bg-gray-50 hover:border-dark"
         >

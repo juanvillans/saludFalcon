@@ -11,16 +11,19 @@
             icon: "material-symbols:id-card-outline",
             href: "/admin/usuarios",
             name: "Usuarios",
+            prefetch: true,
         },
         {
             icon: "mdi:patient-outline",
             href: "/admin/casos",
             name: "Casos",
+            prefetch: false,
         },
         {
             icon: "hugeicons:appointment-02",
             href: "/admin/agenda",
             name: "Citas",
+            prefetch: true,
         },
     
         
@@ -55,7 +58,7 @@
             <li>
                 <a
                     href={navPage.href}
-                    use:inertia
+                    use:inertia={{prefetch: navPage.prefetch }}
                     name={navPage.name}
                     class="hover:text-color4 whitespace-nowrap z-10 rounded-md flex gap-1 md:gap-2 items-center p-2 max-h-9 h-9"
                     class:active={$page.url.startsWith(navPage.href)}
