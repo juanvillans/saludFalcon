@@ -41,6 +41,10 @@ class AppController
         return response()->json(compact('municipalities','statutes','conditions','areas', 'specialties'));
     }
 
+    public function nalgas(){
+        return inertia('DeleteAppointment');
+    }
+
 
    
 

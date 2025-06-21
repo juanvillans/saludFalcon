@@ -2567,7 +2567,7 @@
                         style={`width: ${width}px`}
                     >
                         <div
-                            class="w-10 max-w-[40px] text-right relative -top-2.5 -left-2 pr-1.5 bg-gray-50"
+                            class="w-10 max-w-[40px] rounded-full text-right relative -top-2.5 -left-2 pr-1.5 bg-gray-50"
                             style="font-size: 12px;"
                         >
                             {hour}
