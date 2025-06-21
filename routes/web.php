@@ -8,6 +8,7 @@ use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\RequestUserController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WaitingRoomController;
 use App\Models\Calendar;
 use Illuminate\Support\Facades\Route;
 
@@ -21,24 +22,26 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/sala-de-espera', [WaitingRoomController::class, 'index'])->name('waitingRoom.index');
+
 Route::group(['middleware' => ['guest']], function () {
-    
+
     // Welcome login
     Route::get('/', [AppController::class, 'loginForm'])->name('login');
-    Route::get('/nalgas', [AppController::class, 'nalgas'])->name('nalgas');
 
     // Book appointment
-    
-    
-    
+
+
+
     // Post Login
     Route::post('/admin/login', [UserController::class, 'login']);
-    
-    // Register new user request 
+
+    // Register new user request
     Route::get('/registrarse', [RequestUserController::class, 'create'])->name('requestUser.create');
-    // Post register new user request 
+    // Post register new user request
     Route::post('/registrarse', [RequestUserController::class, 'store'])->name('requestUser.store');
-    
+
     // Forgot Password
     Route::post('/olvidar-contraseña', [UserController::class, 'forgotPassword'])->name('forgotPassword');
     Route::get('/recuperar-contraseña/{token}', [UserController::class, 'checkRecoverToken'])->name('recoverPassword');
@@ -54,9 +57,9 @@ Route::post('/citas/{calendar}', [AppointmentController::class, 'bookAppointment
 Route::get('/citas/cancelar/{token}', [AppointmentController::class, 'cancelAppointmentFromPatient'])->name('agenda.cancel-appointment-patient');
 
 
-Route::get('/admin/logout', [UserController::class, 'logout'])->middleware('auth')->name('logout');  
+Route::get('/admin/logout', [UserController::class, 'logout'])->middleware('auth')->name('logout');
 
-Route::middleware(['auth'])->prefix('admin')->group(function () 
+Route::middleware(['auth'])->prefix('admin')->group(function ()
 {
     // Dashboard
     Route::get('/', [AppController::class, 'admin'])->name('admin');
@@ -66,12 +69,12 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::post('/perfil/{user}', [UserController::class, 'update'])->name('profileUpdate');
     Route::delete('/perfil/{user}', [UserController::class, 'destroy'])->name('profileDelete');
     Route::post('/perfil/picture/{user}', [UserController::class, 'updateProfilePicture'])->name('profilePictureUpdate');
-    
+
     // Cases paginate from my profile
     Route::get('/perfil/json/{userID}', [UserController::class, 'myProfilePaginate'])->name('perfil');
 
 
-   
+
     // Change password
     Route::get('/cambiar-contraseña', [UserController::class, 'changePasswordIndex'])->name('change-password-index');
     // Post change password
@@ -81,14 +84,14 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::get('/usuarios', [UserController::class, 'index'])->middleware('role_or_permission:admin|read-users');
     Route::post('/usuarios', [UserController::class, 'store'])->middleware('role_or_permission:admin|create-users');
 
-    
-    // Accept user requests 
+
+    // Accept user requests
     Route::post('/usuarios/solicitudes/aceptar/{requestID}', [RequestUserController::class, 'accept'])->name('requestUser.accept');
-    // Reject user requests 
+    // Reject user requests
     Route::post('/usuarios/solicitudes/rechazar/{requestID}', [RequestUserController::class, 'reject'])->name('requestUser.reject');
 
 
-    // Cases 
+    // Cases
     Route::get('/casos',[EmergencyCaseController::class,'index'])->middleware('permission:read-cases');
     Route::post('/casos',[EmergencyCaseController::class,'store'])->middleware('permission:create-cases');
     Route::get('/casos/detalle-caso/{case}',[EmergencyCaseController::class,'caseDetail'])->middleware('permission:read-cases')->name('caseDetail');
@@ -110,18 +113,18 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     Route::get('/agenda', [CalendarController::class, 'index'])->name('agenda');
     Route::get('/agenda/crear-calendario', [CalendarController::class, 'create'])->name('agenda.create');
     Route::post('/agenda/crear-calendario', [CalendarController::class, 'store'])->name('agenda.store');
-    
+
     Route::get('/agenda/ver-citas/{calendar}', [CalendarController::class, 'show'])->name('agenda.show');
     Route::put('/agenda/ver-citas/{calendar}', [CalendarController::class, 'update'])->name('agenda.update');
     Route::delete('/agenda/ver-citas/{calendar}', [CalendarController::class, 'destroy'])->name('agenda.destroy');
 
-    
+
     Route::delete('/agenda/ver-citas/{calendar}/{appointment}', [AppointmentController::class, 'cancelAppointmentFromDoctor'])->name('agenda.cancel-appointment-doctor');
 
 
 
 
 
-    
+
 });
 
