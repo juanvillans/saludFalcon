@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string("name",50);
             $table->string("last_name",50);
             $table->string("phone_number",30)->nullable();
-            $table->string('sex');
-            $table->date('date_birth');
+            $table->string('sex')->default('Masculino')->nullable();
+            $table->date('date_birth')->nullable();
             $table->foreignId('municipality_id')->nullable();
             $table->foreignId('parish_id')->nullable();
             $table->string('address')->nullable();

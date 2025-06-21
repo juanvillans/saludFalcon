@@ -13,7 +13,6 @@ class StatusCaseSeeder extends Seeder
      */
     public function run(): void
     {
-
         StatusCase::create([
             'name' => 'Egresado: Alta M.',
         ]);
@@ -37,6 +36,9 @@ class StatusCaseSeeder extends Seeder
         StatusCase::create([
             'name' => 'Permanece en',
         ]);
-        
+
+        StatusCase::create([
+            'name' => 'Fugado',
+        ]);
     }
 }
