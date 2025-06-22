@@ -16,9 +16,9 @@ class MessageController extends Controller
         try {
 
             $messageService = new MessageService;
-            $messageService->create($request->validated());
+            $message = $messageService->create($request->validated());
 
-            return response()->json(['message' => 'ok', 'status' => true]);
+            return response()->json(['message' => $message, 'status' => true]);
 
         } catch (Exception $e) {
 

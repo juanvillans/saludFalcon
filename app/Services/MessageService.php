@@ -24,6 +24,8 @@ class MessageService
                     'last_message_id' => $newMessage->id,
                 ]);
 
+                return $newMessage;
+
             } catch (Exception $e) {
 
                 Log::error('MessageService -  Error al crear mensaje: '. $e->getMessage(), [

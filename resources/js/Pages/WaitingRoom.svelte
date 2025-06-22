@@ -81,6 +81,8 @@
 
         selectedPatient = row;
     }
+
+    $: console.log(selectedPatient);
 </script>
 
 <div class="p-4 overflow-hidden">
