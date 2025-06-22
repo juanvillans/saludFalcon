@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GetEmergencyCasesRequest extends FormRequest
@@ -23,6 +24,7 @@ class GetEmergencyCasesRequest extends FormRequest
             'search' => 'nullable|string',
             'page' => 'nullable|integer|min:1',
             'per_page' => 'nullable|integer|min:1|max:100',
+            'order_by' => ['nullable','string', Rule::in(['id', 'updated_at'])],
             'status' => 'nullable|integer|exists:status_cases,id',
             'condition' => 'nullable|string',
             'area_id' => 'nullable|integer|exists:areas,id',
@@ -44,6 +46,8 @@ class GetEmergencyCasesRequest extends FormRequest
         return [
             'page.integer' => 'El número de página debe ser un valor entero',
             'page.min' => 'El número de página no puede ser menor a 1',
+
+            'order_by.in' => 'El campo ordenar por solo puede ser: id o updated_at',
 
             'per_page.integer' => 'El número de items por página debe ser un entero',
             'per_page.min' => 'El mínimo de items por página es 1',

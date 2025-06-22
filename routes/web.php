@@ -5,6 +5,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\EmergencyCaseController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\RequestUserController;
 use App\Http\Controllers\UserController;
@@ -119,7 +120,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
 
 
 
-
+    // Mensajes
+    Route::post('/mensajes', [MessageController::class, 'store']);
 
 
 });

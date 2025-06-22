@@ -21,6 +21,20 @@ class MessageResource extends JsonResource
             'user_fullname' => $this->user->name . ' ' . $this->last_name,
             'user_photo' => $this->user->photo,
             'body' => $this->body,
+            'date' => function () {
+                        $date = $this->created_at;
+                        $time = $date->format('g:i a');
+
+                        if ($date->isToday()) {
+                            return "Hoy - $time";
+                        }
+
+                        if ($date->isYesterday()) {
+                            return "Ayer - $time";
+                        }
+
+                        return $date->format('d/m/Y') . " - $time";
+                    }
 
         ];
     }

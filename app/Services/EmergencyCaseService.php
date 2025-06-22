@@ -19,7 +19,7 @@ class EmergencyCaseService
 
 
 
-    public function getCases($params, $withMessages = false)
+    public function getCases($params)
     {
         $cases = EmergencyCase::with(
             'patient.municipality',
@@ -86,7 +86,7 @@ class EmergencyCaseService
 
                 });
             })
-            ->orderBy('id', 'DESC')
+            ->orderBy($params['order_by'] ?? 'id', 'DESC')
             ->paginate($params['per_page'] ?? 25);
 
         return new CaseCollection($cases);
