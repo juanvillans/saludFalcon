@@ -76,6 +76,7 @@
         destiny: "",
         admitted_area_id: null,
         bed_number: "",
+        last_message: ""
     };
     let form = useForm(structuredClone(emptyDataForm));
 
@@ -645,9 +646,9 @@
             <Input
                 type="textarea"
                 label={"Observación / mensaje"}
-                error={$form.errors?.message}
+                error={$form.errors?.last_message}
                 classes={"col-span-2"}
-                bind:value={$form.message}
+                bind:value={$form.last_message}
             />
         </fieldset>
     </form>
