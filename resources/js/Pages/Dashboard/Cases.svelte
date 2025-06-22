@@ -76,7 +76,7 @@
         destiny: "",
         admitted_area_id: null,
         bed_number: "",
-        last_message: ""
+        last_message: "",
     };
     let form = useForm(structuredClone(emptyDataForm));
 
@@ -886,8 +886,12 @@
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
+                        {:else if row.reason}
+                            {row?.reason}
                         {:else}
-                            {row?.reason || ""}
+                            <span class="text-xs opacity-60"
+                                >Sin registrar</span
+                            >
                         {/if}
                     </td>
                     <td
@@ -904,8 +908,12 @@
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
+                        {:else if row.diagnosis}
+                            {row?.diagnosis}
                         {:else}
-                            {row?.diagnosis || ""}
+                            <span class="text-xs opacity-60"
+                                >Sin registrar</span
+                            >
                         {/if}
                     </td>
                     <!-- <td>{row.sex}</td> -->
@@ -919,8 +927,12 @@
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
+                       {:else if row.treatment}
+                            {row?.treatment}
                         {:else}
-                            {row?.treatment || ""}
+                            <span class="text-xs opacity-60"
+                                >Sin registrar</span
+                            >
                         {/if}
                     </td>
                     <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
@@ -1005,8 +1017,12 @@
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
+                        {:else if row.reason}
+                            {row?.reason}
                         {:else}
-                            {row?.reason    || ""}
+                            <span class="text-xs opacity-60"
+                                >Sin registrar</span
+                            >
                         {/if}
                     </p>
                 </div>
@@ -1021,8 +1037,12 @@
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
+                        {:else if row.diagnosis}
+                            {row?.diagnosis}
                         {:else}
-                            {row.diagnosis || ""}
+                            <span class="opacity-60 text-xs"
+                                >{row?.current_patient_condition_name}</span
+                            >
                         {/if}
                     </p>
                 </div>
@@ -1040,8 +1060,12 @@
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
+                        {:else if row.treatment}
+                            {row?.treatment}
                         {:else}
-                            {row.treatment || ""}
+                            <span class="text-xs opacity-60"
+                                >Sin registrar</span
+                            >
                         {/if}
                     </p>
                 </div>
