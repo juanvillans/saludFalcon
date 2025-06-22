@@ -7,6 +7,9 @@
     import axios from "axios";
     import { page } from "@inertiajs/svelte";
     import { displayAlert } from "../stores/alertStore";
+    import { usePoll } from "@inertiajs/svelte";
+
+    usePoll(10000);
 
     let localData;
     let showChat = false;
@@ -53,22 +56,28 @@
             emergency_case_id: selectedPatient.id,
         };
 
-        selectedPatient.messages.push(message);
         try {
             const res = await axios.post("/admin/mensajes", message);
-            console.log(res);
+            selectedPatient.messages.push({
+                body: newMessage,
+                user_fullname: page.props.auth.user.name + " " + page.props.auth.user.last_name,
+                user_photo: page.props.auth.user.photo,
+                date: res.data.message.date,
+            });
             newMessage = "";
         } catch (errors) {
-            displayAlert({ type: "error", message: errors.message || "algo salió mal" });
+            displayAlert({
+                type: "error",
+                message: errors.message || "algo salió mal",
+            });
         }
-
     }
 
     function selectPatient(row) {
         // if (newMessage)
         console.log(row);
         showChat = true;
-        
+
         selectedPatient = row;
     }
 </script>
@@ -350,8 +359,10 @@
             {#if selectedPatient}
                 <p>
                     {getFirstName(selectedPatient?.patient_name)}
-                    {getFirstName(selectedPatient?.patient_last_name)} 
-                    <span class="text-xs text-opacity-75"> C.I:{selectedPatient?.patient_ci}</span>
+                    {getFirstName(selectedPatient?.patient_last_name)}
+                    <span class="text-xs text-opacity-75">
+                        C.I:{selectedPatient?.patient_ci}</span
+                    >
                 </p>
             {:else}
                 <p>Selecciona un paciente</p>
@@ -367,9 +378,17 @@
                     <div class="p-3">
                         <p class="text-sm text-gray-500">{message.date}</p>
                         <div class="flex gap-2">
-                            <div class="w-8 h-8 rounded-full bg-gray-300"></div>
-                            <div class=" bg-gray-100 py-1 pl-3 pr-5 rounded-r-xl rounded-bl-xl">
-                                <p class="text-color1 text-xs">{message.user_fullname}</p>
+                            <img
+                                class="bg-gray-400 w-8  h-8 aspect-square rounded-full object-cover"
+                                src={`/storage/users/${message.user_photo}`}
+                                alt=""
+                            />
+                            <div
+                                class=" bg-gray-100 py-1 pl-3 pr-5 rounded-r-xl rounded-bl-xl"
+                            >
+                                <p class="text-color1 text-xs">
+                                    {message.user_fullname}
+                                </p>
                                 <p class="text-sm">{message.body}</p>
                             </div>
                         </div>
@@ -392,7 +411,8 @@
                     placeholder="Escribe un mensaje"
                     bind:value={newMessage}
                 ></textarea>
-                <button class="btn btn-primary h-full flex items-center"
+                <button
+                    class="btn btn-primary h-full flex items-center"
                     on:click={sendMessage}
                     ><iconify-icon icon="iconoir:send" width="24" height="24"
                     ></iconify-icon></button
