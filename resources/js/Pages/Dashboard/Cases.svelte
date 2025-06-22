@@ -880,14 +880,14 @@
                         class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
                         style="white-space: normal;"
                     >
-                        {#if row?.reason.length > 200}
-                            {row?.reason.slice(0, 200)}
+                        {#if row?.reason?.length > 200}
+                            {row?.reason?.slice(0, 200)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
                         {:else}
-                            {row?.reason}
+                            {row?.reason || ""}
                         {/if}
                     </td>
                     <td
@@ -898,14 +898,14 @@
                         <div
                             class={`inline-block w-2 h-2 mr-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
                         ></div>
-                        {#if row?.diagnosis.length > 200}
-                            {row?.diagnosis.slice(0, 200)}
+                        {#if row?.diagnosis?.length > 200}
+                            {row?.diagnosis?.slice(0, 200)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
                         {:else}
-                            {row?.diagnosis}
+                            {row?.diagnosis || ""}
                         {/if}
                     </td>
                     <!-- <td>{row.sex}</td> -->
@@ -913,14 +913,14 @@
                         class="max-w-[340px] min-w-[290px] md:min-w-[320px] max-h-[100px] overflow-hidden"
                         style="white-space: normal;"
                     >
-                        {#if row?.treatment.length > 200}
-                            {row?.treatment.slice(0, 200)}
+                        {#if row?.treatment?.length > 200}
+                            {row?.treatment?.slice(0, 200)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
                         {:else}
-                            {row?.treatment}
+                            {row?.treatment || ""}
                         {/if}
                     </td>
                     <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
@@ -999,14 +999,14 @@
                         class="text-gray-900"
                     ></iconify-icon>
                     <p>
-                        {#if row?.reason.length > 200}
-                            {row?.reason.slice(0, 200)}
+                        {#if row?.reason?.length > 200}
+                            {row?.reason?.slice(0, 200)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
                         {:else}
-                            {row?.reason}
+                            {row?.reason    || ""}
                         {/if}
                     </p>
                 </div>
@@ -1015,14 +1015,14 @@
                         class={`inline-block w-2 h-2 mr-2 relative top-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
                     ></div>
                     <p>
-                        {#if row.diagnosis.length > 200}
-                            {row.diagnosis.slice(0, 200)}
+                        {#if row.diagnosis?.length > 200}
+                            {row.diagnosis?.slice(0, 200)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
                         {:else}
-                            {row.diagnosis}
+                            {row.diagnosis || ""}
                         {/if}
                     </p>
                 </div>
@@ -1034,14 +1034,14 @@
                         height="20"
                     ></iconify-icon>
                     <p>
-                        {#if row.treatment.length > 200}
-                            {row.treatment.slice(0, 200)}
+                        {#if row.treatment?.length > 200}
+                            {row.treatment?.slice(0, 200)}
                             <span
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
                         {:else}
-                            {row.treatment}
+                            {row.treatment || ""}
                         {/if}
                     </p>
                 </div>
