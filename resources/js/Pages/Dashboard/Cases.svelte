@@ -63,7 +63,7 @@
         reason: "",
         diagnosis: "",
         treatment: "",
-        current_status: "",
+        current_status: 4,
         current_patient_condition_id: 1,
         condition: "",
         cases: [],
@@ -75,6 +75,7 @@
         area_name: "",
         destiny: "",
         admitted_area_id: null,
+        bed_number: "",
     };
     let form = useForm(structuredClone(emptyDataForm));
 
@@ -122,6 +123,7 @@
                         message: "Nuevo Caso creado con exito",
                     });
                     showModal = false;
+                    formStage = 0;
                 },
             });
         }
@@ -152,7 +154,6 @@
     }, 280);
 
     const searchDoctor = debounce(async (search) => {
-
         try {
             const res = await axios.get(`/admin/historial-medico/doctor`, {
                 headers: {},
@@ -193,9 +194,8 @@
         }, 100);
     }
 
-    function handlesubmit() {
-        
-    }
+    function handlesubmit() {}
+    let formStage = 0;
 </script>
 
 <svelte:head>
@@ -204,14 +204,25 @@
 
 <Modal bind:showModal modalClasses={"max-w-[560px]"}>
     <p slot="header" class="opacity-60">Registrar un nuevo caso</p>
-    <form id="a-form" on:submit={handleSubmit} action="">
+    <form
+        id="a-form"
+        on:submit={handleSubmit}
+        action=""
+        class={`${formStage == 0 ? "md:grid grid-cols-2 gap-x-5  w-full" : ""}`}
+    >
         <fieldset
-            class=" px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color3 rounded-md"
+            class={`px-5 w-full pt-2 md:grid grid-cols-2 gap-x-5 rounded-md ${
+                formStage == 1
+                    ? "mt-4 border p-6 border-color3"
+                    : "contents-important"
+            }`}
         >
-            <legend
-                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
-                >DATOS DEL PACIENTE</legend
-            >
+            {#if formStage == 1}
+                <legend
+                    class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
+                    >DATOS DEL PACIENTE</legend
+                >
+            {/if}
             {#if $form?.patient_ci.toString().length >= 6}
                 <div class="w-full col-span-2 h-6 overflow-hidden text-center">
                     {#if prosecingSearchPatient}
@@ -245,44 +256,24 @@
             <div>
                 <Input
                     required={true}
-                    type={"number"}
                     label={"C.I *"}
                     name={"ci"}
                     min={100000}
-                    placeholder={"Minimo 6 números"}
+                    placeholder={"Mínimo 6 carácteres"}
                     on:wheel={(e) => document.activeElement.blur()}
                     bind:value={$form.patient_ci}
                     on:input={(e) => {
                         prosecingSearchPatient = true;
                         $form.patient_id = null;
                         $form.cases = [];
-                        if ($form.patient_ci.toString().length >= 6) {
+                        if ($form.patient_ci.length >= 6) {
                             searchPatient($form.patient_ci);
                         }
                     }}
                     error={$form.errors?.ci}
                 />
-                <!-- <button
-                    type="button"
-                    title="Buscar si el paciente existe"
-                    class="bg-color4 h-fit px-2 rounded hover:bg-color1 hover:text-white"
-                    on:click={() => {
-                        searchPatient($form.patient_ci);
-                    }}
-                >
-                    {#if prosecingSearchPatient == true}
-                        <iconify-icon
-                            class="mt-2 text-2xl"
-                            icon="eos-icons:bubble-loading"
-                        ></iconify-icon>
-                    {:else}
-                        <iconify-icon
-                            class="mt-2 text-2xl"
-                            icon="material-symbols:search"
-                        ></iconify-icon>
-                    {/if}
-                </button> -->
             </div>
+
             <Input
                 type="text"
                 required={true}
@@ -299,164 +290,177 @@
                 readOnly={$form.patient_id}
                 error={$form.errors?.patient_last_name}
             />
+            {#if formStage == 1}
+                <Input
+                    type="date"
+                    label={"Fecha de Nacimiento"}
+                    bind:value={$form.patient_date_birth}
+                    readOnly={$form.patient_id}
+                    error={$form.errors?.patient_date_birth}
+                />
 
-            <Input
-                type="date"
-                label={"Fecha de Nacimiento*"}
-                bind:value={$form.patient_date_birth}
-                readOnly={$form.patient_id}
-                required={true}
-                error={$form.errors?.patient_date_birth}
-            />
-
-            <Input
-                type="select"
-                required={true}
-                label={"Municipio"}
-                bind:value={$form.municipality_id}
-                error={$form.errors?.municipality_id}
-                disabled={$form.patient_id}
-            >
-                {#each localData.municipalities as micipality (micipality.id)}
-                    <option value={micipality.id}>{micipality.name}</option>
-                {/each}
-            </Input>
-
-            <Input
-                type="select"
-                required={true}
-                label={"Parroquia"}
-                bind:value={$form.parish_id}
-                error={$form.errors?.parish_id}
-                disabled={$form.patient_id}
-            >
-                {#if localData.municipalities[$form.municipality_id - 1]}
-                    {#each localData.municipalities[$form.municipality_id - 1].parishes as parish (parish.id)}
-                        <option value={parish.id}>{parish.name}</option>
+                <Input
+                    type="select"
+                    label={"Municipio"}
+                    bind:value={$form.municipality_id}
+                    error={$form.errors?.municipality_id}
+                    disabled={$form.patient_id}
+                >
+                    {#each localData.municipalities as micipality (micipality.id)}
+                        <option value={micipality.id}>{micipality.name}</option>
                     {/each}
-                {/if}
-            </Input>
-            <Input
-                type="text"
-                label={"Dirección"}
-                bind:value={$form.patient_address}
-                readOnly={$form.patient_id}
-                error={$form.errors?.patient_address}
-            />
+                </Input>
 
-            <Input
-                type="tel"
-                label={"Teléfono"}
-                readOnly={$form.patient_id}
-                bind:value={$form.patient_phone_number}
-                error={$form.errors?.patient_phone_number}
-            />
-            <div class="flex flex-col mt-6">
-                <label class="py-1 cursor-pointer hover:bg-gray-100">
-                    <input
-                        class="mr-3 inline-block"
-                        type="radio"
-                        bind:group={$form.patient_sex}
-                        value="Masculino"
-                        name="sex"
-                        id=""
-                        required
-                    /><span class:font-bold={$form.patient_sex == "Masculino"}
-                        >Masculino</span
-                    >
-                </label>
+                <Input
+                    type="select"
+                    label={"Parroquia"}
+                    bind:value={$form.parish_id}
+                    error={$form.errors?.parish_id}
+                    disabled={$form.patient_id}
+                >
+                    {#if localData.municipalities[$form.municipality_id - 1]}
+                        {#each localData.municipalities[$form.municipality_id - 1].parishes as parish (parish.id)}
+                            <option value={parish.id}>{parish.name}</option>
+                        {/each}
+                    {/if}
+                </Input>
+                <Input
+                    type="text"
+                    label={"Dirección"}
+                    bind:value={$form.patient_address}
+                    readOnly={$form.patient_id}
+                    error={$form.errors?.patient_address}
+                />
 
-                <label class="py-1 cursor-pointer hover:bg-gray-100">
-                    <input
-                        class="mr-3 inline-block"
-                        type="radio"
-                        bind:group={$form.patient_sex}
-                        value="Femenino"
-                        name="sex"
-                        id=""
-                        required
-                    /><span class:font-bold={$form.patient_sex == "Femenino"}
-                        >Femenino</span
-                    >
-                </label>
-            </div>
+                <Input
+                    type="tel"
+                    label={"Teléfono"}
+                    readOnly={$form.patient_id}
+                    bind:value={$form.patient_phone_number}
+                    error={$form.errors?.patient_phone_number}
+                />
+                <div class="flex flex-col mt-6">
+                    <label class="py-1 cursor-pointer hover:bg-gray-100">
+                        <input
+                            class="mr-3 inline-block"
+                            type="radio"
+                            bind:group={$form.patient_sex}
+                            value="Masculino"
+                            name="sex"
+                            id=""
+                            required
+                        /><span
+                            class:font-bold={$form.patient_sex == "Masculino"}
+                            >Masculino</span
+                        >
+                    </label>
+
+                    <label class="py-1 cursor-pointer hover:bg-gray-100">
+                        <input
+                            class="mr-3 inline-block"
+                            type="radio"
+                            bind:group={$form.patient_sex}
+                            value="Femenino"
+                            name="sex"
+                            id=""
+                            required
+                        /><span
+                            class:font-bold={$form.patient_sex == "Femenino"}
+                            >Femenino</span
+                        >
+                    </label>
+                </div>
+            {/if}
         </fieldset>
 
         <fieldset
-            class=" px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color3 rounded-md"
+            class={`px-5 w-full pt-2 md:grid grid-cols-2 gap-x-5 rounded-md ${
+                formStage == 1
+                    ? "mt-4 border p-6 border-color3"
+                    : "contents-important"
+            }`}
         >
-            <legend
-                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
-                >DATOS DE LA EMERGENCIA</legend
-            >
-            <div class="">
-                <button
-                    type="button"
-                    class="w-full"
-                    on:click={() => {
-                        if ($page.props.auth.rol[0] == "admin") {
-                            showModalDoctor = true;
-                            setTimeout(() => {
-                                document.querySelector("#searchDoctor").focus();
-                            }, 150);
-                        }
-                    }}
+            {#if formStage == 1}
+                <legend
+                    class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
+                    >DATOS DE LA EMERGENCIA</legend
                 >
-                    <div class="mt-3 text-left">
-                        <span class="text-left">Médico y servico</span>
-                    </div>
-
-                    <div
-                        class=" border rounded cursor-pointer hover:bg-gray-100 hover:border-dark p-2"
+                <div class="">
+                    <button
+                        type="button"
+                        class="w-full"
+                        on:click={() => {
+                            if ($page.props.auth.rol[0] == "admin") {
+                                showModalDoctor = true;
+                                setTimeout(() => {
+                                    document
+                                        .querySelector("#searchDoctor")
+                                        .focus();
+                                }, 150);
+                            }
+                        }}
                     >
-                        <div class="flex gap-1.5">
-                            <img
-                                class="bg-gray-300 w-7 aspect-square rounded-full object-cover"
-                                src={`/storage/users/${$form.user_photo}`}
-                                alt=""
-                            />
-                            <p class="inline-block w-fit">
-                                <b>
-                                    {$form.user_name}
-                                    {$form.user_last_name}</b
-                                >
+                        <div class="mt-3 text-left">
+                            <span class="text-left">Médico y servico</span>
+                        </div>
+
+                        <div
+                            class=" border rounded cursor-pointer hover:bg-gray-100 hover:border-dark p-2"
+                        >
+                            <div class="flex gap-1.5">
+                                <img
+                                    class="bg-gray-300 w-7 aspect-square rounded-full object-cover"
+                                    src={`/storage/users/${$form.user_photo}`}
+                                    alt=""
+                                />
+                                <p class="inline-block w-fit">
+                                    <b>
+                                        {$form.user_name}
+                                        {$form.user_last_name}</b
+                                    >
+                                </p>
+                            </div>
+                            <p
+                                class="bg-gray-200 rounded-full w-fit ml-7 relative -top-1 px-2 py-1 text-xs"
+                            >
+                                {$form.user_specialty_name}
                             </p>
                         </div>
-                        <p class="bg-gray-200 rounded-full w-fit ml-7 relative -top-1 px-2 py-1 text-xs">
-                            {$form.user_specialty_name}
-                        </p>
-                    </div>
-                </button>
-            </div>
+                    </button>
+                </div>
 
-            <Input
-                type="date"
-                required={true}
-                label={"Fecha de ingreso *"}
-                on:change={(e) => {
-                    const selectedDate = new Date(e.target.value);
-                    if (selectedDate > today) {
-                        $form.errors = {
-                            ...$form.errors,
-                            entry_date:
-                                "La fecha de ingreso no puede ser posterior a hoy.",
-                        };
-                    } else {
-                        $form.errors = { ...$form.errors, entry_date: null }; // Clear the error
-                    }
-                    $form.entry_date = e.target.value;
-                }}
-                value={$form.entry_date}
-                error={$form.errors?.entry_date}
-            />
+                <Input
+                    type="date"
+                    required={true}
+                    label={"Fecha de ingreso *"}
+                    on:change={(e) => {
+                        const selectedDate = new Date(e.target.value);
+                        if (selectedDate > today) {
+                            $form.errors = {
+                                ...$form.errors,
+                                entry_date:
+                                    "La fecha de ingreso no puede ser posterior a hoy.",
+                            };
+                        } else {
+                            $form.errors = {
+                                ...$form.errors,
+                                entry_date: null,
+                            }; // Clear the error
+                        }
+                        $form.entry_date = e.target.value;
+                    }}
+                    value={$form.entry_date}
+                    error={$form.errors?.entry_date}
+                />
 
-            <Input
-                type="time"
-                required={true}
-                label={"Hora de ingreso *"}
-                bind:value={$form.entry_hour}
-                error={$form.errors?.entry_hour}
-            />
+                <Input
+                    type="time"
+                    required={true}
+                    label={"Hora de ingreso *"}
+                    bind:value={$form.entry_hour}
+                    error={$form.errors?.entry_hour}
+                />
+            {/if}
 
             <Input
                 type="select"
@@ -498,6 +502,13 @@
                 {/each}
             </Input>
 
+            <Input
+                type="number"
+                required={true}
+                label={"Cama *"}
+                bind:value={$form.bed_number}
+                error={$form.errors?.bed_number}
+            />
             <!-- {#if $form.current_status == "3"}
                 <Input
                     type="select"
@@ -567,27 +578,36 @@
         </fieldset>
 
         <fieldset
-            class=" px-5 mt-4 md:grid grid-cols-2 gap-x-5 w-full border p-6 pt-2 border-color3 rounded-md"
+            class={`px-5 w-full pt-2 md:grid grid-cols-2 gap-x-5 rounded-md ${
+                formStage == 1
+                    ? "mt-4 border p-6 border-color3"
+                    : "contents-important"
+            }`}
         >
-            <legend
-                class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
-                >DIAGNÓSTICO Y TRATAMIENTO</legend
-            >
+            {#if formStage == 1}
+                <legend
+                    class="relative text-center px-5 py-1 pt-1.5 rounded-xl bg-color1 text-gray-100"
+                    >DIAGNÓSTICO Y TRATAMIENTO</legend
+                >
 
-            <Input
-                type="textarea"
-                required={true}
-                classes={"col-span-2"}
-                label={"Motivo de consulta *"}
-                bind:value={$form.reason}
-                error={$form?.errors?.reason}
-            />
+                <Input
+                    type="textarea"
+                    classes={"col-span-2"}
+                    label={"Motivo de consulta"}
+                    bind:value={$form.reason}
+                    error={$form?.errors?.reason}
+                />
+            {/if}
             <div class="col-span-2">
-                <span>Diagnóstico *</span>
+                {#if formStage == 1}
+                    <span>Diagnóstico</span>
+                {:else}
+                    <span>Condición</span>
+                {/if}
                 <div class="flex gap-4 mb-3">
                     {#each localData.conditions as condition (condition.id)}
                         <label
-                            class={`py-1 pb-0 px-2 cursor-pointer rounded-full hover:bg-gray-100 flex items-center gap-1 ${$form.current_patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
+                            class={`py-1 pb-0 px-2 cursor-pointer rounded-full border hover:bg-gray-100 flex items-center gap-1 ${$form.current_patient_condition_id == condition.id ? "bg-gray-200 font-bold" : " "}`}
                         >
                             <div
                                 class={`w-2 aspect-square rounded-full  condition${condition.id}`}
@@ -603,32 +623,51 @@
                         </label>
                     {/each}
                 </div>
+                {#if formStage == 1}
+                    <Input
+                        type="textarea"
+                        classes={"col-span-2"}
+                        bind:value={$form.diagnosis}
+                        error={$form?.errors?.diagnosis}
+                    />
+                {/if}
+            </div>
+            {#if formStage == 1}
                 <Input
                     type="textarea"
-                    required={true}
+                    label={"Orden médica de ingreso"}
+                    error={$form.errors?.treatment}
                     classes={"col-span-2"}
-                    bind:value={$form.diagnosis}
-                    error={$form?.errors?.diagnosis}
+                    bind:value={$form.treatment}
                 />
-            </div>
+            {/if}
 
             <Input
                 type="textarea"
-                required={true}
-                label={"Orden médica de ingreso *"}
-                error={$form.errors?.treatment}
+                label={"Observación / mensaje"}
+                error={$form.errors?.message}
                 classes={"col-span-2"}
-                bind:value={$form.treatment}
+                bind:value={$form.message}
             />
         </fieldset>
     </form>
-    <input
-        form="a-form"
-        slot="btn_footer"
-        type="submit"
-        value={$form.processing ? "Cargando..." : submitStatus}
-        class="hover:bg-color3 hover:text-white duration-200 mt-auto w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
-    />
+    <div slot="btn_footer">
+        {#if formStage == 0}
+            <button
+                on:click={() => (formStage = 1)}
+                class="hover:bg-color3 px-16 hover:text-white duration-200 w-full bg-color4 text-black font-bold py-3 rounded-md cursor-pointer"
+            >
+                Siguiente
+            </button>
+        {:else}
+            <input
+                form="a-form"
+                type="submit"
+                value={$form.processing ? "Cargando..." : submitStatus}
+                class="hover:bg-color2 px-16 hover:text-white duration-200 w-full bg-color3 text-black font-bold py-3 rounded-md cursor-pointer"
+            />
+        {/if}
+    </div>
 </Modal>
 
 <Modal bind:showModal={showModalDoctor}>
@@ -727,47 +766,46 @@
     </div>
 </div>
 
-<Search filtersOptions={{
-    date: {
-        type: "date",
-        label: "Fecha de ingreso",
-    },
-    status:
-        {
-            type: "select",
-            label: "Estado",
-            options: localData?.statutes || [],
-        } || {},
-    case_id:
-        {
-            type: "search",
-            label: "ID del caso",
-            options: [],
-        } || {},
-    specialty_id:
-        {
-            type: "select",
-            label: "Servicio tra.",
-            options: localData?.specialties || [],
-        } || {},
-    area_id:
-        {
-            type: "select",
-            label: "Última area",
-            options: localData?.areas || [],
-        } || {},
+<Search
+    filtersOptions={{
+        date: {
+            type: "date",
+            label: "Fecha de ingreso",
+        },
+        status:
+            {
+                type: "select",
+                label: "Estado",
+                options: localData?.statutes || [],
+            } || {},
+        case_id:
+            {
+                type: "search",
+                label: "ID del caso",
+                options: [],
+            } || {},
+        specialty_id:
+            {
+                type: "select",
+                label: "Servicio tra.",
+                options: localData?.specialties || [],
+            } || {},
+        area_id:
+            {
+                type: "select",
+                label: "Última area",
+                options: localData?.areas || [],
+            } || {},
 
-    condition:
-        {
-            type: "select",
-            label: "Condición",
-            options: localData?.conditions || [],
-        } || {},
-}} />
-<Table
-    
-    {visulizateType}
->
+        condition:
+            {
+                type: "select",
+                label: "Condición",
+                options: localData?.conditions || [],
+            } || {},
+    }}
+/>
+<Table {visulizateType}>
     <div slot="filterBox"></div>
     <thead slot="thead" class="sticky top-0">
         <tr>
@@ -1056,5 +1094,8 @@
         border-radius: 0 10px 10px 0;
         backdrop-filter: blur(2px);
         -webkit-backdrop-filter: blur(2px);
+    }
+    .contents-important {
+        display: contents !important;
     }
 </style>
