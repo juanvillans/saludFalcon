@@ -8,8 +8,17 @@
     import { page } from "@inertiajs/svelte";
     import { displayAlert } from "../stores/alertStore";
     import { usePoll } from "@inertiajs/svelte";
-
-    usePoll(10000);
+    import { echo } from '../lib/echo';
+    
+    usePoll(10000, {
+        onStart() {
+            console.log("Polling request started");
+        },
+        onFinish() {
+            console.log("Polling request finished");
+            scrollDownChat();
+        },
+    });
 
     let localData;
     let showChat = false;
@@ -58,13 +67,13 @@
 
         try {
             const res = await axios.post("/admin/mensajes", message);
-            selectedPatient.messages.push({
-                body: newMessage,
-                user_fullname: page.props.auth.user.name + " " + page.props.auth.user.last_name,
-                user_photo: page.props.auth.user.photo,
-                date: res.data.message.date,
-            });
+            console.log(res);
+            selectedPatient.messages = [
+                ...selectedPatient.messages,
+                res.data.message,
+            ];
             newMessage = "";
+            scrollDownChat();
         } catch (errors) {
             displayAlert({
                 type: "error",
@@ -72,14 +81,18 @@
             });
         }
     }
-
+    function scrollDownChat() {
+        setTimeout(() => {
+            // add a transition to the scrollDownChat function to make it smoother
+            const chatContainer = document.querySelector(".chat-container");
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 100);
+    }
     function selectPatient(row) {
-        // if (newMessage)
         console.log(row);
         showChat = true;
-
-
         selectedPatient = row;
+        scrollDownChat();
     }
 
     $: console.log(selectedPatient);
@@ -211,6 +224,8 @@
                 <div class="grid lg:grid-cols-2 gap-5 mt-3">
                     {#each data?.data as row, i (row.id)}
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <!-- svelte-ignore missing-declaration -->
+                        <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                         <article
                             on:mousedown={handleMouseDown}
                             on:mouseup={(e) => handleMouseUp(e, row.id)}
@@ -362,8 +377,10 @@
             {#if selectedPatient}
                 <p>
                     {getFirstName(selectedPatient?.patient_name)}
-                    {getFirstName(selectedPatient?.patient_last_name)} 
-                    <span class="text-xs text-opacity-75"> C.I:{selectedPatient?.patient_ci}</span>
+                    {getFirstName(selectedPatient?.patient_last_name)}
+                    <span class="text-xs text-opacity-75">
+                        C.I:{selectedPatient?.patient_ci}</span
+                    >
                 </p>
             {:else}
                 <p>Selecciona un paciente</p>
@@ -373,14 +390,14 @@
             </button>
         </header>
 
-        <main class="flex-1 overflow-y-scroll">
+        <main class="flex-1 overflow-y-scroll chat-container">
             {#if selectedPatient}
                 {#each selectedPatient?.messages as message, i (message.id)}
                     <div class="p-3">
-                        <p class="text-sm text-gray-500">{message.date}</p>
+                        <p class="text-sm text-gray-500 mb-1">{message.date}</p>
                         <div class="flex gap-2">
                             <img
-                                class="bg-gray-400 w-8  h-8 aspect-square rounded-full object-cover"
+                                class="bg-gray-400 w-8 h-8 aspect-square rounded-full object-cover"
                                 src={`/storage/users/${message.user_photo}`}
                                 alt=""
                             />

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Resources\MessageResource;
 use Exception;
 use App\Models\Messages;
 use App\Models\EmergencyCase;
@@ -24,7 +25,7 @@ class MessageService
                     'last_message_id' => $newMessage->id,
                 ]);
 
-                return $newMessage;
+                return new MessageResource($newMessage);
 
             } catch (Exception $e) {
 
