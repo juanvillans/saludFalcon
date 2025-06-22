@@ -942,58 +942,61 @@
     }
 </script>
 
-<div class="p-4">
-    <div class="">
-        <div class="neumorphism2 p-3 rounded-xl">
+<div class="p-4 overflow-hidden">
+        <div class=" p-3 rounded-xl">
             <h2>Condión de los pacientes</h2>
-<Search filtersOptions={{
-    date: {
-        type: "date",
-        label: "Fecha de ingreso",
-    },
-    status:
-        {
-            type: "select",
-            label: "Estado",
-            options: localData?.statutes || [],
-        } || {},
-    case_id:
-        {
-            type: "search",
-            label: "ID del caso",
-            options: [],
-        } || {},
-    specialty_id:
-        {
-            type: "select",
-            label: "Servicio tra.",
-            options: localData?.specialties || [],
-        } || {},
-    area_id:
-        {
-            type: "select",
-            label: "Última area",
-            options: localData?.areas || [],
-        } || {},
+            <Search
+                filtersOptions={{
+                    date: {
+                        type: "date",
+                        label: "Fecha de ingreso",
+                    },
+                    status:
+                        {
+                            type: "select",
+                            label: "Estado",
+                            options: localData?.statutes || [],
+                        } || {},
+                    case_id:
+                        {
+                            type: "search",
+                            label: "ID del caso",
+                            options: [],
+                        } || {},
+                    specialty_id:
+                        {
+                            type: "select",
+                            label: "Servicio tra.",
+                            options: localData?.specialties || [],
+                        } || {},
+                    area_id:
+                        {
+                            type: "select",
+                            label: "Última area",
+                            options: localData?.areas || [],
+                        } || {},
 
-    condition:
-        {
-            type: "select",
-            label: "Condición",
-            options: localData?.conditions || [],
-        } || {},
-}} />
-            <div>
+                    condition:
+                        {
+                            type: "select",
+                            label: "Condición",
+                            options: localData?.conditions || [],
+                        } || {},
+                }}
+            />
+            <div class="w-full z-0">
                 <Table {visulizateType}>
                     <div slot="filterBox"></div>
                     <thead slot="thead" class="sticky top-0">
                         <tr>
-                            <th >Cama</th>
+                            <th>Cama</th>
                             <th>Paciente</th>
                             <th>Ubicación</th>
                             <th>Condición</th>
-                            <th>Observación</th>
-                            <th style="font-size: 12px  ">Última actualización.</th>
+                            <th>Mensaje</th>
+                            <th style="font-size: 12px  "
+                                >Última actualización.</th
+                            >
                         </tr>
                     </thead>
 
@@ -1001,8 +1004,6 @@
                         {#if data?.data?.length > 0 && visulizateType == "table"}
                             {#each data?.data as row, i (row.id)}
                                 <tr
-                                    on:mousedown={handleMouseDown}
-                                    on:mouseup={(e) => handleMouseUp(e, row.id)}
                                     class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5`}
                                 >
                                     <td style="font-size: 12px;">{row.id}</td>
@@ -1204,5 +1205,21 @@
                 {/if}
             </div>
         </div>
+
+    <div class="neumorphism2 rounded-2xl fixed flex overflow-hidden flex-col justify-between bg-white bottom-4 right-4 h-[500px] w-[330px]">
+        <header class="p-2 px-3 flex justify-between items-center bg-gray-200 ">
+            <p>Mensajes para Fulanito de tal</p>
+      <iconify-icon icon="line-md:close"></iconify-icon>
+
+        </header>
+
+        <main>
+
+        </main>
+
+        <footer class="p-2 px-3 rounded-full border mb-4 flex justify-between w-11/12 mx-auto items-center bg-gray-200 ">
+            <textarea name="message" id="" class="w-full h-10"></textarea>
+            <button class="btn btn-primary"><iconify-icon icon="iconoir:send" width="24" height="24"></iconify-icon></button>
+        </footer>
     </div>
 </div>
