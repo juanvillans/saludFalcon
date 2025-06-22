@@ -1,3 +1,4 @@
+
 <script>
     import Table from "../components/Table.svelte";
     import StatusColor from "../components/StatusColor.svelte";
@@ -8,17 +9,18 @@
     import { page } from "@inertiajs/svelte";
     import { displayAlert } from "../stores/alertStore";
     import { usePoll } from "@inertiajs/svelte";
-    import { echo } from '../lib/echo';
     
-    usePoll(10000, {
-        onStart() {
-            console.log("Polling request started");
-        },
-        onFinish() {
-            console.log("Polling request finished");
-            scrollDownChat();
-        },
-    });
+    // usePoll(10000, {
+    //     onStart() {
+    //         console.log("Polling request started");
+    //     },
+    //     onFinish() {
+    //         console.log("Polling request finished");
+    //         scrollDownChat();
+    //     },
+    // });
+
+
 
     let localData;
     let showChat = false;
@@ -29,7 +31,14 @@
         } catch (error) {
             console.error("Error loading data:", error);
         }
+
     });
+    var channel = Echo.channel('chat');
+    channel.listen('.newMessage', function(data) {
+    alert(JSON.stringify(data));
+    });
+
+
 
     function getFirstName(firstName) {
         const parts = firstName.split(" ");

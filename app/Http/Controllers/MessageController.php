@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageCreated;
 use Exception;
 use Illuminate\Http\Request;
 use App\Services\MessageService;
@@ -17,6 +18,8 @@ class MessageController extends Controller
 
             $messageService = new MessageService;
             $message = $messageService->create($request->validated());
+
+            broadcast(new MessageCreated($message))->toOthers();
 
             return response()->json(['message' => $message, 'status' => true]);
 

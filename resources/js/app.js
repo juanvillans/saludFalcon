@@ -1,6 +1,7 @@
 import { createInertiaApp } from "@inertiajs/svelte";
 import Layout from "./components/DashboardLayout.svelte";
-console.log('svelte 4')
+import './echo';
+
 createInertiaApp({
     resolve: (name) => {
         const pages = import.meta.glob("./Pages/**/*.svelte", { eager: true });
@@ -17,5 +18,6 @@ createInertiaApp({
 });
 
 // serviceWorkerRegistration.register();
+
 
 
