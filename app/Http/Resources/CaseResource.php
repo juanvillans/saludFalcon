@@ -64,21 +64,24 @@ class CaseResource extends JsonResource
             'last_message_id' => $this->lastMessage->id ?? null,
             'last_message' => $this->lastMessage->body ?? null,
             'bed_number' => $this->bed_number,
-            'updated_at' => function () {
-                        $date = $this->updated_at;
-                        $time = $date->format('g:i a');
-
-                        if ($date->isToday()) {
-                            return "Hoy - $time";
-                        }
-
-                        if ($date->isYesterday()) {
-                            return "Ayer - $time";
-                        }
-
-                        return $date->format('d/m/Y') . " - $time";
-                    }
+            'updated_at' => $this->formatDate(),
         ];
 
+    }
+
+    protected function formatDate(): string
+    {
+        $date = $this->created_at;
+        $time = $date->format('g:i a');
+
+        if ($date->isToday()) {
+            return "Hoy - $time";
+        }
+
+        if ($date->isYesterday()) {
+            return "Ayer - $time";
+        }
+
+        return $date->format('d/m/Y') . " - $time";
     }
 }

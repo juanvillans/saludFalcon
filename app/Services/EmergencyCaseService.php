@@ -86,7 +86,7 @@ class EmergencyCaseService
 
                 });
             })
-            ->orderBy($params['order_by'] ?? 'id', 'DESC')
+            ->orderBy($params['order_by'] ?? 'updated_at', 'DESC')
             ->paginate($params['per_page'] ?? 25);
 
         return new CaseCollection($cases);
