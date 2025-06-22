@@ -95,7 +95,9 @@ class EmergencyCaseService
 
     public function createCase($data)
     {
-        DB::transaction(function () use ($data) {
+       return  DB::transaction(function () use ($data) {
+
+            try {
 
             $patientID = $data['patient_id'];
 
@@ -132,6 +134,19 @@ class EmergencyCaseService
 
 
             return 0;
+
+            } catch (Exception $e) {
+
+                Log::error('EmergencyCaseService -  Error al crear caso: '. $e->getMessage(), [
+                'data' => $data,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            throw $e;
+
+
+            }
+
 
         });
 
