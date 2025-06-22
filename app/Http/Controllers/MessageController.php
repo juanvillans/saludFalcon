@@ -24,7 +24,7 @@ class MessageController extends Controller
 
             Log::info('Error creando el mensaje: ' . $e->getMessage() . ' --- Linea: ' . $e->getLine());
 
-            return response()->json(['message' => 'Algo salio mal: ' . $e->getMessage(), 'status' => false]);
+            return response()->json(['message' => 'Algo salio mal: ' . $e->getMessage(), 'status' => false], 500);
 
         }
     }
