@@ -27,6 +27,11 @@ class CreateMessageRequest extends FormRequest
                 'integer',
                 'exists:emergency_cases,id'
             ],
+            'user_id' => [
+                'required',
+                'integer',
+                'exists:users,id'
+            ],
             'body' => [
                 'required',
                 'string',
@@ -44,6 +49,8 @@ class CreateMessageRequest extends FormRequest
         return [
             'emergency_case_id.required' => 'El ID del caso de emergencia es requerido',
             'emergency_case_id.exists' => 'El caso de emergencia seleccionado no existe',
+            'user_id.required' => 'El ID del usuario es requerido',
+            'user_id.exists' => 'El usuario seleccionado no existe',
             'body.required' => 'El contenido del mensaje es requerido',
             'body.min' => 'El mensaje debe tener al menos 1 carácter',
             'body.max' => 'El mensaje no puede exceder los 5000 caracteres'
@@ -57,6 +64,7 @@ class CreateMessageRequest extends FormRequest
     {
         return [
             'emergency_case_id' => 'caso de emergencia',
+            'user_id' => 'usuario',
             'body' => 'contenido del mensaje'
         ];
     }
@@ -66,6 +74,6 @@ class CreateMessageRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-        $this->merge(['user_id' => auth()->id()]);
+        $this->merge(['user_id' => auth()->user()->id]);
     }
 }

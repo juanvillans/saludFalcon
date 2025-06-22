@@ -60,11 +60,7 @@ class EmergencyCaseController extends Controller
     {
         try
         {
-            $data = $request->all();
-
-            $this->emergencyCaseService->createCase($data);
-
-            DB::commit();
+            $this->emergencyCaseService->createCase($request->validated());
 
             return redirect()->back()->with(['message' => 'Operación realizada con exito']);
 
@@ -72,7 +68,13 @@ class EmergencyCaseController extends Controller
         catch (Exception $e)
         {
 
-            Log::info('Error creando el caso: ' . $e->getMessage() . ' --- Linea: ' . $e->getLine());
+            Log::error(
+                'Error creando el caso: ' . $e->getMessage() . ' --- Linea: ' . $e->getLine(),
+                [
+                    'exception' => $e,
+                    'request_data' => $request->validated()
+                ]
+            );
 
             return redirect()->back()->withErrors(['data' => $e->getMessage()]);
         }
