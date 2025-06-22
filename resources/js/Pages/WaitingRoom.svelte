@@ -8,7 +8,6 @@
     import axios from "axios";
     import { page } from "@inertiajs/svelte";
     import { displayAlert } from "../stores/alertStore";
-
     let localData;
     let showChat = false;
 
@@ -21,6 +20,10 @@
 
     });
 
+    var channel = Echo.channel('chat');
+    channel.listen('.newMessage', function(data) {
+    alert(JSON.stringify(data));
+    });
 
 
     function getFirstName(firstName) {
