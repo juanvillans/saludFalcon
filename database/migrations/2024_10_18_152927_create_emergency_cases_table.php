@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\StatusCaseEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -26,18 +27,31 @@ return new class extends Migration
 
             $table->date('entry_date');
             $table->string('entry_hour');
-            $table->foreignId('current_status')
-                  ->constrained('status_cases') 
-                  ->onDelete('restrict')     
-                  ->onUpdate('cascade');
+
+            $table->unsignedBigInteger('current_status_case')->default(StatusCaseEnum::INGRESADO->value);
+            $table->foreign('current_status_case')
+                ->references('id')
+                ->on('status_cases')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
 
             $table->string('destiny')->nullable();
-            
+
             $table->date('departure_date')->nullable();
             $table->string('departure_hour')->nullable();
             $table->text('reason')->nullable();
             $table->text('diagnosis')->nullable();
             $table->text('treatment')->nullable();
+            $table->integer('bed_number');
+
+            $table->unsignedBigInteger('last_message_id')->nullable();
+            $table->foreign('last_message_id')
+                ->references('id')
+                ->on('messages')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+
+
             $table->timestamps();
         });
     }

@@ -22,8 +22,8 @@ class EmergencyCaseSeeder extends Seeder
         $sexs = ['Masculino', 'Femenino'];
         $doctor = User::where('id',3)->first();
 
-        for ($i = 0; $i < 100; $i++) { 
-            
+        for ($i = 0; $i < 100; $i++) {
+
             $name = $names[rand(0,4)];
             $lastName = $lastNames[rand(0,4)];
 
@@ -38,7 +38,7 @@ class EmergencyCaseSeeder extends Seeder
                 'municipality_id' => 14,
                 'parish_id' => 37,
                 'address' => 'San José',
-                'search' => $name . ' ' . $lastName . ' 30847' . $i , 
+                'search' => $name . ' ' . $lastName . ' 30847' . $i ,
             ]);
 
 
@@ -50,12 +50,13 @@ class EmergencyCaseSeeder extends Seeder
                 'current_patient_condition_id' => 2,
                 'entry_date' => Carbon::now()->yesterday(),
                 'entry_hour' => Carbon::now()->yesterday()->format('H:i:s'),
-                'current_status' => 4,
+                'current_status_case' => 4,
                 'departure_date' => null,
                 'departure_hour' => null,
                 'reason' => 'Diarrea',
                 'diagnosis' => 'Efectivamente tiene diarrea',
                 'treatment' => 'Café con bastante cambul',
+                'bed_number' => rand(1,9),
             ]);
 
             Evolution::create([
@@ -72,11 +73,10 @@ class EmergencyCaseSeeder extends Seeder
                 'is_interconsult' => false,
 
             ]);
-            
+
         }
     }
 }
 
 
-	
-	
+

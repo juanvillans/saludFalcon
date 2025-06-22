@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\StatusAppointmentsEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('appointments', function (Blueprint $table) {
-            
+
             $table->id();
             $table->unsignedBigInteger('calendar_id');
             $table->unsignedBigInteger('patient_id');
@@ -30,6 +31,11 @@ return new class extends Migration
             ->references('id')
             ->on('patients')
             ->onDelete('cascade');
+
+            $table->integer('status')->default(StatusAppointmentsEnum::PENDIENTE->value);
+            $table->string('token', 36)->nullable();
+
+
         });
     }
 

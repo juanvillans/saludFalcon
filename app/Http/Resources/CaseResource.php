@@ -13,7 +13,7 @@ class CaseResource extends JsonResource
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
-    {   
+    {
         return [
 
             "id" => $this->id,
@@ -25,8 +25,8 @@ class CaseResource extends JsonResource
             'reason' => $this->reason,
             'diagnosis' => $this->diagnosis,
             'treatment' => $this->treatment,
-            'current_status' => $this->current_status,
-            'current_status_name' => $this->statusCase->name,
+            'current_status_case' => $this->current_status_case,
+            'current_status_case_name' => $this->statusCase->name,
 
             'municipality_id' => $this->patient->municipality_id ?? null,
             'municipality_name' => $this->patient->municipality->name ?? null,
@@ -36,9 +36,9 @@ class CaseResource extends JsonResource
             'user_id' => $this->user->id,
             'user_name' => $this->user->name,
             'user_last_name' => $this->user->last_name,
-            'user_ci' => $this->user->ci, 
+            'user_ci' => $this->user->ci,
             'user_specialty_id' => $this->user->specialty->id ?? null,
-            'user_specialty_name' => $this->user->specialty->name ?? null, 
+            'user_specialty_name' => $this->user->specialty->name ?? null,
 
 
             "patient_id" => $this->patient->id,
@@ -51,15 +51,18 @@ class CaseResource extends JsonResource
             "patient_age" => $this->patient->age ,
             "patient_address" => $this->patient->address ?? null,
 
-            
+
             'area_id' => $this->area_id,
             'area_name' => $this->area->name,
 
 
             'current_patient_condition_id' => $this->current_patient_condition_id,
             'current_patient_condition_name' => $this->condition->name,
-            
+
             'evolutions' => new EvolutionCollection($this->whenLoaded('evolutions')),
+            'last_message_id' => $this->lastMessage->id ?? null,
+            'last_message' => $this->lastMessage->body ?? null,
+            'bed_number' => $this->bed_number,
         ];
 
     }

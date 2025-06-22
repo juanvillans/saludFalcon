@@ -63,7 +63,7 @@
         reason: "",
         diagnosis: "",
         treatment: "",
-        current_status: 4,
+        current_status_case: 4,
         current_patient_condition_id: 1,
         condition: "",
         cases: [],
@@ -466,10 +466,10 @@
                 type="select"
                 required={true}
                 label={"Estado *"}
-                bind:value={$form.current_status}
-                error={$form.errors?.current_status}
+                bind:value={$form.current_status_case}
+                error={$form.errors?.current_status_case}
                 on:change={() => {
-                    if ($form.current_status == 4) {
+                    if ($form.current_status_case == 4) {
                         $form.departure_date = "";
                         $form.departure_hour = "";
                     } else {
@@ -509,7 +509,7 @@
                 bind:value={$form.bed_number}
                 error={$form.errors?.bed_number}
             />
-            <!-- {#if $form.current_status == "3"}
+            <!-- {#if $form.current_status_case == "3"}
                 <Input
                     type="select"
                     required={true}
@@ -525,7 +525,7 @@
                 </Input>
             {/if} -->
 
-            {#if $form.current_status != "4" && $form.current_status != ""}
+            {#if $form.current_status_case != "4" && $form.current_status_case != ""}
                 <Input
                     type="date"
                     label={"Fecha de salida "}
@@ -834,20 +834,20 @@
                     <td style="white-space: normal;" class="min-w-[150px]">
                         <StatusColor
                             status={{
-                                name: row?.current_status_name,
-                                id: row?.current_status,
+                                name: row?.current_status_case_name,
+                                id: row?.current_status_case,
                             }}
                         />
 
-                        <!-- {#if row?.current_status == "3"}
+                        <!-- {#if row?.current_status_case == "3"}
                                     a {row?.admitted_area_name}
                                 {/if} -->
                         <span class="inline-block flex">
-                            {#if row.current_status == 1 || row.current_status == 2}
+                            {#if row.current_status_case == 1 || row.current_status_case == 2}
                                 de
-                            {:else if row.current_status == 4 || row.current_status == 5}
+                            {:else if row.current_status_case == 4 || row.current_status_case == 5}
                                 en
-                            {:else if row.current_status == 3}
+                            {:else if row.current_status_case == 3}
                                 a
                             {/if}
                             {row.area_name}
@@ -945,20 +945,20 @@
                 <div class="flex gap-1 items-center">
                     <StatusColor
                         status={{
-                            name: row?.current_status_name,
-                            id: row?.current_status,
+                            name: row?.current_status_case_name,
+                            id: row?.current_status_case,
                         }}
                     />
 
-                    <!-- {#if row?.current_status == "3"}
+                    <!-- {#if row?.current_status_case == "3"}
                         a {row?.admitted_area_name}
                     {/if} -->
                     <span class="inline-flex">
-                        {#if row.current_status == 1 || row.current_status == 2}
+                        {#if row.current_status_case == 1 || row.current_status_case == 2}
                             de
-                        {:else if row.current_status == 4 || row.current_status == 5}
+                        {:else if row.current_status_case == 4 || row.current_status_case == 5}
                             en
-                        {:else if row.current_status == 3}
+                        {:else if row.current_status_case == 3}
                             a
                         {/if}
                         {row.area_name}.

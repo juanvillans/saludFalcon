@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CaseRequest;
+use App\Http\Requests\CreateEmergencyCaseRequest;
 use App\Http\Requests\EvolutionRequest;
+use App\Http\Requests\GetEmergencyCasesRequest;
 use App\Http\Requests\PatientRequest;
 use App\Http\Resources\CaseResource;
 use App\Http\Resources\PatientResource;
@@ -15,6 +17,7 @@ use App\Models\PatientCondition;
 use App\Models\StatusCase;
 use App\Services\EmergencyCaseService;
 use App\Services\EvolutionService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -34,55 +37,28 @@ class EmergencyCaseController extends Controller
 
     }
 
-    public function index(Request $request)
+    public function index(GetEmergencyCasesRequest $request)
     {
-        $this->params = [
-            'search' => $request->input('search') ?? null,
-            'page' => $request->input('page') ?? null,
-            'per_page' => $request->input('per_page') ?? null,
-            'status' => $request->input('status') ?? null,
-            'condition' => $request->input('condition') ?? null,
-            'area_id' => $request->input('area_id') ?? null,
-            'patient_ci' => $request->input('ci') ?? null,
-            'start_date' => $request->input('start_date') ?? null,
-            'end_date' => $request->input('end_date') ?? null,
-            'case_id' => $request->input('case_id') ?? null,
-            'specialty_id' => $request->input('specialty_id') ?? null,
-            'age' => $request->input('age') ?? null,
 
-        ];
+        $emergencyCases = $this->emergencyCaseService->getCases($request->validated());
+        if($request->filled('ci'))
+            $patient = $this->emergencyCaseService->getPatientByCI($request->validated());
 
-        $emergencyCases = $this->emergencyCaseService->getCases($this->params);
-        if($this->params['patient_ci'] != null)
-            $patient = $this->emergencyCaseService->getPatientByCI($this->params);
-        
-        
         return inertia('Dashboard/Cases', [
             'data' => $emergencyCases,
             'patient' => $patient ?? null,
-            'filters' => array_filter([
-                'status' => $request->input('status') ?? '',
-                'condition' => $request->input('condition') ?? '',
-                'area_id' => $request->input('area_id') ?? '',
-                'search' => $request->input('search') ?? '',
-                'start_date' => $request->input('start_date') ?? '',
-                'end_date' => $request->input('end_date') ?? '',
-                'case_id' => $request->input('case_id') ?? '',
-                'specialty_id' => $request->input('specialty_id') ?? '',
-                'age' => $request->input('age') ?? '',
-
-            ]),
+            'filters' => array_filter($request->validatedParams(), function ($value) {
+                return $value !== null;
+            })
         ]);
 
     }
 
-   
-   
-    public function store(CaseRequest $request)
-    {
-        DB::beginTransaction();
 
-        try 
+
+    public function store(CreateEmergencyCaseRequest $request)
+    {
+        try
         {
             $data = $request->all();
 
@@ -93,12 +69,11 @@ class EmergencyCaseController extends Controller
             return redirect()->back()->with(['message' => 'Operación realizada con exito']);
 
         }
-        catch (\Throwable $e)
-        {   
-            
-            DB::rollback();
-            Log::info('Error: ' . $e->getMessage() . ' --- Linea: ' . $e->getLine());
-            
+        catch (Exception $e)
+        {
+
+            Log::info('Error creando el caso: ' . $e->getMessage() . ' --- Linea: ' . $e->getLine());
+
             return redirect()->back()->withErrors(['data' => $e->getMessage()]);
         }
     }
@@ -106,16 +81,16 @@ class EmergencyCaseController extends Controller
     public function caseDetail(Request $request, EmergencyCase $case){
 
         $case->load('patient.municipality','patient.parish','user.specialty','area', 'evolutions.user' , 'evolutions.area', 'evolutions.condition', 'evolutions.status','statusCase','condition');
-        
+
         $nroEvolutions = $case->evolutions->filter(function ($evolution) {
             return $evolution->is_interconsult == false;
         })->count();
 
-        
+
         $nroInter = $case->evolutions->filter(function ($evolution) {
             return $evolution->is_interconsult == true;
         })->count();
-        
+
         return inertia('Dashboard/CaseDetail',[
             'caseDetail' => new CaseResource($case),
             'nroEvol' => $nroEvolutions,
@@ -127,7 +102,7 @@ class EmergencyCaseController extends Controller
     {
         DB::beginTransaction();
 
-        try 
+        try
         {
             $data = $request->all();
 
@@ -139,16 +114,16 @@ class EmergencyCaseController extends Controller
 
         }
         catch (\Throwable $e)
-        {   
-            
+        {
+
             DB::rollback();
-            
+
             return redirect()->back()->withErrors(['data' => $e->getMessage()]);
         }
     }
 
     public function searchPatient(Request $request){
-        
+
         $this->params = [
             'ci' => $request->input('ci') ?? null,
         ];
@@ -161,7 +136,7 @@ class EmergencyCaseController extends Controller
 
          DB::beginTransaction();
 
-        try 
+        try
         {
             $data = $request->all();
 
@@ -173,12 +148,12 @@ class EmergencyCaseController extends Controller
 
         }
         catch (\Throwable $e)
-        {   
-            
+        {
+
             DB::rollback();
 
             Log::info(json_encode($e->getMessage(), JSON_PRETTY_PRINT));
-            
+
             return redirect()->back()->withErrors(['data' => $e->getMessage()]);
         }
 
@@ -189,7 +164,7 @@ class EmergencyCaseController extends Controller
 
         DB::beginTransaction();
 
-       try 
+       try
        {
            $data = $request->all();
 
@@ -201,12 +176,12 @@ class EmergencyCaseController extends Controller
 
        }
        catch (\Throwable $e)
-       {   
-           
+       {
+
            DB::rollback();
 
            Log::info(json_encode($e->getMessage(), JSON_PRETTY_PRINT));
-           
+
            return redirect()->back()->withErrors(['data' => $e->getMessage()]);
        }
 

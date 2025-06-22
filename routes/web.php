@@ -30,10 +30,6 @@ Route::group(['middleware' => ['guest']], function () {
     // Welcome login
     Route::get('/', [AppController::class, 'loginForm'])->name('login');
 
-    // Book appointment
-
-
-
     // Post Login
     Route::post('/admin/login', [UserController::class, 'login']);
 

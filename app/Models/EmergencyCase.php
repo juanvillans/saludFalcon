@@ -14,25 +14,27 @@ class EmergencyCase extends Model
     use Searchable;
 
     protected $fillable = [
-        
+
         'patient_id',
         'current_patient_condition_id',
         'user_id',
         'area_id',
         'entry_date',
         'entry_hour',
-        'current_status',
+        'current_status_case',
         'departure_date',
         'departure_hour',
         'reason',
         'diagnosis',
         'treatment',
         'destiny',
+        'bed_number',
+        'last_message_id',
 
     ];
 
     public function getFormattedEntryDateAttribute(){
-        
+
         return Carbon::parse($this->entry_date)->format('d M Y');
     }
 
@@ -59,12 +61,20 @@ class EmergencyCase extends Model
         return $this->hasMany(Evolution::class)->orderBy('id','desc');
     }
 
+    public function lastMessage(){
+        return $this->belongsTo(Messages::class,'last_message_id','id');
+    }
+
+    public function messages(){
+        return $this->hasMany(Messages::class)->orderBy('id','desc');
+    }
+
     public function statusCase(){
-        return $this->belongsTo(StatusCase::class,'current_status','id');
+        return $this->belongsTo(StatusCase::class,'current_status_case','id');
     }
 
     public function toSearchableArray()
-    {   
+    {
 
         return [
 

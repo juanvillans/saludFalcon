@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('appointments', function (Blueprint $table) {
-            $table->integer('status')->default(1); // 1 -> Pending, 2 -> Active, 3 -> Passed, 4 -> Cancelled by patient, 5 -> Cancelled by doctor 
+        Schema::create('messages', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('emergency_case_id');
+            $table->unsignedBigInteger('user_id');
+            $table->text('body');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('appointments', function (Blueprint $table) {
-            $table->dropColumn('status');
-        });
+        Schema::dropIfExists('messages');
     }
 };
