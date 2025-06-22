@@ -68,7 +68,7 @@
         // if (newMessage)
         console.log(row);
         showChat = true;
-        
+
         selectedPatient = row;
     }
 </script>
@@ -350,7 +350,7 @@
             {#if selectedPatient}
                 <p>
                     {getFirstName(selectedPatient?.patient_name)}
-                    {getFirstName(selectedPatient?.patient_last_name)} 
+                    {getFirstName(selectedPatient?.patient_last_name)}
                     <span class="text-xs text-opacity-75"> C.I:{selectedPatient?.patient_ci}</span>
                 </p>
             {:else}
@@ -363,7 +363,7 @@
 
         <main class="flex-1 overflow-y-scroll">
             {#if selectedPatient}
-                {#each selectedPatient?.messages.reverse() as message, i (message.id)}
+                {#each selectedPatient?.messages as message, i (message.id)}
                     <div class="p-3">
                         <p class="text-sm text-gray-500">{message.date}</p>
                         <div class="flex gap-2">

@@ -66,7 +66,7 @@ class EmergencyCase extends Model
     }
 
     public function messages(){
-        return $this->hasMany(Messages::class)->orderBy('id','desc');
+        return $this->hasMany(Messages::class)->orderBy('id','asc');
     }
 
     public function statusCase(){
