@@ -80,7 +80,7 @@ class EmergencyCaseController extends Controller
 
     public function caseDetail(Request $request, EmergencyCase $case){
 
-        $case->load('patient.municipality','patient.parish','user.specialty','area', 'evolutions.user' , 'evolutions.area', 'evolutions.condition', 'evolutions.status','statusCase','condition');
+        $case->load('patient.municipality','patient.parish','user.specialty','area', 'evolutions.user' , 'evolutions.area', 'evolutions.condition', 'evolutions.status','statusCase','condition', 'lastMessage','messages.user');
 
         $nroEvolutions = $case->evolutions->filter(function ($evolution) {
             return $evolution->is_interconsult == false;

@@ -19,7 +19,7 @@ class EmergencyCaseService
 
 
 
-    public function getCases($params)
+    public function getCases($params, $withMessages = false)
     {
         $cases = EmergencyCase::with(
             'patient.municipality',
@@ -28,7 +28,8 @@ class EmergencyCaseService
             'area',
             'statusCase',
             'condition',
-            'lastMessage'
+            'lastMessage',
+            'messages.user',
             )
             ->when(isset($params['status']),function($query) use ($params){
                 $query->where('current_status', $params['status']);
@@ -90,6 +91,7 @@ class EmergencyCaseService
 
         return new CaseCollection($cases);
     }
+
 
     public function createCase($data)
     {

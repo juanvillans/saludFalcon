@@ -60,6 +60,7 @@ class CaseResource extends JsonResource
             'current_patient_condition_name' => $this->condition->name,
 
             'evolutions' => new EvolutionCollection($this->whenLoaded('evolutions')),
+            'messages' => new MessageCollection($this->whenLoaded('messages')),
             'last_message_id' => $this->lastMessage->id ?? null,
             'last_message' => $this->lastMessage->body ?? null,
             'bed_number' => $this->bed_number,
