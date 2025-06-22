@@ -2,16 +2,17 @@
 
 namespace App\Services;
 
+use Exception;
+use Carbon\Carbon;
+use App\Models\Patient;
+use App\Models\Messages;
 use App\Enums\StatusCaseEnum;
+use App\Models\EmergencyCase;
+use App\Services\EvolutionService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Resources\CaseCollection;
 use App\Http\Resources\PatientResource;
-use App\Models\EmergencyCase;
-use App\Models\Messages;
-use App\Models\Patient;
-use App\Services\EvolutionService;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Support\Facades\Log;
 
 class EmergencyCaseService
 {
@@ -92,42 +93,46 @@ class EmergencyCaseService
 
     public function createCase($data)
     {
-        $patientID = $data['patient_id'];
+        DB::transaction(function () use ($data) {
 
-        if($patientID == null)
-            $patientID = $this->createPatient($data);
+            $patientID = $data['patient_id'];
+
+            if($patientID == null)
+                $patientID = $this->createPatient($data);
+
+            $this->validateIfExistsOpenCase($patientID);
+
+            $data['patient_id'] = $patientID;
+
+            $caseCreated = EmergencyCase::create($data);
+
+            $evolutionService = new EvolutionService;
+
+            if($caseCreated->current_status_case == StatusCaseEnum::EGRESADO_ALTA_MEDICA->value||
+            $caseCreated->current_status_case == StatusCaseEnum::EGRESADO_ALTA_CONTRAMEDICA->value ||
+            $caseCreated->current_status_case == StatusCaseEnum::FALLECIDO->value
+        ){
+            $evolutionService->createEvolutionFromCaseButDischarge($caseCreated);
+            }
+            else{
+                $evolutionService->createEvolutionFromCase($caseCreated);
+            }
+
+            if(isset($data['last_message'])){
+                $message = Messages::create([
+                    'emergency_case_id' => $caseCreated->id,
+                    'user_id' => $data['user_id'],
+                    'body' => $data['last_message']
+                ]);
+
+                $caseCreated->update(['last_message_id' => $message->id]);
+            }
 
 
-        $this->validateIfExistsOpenCase($patientID);
+            return 0;
 
-        $data['patient_id'] = $patientID;
+        });
 
-        $caseCreated = EmergencyCase::create($data);
-
-        $evolutionService = new EvolutionService;
-
-        if($caseCreated->current_status_case == StatusCaseEnum::EGRESADO_ALTA_MEDICA->value||
-           $caseCreated->current_status_case == StatusCaseEnum::EGRESADO_ALTA_CONTRAMEDICA->value ||
-           $caseCreated->current_status_case == StatusCaseEnum::FALLECIDO->value
-       ){
-           $evolutionService->createEvolutionFromCaseButDischarge($caseCreated);
-        }
-        else{
-            $evolutionService->createEvolutionFromCase($caseCreated);
-        }
-
-        if(isset($data['last_message'])){
-               $message = Messages::create([
-                'emergency_case_id' => $caseCreated->id,
-                'user_id' => $data['user_id'],
-                'body' => $data['last_message']
-               ]);
-
-            $caseCreated->update(['last_message_id' => $message->id]);
-        }
-
-
-        return 0;
 
     }
 

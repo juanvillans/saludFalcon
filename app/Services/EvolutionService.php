@@ -1,4 +1,4 @@
-<?php  
+<?php
 
 namespace App\Services;
 
@@ -17,7 +17,7 @@ class EvolutionService{
                 'user_id' => $case->user_id,
                 'area_id' => $case->area_id,
                 'patient_condition_id' => $case->current_patient_condition_id,
-                'status_id' => $case->current_status,
+                'status_id' => $case->current_status_case,
                 'evolution' => 'Sin descripción',
                 'diagnosis' => $case->diagnosis,
                 'treatment' => $case->treatment,
@@ -33,7 +33,7 @@ class EvolutionService{
     }
 
     public function createEvolutionFromCaseButDischarge($case){
-            
+
         Evolution::create([
             'emergency_case_id' => $case->id,
             'user_id' => $case->user_id,
@@ -99,7 +99,7 @@ class EvolutionService{
     }
 
     public function addInterConsult($case, $data){
-        
+
         $evolution = $this->addEvolution($case, $data);
         $evolution->is_interconsult = true;
         $evolution->save();
@@ -110,9 +110,9 @@ class EvolutionService{
 
     public function evalIsSameArea($case, $data){
 
-        if($data['area_id'] != '')  
+        if($data['area_id'] != '')
             return $data['area_id'];
         else
             return $case->area_id;
-    }   
+    }
 }
