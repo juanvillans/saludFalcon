@@ -1,3 +1,4 @@
+
 <script>
     import Table from "../components/Table.svelte";
     import StatusColor from "../components/StatusColor.svelte";
@@ -17,7 +18,10 @@
         } catch (error) {
             console.error("Error loading data:", error);
         }
+
     });
+
+
 
     function getFirstName(firstName) {
         const parts = firstName.split(" ");
