@@ -29,7 +29,7 @@
         } catch (error) {
             console.error("Error loading data:", error);
         }
-        messageSound = new Audio("/mixkit-long-pop-2358.waw"); // Path to your sound file
+        messageSound = new Audio("/mixkit-long-pop-2358.wav");
     });
 
     var channel = Echo.channel("chat");
@@ -45,16 +45,8 @@
                 .catch((e) => console.log("Audio play failed:", e));
         }
     };
-    let selectedPatient;
-    let generalChannel = Echo.channel("generalChat");
-    generalChannel.listen(".newMessage", function (data) {
-        handleFilters();
-        playNotificationSound();
-    });
-    let singleChatChannel = null;
     let filterClientData;
 
-    // Reactividad para el canal específico del paciente
     $: {
         // Limpiar canal anterior si existe
         if (singleChatChannel) {
@@ -77,8 +69,21 @@
         }
 
         filterClientData = { ...$page.props.filters };
-        console.log({ filterClientData });
+        console.log({$page });
     }
+    let selectedPatient;
+    let generalChannel = Echo.channel("generalChat");
+    generalChannel.listen(".newMessage", function (data) {
+         router.reload(`${$page.url.split("?")[0]}`, filterClientData, {
+            preserveState: true,
+            only: ["data"],
+        });
+
+        playNotificationSound();
+    });
+    let singleChatChannel = null;
+
+    // Reactividad para el canal específico del paciente
 
     // Limpieza cuando sea necesario (ejemplo: al cambiar de componente)
     const cleanupChannels = () => {
@@ -130,7 +135,7 @@
 
         try {
             const res = await axios.post("/admin/mensajes", message);
-            
+
             newMessage = "";
             scrollDownChat();
         } catch (errors) {
@@ -154,10 +159,9 @@
         scrollDownChat();
     }
 
-    const handleFilters = () => {
+     const handleFilters = () => {
         router.get(`${$page.url.split("?")[0]}`, filterClientData, {
             preserveState: true,
-            only: ["data"],
         });
     };
     $: console.log( localData);
