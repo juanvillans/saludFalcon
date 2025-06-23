@@ -7,8 +7,10 @@
     import axios from "axios";
     import { page, router } from "@inertiajs/svelte";
     import { displayAlert } from "../stores/alertStore";
-    import { usePoll } from "@inertiajs/svelte";
+    import QRCode from "qrcode";
 
+    let qrDataUrl = "";
+    const targetUrl = "https://saludfalcon.org/sala-de-espera";
     // usePoll(10000, {
     //     onStart() {
     //         console.log("Polling request started");
@@ -17,7 +19,7 @@
     //         console.log("Polling request finished");
     //         scrollDownChat();
     //     },
-    // });
+    // })
 
     let localData;
     let showChat = false;
@@ -30,6 +32,14 @@
             console.error("Error loading data:", error);
         }
         messageSound = new Audio("/mixkit-long-pop-2358.wav");
+        try {
+            qrDataUrl = await QRCode.toDataURL(targetUrl, {
+                width: 300,
+                margin: 2,
+            });
+        } catch (err) {
+            console.error("Error generando QR:", err);
+        }
     });
 
     var channel = Echo.channel("chat");
@@ -69,12 +79,12 @@
         }
 
         filterClientData = { ...$page.props.filters };
-        console.log({$page });
+        console.log({ $page });
     }
     let selectedPatient;
     let generalChannel = Echo.channel("generalChat");
     generalChannel.listen(".newMessage", function (data) {
-         router.reload(`${$page.url.split("?")[0]}`, filterClientData, {
+        router.reload(`${$page.url.split("?")[0]}`, filterClientData, {
             preserveState: true,
             only: ["data"],
         });
@@ -159,18 +169,18 @@
         scrollDownChat();
     }
 
-     const handleFilters = () => {
+    const handleFilters = () => {
         router.get(`${$page.url.split("?")[0]}`, filterClientData, {
             preserveState: true,
         });
     };
-    $: console.log( localData);
+    $: console.log($page);
 </script>
 
-<div class="p-4 overflow-hidden">
-    <div class=" p-3 rounded-xl">
-        <div class="flex gap-2 items-center">
-        <h2>Condión de los pacientes</h2>
+<div class="p-4 overflow-hidden mt-12">
+    <div class=" p-3 rounded-xl ">
+        <div class="w-full flex gap-2 items-center fixed top-0 z-50 py-4 bg-white">
+            <h2>Condión de los pacientes</h2>
             <p>ubicados en</p>
             <select
                 on:change={(e) => {
@@ -187,20 +197,21 @@
             >
                 <option value="todas">Todas las areas</option>
                 {#if localData?.areas}
-                {#each localData?.areas as filter, i (filter.id)}
-                    <option
-                        selected={filterClientData?.["area_id"] == filter.id}
-                        value={filter.id}>{filter.name}</option
-                    >
-                {/each}
+                    {#each localData?.areas as filter, i (filter.id)}
+                        <option
+                            selected={filterClientData?.["area_id"] ==
+                                filter.id}
+                            value={filter.id}>{filter.name}</option
+                        >
+                    {/each}
                 {/if}
             </select>
         </div>
         <Search
             placeholder="Buscar por nombre o CI"
-            style="min-width: 300px;"
+            style="min-width: 300px; z-index: 100 !important; border: 1px solid gray;"
         />
-        <div class="w-full z-0">
+        <div class="w-full z-0 max-w-[1600px]">
             <Table {visulizateType}>
                 <div slot="filterBox"></div>
                 <thead slot="thead" class="sticky top-0">
@@ -271,7 +282,7 @@
                                         {row?.last_message}
                                     {:else}{/if}
                                 </td>
-                                <td class="">{row.formatted_entry_date}</td>
+                                <td class="">{row.updated_at}</td>
 
                                 <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
                             </tr>
@@ -419,6 +430,21 @@
         </div>
     </div>
 
+    {#if !$page.props.auth.user_id }
+    <div class=" bottom-7 right-2 hidden 2xl:block fixed">
+        {#if qrDataUrl}
+        <div class="shadow-xl rounded-md bg-white">
+
+            <div class="py-2 px-2">Buscas a tu familiar?</div>
+            <img class="w-[300px]" src={qrDataUrl}  alt="Código QR" />
+        </div>
+        {:else}
+            <p>Generando código QR...</p>
+        {/if}
+    </div>
+
+    {:else}
+
     <button
         title="open chat"
         class="fixed bottom-7 right-7 w-16 shadow-2xl border-color3 border aspect-square flex justify-center items-center bg-color4 rounded-full"
@@ -473,6 +499,7 @@
                 {/each}
             {/if}
         </main>
+    {#if $page.props.auth.user_id }
 
         <footer class="bg-color4 pt-2">
             <div class="flex">

@@ -19,8 +19,8 @@
     $: {
         filterClientData = { ...$page.props.filters };
         isFilterAply = Object.keys(filterClientData).some(
-            (value) => value != "search" && value != "page" 
-            
+            (value) => value != "search" && value != "page"
+
         );
         console.log(Object.keys(filterClientData))
     }
@@ -43,7 +43,7 @@
 </script>
 
 <div
-    class="fixed top-3 lg right-20 md:right-64 flex items-center rounded-full bg-gray-50 border border-gray-200"
+    class="fixed top-3 z-50 lg right-20 md:right-64 flex items-center rounded-full bg-gray-50 border border-gray-200"
 >
     <span class="absolute">
         <svg
