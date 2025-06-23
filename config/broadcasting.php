@@ -40,11 +40,7 @@ return [
                 'port' => env('PUSHER_PORT', 443),
                 'scheme' => env('PUSHER_SCHEME', 'https'),
                 'encrypted' => true,
-                'useTLS' => true,
-                 // ONLY FOR DEVELOPMENT/DEBUGGING - DO NOT USE IN PRODUCTION
-            'client_options' => [
-                'verify' => false, // This tells Guzzle/cURL to NOT verify SSL certificates
-            ],
+                'useTLS' => env('PUSHER_SCHEME', 'https') === 'https',
             ],
             'client_options' => [
                 // Guzzle client options: https://docs.guzzlephp.org/en/stable/request-options.html
