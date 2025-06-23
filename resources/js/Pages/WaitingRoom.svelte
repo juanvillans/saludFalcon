@@ -7,8 +7,10 @@
     import axios from "axios";
     import { page, router } from "@inertiajs/svelte";
     import { displayAlert } from "../stores/alertStore";
-    import { usePoll } from "@inertiajs/svelte";
+    import QRCode from "qrcode";
 
+    let qrDataUrl = "";
+    const targetUrl = "https://saludfalcon.org/sala-de-espera";
     // usePoll(10000, {
     //     onStart() {
     //         console.log("Polling request started");
@@ -17,7 +19,7 @@
     //         console.log("Polling request finished");
     //         scrollDownChat();
     //     },
-    // });
+    // })
 
     let localData;
     let showChat = false;
@@ -30,6 +32,14 @@
             console.error("Error loading data:", error);
         }
         messageSound = new Audio("/mixkit-long-pop-2358.wav");
+        try {
+            qrDataUrl = await QRCode.toDataURL(targetUrl, {
+                width: 300,
+                margin: 2,
+            });
+        } catch (err) {
+            console.error("Error generando QR:", err);
+        }
     });
 
     var channel = Echo.channel("chat");
@@ -69,12 +79,12 @@
         }
 
         filterClientData = { ...$page.props.filters };
-        console.log({$page });
+        console.log({ $page });
     }
     let selectedPatient;
     let generalChannel = Echo.channel("generalChat");
     generalChannel.listen(".newMessage", function (data) {
-         router.reload(`${$page.url.split("?")[0]}`, filterClientData, {
+        router.reload(`${$page.url.split("?")[0]}`, filterClientData, {
             preserveState: true,
             only: ["data"],
         });
@@ -159,18 +169,18 @@
         scrollDownChat();
     }
 
-     const handleFilters = () => {
+    const handleFilters = () => {
         router.get(`${$page.url.split("?")[0]}`, filterClientData, {
             preserveState: true,
         });
     };
-    $: console.log( localData);
+    $: console.log($page);
 </script>
 
 <div class="p-4 overflow-hidden">
     <div class=" p-3 rounded-xl">
-        <div class="flex gap-2 items-center">
-        <h2>Condión de los pacientes</h2>
+        <div class="flex gap-2 items-center sticky top-0 z-50 py-4 bg-white">
+            <h2>Condión de los pacientes</h2>
             <p>ubicados en</p>
             <select
                 on:change={(e) => {
@@ -187,18 +197,19 @@
             >
                 <option value="todas">Todas las areas</option>
                 {#if localData?.areas}
-                {#each localData?.areas as filter, i (filter.id)}
-                    <option
-                        selected={filterClientData?.["area_id"] == filter.id}
-                        value={filter.id}>{filter.name}</option
-                    >
-                {/each}
+                    {#each localData?.areas as filter, i (filter.id)}
+                        <option
+                            selected={filterClientData?.["area_id"] ==
+                                filter.id}
+                            value={filter.id}>{filter.name}</option
+                        >
+                    {/each}
                 {/if}
             </select>
         </div>
         <Search
             placeholder="Buscar por nombre o CI"
-            style="min-width: 300px;"
+            style="min-width: 300px; z-index: 100 !important;"
         />
         <div class="w-full z-0">
             <Table {visulizateType}>
@@ -419,6 +430,17 @@
         </div>
     </div>
 
+    {#if !$page.props.auth.user_id }
+    <div class=" bottom-7 right-9 hidden 2xl:block fixed">
+        {#if qrDataUrl}
+            <img class="w-[300px]" src={qrDataUrl}  alt="Código QR" />
+        {:else}
+            <p>Generando código QR...</p>
+        {/if}
+    </div>
+
+    {:else}
+
     <button
         title="open chat"
         class="fixed bottom-7 right-7 w-16 shadow-2xl border-color3 border aspect-square flex justify-center items-center bg-color4 rounded-full"
@@ -427,7 +449,7 @@
         <iconify-icon icon="line-md:chat-filled" class="text-3xl text-color1"
         ></iconify-icon>
     </button>
-
+    {/if}
     <form
         class="neumorphism2 rounded-2xl fixed flex overflow-hidden flex-col justify-between bg-white bottom-4 right-4 h-[500px] md:w-[340px]"
         class:hidden={!showChat}
@@ -473,6 +495,7 @@
                 {/each}
             {/if}
         </main>
+    {#if $page.props.auth.user_id }
 
         <footer class="bg-color4 pt-2">
             <div class="flex">
@@ -497,5 +520,6 @@
                 >
             </div>
         </footer>
+        {/if}
     </form>
 </div>
