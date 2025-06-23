@@ -81,10 +81,10 @@
     }
     let generalChannel = Echo.channel("generalChat");
     generalChannel.listen(".newMessage", function (data) {
-
-        router.reload(`${$page.url.split("?")[0]}`, filterClientData, {
-            preserveState: true,
-        });
+        console.log("petición de casos")
+        // router.reload(`${$page.url.split("?")[0]}`, filterClientData, {
+        //     preserveState: true,
+        // });
 
         playNotificationSound();
     });
@@ -166,9 +166,9 @@
     }
 
     const handleFilters = () => {
-        // router.get(`${$page.url.split("?")[0]}`, filterClientData, {
-        //     preserveState: true,
-        // });
+        router.get(`${$page.url.split("?")[0]}`, filterClientData, {
+            preserveState: true,
+        });
         console.log("sin filtros")
     };
     $: console.log($page);
