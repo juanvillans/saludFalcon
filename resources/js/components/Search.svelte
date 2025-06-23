@@ -36,7 +36,9 @@
 
     const handleFilters = () => {
         firstTime = false;
-        router.get(`${$page.url.split("?")[0]}`, filterClientData);
+        router.get(`${$page.url.split("?")[0]}`, filterClientData, {
+            preserveState: true,
+        });
     };
 </script>
 

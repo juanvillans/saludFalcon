@@ -129,12 +129,8 @@
         };
 
         try {
-            const res = await axios.post("/admin/mensajes", message);
-            console.log(res);
-            selectedPatient.messages = [
-                ...selectedPatient.messages,
-                res.data.message,
-            ];
+            await axios.post("/admin/mensajes", message);
+           
             newMessage = "";
             scrollDownChat();
         } catch (errors) {
@@ -159,7 +155,7 @@
     }
 
     const handleFilters = () => {
-        router.get(`${$page.url.split("?")[0]}`, filterClientData, {
+        router.visit(`${$page.url.split("?")[0]}`, filterClientData, {
             preserveState: true,
             only: ["data"],
         });
