@@ -2,13 +2,14 @@
 
 namespace App\Events;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 class MessageCreated implements ShouldBroadcast
 {
@@ -26,11 +27,15 @@ class MessageCreated implements ShouldBroadcast
 
   public function broadcastOn()
   {
+      Log::info('Llamando broadcast');
+
       return ['generalChat', 'chat-'. $this->caseID];
   }
 
   public function broadcastAs()
   {
+     Log::info('Llamando broadcast 2');
+
       return 'newMessage';
   }
 }
