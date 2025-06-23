@@ -177,9 +177,9 @@
     $: console.log($page);
 </script>
 
-<div class="p-4 overflow-hidden">
-    <div class=" p-3 rounded-xl">
-        <div class="flex gap-2 items-center sticky top-0 z-50 py-4 bg-white">
+<div class="p-4 overflow-hidden mt-12">
+    <div class=" p-3 rounded-xl ">
+        <div class="w-full flex gap-2 items-center fixed top-0 z-50 py-4 bg-white">
             <h2>Condión de los pacientes</h2>
             <p>ubicados en</p>
             <select
@@ -209,9 +209,9 @@
         </div>
         <Search
             placeholder="Buscar por nombre o CI"
-            style="min-width: 300px; z-index: 100 !important;"
+            style="min-width: 300px; z-index: 100 !important; border: 1px solid gray;"
         />
-        <div class="w-full z-0">
+        <div class="w-full z-0 max-w-[1600px]">
             <Table {visulizateType}>
                 <div slot="filterBox"></div>
                 <thead slot="thead" class="sticky top-0">
@@ -282,7 +282,7 @@
                                         {row?.last_message}
                                     {:else}{/if}
                                 </td>
-                                <td class="">{row.formatted_entry_date}</td>
+                                <td class="">{row.updated_at}</td>
 
                                 <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
                             </tr>
@@ -431,9 +431,13 @@
     </div>
 
     {#if !$page.props.auth.user_id }
-    <div class=" bottom-7 right-9 hidden 2xl:block fixed">
+    <div class=" bottom-7 right-2 hidden 2xl:block fixed">
         {#if qrDataUrl}
+        <div class="shadow-xl rounded-md bg-white">
+
+            <div class="py-2 px-2">Buscas a tu familiar?</div>
             <img class="w-[300px]" src={qrDataUrl}  alt="Código QR" />
+        </div>
         {:else}
             <p>Generando código QR...</p>
         {/if}
