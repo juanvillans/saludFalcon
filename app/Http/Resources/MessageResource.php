@@ -32,7 +32,7 @@ class MessageResource extends JsonResource
         $time = $date->format('g:i a');
 
         if ($date->isToday()) {
-            return "Hoy - $time";
+            return $time;
         }
 
         if ($date->isYesterday()) {
