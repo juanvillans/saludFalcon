@@ -129,8 +129,8 @@
         };
 
         try {
-            await axios.post("/admin/mensajes", message);
-           
+            const res = await axios.post("/admin/mensajes", message);
+            
             newMessage = "";
             scrollDownChat();
         } catch (errors) {
@@ -155,7 +155,7 @@
     }
 
     const handleFilters = () => {
-        router.visit(`${$page.url.split("?")[0]}`, filterClientData, {
+        router.get(`${$page.url.split("?")[0]}`, filterClientData, {
             preserveState: true,
             only: ["data"],
         });
