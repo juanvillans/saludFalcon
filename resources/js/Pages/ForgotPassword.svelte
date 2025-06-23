@@ -50,7 +50,7 @@
         >
             <img src="/img/logoBlue.svg" alt="" srcset="" class="1/2 w-10" />
 
-             <b>SALUDFALCÓN.COM</b>
+             <b>SALUDFALCÓN.org</b>
         </a>
         <p class="text-center mt-5 my-10">
             ¡Hola <b> Nacho Vidal</b>! Aquí puedes recuperar tu contraseña

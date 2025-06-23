@@ -10,7 +10,7 @@
         class="1/2 w-10"
     />
 
-    <h4>SALUDFALCÓN.COM</h4>
+    <h4>SALUDFALCÓN.org</h4>
 </header>
 {#if isSuccess}
     <p class="flex items-center justify-center gap-2 mt-2">

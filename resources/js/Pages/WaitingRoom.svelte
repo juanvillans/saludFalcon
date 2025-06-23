@@ -107,13 +107,27 @@
     }
     export let data = {};
     let visulizateType = "table";
-    // Check if 'visualizateTypeCases' exists in localStorage
+
+    function isSmallDevice() {
+        // This will only run in the browser environment
+        if (typeof window !== 'undefined') {
+            // Using matchMedia for responsiveness. Adjust '768px' to your desired breakpoint (e.g., Tailwind's md)
+            return window.matchMedia('(max-width: 767px)').matches;
+        }
+        return false; // Default to false if not in a browser environment (e.g., SSR)
+    }
+
     if (typeof localStorage !== "undefined") {
         const storedValue = localStorage.getItem("visualizateTypeCases");
         if (storedValue) {
             visulizateType = storedValue; // Use the stored value if it exists
         } else {
-            localStorage.setItem("visualizateTypeCases", visulizateType); // Save the default value
+            if (isSmallDevice()) {
+                visulizateType = "card";
+            } else {
+                visulizateType = "table"; // Default for larger devices if no stored value
+            }
+            localStorage.setItem("visualizateTypeCases", visulizateType);
         }
     }
 
@@ -180,7 +194,7 @@
     $: console.log($page);
 </script>
 
-<div class="pt-4 md:p-4 overflow-hidden mt-24 md:mt-14">
+<div class="pt-4 md:p-4 overflow-hidden mt-24 md:mt-14 bg-gray-100">
     <div class=" p-3 rounded-xl">
         <div
             class="w-full md:flex md:space-x-10 lg:space-x-16 gap-2 space-y-4 md:space-y-0 items-center fixed top-0 z-50 py-4 bg-white"
