@@ -7,7 +7,7 @@
     let search;
 
     const handleSearch = debounce((event) => {
-        router.get(`${$page.url}`, { search, page: "1" });
+        router.get(`${$page.url}`, { search, page: "1" }, { preserveState: true });
     }, 300);
 
     let showModal = false;
@@ -19,8 +19,10 @@
     $: {
         filterClientData = { ...$page.props.filters };
         isFilterAply = Object.keys(filterClientData).some(
-            (value) => value != "search",
+            (value) => value != "search" && value != "page" 
+            
         );
+        console.log(Object.keys(filterClientData))
     }
     const changeDateFilter = (args) => {
         filterClientData = {
@@ -60,12 +62,13 @@
 
     <input
         type="search"
-        placeholder="Buscar"
+        placeholder={$$props.placeholder || "Buscar"}
         bind:value={search}
         on:input={() => {
             handleSearch();
         }}
-        class=" block w-full py-1.5 pr-5 text-gray-700 rounded-full rounded-r-none md:w-56  placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+        class={`block w-full py-1.5 pr-5 text-gray-700 rounded-full ${filtersOptions ? "rounded-r-none" : ""}  md:w-56  placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40`}
+        style={$$props.style}
     />
     {#if filtersOptions}
         <div class="md:right-64 top-3 z-50">

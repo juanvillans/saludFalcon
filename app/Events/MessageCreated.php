@@ -14,16 +14,19 @@ class MessageCreated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-  public $message;
+  public $messages;
+  public $caseID;
 
-  public function __construct($message)
+  public function __construct($messages, $caseID)
   {
-      $this->message = $message;
+    $this->messages = $messages;
+    $this->caseID = $caseID;
+
   }
 
   public function broadcastOn()
   {
-      return ['chat'];
+      return ['generalChat', 'chat-'. $this->caseID];
   }
 
   public function broadcastAs()

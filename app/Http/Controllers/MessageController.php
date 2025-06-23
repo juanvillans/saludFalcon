@@ -9,6 +9,9 @@ use App\Services\MessageService;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\CreateMessageRequest;
+use App\Http\Resources\MessageCollection;
+use App\Models\EmergencyCase;
+use App\Models\Messages;
 
 class MessageController extends Controller
 {
@@ -19,7 +22,9 @@ class MessageController extends Controller
             $messageService = new MessageService;
             $message = $messageService->create($request->validated());
 
-            broadcast(new MessageCreated($message))->toOthers();
+            $messages = Messages::where('emergency_case_id', $message->emergency_case_id)->get();
+
+            broadcast(new MessageCreated(new MessageCollection($messages), $message->emergency_case_id))->toOthers();
 
             return response()->json(['message' => $message, 'status' => true]);
 

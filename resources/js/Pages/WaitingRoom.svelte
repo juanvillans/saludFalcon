@@ -1,4 +1,3 @@
-
 <script>
     import Table from "../components/Table.svelte";
     import StatusColor from "../components/StatusColor.svelte";
@@ -6,10 +5,10 @@
     import Search from "../components/Search.svelte";
     import { onMount } from "svelte";
     import axios from "axios";
-    import { page } from "@inertiajs/svelte";
+    import { page, router } from "@inertiajs/svelte";
     import { displayAlert } from "../stores/alertStore";
     import { usePoll } from "@inertiajs/svelte";
-    
+
     // usePoll(10000, {
     //     onStart() {
     //         console.log("Polling request started");
@@ -20,32 +19,81 @@
     //     },
     // });
 
-
-
     let localData;
     let showChat = false;
-
+    // Audio setup
+    let messageSound;
     onMount(async () => {
         try {
             localData = await fetchLocalData();
         } catch (error) {
             console.error("Error loading data:", error);
         }
-
+        messageSound = new Audio("/mixkit-long-pop-2358.waw"); // Path to your sound file
     });
-    var channel = Echo.channel('chat');
-    channel.listen('.newMessage', function(data) {
-    alert(JSON.stringify(data));
-    });
 
+    var channel = Echo.channel("chat");
+    channel.listen(".newMessage", function (data) {
+        alert(JSON.stringify(data));
+    });
 
+    const playNotificationSound = () => {
+        if (messageSound) {
+            messageSound.currentTime = 0; // Rewind to start if already playing
+            messageSound
+                .play()
+                .catch((e) => console.log("Audio play failed:", e));
+        }
+    };
+    let selectedPatient;
+    let generalChannel = Echo.channel("generalChat");
+    generalChannel.listen(".newMessage", function (data) {
+        handleFilters();
+        playNotificationSound();
+    });
+    let singleChatChannel = null;
+    let filterClientData;
 
+    // Reactividad para el canal específico del paciente
+    $: {
+        // Limpiar canal anterior si existe
+        if (singleChatChannel) {
+            Echo.leave(`chat-${singleChatChannel.name.split("-")[1]}`);
+        }
+
+        // Solo crear nuevo canal si selectedPatient tiene ID válido
+        if (selectedPatient?.id) {
+            singleChatChannel = Echo.channel("chat-" + selectedPatient.id);
+
+            singleChatChannel.listen(".newMessage", function (data) {
+                playNotificationSound();
+                if (selectedPatient.id) {
+                    selectedPatient.messages = data.messages;
+                }
+                // Aquí tu lógica para manejar mensajes específicos
+            });
+        } else {
+            singleChatChannel = null; // Asegurarse que queda limpio
+        }
+
+        filterClientData = { ...$page.props.filters };
+        console.log({ filterClientData });
+    }
+
+    // Limpieza cuando sea necesario (ejemplo: al cambiar de componente)
+    const cleanupChannels = () => {
+        if (generalChannel) {
+            Echo.leave("generalChat");
+        }
+        if (singleChatChannel) {
+            Echo.leave(`chat-${singleChatChannel.name.split("-")[1]}`);
+        }
+    };
     function getFirstName(firstName) {
         const parts = firstName.split(" ");
         return parts[0];
     }
     export let data = {};
-    $: console.log(data);
     let visulizateType = "table";
     // Check if 'visualizateTypeCases' exists in localStorage
     if (typeof localStorage !== "undefined") {
@@ -63,10 +111,16 @@
         }
     }
 
-    let selectedPatient;
+    function handleKeydown(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault(); // Evita el salto de línea
+            console.log(event.key);
+            sendMessage();
+        }
+    }
+
     let newMessage = "";
     async function sendMessage(e) {
-        e.preventDefault();
         if (!newMessage.trim()) return;
 
         const message = {
@@ -104,50 +158,47 @@
         scrollDownChat();
     }
 
-    $: console.log(selectedPatient);
+    const handleFilters = () => {
+        router.get(`${$page.url.split("?")[0]}`, filterClientData, {
+            preserveState: true,
+            only: ["data"],
+        });
+    };
+    $: console.log( localData);
 </script>
 
 <div class="p-4 overflow-hidden">
     <div class=" p-3 rounded-xl">
+        <div class="flex gap-2 items-center">
         <h2>Condión de los pacientes</h2>
+            <p>ubicados en</p>
+            <select
+                on:change={(e) => {
+                    if (e.target.value == "todas") {
+                        delete filterClientData["area_id"];
+                    } else {
+                        filterClientData["area_id"] = e.target.value;
+                    }
+                    handleFilters();
+                }}
+                name={"Ubicación actual"}
+                id=""
+                class="bg-gray-200 p-1 py-2 rounded-md"
+            >
+                <option value="todas">Todas las areas</option>
+                {#if localData?.areas}
+                {#each localData?.areas as filter, i (filter.id)}
+                    <option
+                        selected={filterClientData?.["area_id"] == filter.id}
+                        value={filter.id}>{filter.name}</option
+                    >
+                {/each}
+                {/if}
+            </select>
+        </div>
         <Search
-            filtersOptions={{
-                date: {
-                    type: "date",
-                    label: "Fecha de ingreso",
-                },
-                status:
-                    {
-                        type: "select",
-                        label: "Estado",
-                        options: localData?.statutes || [],
-                    } || {},
-                case_id:
-                    {
-                        type: "search",
-                        label: "ID del caso",
-                        options: [],
-                    } || {},
-                specialty_id:
-                    {
-                        type: "select",
-                        label: "Servicio tra.",
-                        options: localData?.specialties || [],
-                    } || {},
-                area_id:
-                    {
-                        type: "select",
-                        label: "Última area",
-                        options: localData?.areas || [],
-                    } || {},
-
-                condition:
-                    {
-                        type: "select",
-                        label: "Condición",
-                        options: localData?.conditions || [],
-                    } || {},
-            }}
+            placeholder="Buscar por nombre o CI"
+            style="min-width: 300px;"
         />
         <div class="w-full z-0">
             <Table {visulizateType}>
@@ -380,7 +431,6 @@
     <form
         class="neumorphism2 rounded-2xl fixed flex overflow-hidden flex-col justify-between bg-white bottom-4 right-4 h-[500px] md:w-[340px]"
         class:hidden={!showChat}
-        on:submit={sendMessage}
     >
         <header class="p-2 px-3 flex justify-between items-center bg-gray-200">
             {#if selectedPatient}
@@ -437,6 +487,7 @@
                     class="w-full h-10 bg-transparent p-2 outline-none"
                     placeholder="Escribe un mensaje"
                     bind:value={newMessage}
+                    on:keydown={handleKeydown}
                 ></textarea>
                 <button
                     class="btn btn-primary h-full flex items-center"
