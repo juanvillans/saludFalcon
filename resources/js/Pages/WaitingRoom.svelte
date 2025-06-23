@@ -42,10 +42,7 @@
         }
     });
 
-    var channel = Echo.channel("chat");
-    channel.listen(".newMessage", function (data) {
-        alert(JSON.stringify(data));
-    });
+
 
     const playNotificationSound = () => {
         if (messageSound) {
@@ -56,6 +53,8 @@
         }
     };
     let filterClientData;
+    let selectedPatient;
+    let singleChatChannel = null;
 
     $: {
         // Limpiar canal anterior si existe
@@ -68,6 +67,8 @@
             singleChatChannel = Echo.channel("chat-" + selectedPatient.id);
 
             singleChatChannel.listen(".newMessage", function (data) {
+                alert(JSON.stringify(data));
+
                 playNotificationSound();
                 if (selectedPatient.id) {
                     selectedPatient.messages = data.messages;
@@ -81,9 +82,10 @@
         filterClientData = { ...$page.props.filters };
         console.log({ $page });
     }
-    let selectedPatient;
     let generalChannel = Echo.channel("generalChat");
     generalChannel.listen(".newMessage", function (data) {
+        alert(JSON.stringify(data));
+
         router.reload(`${$page.url.split("?")[0]}`, filterClientData, {
             preserveState: true,
             only: ["data"],
@@ -91,7 +93,6 @@
 
         playNotificationSound();
     });
-    let singleChatChannel = null;
 
     // Reactividad para el canal específico del paciente
 
