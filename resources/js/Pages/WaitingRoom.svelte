@@ -42,8 +42,6 @@
         }
     });
 
-
-
     const playNotificationSound = () => {
         if (messageSound) {
             messageSound.currentTime = 0; // Rewind to start if already playing
@@ -67,7 +65,6 @@
             singleChatChannel = Echo.channel("chat-" + selectedPatient.id);
 
             singleChatChannel.listen(".newMessage", function (data) {
-                alert(JSON.stringify(data));
 
                 playNotificationSound();
                 if (selectedPatient.id) {
@@ -84,12 +81,10 @@
     }
     let generalChannel = Echo.channel("generalChat");
     generalChannel.listen(".newMessage", function (data) {
-        alert(JSON.stringify(data));
-
-        router.reload(`${$page.url.split("?")[0]}`, filterClientData, {
-            preserveState: true,
-            only: ["data"],
-        });
+        console.log("petición de casos")
+        // router.reload(`${$page.url.split("?")[0]}`, filterClientData, {
+        //     preserveState: true,
+        // });
 
         playNotificationSound();
     });
@@ -174,13 +169,16 @@
         router.get(`${$page.url.split("?")[0]}`, filterClientData, {
             preserveState: true,
         });
+        console.log("sin filtros")
     };
     $: console.log($page);
 </script>
 
-<div class="p-4 overflow-hidden mt-12">
-    <div class=" p-3 rounded-xl ">
-        <div class="w-full flex gap-2 items-center fixed top-0 z-50 py-4 bg-white">
+<div class="pt-4 md:p-4 overflow-hidden mt-12">
+    <div class=" p-3 rounded-xl">
+        <div
+            class="w-full flex gap-2 items-center fixed top-0 z-50 py-4 bg-white"
+        >
             <h2>Condión de los pacientes</h2>
             <p>ubicados en</p>
             <select
@@ -207,6 +205,25 @@
                     {/each}
                 {/if}
             </select>
+
+            <div class="text-gray-600 text-xl md:text-2xl">
+                <iconify-icon
+                    class="cursor-pointer mr-2"
+                    title="Vizualizar tipo Tabla"
+                    on:click={() => (visulizateType = "table")}
+                    icon="material-symbols:table-sharp"
+                    class:text-color1={visulizateType == "table"}
+                    class:bg-color4={visulizateType == "table"}
+                ></iconify-icon>
+                <iconify-icon
+                    class="cursor-pointer"
+                    title="Vizualizar tipo lista"
+                    on:click={() => (visulizateType = "card")}
+                    icon="carbon:show-data-cards"
+                    class:text-color1={visulizateType == "card"}
+                    class:bg-color4={visulizateType == "card"}
+                ></iconify-icon>
+            </div>
         </div>
         <Search
             placeholder="Buscar por nombre o CI"
@@ -221,7 +238,7 @@
                         <th>Paciente</th>
                         <th>Ubicación</th>
                         <th>Condición</th>
-                        <th>Mensaje</th>
+                        <th>Último mensaje</th>
                         <th style="font-size: 12px  ">Última actualización.</th>
                     </tr>
                 </thead>
@@ -233,7 +250,7 @@
                                 on:click={() => selectPatient(row)}
                                 class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5 ${selectedPatient?.id == row.id ? "bg-color3 hover:bg-opacity-10 bg-opacity-20 brightness-110" : ""}`}
                             >
-                                <td style="font-size: 12px;">{row.id}</td>
+                                <td >{row.bed_number}</td>
                                 <td class="min-w-[180px]">
                                     <div class="flex items-center gap-2">
                                         <span class="whitespace-normal"
@@ -281,7 +298,7 @@
                                         >
                                     {:else if row.last_message}
                                         {row?.last_message}
-                                    {:else}{/if}
+                                    {/if}
                                 </td>
                                 <td class="">{row.updated_at}</td>
 
@@ -293,137 +310,118 @@
             </Table>
 
             {#if visulizateType == "card"}
-                <div class="grid lg:grid-cols-2 gap-5 mt-3">
+                <div class="grid lg:grid-cols-2 2xl:grid-cols-3 gap-5 mt-3">
                     {#each data?.data as row, i (row.id)}
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <!-- svelte-ignore missing-declaration -->
                         <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                         <article
-                            on:mousedown={handleMouseDown}
-                            on:mouseup={(e) => handleMouseUp(e, row.id)}
-                            class={`relative w-full cursor-pointer bg-gray-100 p-2 md:p-5 rounded-md  hover:bg-color4 hover:bg-opacity-60 neumorphism2`}
+                            on:click={() => selectPatient(row)}
+                            class={`relative w-full cursor-pointer  p-2 md:p-5 rounded-md hover:bg-color4 hover:bg-opacity-60 neumorphism2 ${selectedPatient?.id == row.id ? "bg-color4 bg-opacity-70" : " bg-gray-100"}`}
                         >
                             <span
                                 class="h-fit absolute right-0 top-0 text-center col-span-2 p-1 text-xs inline-block w-10 md:px-2"
-                                >{row.id}</span
                             >
-                            <div class="flex gap-1 items-center">
-                                <StatusColor
-                                    status={{
-                                        name: row?.current_status_name,
-                                        id: row?.current_status,
-                                    }}
-                                />
+                            <p class="font-bold text-color3">
+                                {row.bed_number}
+                            </p>
+                                <iconify-icon
+                                    icon="streamline-ultimate-color:medical-instrument-ambulance-bed"
+                                    width="24"
+                                    height="24"
+                                    class="xl:text-xl"
+                                ></iconify-icon>
+                            </span>
 
-                                <!-- {#if row?.current_status == "3"}
-                        a {row?.admitted_area_name}
-                    {/if} -->
-                                <span class="inline-flex">
-                                    {#if row.current_status == 1 || row.current_status == 2}
-                                        de
-                                    {:else if row.current_status == 4 || row.current_status == 5}
-                                        en
-                                    {:else if row.current_status == 3}
-                                        a
-                                    {/if}
-                                    {row.area_name}.
-                                </span>
-                                <div class="flex items-cenenter gap-1">
+                            <div
+                                class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 items-start"
+                            >
+
+                             <div class="flex items-center justify-center">
                                     <iconify-icon
-                                        icon="game-icons:duration"
-                                        class="text-gray-600 text-xs md:text-sm"
+                                        icon="material-symbols:person-rounded"
+                                        width="20"
+                                        height="20"
+                                        class="text-gray-500"
                                     ></iconify-icon>
                                 </div>
-                            </div>
-                            <p>
-                                F. de ingreso: {row.formatted_entry_date}
-                            </p>
-
-                            <div class="flex items-center gap-3 mt-1">
-                                {#if row.sex == "Femenino"}
-                                    <span class="text-pink text-lg sm:text-2xl">
-                                        <iconify-icon icon="fa-solid:female"
-                                        ></iconify-icon>
+                                <div>
+                                    <span>
+                                        {getFirstName(row?.patient_name)}
+                                        {getFirstName(row.patient_last_name)}
+                                        <small class="text-gray-500">C.I:</small
+                                        >
+                                        {row.user_ci}
                                     </span>
-                                {:else}
-                                    <span
-                                        class="text-color3 text-lg sm:text-2xl"
-                                    >
-                                        <iconify-icon icon="fa-solid:male"
-                                        ></iconify-icon>
+                                </div>
+                                <div class="flex items-center justify-center">
+                                    <iconify-icon
+                                        icon="ic:baseline-place"
+                                        width="20"
+                                        height="20"
+                                        class="text-gray-500"
+                                    ></iconify-icon>
+                                </div>
+                                <div>
+                                    <span>
+                                        {row.area_name}
                                     </span>
-                                {/if}
-                                <span
-                                    >{getFirstName(row?.patient_name)}
-                                    {getFirstName(row.patient_last_name)}
-                                    <small class="text-gray-500">C.I:</small
-                                    >{row.user_ci}
-                                </span>
-                            </div>
-                            <div class="mt-1 flex gap-1.5">
-                                <iconify-icon
-                                    icon="emojione-monotone:speaking-head"
-                                    width="20"
-                                    height="20"
-                                    class="text-gray-900"
-                                ></iconify-icon>
-                                <p>
-                                    {#if row?.reason.length > 200}
-                                        {row?.reason.slice(0, 200)}
-                                        <span
-                                            class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                                            >...</span
-                                        >
-                                    {:else}
-                                        {row?.reason}
-                                    {/if}
-                                </p>
-                            </div>
-                            <div class="mt-2 flex gap-2">
-                                <div
-                                    class={`inline-block w-2 h-2 mr-2 relative top-2 aspect-square rounded-full  condition${row.current_patient_condition_id}`}
-                                ></div>
-                                <p>
-                                    {#if row.diagnosis.length > 200}
-                                        {row.diagnosis.slice(0, 200)}
-                                        <span
-                                            class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                                            >...</span
-                                        >
-                                    {:else}
-                                        {row.diagnosis}
-                                    {/if}
-                                </p>
-                            </div>
-                            <div class="mt-2 flex gap-2">
-                                <iconify-icon
-                                    class="relative top-1 -left-1 text-color2"
-                                    icon="ant-design:medicine-box-filled"
-                                    width="20"
-                                    height="20"
-                                ></iconify-icon>
-                                <p>
-                                    {#if row.last_message.length > 200}
-                                        {row.last_message.slice(0, 200)}
-                                        <span
-                                            class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                                            >...</span
-                                        >
-                                    {:else}
-                                        {row.last_message}
-                                    {/if}
-                                </p>
-                            </div>
+                                </div>
 
-                            <!-- <td>{row.rep_name} {row.rep_last_name}</td> -->
-                            <!-- <p
-                    class="text-right justify-end w-full flex items-center gap-2"
-                >
-                    {row.user_name}
-                    {row.user_last_name}
-                    <iconify-icon icon="mdi:doctor" style="font-size: 20px;"
-                    ></iconify-icon>
-                </p> -->
+                                <!-- <div class="flex items-center justify-center">
+                                    <iconify-icon
+                                        icon="mingcute:time-line"
+                                        width="20"
+                                        height="20"
+                                        class="text-gray-500"
+                                    ></iconify-icon>
+                                </div>
+                                <div>
+                                    <span>
+                                        {row.updated_at}
+                                    </span>
+                                </div> -->
+
+                               
+
+                                <div class="flex items-center justify-center">
+                                    <div
+                                        class={`inline-block w-6 h-6 aspect-square rounded-full condition${row.current_patient_condition_id} flex items-center justify-center`}
+                                    ></div>
+                                </div>
+                                <div>
+                                    <span>
+                                        {row.current_patient_condition_name}  <small class="opacity-70">
+                                                | hoy a las 4:00 pm
+                                        </small>
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center justify-center">
+                                    <iconify-icon
+                                        icon="tabler:message-filled"
+                                        width="20"
+                                        height="20"
+                                        class="text-color1"
+                                    ></iconify-icon>
+                                </div>
+                                <div>
+                                    <p>
+                                        {#if row.last_message?.length > 200}
+                                            {row.last_message.slice(0, 200)}
+                                            <span
+                                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                                >...</span
+                                            >
+                                        {:else}
+                                            {row.last_message}
+                                        {/if}
+                                        <small class="opacity-70">
+                                                | hoy a las 4:00 pm
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
                         </article>
                     {/each}
                 </div>
@@ -431,29 +429,28 @@
         </div>
     </div>
 
-    {#if !$page.props.auth.user_id }
-    <div class=" bottom-7 right-2 hidden 2xl:block fixed">
-        {#if qrDataUrl}
-        <div class="shadow-xl rounded-md bg-white">
-
-            <div class="py-2 px-2">Buscas a tu familiar?</div>
-            <img class="w-[300px]" src={qrDataUrl}  alt="Código QR" />
+    {#if !$page.props.auth.user_id}
+        <div class=" bottom-7 right-2 hidden 2xl:block fixed">
+            {#if qrDataUrl}
+                <div class="shadow-xl rounded-md bg-white">
+                    <div class="py-2 px-2">Buscas a tu familiar?</div>
+                    <img class="w-[300px]" src={qrDataUrl} alt="Código QR" />
+                </div>
+            {:else}
+                <p>Generando código QR...</p>
+            {/if}
         </div>
-        {:else}
-            <p>Generando código QR...</p>
-        {/if}
-    </div>
-
     {:else}
-
-    <button
-        title="open chat"
-        class="fixed bottom-7 right-7 w-16 shadow-2xl border-color3 border aspect-square flex justify-center items-center bg-color4 rounded-full"
-        on:click={() => (showChat = true)}
-    >
-        <iconify-icon icon="line-md:chat-filled" class="text-3xl text-color1"
-        ></iconify-icon>
-    </button>
+        <button
+            title="open chat"
+            class="fixed bottom-7 right-7 w-16 shadow-2xl border-color3 border aspect-square flex justify-center items-center bg-color4 rounded-full"
+            on:click={() => (showChat = true)}
+        >
+            <iconify-icon
+                icon="line-md:chat-filled"
+                class="text-3xl text-color1"
+            ></iconify-icon>
+        </button>
     {/if}
 
     <div
@@ -501,31 +498,33 @@
                 {/each}
             {/if}
         </main>
-        {#if $page.props.auth.user_id }
-
-        <footer class="bg-color4 pt-2">
-            <div class="flex">
-                <button> </button>
-            </div>
-            <div
-                class="overflow-hidden text-sm px-3 py-1 rounded-full border border-gray-600 mb-2 flex justify-between w-11/12 mx-auto items-center bg-gray-100"
-            >
-                <textarea
-                    name="message"
-                    id=""
-                    class="w-full h-10 bg-transparent p-2 outline-none"
-                    placeholder="Escribe un mensaje"
-                    bind:value={newMessage}
-                    on:keydown={handleKeydown}
-                ></textarea>
-                <button
-                    class="btn btn-primary h-full flex items-center"
-                    on:click={sendMessage}
-                    ><iconify-icon icon="iconoir:send" width="24" height="24"
-                    ></iconify-icon></button
+        {#if $page.props.auth.user_id}
+            <footer class="bg-color4 pt-2">
+                <div class="flex">
+                    <button> </button>
+                </div>
+                <div
+                    class="overflow-hidden text-sm px-3 py-1 rounded-full border border-gray-600 mb-2 flex justify-between w-11/12 mx-auto items-center bg-gray-100"
                 >
-            </div>
-        </footer>
+                    <textarea
+                        name="message"
+                        id=""
+                        class="w-full h-10 bg-transparent p-2 outline-none"
+                        placeholder="Escribe un mensaje"
+                        bind:value={newMessage}
+                        on:keydown={handleKeydown}
+                    ></textarea>
+                    <button
+                        class="btn btn-primary h-full flex items-center"
+                        on:click={sendMessage}
+                        ><iconify-icon
+                            icon="iconoir:send"
+                            width="24"
+                            height="24"
+                        ></iconify-icon></button
+                    >
+                </div>
+            </footer>
         {/if}
     </div>
 </div>
