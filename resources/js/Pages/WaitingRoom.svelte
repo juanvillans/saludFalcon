@@ -453,6 +453,7 @@
         <iconify-icon icon="line-md:chat-filled" class="text-3xl text-color1"
         ></iconify-icon>
     </button>
+    {/if}
 
     <div
         class="neumorphism2 rounded-2xl fixed flex overflow-hidden flex-col justify-between bg-white bottom-4 right-4 h-[500px] md:w-[340px]"
@@ -499,7 +500,7 @@
                 {/each}
             {/if}
         </main>
-    {#if $page.props.auth.user_id }
+        {#if $page.props.auth.user_id }
 
         <footer class="bg-color4 pt-2">
             <div class="flex">
@@ -524,5 +525,6 @@
                 >
             </div>
         </footer>
+        {/if}
     </div>
 </div>
