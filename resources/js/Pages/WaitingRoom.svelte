@@ -428,7 +428,7 @@
         ></iconify-icon>
     </button>
 
-    <form
+    <div
         class="neumorphism2 rounded-2xl fixed flex overflow-hidden flex-col justify-between bg-white bottom-4 right-4 h-[500px] md:w-[340px]"
         class:hidden={!showChat}
     >
@@ -497,5 +497,5 @@
                 >
             </div>
         </footer>
-    </form>
+    </div>
 </div>
