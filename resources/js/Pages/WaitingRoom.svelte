@@ -8,6 +8,7 @@
     import { page, router } from "@inertiajs/svelte";
     import { displayAlert } from "../stores/alertStore";
     import QRCode from "qrcode";
+    import debounce from "lodash/debounce";
 
     let qrDataUrl = "";
     const targetUrl = "https://saludfalcon.org/sala-de-espera";
@@ -65,7 +66,6 @@
             singleChatChannel = Echo.channel("chat-" + selectedPatient.id);
 
             singleChatChannel.listen(".newMessage", function (data) {
-
                 playNotificationSound();
                 if (selectedPatient.id) {
                     selectedPatient.messages = data.messages;
@@ -81,10 +81,11 @@
     }
     let generalChannel = Echo.channel("generalChat");
     generalChannel.listen(".newMessage", function (data) {
-        console.log("petición de casos")
-        // router.reload(`${$page.url.split("?")[0]}`, filterClientData, {
-        //     preserveState: true,
-        // });
+        console.log("petición de casos");
+        router.reload(`${$page.url.split("?")[0]}`, filterClientData, {
+            preserveState: true,
+        });
+        scrollDownChat();
 
         playNotificationSound();
     });
@@ -169,66 +170,96 @@
         router.get(`${$page.url.split("?")[0]}`, filterClientData, {
             preserveState: true,
         });
-        console.log("sin filtros")
+        console.log("sin filtros");
     };
+
+    let search;
+    const handleSearch = debounce((event) => {
+        router.get(`${$page.url}`, { search }, { preserveState: true });
+    }, 300);
     $: console.log($page);
 </script>
 
-<div class="pt-4 md:p-4 overflow-hidden mt-12">
+<div class="pt-4 md:p-4 overflow-hidden mt-24 md:mt-14">
     <div class=" p-3 rounded-xl">
         <div
-            class="w-full flex gap-2 items-center fixed top-0 z-50 py-4 bg-white"
+            class="w-full md:flex md:space-x-10 lg:space-x-16 gap-2 space-y-4 md:space-y-0 items-center fixed top-0 z-50 py-4 bg-white"
         >
-            <h2>Condión de los pacientes</h2>
-            <p>ubicados en</p>
-            <select
-                on:change={(e) => {
-                    if (e.target.value == "todas") {
-                        delete filterClientData["area_id"];
-                    } else {
-                        filterClientData["area_id"] = e.target.value;
-                    }
-                    handleFilters();
-                }}
-                name={"Ubicación actual"}
-                id=""
-                class="bg-gray-200 p-1 py-2 rounded-md"
-            >
-                <option value="todas">Todas las areas</option>
-                {#if localData?.areas}
-                    {#each localData?.areas as filter, i (filter.id)}
-                        <option
-                            selected={filterClientData?.["area_id"] ==
-                                filter.id}
-                            value={filter.id}>{filter.name}</option
-                        >
-                    {/each}
-                {/if}
-            </select>
-
-            <div class="text-gray-600 text-xl md:text-2xl">
-                <iconify-icon
-                    class="cursor-pointer mr-2"
-                    title="Vizualizar tipo Tabla"
-                    on:click={() => (visulizateType = "table")}
-                    icon="material-symbols:table-sharp"
-                    class:text-color1={visulizateType == "table"}
-                    class:bg-color4={visulizateType == "table"}
-                ></iconify-icon>
-                <iconify-icon
-                    class="cursor-pointer"
-                    title="Vizualizar tipo lista"
-                    on:click={() => (visulizateType = "card")}
-                    icon="carbon:show-data-cards"
-                    class:text-color1={visulizateType == "card"}
-                    class:bg-color4={visulizateType == "card"}
-                ></iconify-icon>
+            <div class="lg:flex gap-2 items-center">
+                <div class="flex gap-2">
+                    <h2>Condión de los pacientes</h2>
+                    <p>ubicados en</p>
+                </div>
+                <select
+                    on:change={(e) => {
+                        if (e.target.value == "todas") {
+                            delete filterClientData["area_id"];
+                        } else {
+                            filterClientData["area_id"] = e.target.value;
+                        }
+                        handleFilters();
+                    }}
+                    name={"Ubicación actual"}
+                    id=""
+                    class="bg-gray-200 p-1 py-2 rounded-md"
+                >
+                    <option value="todas">Todas las areas</option>
+                    {#if localData?.areas}
+                        {#each localData?.areas as filter, i (filter.id)}
+                            <option
+                                selected={filterClientData?.["area_id"] ==
+                                    filter.id}
+                                value={filter.id}>{filter.name}</option
+                            >
+                        {/each}
+                    {/if}
+                </select>
+            </div>
+            <div class="flex gap-4 items-center">
+                <div
+                    class="flex items-center gap-2 border border-gray-400 w-fit rounded-full pr-3"
+                >
+                    <input
+                        type="search"
+                        placeholder="Buscar por nombre o CI"
+                        bind:value={search}
+                        on:input={() => {
+                            handleSearch();
+                        }}
+                        style=" z-index: 100 !important;"
+                        class={`block  py-1.5 pr-2 text-gray-700 rounded-full  w-36 md:w-56  placeholder-gray-400/70 pl-3 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40`}
+                    />
+                    <iconify-icon
+                        icon="material-symbols:search"
+                        width="24"
+                        height="24"
+                    ></iconify-icon>
+                </div>
+                <div class="text-gray-600 text-xl md:text-2xl">
+                    <iconify-icon
+                        class="cursor-pointer mr-2"
+                        title="Vizualizar tipo Tabla"
+                        on:click={() => (visulizateType = "table")}
+                        icon="material-symbols:table-sharp"
+                        class:text-color1={visulizateType == "table"}
+                        class:bg-color4={visulizateType == "table"}
+                    ></iconify-icon>
+                    <iconify-icon
+                        class="cursor-pointer"
+                        title="Vizualizar tipo lista"
+                        on:click={() => (visulizateType = "card")}
+                        icon="carbon:show-data-cards"
+                        class:text-color1={visulizateType == "card"}
+                        class:bg-color4={visulizateType == "card"}
+                    ></iconify-icon>
+                </div>
             </div>
         </div>
-        <Search
+        <!-- <Search
             placeholder="Buscar por nombre o CI"
             style="min-width: 300px; z-index: 100 !important; border: 1px solid gray;"
-        />
+        /> -->
+
         <div class="w-full z-0 max-w-[1600px]">
             <Table {visulizateType}>
                 <div slot="filterBox"></div>
@@ -250,7 +281,7 @@
                                 on:click={() => selectPatient(row)}
                                 class={`md:max-h-[200px] overflow-hidden cursor-pointer  hover:bg-gray-500 hover:bg-opacity-5 ${selectedPatient?.id == row.id ? "bg-color3 hover:bg-opacity-10 bg-opacity-20 brightness-110" : ""}`}
                             >
-                                <td >{row.bed_number}</td>
+                                <td>{row.bed_number}</td>
                                 <td class="min-w-[180px]">
                                     <div class="flex items-center gap-2">
                                         <span class="whitespace-normal"
@@ -298,6 +329,10 @@
                                         >
                                     {:else if row.last_message}
                                         {row?.last_message}
+                                        <small class="opacity-70">
+                                            | {row.messages[row.messages.length - 1]
+                                                ?.date}
+                                        </small>
                                     {/if}
                                 </td>
                                 <td class="">{row.updated_at}</td>
@@ -322,9 +357,9 @@
                             <span
                                 class="h-fit absolute right-0 top-0 text-center col-span-2 p-1 text-xs inline-block w-10 md:px-2"
                             >
-                            <p class="font-bold text-color3">
-                                {row.bed_number}
-                            </p>
+                                <p class="font-bold text-color3">
+                                    {row.bed_number}
+                                </p>
                                 <iconify-icon
                                     icon="streamline-ultimate-color:medical-instrument-ambulance-bed"
                                     width="24"
@@ -336,8 +371,7 @@
                             <div
                                 class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 items-start"
                             >
-
-                             <div class="flex items-center justify-center">
+                                <div class="flex items-center justify-center">
                                     <iconify-icon
                                         icon="material-symbols:person-rounded"
                                         width="20"
@@ -382,8 +416,6 @@
                                     </span>
                                 </div> -->
 
-                               
-
                                 <div class="flex items-center justify-center">
                                     <div
                                         class={`inline-block w-6 h-6 aspect-square rounded-full condition${row.current_patient_condition_id} flex items-center justify-center`}
@@ -391,8 +423,9 @@
                                 </div>
                                 <div>
                                     <span>
-                                        {row.current_patient_condition_name}  <small class="opacity-70">
-                                                | hoy a las 4:00 pm
+                                        {row.current_patient_condition_name}
+                                        <small class="opacity-70">
+                                            | {row.updated_at}
                                         </small>
                                     </span>
                                 </div>
@@ -407,18 +440,19 @@
                                 </div>
                                 <div>
                                     <p>
-                                        {#if row.last_message?.length > 200}
-                                            {row.last_message.slice(0, 200)}
-                                            <span
-                                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                                                >...</span
-                                            >
-                                        {:else}
-                                            {row.last_message}
-                                        {/if}
+                                        {#if row?.last_message?.length > 200}
+                                        {row?.last_message.slice(0, 200)}
+                                        <span
+                                            class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                            >...</span
+                                        >
+                                    {:else if row.last_message}
+                                        {row?.last_message}
                                         <small class="opacity-70">
-                                                | hoy a las 4:00 pm
+                                            | {row.messages[row.messages.length - 1]
+                                                ?.date}
                                         </small>
+                                    {/if}
                                     </p>
                                 </div>
                             </div>
@@ -454,34 +488,46 @@
     {/if}
 
     <div
-        class="neumorphism2 rounded-2xl fixed flex overflow-hidden flex-col justify-between bg-white bottom-4 right-4 h-[500px] md:w-[340px]"
+        class="z-50 neumorphism2 rounded-2xl fixed flex overflow-hidden flex-col justify-between bg-white bottom-1 right-1 md:bottom-4 md:right-4 h-[500px] w-[250px] md:w-[340px]"
         class:hidden={!showChat}
     >
-        <header class="p-2 px-3 flex justify-between items-center bg-gray-200">
-            {#if selectedPatient}
-                <p>
-                    {getFirstName(selectedPatient?.patient_name)}
-                    {getFirstName(selectedPatient?.patient_last_name)}
-                    <span class="text-xs text-opacity-75">
-                        C.I:{selectedPatient?.patient_ci}</span
-                    >
-                </p>
-            {:else}
-                <p>Selecciona un paciente</p>
+        <header class="p-2 px-3 bg-gray-200">
+            <div class="flex justify-between items-center">
+                {#if selectedPatient}
+                    <p>
+                        {getFirstName(selectedPatient?.patient_name)}
+                        {getFirstName(selectedPatient?.patient_last_name)}
+                        <span class="text-xs text-opacity-75">
+                            C.I:{selectedPatient?.patient_ci}</span
+                        >
+                    </p>
+                {:else}
+                    <p>Selecciona un paciente</p>
+                {/if}
+                <button on:click={() => (showChat = false)}>
+                    <iconify-icon icon="line-md:close"></iconify-icon>
+                </button>
+            </div>
+            {#if $page.props.auth.user_id && selectedPatient}
+                <a
+                    class="text-xs underline text-color3"
+                    href="http://localhost:8000/admin/casos/detalle-caso/{selectedPatient?.id}"
+                    target="_blank"
+                    rel="noopener noreferrer">Actualizar caso</a
+                >
             {/if}
-            <button on:click={() => (showChat = false)}>
-                <iconify-icon icon="line-md:close"></iconify-icon>
-            </button>
         </header>
 
         <main class="flex-1 overflow-y-scroll chat-container">
             {#if selectedPatient}
                 {#each selectedPatient?.messages as message, i (message.id)}
                     <div class="p-3">
-                        <p class="text-sm text-gray-500 mb-1">{message.date}</p>
+                        <p class="text-xs md:text-sm text-gray-500 mb-1">
+                            {message.date}
+                        </p>
                         <div class="flex gap-2">
                             <img
-                                class="bg-gray-400 w-8 h-8 aspect-square rounded-full object-cover"
+                                class="bg-gray-400 w-5 h-5 md:w-8 md:h-8 aspect-square rounded-full object-cover"
                                 src={`/storage/users/${message.user_photo}`}
                                 alt=""
                             />
