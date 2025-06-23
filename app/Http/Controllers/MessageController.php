@@ -24,7 +24,12 @@ class MessageController extends Controller
 
             $messages = Messages::where('emergency_case_id', $message->emergency_case_id)->get();
 
+            Log::info('antes del broadcast');
+
             broadcast(new MessageCreated(new MessageCollection($messages), $message->emergency_case_id))->toOthers();
+
+            Log::info('despues del broadcast');
+
 
             return response()->json(['message' => $message, 'status' => true]);
 
