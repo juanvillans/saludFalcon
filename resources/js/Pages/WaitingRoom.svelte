@@ -166,9 +166,10 @@
     }
 
     const handleFilters = () => {
-        router.get(`${$page.url.split("?")[0]}`, filterClientData, {
-            preserveState: true,
-        });
+        // router.get(`${$page.url.split("?")[0]}`, filterClientData, {
+        //     preserveState: true,
+        // });
+        console.log("sin filtros")
     };
     $: console.log($page);
 </script>
