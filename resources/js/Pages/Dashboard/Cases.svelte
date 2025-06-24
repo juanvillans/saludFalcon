@@ -497,9 +497,16 @@
                 }}
             >
                 {#each localData.areas as area (area.id)}
-                    {#if area.division_id == 2}
-                        <option value={area.id}>{area.name}</option>
-                    {/if}
+                    <option value={area.id}>
+                        {#if area.division_id == "1"}
+                            <span class="text-green" style="color: red">
+                                H -
+                            </span>
+                        {:else}
+                            <span class="text-color3"> E - </span>
+                        {/if}
+                        {area.name}
+                    </option>
                 {/each}
             </Input>
 

@@ -706,6 +706,14 @@
                                 a
                             {/if}
                             {evolution.area_name}
+                            |
+                            <iconify-icon
+                                    icon="streamline-ultimate-color:medical-instrument-ambulance-bed"
+                                    width="24"
+                                    height="24"
+                                    class="xl:text-xl"
+                                ></iconify-icon>
+                                {evolution.bed_number || 0}
                         </div>
                         <div class="flex gap-2 justify-center">
                             {#if evolution.is_interconsult}

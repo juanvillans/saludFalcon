@@ -31,7 +31,7 @@
 </script>
 
 <a
-    class="btn_create inline-block p-2 px-3"
+    class="btn_create responsive inline-block p-2 px-3"
     href="/admin/agenda/crear-calendario"
     use:inertia
 >

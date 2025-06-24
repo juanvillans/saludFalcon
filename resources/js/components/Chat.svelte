@@ -63,6 +63,9 @@
     };
 
     $: {
+        if (showChat) {
+            scrollDownChat();
+        }
         // Limpiar canal anterior si existe
         if (singleChatChannel) {
             Echo.leave(`chat-${singleChatChannel.name.split("-")[1]}`);

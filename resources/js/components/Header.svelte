@@ -4,7 +4,7 @@
 
     let pageName = "";
     $: userNav = false;
-
+    export let showTitlePage = true
     function toggleNavUser() {
         userNav = !userNav;
     }
@@ -42,20 +42,23 @@
 
 </script>
 
-<header class="w-full text-color1">
+<header class=" text-color1 ">
     <nav
         class="flex justify-between items-center w-full max-h-32 py-2 gap-3 text-sm px-3 md:px-5"
     >
         <span class="flex gap-1 items-center">
             <!-- svelte-ignore missing-declaration -->
-            <a
-                href="/dashboard"
-                use:inertia
-                class="text-sm hidden md:inline font-bold"
-                >{dictionaryPages?.[
-                    $page.component.replace("Dashboard/", "")?.toLowerCase()
-                ].toUpperCase()}</a
-            >
+             {#if showTitlePage}
+                <a
+                    href="/dashboard"
+                    use:inertia
+                    class="text-sm hidden md:inline font-bold"
+                    >{dictionaryPages?.[
+                        $page.component.replace("Dashboard/", "")?.toLowerCase()
+                    ].toUpperCase()}</a
+                >
+            {/if}
+            
         </span>
         <!-- <div class="flex bg-color2  md:min-w-72 rounded-full items-center">
                 <iconify-icon icon="cil:search" class="mx-2" />
@@ -104,6 +107,12 @@
                 <div
                     class="absolute w-fit rounded-lg flex items-center flex-col bg-color1 overflow-hidden z-50 top-10 right-3 rounded-tr-none text-gray-100 shadow-xl"
                 >
+                <a
+                        href={`/admin/casos/`}
+                        use:inertia
+                        class="p-2 py-3 px-4 w-full cursor-pointer hover:underline hover:text-gray-50 block whitespace-nowrap"
+                        >Entrar al admin</a
+                    >
                     <a
                         href={`/admin/perfil/${$page.props.auth.user_id}`}
                         use:inertia

@@ -10,6 +10,7 @@
     import QRCode from "qrcode";
     import debounce from "lodash/debounce";
     import Chat from "../components/Chat.svelte";
+    import Header from "../components/Header.svelte";
 
     let qrDataUrl = "";
     const targetUrl = "https://saludfalcon.org/sala-de-espera";
@@ -89,9 +90,9 @@
 
     function isSmallDevice() {
         // This will only run in the browser environment
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
             // Using matchMedia for responsiveness. Adjust '768px' to your desired breakpoint (e.g., Tailwind's md)
-            return window.matchMedia('(max-width: 767px)').matches;
+            return window.matchMedia("(max-width: 767px)").matches;
         }
         return false; // Default to false if not in a browser environment (e.g., SSR)
     }
@@ -134,81 +135,120 @@
     }, 300);
     $: console.log($page);
 </script>
+
 <svelte:head>
     <title>Sala de espera</title>
 </svelte:head>
-<div class="pt-4 md:p-4 overflow-hidden mt-24 md:mt-14 ">
+<div class="pt-4 md:p-4 overflow-hidden mt-24 xl:mt-14">
     <div class=" p-3 rounded-xl">
         <div
-            class="w-full md:flex md:space-x-10 lg:space-x-16 gap-2 space-y-4 md:space-y-0 items-center fixed top-0 z-50 py-4 bg-white"
+            class="w-screen md:flex md:space-x-10 lg:space-x-16 gap-2 space-y-4 md:space-y-0 items-center fixed left-0 px-2 md:px-8 lg:px-12 top-0 z-50 py-4 bg-white"
         >
-            <div class="lg:flex gap-2 items-center">
-                <div class="flex gap-2">
-                    <h2>Condión de los pacientes</h2>
-                    <p>ubicados en</p>
+            <div class="flex justify-between w-full">
+                <div class="flex-1 flex flex-col lg:flex-row space-y-2 lg:gap-x-10">
+                    <div class=" gap-2 items-center">
+                        <div class="flex gap-2">
+                            <h2>Condión de los pacientes</h2>
+                            <p>ubicados en</p>
+                        </div>
+                        <select
+                            on:change={(e) => {
+                                if (e.target.value == "todas") {
+                                    delete filterClientData["division_id"];
+                                } else {
+                                    filterClientData["division_id"] =
+                                        e.target.value;
+                                }
+                                handleFilters();
+                            }}
+                            name={"División"}
+                            id=""
+                            class="bg-gray-200 p-1 py-2 rounded-md"
+                        >
+                            <option value="todas">Todas las divisiones</option>
+                            {#if localData?.divisions}
+                                {#each localData?.divisions as filter, i (filter.id)}
+                                    <option
+                                        selected={filterClientData?.[
+                                            "division_id"
+                                        ] == filter.id}
+                                        value={filter.id}>{filter.name}</option
+                                    >
+                                {/each}
+                            {/if}
+                        </select>
+                        <select
+                            on:change={(e) => {
+                                if (e.target.value == "todas") {
+                                    delete filterClientData["area_id"];
+                                } else {
+                                    filterClientData["area_id"] =
+                                        e.target.value;
+                                }
+                                handleFilters();
+                            }}
+                            name={"Area"}
+                            id=""
+                            class="bg-gray-200 p-1 py-2 rounded-md"
+                        >
+                            <option value="todas">Todas las areas</option>
+                            {#if localData?.areas}
+                                {#each localData?.areas as filter, i (filter.id)}
+                                    {#if filterClientData?.["division_id"] == filter.division_id}
+                                        <option
+                                            selected={filterClientData?.[
+                                                "area_id"
+                                            ] == filter.id}
+                                            value={filter.id}
+                                            >{filter.name}</option
+                                        >
+                                    {/if}
+                                {/each}
+                            {/if}
+                        </select>
+                    </div>
+                    <div class="flex gap-4 items-center">
+                        <div
+                            class="flex items-center gap-2 border border-gray-400 w-fit rounded-full pr-3"
+                        >
+                            <input
+                                type="search"
+                                placeholder="Buscar por nombre o CI"
+                                bind:value={search}
+                                on:input={() => {
+                                    handleSearch();
+                                }}
+                                style=" z-index: 100 !important;"
+                                class={`block  py-1.5 pr-2 text-gray-700 rounded-full  w-36 md:w-56  placeholder-gray-400/70 pl-3 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40`}
+                            />
+                            <iconify-icon
+                                icon="material-symbols:search"
+                                width="24"
+                                height="24"
+                            ></iconify-icon>
+                        </div>
+                        <div class="text-gray-600 text-xl md:text-2xl">
+                            <iconify-icon
+                                class="cursor-pointer mr-2"
+                                title="Vizualizar tipo Tabla"
+                                on:click={() => (visulizateType = "table")}
+                                icon="material-symbols:table-sharp"
+                                class:text-color1={visulizateType == "table"}
+                                class:bg-color4={visulizateType == "table"}
+                            ></iconify-icon>
+                            <iconify-icon
+                                class="cursor-pointer"
+                                title="Vizualizar tipo lista"
+                                on:click={() => (visulizateType = "card")}
+                                icon="carbon:show-data-cards"
+                                class:text-color1={visulizateType == "card"}
+                                class:bg-color4={visulizateType == "card"}
+                            ></iconify-icon>
+                        </div>
+                    </div>
                 </div>
-                <select
-                    on:change={(e) => {
-                        if (e.target.value == "todas") {
-                            delete filterClientData["area_id"];
-                        } else {
-                            filterClientData["area_id"] = e.target.value;
-                        }
-                        handleFilters();
-                    }}
-                    name={"Ubicación actual"}
-                    id=""
-                    class="bg-gray-200 p-1 py-2 rounded-md"
-                >
-                    <option value="todas">Todas las areas</option>
-                    {#if localData?.areas}
-                        {#each localData?.areas as filter, i (filter.id)}
-                            <option
-                                selected={filterClientData?.["area_id"] ==
-                                    filter.id}
-                                value={filter.id}>{filter.name}</option
-                            >
-                        {/each}
-                    {/if}
-                </select>
-            </div>
-            <div class="flex gap-4 items-center">
-                <div
-                    class="flex items-center gap-2 border border-gray-400 w-fit rounded-full pr-3"
-                >
-                    <input
-                        type="search"
-                        placeholder="Buscar por nombre o CI"
-                        bind:value={search}
-                        on:input={() => {
-                            handleSearch();
-                        }}
-                        style=" z-index: 100 !important;"
-                        class={`block  py-1.5 pr-2 text-gray-700 rounded-full  w-36 md:w-56  placeholder-gray-400/70 pl-3 rtl:pr-11 rtl:pl-5 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40`}
-                    />
-                    <iconify-icon
-                        icon="material-symbols:search"
-                        width="24"
-                        height="24"
-                    ></iconify-icon>
-                </div>
-                <div class="text-gray-600 text-xl md:text-2xl">
-                    <iconify-icon
-                        class="cursor-pointer mr-2"
-                        title="Vizualizar tipo Tabla"
-                        on:click={() => (visulizateType = "table")}
-                        icon="material-symbols:table-sharp"
-                        class:text-color1={visulizateType == "table"}
-                        class:bg-color4={visulizateType == "table"}
-                    ></iconify-icon>
-                    <iconify-icon
-                        class="cursor-pointer"
-                        title="Vizualizar tipo lista"
-                        on:click={() => (visulizateType = "card")}
-                        icon="carbon:show-data-cards"
-                        class:text-color1={visulizateType == "card"}
-                        class:bg-color4={visulizateType == "card"}
-                    ></iconify-icon>
+                <div class="min-w-[100px]">
+                <Header showTitlePage={false} />
                 </div>
             </div>
         </div>
@@ -257,7 +297,11 @@
                                     class="min-w-[150px]"
                                 >
                                     <span class="inline-block flex">
-                                        {row.area_name}
+                                        {#if row.area_id?.division_id == "2"}
+                                            Emergencia
+                                        {:else}
+                                            {row.area_name}
+                                        {/if}
                                     </span>
                                 </td>
 
@@ -287,8 +331,9 @@
                                     {:else if row.last_message}
                                         {row?.last_message}
                                         <small class="opacity-70">
-                                            | {row.messages[row.messages.length - 1]
-                                                ?.date}
+                                            | {row.messages[
+                                                row.messages.length - 1
+                                            ]?.date}
                                         </small>
                                     {/if}
                                 </td>
@@ -355,7 +400,11 @@
                                 </div>
                                 <div>
                                     <span>
-                                        {row.area_name}
+                                        {#if row.area_id?.division_id == "2"}
+                                            Emergencia
+                                        {:else}
+                                            {row.area_name}
+                                        {/if}
                                     </span>
                                 </div>
 
@@ -375,7 +424,7 @@
 
                                 <div class="flex items-center justify-center">
                                     <div
-                                        class={`inline-block w-6 h-6 aspect-square rounded-full condition${row.current_patient_condition_id} flex items-center justify-center`}
+                                        class={`inline-block w-4 h-4  aspect-square rounded-full condition${row.current_patient_condition_id} relative top-1`}
                                     ></div>
                                 </div>
                                 <div>
@@ -398,18 +447,19 @@
                                 <div>
                                     <p>
                                         {#if row?.last_message?.length > 200}
-                                        {row?.last_message.slice(0, 200)}
-                                        <span
-                                            class="leading-3 text-2xl inline-block font-bold text-color1 relative"
-                                            >...</span
-                                        >
-                                    {:else if row.last_message}
-                                        {row?.last_message}
-                                        <small class="opacity-70">
-                                            | {row.messages[row.messages.length - 1]
-                                                ?.date}
-                                        </small>
-                                    {/if}
+                                            {row?.last_message.slice(0, 200)}
+                                            <span
+                                                class="leading-3 text-2xl inline-block font-bold text-color1 relative"
+                                                >...</span
+                                            >
+                                        {:else if row.last_message}
+                                            {row?.last_message}
+                                            <small class="opacity-70">
+                                                | {row.messages[
+                                                    row.messages.length - 1
+                                                ]?.date}
+                                            </small>
+                                        {/if}
                                     </p>
                                 </div>
                             </div>
@@ -434,3 +484,9 @@
     {/if}
     <Chat {selectedPatient} bind:showChat />
 </div>
+
+<style>
+    * {
+        background-origin: padding-box;
+    }
+</style>
