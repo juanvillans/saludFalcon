@@ -84,7 +84,7 @@
 <header class="flex items-center gap-3 w-11/12 mx-auto pt-3">
     <img src="/img/logoBlue.svg" alt="" srcset="" class="1/2 w-10" />
 
-    <h4>SALUDFALCÓN.COM</h4>
+    <h4>SALUDFALCÓN.org</h4>
 </header>
 <div class="lg:grid grid-cols-12 w-full top-0 fixed h-screen -z-10">
     <div class="col-span-6 border-r-8 border-red"></div>

@@ -92,7 +92,7 @@
                     class="1/2 w-10"
                 />
 
-                <h4>SALUDFALCÓN.COM</h4>
+                <h4>SALUDFALCÓN.org</h4>
             </header>
             <h1
                 class="text-color1 sm:text-xl xl:text-3xl mt-2 lg:mt-6 xl:mt-12"

@@ -12,19 +12,23 @@
             href: "/admin/usuarios",
             name: "Usuarios",
             prefetch: true,
+            target_blank: false,
         },
         {
             icon: "mdi:patient-outline",
             href: "/admin/casos",
             name: "Casos",
             prefetch: false,
+            target_blank: false,
         },
         {
             icon: "hugeicons:appointment-02",
             href: "/admin/agenda",
             name: "Citas",
             prefetch: true,
+            target_blank: false,
         },
+        
     
         
     ];
@@ -45,7 +49,7 @@
     >
     <div class="flex items-center justify-center mt-3 gap-2">
         <img src="/img/logoWhite.svg" alt="" srcset=""  class="1/2 w-6 "/>
-        <span class="label_link text-xs">SALUDFALCÓN.COM</span>
+        <span class="label_link text-xs">SALUDFALCÓN.org</span>
     </div>
 
 </div>
@@ -62,6 +66,7 @@
                     name={navPage.name}
                     class="hover:text-color4 whitespace-nowrap z-10 rounded-md flex gap-1 md:gap-2 items-center p-2 max-h-9 h-9"
                     class:active={$page.url.startsWith(navPage.href)}
+                    target={navPage.target_blank ? "_blank" : "_self"}
                     ><iconify-icon
                         class="text-xl md:text-2lg"
                         icon={navPage.icon}
@@ -72,6 +77,8 @@
                 </a>
             </li>
         {/each}
+
+            
     </ul>
 </nav>
 

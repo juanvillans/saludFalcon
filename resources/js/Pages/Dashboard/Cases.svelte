@@ -746,24 +746,37 @@
         >
         <span class="hidden sm:block"> Nuevo caso</span>
     </button>
-
-    <div class="text-gray-600 text-xl md:text-2xl ml-auto">
-        <iconify-icon
-            class="cursor-pointer mr-2"
-            title="Vizualizar tipo Tabla"
-            on:click={() => (visulizateType = "table")}
-            icon="material-symbols:table-sharp"
-            class:text-color1={visulizateType == "table"}
-            class:bg-color4={visulizateType == "table"}
-        ></iconify-icon>
-        <iconify-icon
-            class="cursor-pointer"
-            title="Vizualizar tipo lista"
-            on:click={() => (visulizateType = "card")}
-            icon="carbon:show-data-cards"
-            class:text-color1={visulizateType == "card"}
-            class:bg-color4={visulizateType == "card"}
-        ></iconify-icon>
+    <div class="ml-auto flex items-center">
+        <a
+            href="/sala-de-espera"
+            target="_blank"
+            class="mr-5 hover:text-color1 hover:underline whitespace-nowrap z-10 rounded-md flex gap-1 md:gap-2 items-center p-2 max-h-9 h-9"
+        >
+            <span class=" text-xs md:text-base">Ver sala de espera</span>
+            <iconify-icon
+                icon="streamline:expand-window-2-solid"
+                width="14"
+                height="14"
+            ></iconify-icon>
+        </a>
+        <div class="text-gray-600 text-xl md:text-2xl">
+            <iconify-icon
+                class="cursor-pointer mr-2"
+                title="Vizualizar tipo Tabla"
+                on:click={() => (visulizateType = "table")}
+                icon="material-symbols:table-sharp"
+                class:text-color1={visulizateType == "table"}
+                class:bg-color4={visulizateType == "table"}
+            ></iconify-icon>
+            <iconify-icon
+                class="cursor-pointer"
+                title="Vizualizar tipo lista"
+                on:click={() => (visulizateType = "card")}
+                icon="carbon:show-data-cards"
+                class:text-color1={visulizateType == "card"}
+                class:bg-color4={visulizateType == "card"}
+            ></iconify-icon>
+        </div>
     </div>
 </div>
 
@@ -889,8 +902,7 @@
                         {:else if row.reason}
                             {row?.reason}
                         {:else}
-                            <span class="text-xs opacity-60"
-                                >Sin registrar</span
+                            <span class="text-xs opacity-60">Sin registrar</span
                             >
                         {/if}
                     </td>
@@ -911,8 +923,7 @@
                         {:else if row.diagnosis}
                             {row?.diagnosis}
                         {:else}
-                            <span class="text-xs opacity-60"
-                                >Sin registrar</span
+                            <span class="text-xs opacity-60">Sin registrar</span
                             >
                         {/if}
                     </td>
@@ -927,11 +938,10 @@
                                 class="leading-3 text-2xl inline-block font-bold text-color1 relative"
                                 >...</span
                             >
-                       {:else if row.treatment}
+                        {:else if row.treatment}
                             {row?.treatment}
                         {:else}
-                            <span class="text-xs opacity-60"
-                                >Sin registrar</span
+                            <span class="text-xs opacity-60">Sin registrar</span
                             >
                         {/if}
                     </td>
@@ -1020,8 +1030,7 @@
                         {:else if row.reason}
                             {row?.reason}
                         {:else}
-                            <span class="text-xs opacity-60"
-                                >Sin registrar</span
+                            <span class="text-xs opacity-60">Sin registrar</span
                             >
                         {/if}
                     </p>
@@ -1063,8 +1072,7 @@
                         {:else if row.treatment}
                             {row?.treatment}
                         {:else}
-                            <span class="text-xs opacity-60"
-                                >Sin registrar</span
+                            <span class="text-xs opacity-60">Sin registrar</span
                             >
                         {/if}
                     </p>

@@ -28,7 +28,6 @@
         };
     }
 
-    
     const dictionaryPages = {
         cases: "Casos",
         casedetail: "Detalles del caso",
@@ -38,12 +37,10 @@
         calendars: "Citas",
         index: "home",
         createcalendar: "Cita",
+        waitingroom: "Sala de Espera", // Or 'saladeespera' if that's the lowercased component name
     };
-    
-    console.log($page.component.replace("Dashboard/", ""), dictionaryPages?.[
-                    $page.component.replace("Dashboard/", "").toLowerCase()
-                ]);
 
+    $: console.log($page.component);
 </script>
 
 <header class="w-full text-color1">
@@ -57,7 +54,7 @@
                 use:inertia
                 class="text-sm hidden md:inline font-bold"
                 >{dictionaryPages?.[
-                    $page.component.replace("Dashboard/", "").toLowerCase()
+                    $page.component.replace("Dashboard/", "")?.toLowerCase()
                 ].toUpperCase()}</a
             >
         </span>
