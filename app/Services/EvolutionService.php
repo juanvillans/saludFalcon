@@ -25,6 +25,7 @@ class EvolutionService{
                 'is_interconsult' => false,
                 'departure_date' => $case->departure_date ?? null,
                 'departure_hour' => $case->departure_hour ?? null,
+                'bed_number' => $case->bed_number,
 
             ]);
 
@@ -45,6 +46,7 @@ class EvolutionService{
             'treatment' => $case->treatment,
             'destiny' => $case->destiny ?? null,
             'is_interconsult' => false,
+            'bed_number' => $case->bed_number,
         ]);
 
         Evolution::create([
@@ -68,31 +70,22 @@ class EvolutionService{
 
         $areaID = $this->evalIsSameArea($case, $data);
 
-        $newEvolution = Evolution::create([
-            'emergency_case_id' => $case->id,
-            'user_id' => auth()->user()->id,
-            'area_id' => $areaID,
-            'evolution' => $data['evolution'],
-            'patient_condition_id' => $data['patient_condition_id'],
-            'status_id' => $data['status_id'],
-            'diagnosis' => $data['diagnosis'],
-            'treatment' => $data['treatment'],
-            'destiny' => $data['destiny'] ?? null,
-            'is_interconsult' => false,
-            'departure_date' => $data['departure_date'] ?? null,
-            'departure_hour' => $data['departure_hour'] ?? null,
-            ]);
+        $data['area_id'] = $areaID;
+        $newEvolution = Evolution::create($data);
 
-        $case->update([
-            'current_patient_condition_id' => $newEvolution->patient_condition_id,
-            'area_id' => $newEvolution->area_id,
-            'current_status' => $newEvolution->status_id,
-            'departure_date' => $newEvolution->departure_date,
-            'departure_hour' => $newEvolution->departure_hour,
-            'diagnosis' => $newEvolution->diagnosis,
-            'treatment' => $newEvolution->treatment,
-            'destiny' => $newEvolution->destiny,
-        ]);
+        $updateData = [
+        'current_patient_condition_id' => $newEvolution->patient_condition_id,
+        'area_id' => $newEvolution->area_id,
+        'current_status' => $newEvolution->status_id,
+        'departure_date' => $newEvolution->departure_date,
+        'departure_hour' => $newEvolution->departure_hour,
+        'diagnosis' => $newEvolution->diagnosis,
+        'treatment' => $newEvolution->treatment,
+        'destiny' => $newEvolution->destiny,
+        'bed_number' => $newEvolution->bed_number ?? $case->bed_number,
+    ];
+
+        $case->update($updateData);
 
         return $newEvolution;
 

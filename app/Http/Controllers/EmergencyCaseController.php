@@ -140,9 +140,8 @@ class EmergencyCaseController extends Controller
 
         try
         {
-            $data = $request->all();
 
-            $this->evolutionService->addEvolution($case,$data);
+            $this->evolutionService->addEvolution($case,$request->validated());
 
             DB::commit();
 
