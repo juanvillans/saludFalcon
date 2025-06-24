@@ -40,7 +40,6 @@
         waitingroom: "Sala de Espera", // Or 'saladeespera' if that's the lowercased component name
     };
 
-    $: console.log($page.component);
 </script>
 
 <header class="w-full text-color1">

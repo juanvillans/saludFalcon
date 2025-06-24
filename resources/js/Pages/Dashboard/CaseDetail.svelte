@@ -7,6 +7,7 @@
     import fetchLocalData from "../../components/localData";
     import { onMount } from "svelte";
     import { getDuration } from "../../components/getDuration.js";
+    import Chat from "../../components/Chat.svelte";
 
     export let patient = false;
     export let caseDetail = {};
@@ -52,6 +53,7 @@
         status_id: 6,
         destiny: "",
         evolution: "",
+        bed_number: "",
     });
     let interconsultationForm = useForm(
         structuredClone({
@@ -522,6 +524,16 @@
                                         {/if}
                                     </div>
                                 </div>
+                                <Input
+                                    type="number"
+                                    required={true}
+                                    label={"Cama *"}
+                                    bind:value={$form.bed_number}
+                                    error={$form.errors?.bed_number}
+                                    classes={"max-w-[100px] mb-2"}
+                                    labelClasses={"font-semibold"}
+
+                                />
 
                                 <Input
                                     type="textarea"
@@ -736,7 +748,9 @@
                                     <p class="text-dark">
                                         El {caseDetail.data
                                             .formatted_entry_date} a la(s)
-                                        {convert24To12(caseDetail.data.entry_hour)}
+                                        {convert24To12(
+                                            caseDetail.data.entry_hour,
+                                        )}
                                     </p>
                                 </div>
                                 <div>
@@ -753,7 +767,9 @@
                                     <h3 class="font-semibold">Hora y fecha:</h3>
                                     <p class="text-dark">
                                         {evolution.formatted_departure_date} a la(s)
-                                        {convert24To12(evolution.departure_hour)}
+                                        {convert24To12(
+                                            evolution.departure_hour,
+                                        )}
                                     </p>
                                 </div>
                             {/if}
@@ -806,6 +822,7 @@
         </ul>
     </div>
 </div>
+<Chat {patient}  />
 <Alert />
 
 <style>

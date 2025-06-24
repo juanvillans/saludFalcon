@@ -645,7 +645,7 @@
 
             <Input
                 type="textarea"
-                label={"Observación / mensaje"}
+                label={"Mensaje (opcional)"}
                 error={$form.errors?.last_message}
                 classes={"col-span-2"}
                 bind:value={$form.last_message}
