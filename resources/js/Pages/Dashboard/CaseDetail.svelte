@@ -9,12 +9,11 @@
     import { getDuration } from "../../components/getDuration.js";
     import Chat from "../../components/Chat.svelte";
 
-    export let patient = false;
     export let caseDetail = {};
     export let nroEvol = 0;
     export let nroInter = 0;
     export let showMorePatientDetail = false;
-
+    $: console.log({caseDetail})
     function convert24To12(time24) {
         const [hours, minutes] = time24.split(":").map(Number);
         const period = hours >= 12 ? "PM" : "AM";
@@ -822,7 +821,7 @@
         </ul>
     </div>
 </div>
-<Chat {patient}  />
+<Chat bind:selectedPatient={caseDetail.data}  showLink={false} />
 <Alert />
 
 <style>

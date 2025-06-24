@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('is_interconsult')->default(false);
             $table->date('departure_date')->nullable();
             $table->string('departure_hour')->nullable();
+            $table->integer('bed_number')->nullable();
             $table->timestamps();
 
             // Foreign key constraints

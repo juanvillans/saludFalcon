@@ -732,7 +732,7 @@
 </Modal>
 <div class="flex justify-between items-center">
     <button
-        class="btn_create inline-block p-2 px-3"
+        class="btn_create responsive inline-block p-2 px-3"
         on:click={(e) => {
             e.preventDefault();
 

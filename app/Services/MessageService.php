@@ -22,6 +22,7 @@ class MessageService
                 $newMessage = Messages::create($data);
                 EmergencyCase::where('id',$newMessage->emergency_case_id)
                 ->update([
+
                     'last_message_id' => $newMessage->id,
                 ]);
 

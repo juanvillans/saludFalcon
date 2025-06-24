@@ -258,7 +258,7 @@ h1 {
     z-index: 1;
 }
 @media (max-width: 350px) {
-    .btn_create, .btn_create2 {
+    .btn_create.responsive, .btn_create2.responsive {
         bottom: 70px;
         right: 20px;
         position: fixed;
@@ -266,7 +266,7 @@ h1 {
 
     }
 }
-.btn_create:after, .btn_create2:after {
+.btn_create:after, .btn_create2:after, .btn_transition {
     position: absolute;
     content: "";
     width: 0;
@@ -281,16 +281,16 @@ h1 {
     transition: all 0.3s ease;
 }
 
-.btn_create:hover {
+.btn_create:hover, .btn_transition:hover {
     color: #fff;
 }
 
-.btn_create:hover:after, .btn_create2:hover:after {
+.btn_create:hover:after, .btn_create2:hover:after, .btn_transition:hover:after {
     left: 0;
     width: 100%;
 }
 
-.btn_create:active, .btn_create2:active {
+.btn_create:active, .btn_create2:active, .btn_transition:active {
     top: 2px;
 }
 

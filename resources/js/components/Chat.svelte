@@ -7,6 +7,9 @@
     export let selectedPatient;
 
     export let showChat;
+    export let showLink = true;
+    $: console.log({ selectedPatient });
+
     let newMessage = "";
     let singleChatChannel = null;
     let messageSound;
@@ -91,16 +94,16 @@
 {#if $page.props.auth.user_id}
     <button
         title="open chat"
-        class="fixed bottom-7 right-7 w-16 shadow-2xl border-color3 border aspect-square flex justify-center items-center bg-color4 rounded-full"
+        class="fixed bottom-16 md:bottom-7 right-7 w-10 md:w-16 shadow-2xl border-color3 border aspect-square flex justify-center items-center bg-color4 rounded-full"
         on:click={() => (showChat = true)}
     >
-        <iconify-icon icon="line-md:chat-filled" class="text-3xl text-color1"
+        <iconify-icon icon="line-md:chat-filled" class="text-xl md:text-3xl text-color1"
         ></iconify-icon>
     </button>
 {/if}
 
 <div
-    class="z-50 neumorphism2 rounded-2xl fixed flex overflow-hidden flex-col justify-between bg-white bottom-1 right-1 md:bottom-4 md:right-4 h-[500px] w-[250px] md:w-[340px]"
+    class="z-50 shadow-md rounded-2xl fixed flex overflow-hidden flex-col justify-between bg-white bottom-1 right-1 md:bottom-4 md:right-4 h-[500px] w-[250px] md:w-[340px]"
     class:hidden={!showChat}
 >
     <header class="p-2 px-3 bg-gray-200">
@@ -120,7 +123,7 @@
                 <iconify-icon icon="line-md:close"></iconify-icon>
             </button>
         </div>
-        {#if $page.props.auth.user_id && selectedPatient}
+        {#if $page.props.auth.user_id && selectedPatient && showLink}
             <a
                 class="text-xs underline text-color3"
                 href="http://localhost:8000/admin/casos/detalle-caso/{selectedPatient?.id}"

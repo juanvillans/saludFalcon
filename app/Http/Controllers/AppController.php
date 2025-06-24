@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Area;
 use App\Models\Calendar;
+use App\Models\Division;
 use App\Models\Municipality;
 use App\Models\PatientCondition;
 use App\Models\Specialty;
@@ -11,9 +12,9 @@ use App\Models\StatusCase;
 use Illuminate\Support\Facades\Request;
 use Inertia\Response;
 
-class AppController 
-{   
-    
+class AppController
+{
+
 
     public function index(): Response
     {
@@ -33,12 +34,13 @@ class AppController
     public function generalData(){
 
         $areas = Area::get();
+        $divisions = Division::get();
         $municipalities = Municipality::with('parishes')->get();
         $statutes = StatusCase::get();
         $conditions = PatientCondition::get();
         $specialties = Specialty::get();
 
-        return response()->json(compact('municipalities','statutes','conditions','areas', 'specialties'));
+        return response()->json(compact('municipalities','statutes','conditions','areas', 'specialties', 'divisions'));
     }
 
     public function nalgas(){
@@ -46,8 +48,8 @@ class AppController
     }
 
 
-   
 
 
-   
+
+
 }

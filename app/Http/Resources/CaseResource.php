@@ -71,7 +71,7 @@ class CaseResource extends JsonResource
 
     protected function formatDate(): string
     {
-        $date = $this->created_at;
+        $date = $this->updated_at;
         $time = $date->format('g:i a');
 
         if ($date->isToday()) {
