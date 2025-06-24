@@ -40,6 +40,13 @@ class EmergencyCaseService
             ->when(isset($params['area_id']),function($query) use ($params){
                 $query->where('area_id', $params['area_id']);
             })
+            ->when(isset($params['division_id']), function($query) use ($params){
+                $query->where(function($query) use ($params){
+                    $query->whereHas('area', function ($query2) use ($params){
+                        $query2->where('division_id', $params['division_id']);
+                    });
+                });
+            })
             ->when(isset($params['case_id']),function($query) use ($params){
                 $query->where('id', $params['case_id']);
             })

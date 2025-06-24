@@ -28,6 +28,7 @@ class GetEmergencyCasesRequest extends FormRequest
             'status' => 'nullable|integer|exists:status_cases,id',
             'condition' => 'nullable|string',
             'area_id' => 'nullable|integer|exists:areas,id',
+            'division_id' => 'nullable|integer|exists:divisions,id',
             'ci' => 'nullable|string',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
