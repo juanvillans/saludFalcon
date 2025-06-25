@@ -248,7 +248,10 @@
                     </div>
                 </div>
                 <div class="min-w-[100px]">
+    {#if $page.props.auth.user_id}
+
                 <Header showTitlePage={false} />
+                {/if}
                 </div>
             </div>
         </div>
