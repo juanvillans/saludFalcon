@@ -107,6 +107,7 @@ class GetEmergencyCasesRequest extends FormRequest
             'case_id' => $this->input('case_id'),
             'specialty_id' => $this->input('specialty_id'),
             'age' => $this->input('age'),
+            'division_id' => $this->input('division_id'),
         ];
     }
 }

@@ -47,7 +47,7 @@ class EmergencyCaseController extends Controller
         return inertia('Dashboard/Cases', [
             'data' => $emergencyCases,
             'patient' => $patient ?? null,
-            'filters' => array_filter($request->validatedParams(), function ($value) {
+            'filters' => array_filter($request->validated(), function ($value) {
                 return $value !== null;
             })
         ]);

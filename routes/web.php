@@ -25,6 +25,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/sala-de-espera', [WaitingRoomController::class, 'index'])->name('waitingRoom.index');
+Route::get('/general-data',[AppController::class,'generalData']);
+
 
 Route::group(['middleware' => ['guest']], function () {
 
@@ -100,7 +102,6 @@ Route::middleware(['auth'])->prefix('admin')->group(function ()
     // Searchers
     Route::get('/historial-medico',[EmergencyCaseController::class,'searchPatient']);
     Route::get('/historial-medico/doctor',[UserController::class,'searchDoctor']);
-    Route::get('/general-data',[AppController::class,'generalData']);
 
     // Update Patient Data
     Route::put('/historial-medico/detalle-paciente/{patient}',[EmergencyCaseController::class,'updatePatient']);
