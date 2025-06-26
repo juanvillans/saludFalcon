@@ -54,7 +54,7 @@ class EvolutionResource extends JsonResource
             'entry_date' => $this->whenLoaded('emergencyCase', fn() => $this->emergencyCase->entry_date),
             'formatted_entry_date' => $this->whenLoaded('emergencyCase', fn() => $this->emergencyCase->formatted_entry_date),
             'entry_hour' => $this->whenLoaded('emergencyCase', fn() => $this->emergencyCase->entry_hour),
-
+            'bed_number' => $this->bed_number,
         ];
     }
 }

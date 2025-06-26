@@ -106,9 +106,8 @@ class EmergencyCaseController extends Controller
 
         try
         {
-            $data = $request->all();
 
-            $this->emergencyCaseService->updatePatient($data, $patient);
+            $this->emergencyCaseService->updatePatient($request->validated(), $patient);
 
             DB::commit();
 

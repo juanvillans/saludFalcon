@@ -50,7 +50,7 @@
             <!-- svelte-ignore missing-declaration -->
              {#if showTitlePage}
                 <a
-                    href="/dashboard"
+                    href="/admin"
                     use:inertia
                     class="text-sm hidden md:inline font-bold"
                     >{dictionaryPages?.[
@@ -58,7 +58,7 @@
                     ].toUpperCase()}</a
                 >
             {/if}
-            
+
         </span>
         <!-- <div class="flex bg-color2  md:min-w-72 rounded-full items-center">
                 <iconify-icon icon="cil:search" class="mx-2" />

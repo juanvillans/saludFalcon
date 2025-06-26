@@ -34,7 +34,7 @@ class EvolutionRequest extends FormRequest
                 'exists:users,id'
             ],
             'area_id' => [
-                'required',
+                'nullable',
                 'integer',
                 'exists:areas,id'
             ],
@@ -91,6 +91,7 @@ class EvolutionRequest extends FormRequest
     {
         $this->merge([
             'user_id' => auth()->user()->id,
+            'emergency_case_id' => $this->input('id'),
         ]);
     }
 

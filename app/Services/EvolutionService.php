@@ -68,9 +68,8 @@ class EvolutionService{
 
     public function addEvolution($case, $data){
 
-        $areaID = $this->evalIsSameArea($case, $data);
 
-        $data['area_id'] = $areaID;
+        $data['area_id'] = $data['area_id'] ?? $case->area_id;
         $newEvolution = Evolution::create($data);
 
         $updateData = [
@@ -100,12 +99,4 @@ class EvolutionService{
         return 0;
     }
 
-
-    public function evalIsSameArea($case, $data){
-
-        if($data['area_id'] != '')
-            return $data['area_id'];
-        else
-            return $case->area_id;
-    }
 }

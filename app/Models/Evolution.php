@@ -17,22 +17,23 @@ class Evolution extends Model
         'area_id',
         'patient_condition_id',
         'status_id',
-        'evolution',    
+        'evolution',
         'diagnosis',
         'treatment',
         'destiny',
         'is_interconsult',
         'departure_date',
         'departure_hour',
+        'bed_number'
      ];
 
      public function getFormattedCreatedAtAttribute(){
-        
+
         return Carbon::parse($this->created_at)->format('d M Y h:i A');
     }
 
     public function getFormattedDepartureDateAttribute(){
-        
+
         return Carbon::parse($this->departure_date)->format('d M Y');
     }
 

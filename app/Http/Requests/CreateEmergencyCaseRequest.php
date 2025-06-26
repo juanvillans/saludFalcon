@@ -30,6 +30,22 @@ class CreateEmergencyCaseRequest extends FormRequest
                 'integer',
                 'exists:patients,id'
             ],
+            'patient_ci' => [
+                'required',
+                'string',
+                'min:6',
+                'max:30'
+            ],
+            'patient_name' => 'required|string|max:50',
+            'patient_last_name' => 'required|string|max:50',
+            'patient_email' => 'nullable|email|max:255',
+            'patient_phone_number' => 'nullable|string|max:30',
+            'patient_sex' => 'nullable|string|in:Masculino,Femenino,Otro',
+            'patient_date_birth' => 'nullable|date|before_or_equal:today',
+            'patient_address' => 'nullable|string|max:255',
+            'municipality_id' => 'nullable',
+            'parish_id' => 'nullable',
+
             'user_id' => [
                 'required',
                 'integer',
@@ -110,6 +126,8 @@ class CreateEmergencyCaseRequest extends FormRequest
         return [
             'patient_id.required' => 'El paciente es requerido',
             'patient_id.exists' => 'El paciente seleccionado no existe',
+            'patient_ci.required' => 'La cedula del paciente es requerido',
+            'patient_ci.min' => 'La cedula del paciente debe tener un minimo 6 caracteres',
             'user_id.required' => 'El médico responsable es requerido',
             'user_id.exists' => 'El usuario seleccionado no existe',
             'area_id.required' => 'El área es requerida',
@@ -123,6 +141,12 @@ class CreateEmergencyCaseRequest extends FormRequest
             'departure_hour.regex' => 'La hora de egreso debe tener formato HH:MM',
             'bed_number.required' => 'El número de cama es requerido',
             'bed_number.min' => 'El número de cama debe ser al menos 1',
+
+            'patient_name.required' => 'El nombre es obligatorio',
+            'patient_last_name.required' => 'El apellido es obligatorio',
+            'patient_email.email' => 'Debe ingresar un correo electrónico válido',
+            'patient_date_birth.before_or_equal' => 'La fecha de nacimiento no puede ser futura',
+
         ];
     }
 

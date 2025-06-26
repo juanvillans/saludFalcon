@@ -24,12 +24,16 @@ class PatientRequest extends FormRequest
         $patientID = $this->input('patient_id') ?? 0;
 
         return [
-            'patient_ci' => ['required','unique:patients,ci,'. $patientID],
-            'patient_name' => ['required'],
-            'patient_last_name' => ['required'],
-            'patient_phone_number' => ['required'],
-            'patient_sex' => ['required'],
+            'patient_ci' => ['required','unique:patients,ci,'. $patientID, 'string', 'min:6', 'max:30'],
+            'patient_name' => ['required','string', 'max:50', 'min:3'],
+            'patient_last_name' => ['required', 'string', 'max:50', 'min:3'],
+            'patient_phone_number' => 'nullable|string|max:30',
+            'patient_sex' => 'nullable|string|in:Masculino,Femenino',
             'patient_date_birth' => ['required'],
+            'patient_date_birth' => 'nullable|date|before_or_equal:today',
+            'patient_address' => 'nullable|string|max:255',
+            'municipality_id' => 'nullable',
+            'parish_id' => 'nullable',
         ];
     }
 }
