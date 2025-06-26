@@ -1,4 +1,4 @@
-<?php  
+<?php
 
 namespace App\Services;
 
@@ -18,24 +18,24 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Str;
 class UserService
-{	
+{
     public function getUsers($params)
     {
         $users = User::query()
         ->where('status',1)
         ->when($params['search'] ?? null, function($query, $search){
-            
+
             $query->where('search','like','%' . $search . '%');
         })
         ->when($params['role'] ?? null, function($query, $role) {
             $query->whereHas('roles',function($query) use ($role){
-                
+
                 $query->where('name',$role);
-            
+
             });
         })
         ->when($params['userID'] ?? null, function($query, $userID){
-            
+
             $query->where('id',$userID);
         })
         ->with('specialty', 'roles')
@@ -46,14 +46,14 @@ class UserService
     }
 
     public function createUser($data, $photo = true)
-    {   
+    {
         if($photo)
             $fileName = $this->handlePhoto($data);
         else
             $fileName = $data['photo'];
 
         $newUser = User::create([
-            
+
             "ci" => $data['ci'],
             "name" => $data['name'],
             "last_name" => $data['last_name'],
@@ -75,7 +75,7 @@ class UserService
     public function updateUser($data, $user)
     {
         $user->update([
-            
+
             "ci" => $data['ci'],
             "name" => $data['name'],
             "last_name" => $data['last_name'],
@@ -86,7 +86,7 @@ class UserService
         ]);
 
         method_exists($user, 'revokeRoles') ? $user->revokeRoles(): null;
-        
+
         $user->assignRole($data['role_name']);
 
 
@@ -95,10 +95,10 @@ class UserService
     }
 
     public function deleteUser($usuario)
-    {   
+    {
         $authUserId = auth()->id();
         $usuario->id == $authUserId ? throw new Exception("No puedes eliminar tu propio usuario", 401) : null;
-        
+
         $usersDeleted = User::where('status',0)->count();
         $number = $usersDeleted + 1;
 
@@ -113,7 +113,7 @@ class UserService
             $fields['name'],
             $fields['last_name'],
             );
-        
+
         $usuario->update(array_map(function ($value) use ($number){
 
             return $value .'deleted-'.$number;
@@ -139,15 +139,15 @@ class UserService
         $user->password = Hash::make($data['newPassword']);
         $user->save();
         $userID = $user->id;
-        
+
         Auth::logout();
-        
+
         DB::table('sessions')
                 ->where('user_id', $userID)
                 ->delete();
 
         return 0;
-        
+
     }
 
     public function getMyEvolutions($userID, $params){
@@ -155,20 +155,20 @@ class UserService
 
         $evolutions = Evolution::where('user_id',$userID)
         ->with('emergencyCase.patient', 'status', 'condition', 'area')
-        ->when($params['status'],function($query) use ($params){
+        ->when(isset($params['status']),function($query) use ($params){
             $query->where('status_id', $params['status']);
         })
-        ->when($params['condition'],function($query) use ($params){
+        ->when(isset($params['condition']),function($query) use ($params){
             $query->where('patient_condition_id', $params['condition']);
         })
-        ->when($params['area_id'],function($query) use ($params){
+        ->when(isset($params['area_id']),function($query) use ($params){
             $query->where('area_id', $params['area_id']);
         })
         ->when(isset($params['start_date']) && isset($params['end_date']),function($query) use ($params){
-                    
-            $startDateMillis = (int)$params['start_date']; 
-            $endDateMillis = (int)$params['end_date']; 
-        
+
+            $startDateMillis = (int)$params['start_date'];
+            $endDateMillis = (int)$params['end_date'];
+
             $startDateSeconds = $startDateMillis / 1000;
             $endDateSeconds = $endDateMillis / 1000;
 
@@ -177,13 +177,13 @@ class UserService
 
             $query->whereBetween('created_at', [$startDate, $endDate]);
         })
-        ->when($params['case_id'],function($query) use ($params){
+        ->when(isset($params['case_id']),function($query) use ($params){
             $query->where('id', $params['case_id']);
         })
-        ->when($params['search'],function($query) use ($params){
+        ->when(isset($params['search']),function($query) use ($params){
 
             $query->where(function($query) use ($params) {
-                
+
                 $query->whereHas('emergencyCase.patient', function($query2) use ($params) {
                     $query2->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($params['search']) . '%']);
                 });
@@ -195,7 +195,7 @@ class UserService
 
         return $evolutions;
     }
-    
+
     private function generateSearch($data){
         $search = $data['ci'] . " "
                  .$data['name'] . " "
@@ -205,7 +205,7 @@ class UserService
                  .$data['medical_license'] . " "
 
                  ;
-        
+
         return $search;
     }
 
@@ -214,59 +214,56 @@ class UserService
         if (isset($data['photo']) && $data['photo']->isValid()) {
             $fileName = $data['ci'] . '-profile.webp';
             $image = Image::make($data['photo']);
-            
+
             $image->resize(180, null, function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();
             });
-            
+
             $image->save(storage_path('app/public/users/' . $fileName), 100); // 100 es el nivel de calidad (0-100)
-    
+
             return $fileName;
         }
-    
-        throw new Exception("La imagen no es valida, intente con otra", 500);    
-    
+
+        throw new Exception("La imagen no es valida, intente con otra", 500);
+
         }
     public function handleUpdatePhoto($data, $user){
-        
-        if (isset($data['photo']) && $data['photo']->isValid()) {
-            $fileName = $user->photo;
+
+            $fileName = $user->id . '-profile_picture.webp';
             $filePath = storage_path('app/public/users/' . $fileName);
 
-        
+
             // Verifica si la imagen existe y la elimina
             if (file_exists($filePath)) {
                 unlink($filePath); // Elimina el archivo existente
             }
-            
+
 
             // Crea la nueva imagen
             $image = Image::make($data['photo']);
-            
+
             $image->resize(180, null, function ($constraint) {
                 $constraint->aspectRatio();
 
                 $constraint->upsize();
             });
 
-            
-            $image->save($filePath, 100); // 100 es el nivel de calidad (0-100)
-            
+
+            $image->save($filePath, 100);
+
             return $fileName;
-        }
-        
-        throw new Exception("La imagen no es válida, intente con otra", 500);
+
     }
 
     private function changePhotoName($user,$number){
 
 
         $fileName = $user->photo;
-        $newFileName = $fileName . 'deleted-'. $number; 
+        $newFileName = $fileName . 'deleted-'. $number;
 
         if (Storage::exists('public/users/' . $fileName)) {
-            
+
             Storage::move('public/users/' . $fileName, 'public/users/' . $newFileName);
             $user->save();
             return 0;
@@ -276,10 +273,10 @@ class UserService
     }
 
     public function forgotPassword($ci){
-       
+
         $user = User::where( 'ci', $ci )->first();
 
-                
+
 		if(!isset($user->id))
 			  throw new Exception('Cedula incorrecta o invalida',400);
 
@@ -292,7 +289,7 @@ class UserService
         ],
         ['token' => $token, 'created_at' => now(), 'expires_at' => $expiresAt]
     );
-		
+
 
 		$dataToSend = ['token' => $token, 'user' => $user];
 
@@ -302,22 +299,22 @@ class UserService
     }
 
     public function checkRecoverToken($token){
-                    
+
         $record = DB::table('password_reset_tokens')
                     ->where('token', $token)
                     ->first();
-    
+
         if(!isset($record->id))
             return ['message' => 'Token invalido', 'status' => false];
 
         if(Carbon::now()->gt($record->expires_at))
             return ['message' => 'Token expirado', 'status' => false];
-        
+
         return ['message' => 'OK', 'status' => true];
     }
 
     public function recoverPassword($data, $token){
-        
+
         $record = DB::table('password_reset_tokens')
                     ->where('token', $token)
                     ->first();
@@ -336,6 +333,6 @@ class UserService
         $user->save();
 
     }
-    
+
 
 }

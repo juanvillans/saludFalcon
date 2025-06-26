@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\ForgotPasswordRequest;
+use App\Http\Requests\GetProfileRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RecoverPasswordRequest;
+use App\Http\Requests\UpdateProfilePictureRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\DoctorCollection;
@@ -42,14 +44,14 @@ class UserController extends Controller
         $this->params = [
             'search' => $request->input('search'),
             'role' => $request->input('role'),
-        ];     
+        ];
         $specialtyService = new SpecialtyService();
 
         $users = $this->userService->getUsers($this->params);
         $requests = null;
         if($request->has('requests'))
-            $requests = RequestUser::with('specialty')->get(); 
-        
+            $requests = RequestUser::with('specialty')->get();
+
 
         return inertia('Dashboard/Users',[
 
@@ -61,10 +63,10 @@ class UserController extends Controller
     }
 
     public function store(UserRequest $request)
-    {   
+    {
         DB::beginTransaction();
 
-        try 
+        try
         {
             $data = $request->all();
 
@@ -76,10 +78,10 @@ class UserController extends Controller
 
         }
         catch (\Throwable $e)
-        {   
-            
+        {
+
             DB::rollback();
-            
+
             return redirect('/admin/usuarios')->withErrors(['data' => $e->getMessage()]);
         }
 
@@ -90,7 +92,7 @@ class UserController extends Controller
     {
         DB::beginTransaction();
 
-        try 
+        try
         {
             $data = $request->all();
 
@@ -103,10 +105,10 @@ class UserController extends Controller
 
         }
         catch (\Throwable $e)
-        {   
-            
+        {
+
             DB::rollback();
-            
+
             return redirect('/admin/usuarios')->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -116,7 +118,7 @@ class UserController extends Controller
 
         DB::beginTransaction();
 
-        try 
+        try
         {
             $this->userService->deleteUser($user);
 
@@ -126,12 +128,12 @@ class UserController extends Controller
 
         }
         catch (\Throwable $e)
-        {   
-            
+        {
+
             DB::rollback();
-            Log::info($e->getMessage());            
+            Log::info($e->getMessage());
             return redirect('/admin/perfil/'.$user->id)->withErrors(['data' => $e->getMessage()]);
-        }       
+        }
 
     }
 
@@ -157,12 +159,12 @@ class UserController extends Controller
     }
 
     public function changePasswordIndex(){
-        
+
         return inertia('Dashboard/ChangePassword');
     }
 
     public function changePassword(ChangePasswordRequest $request)
-    {   
+    {
         $data = [
             'currentPassword' => $request->current_password,
             'newPassword' => $request->new_password,
@@ -174,11 +176,11 @@ class UserController extends Controller
             $this->userService->changePassword($data);
 
             return redirect()->route('login')->with(['message' => 'Contraseña actualizada con éxito']);
-            
+
         } catch (\Throwable $e) {
-            
+
             DB::rollback();
-            
+
             return redirect('/admin/cambiar-contraseña')->withErrors(['data' => $e->getMessage()]);
         }
     }
@@ -201,36 +203,22 @@ class UserController extends Controller
         ->where('status',1)
         ->whereRaw('LOWER(search) LIKE ?', ['%' . strtolower($request->search) . '%'])->get();
 
-        $doctors = new DoctorCollection($doctors);    
+        $doctors = new DoctorCollection($doctors);
 
-        
-        
+
+
 
         return response()->json(['doctors' => $doctors]);
     }
 
-    public function myProfile(Request $request, $userID){
+    public function myProfile(GetProfileRequest $request, $userID){
 
-        $params = [
-            'search' => $request->input('search') ?? null,
-            'page' => $request->input('page') ?? null,
-            'per_page' => $request->input('per_page') ?? null,
-            'status' => $request->input('status') ?? null,
-            'condition' => $request->input('condition') ?? null,
-            'area_id' => $request->input('area_id') ?? null,
-            'patient_ci' => $request->input('ci') ?? null,
-            'start_date' => $request->input('start_date') ?? null,
-            'end_date' => $request->input('end_date') ?? null,
-            'case_id' => $request->input('case_id') ?? null,
-
-        ];
-        
-        $evolutions = $this->userService->getMyEvolutions($userID, $params);
+        $evolutions = $this->userService->getMyEvolutions($userID, $request->validated());
         $nroEvolutions = Evolution::where('user_id',$userID)->where('is_interconsult',0)->count();
         $nroInter = Evolution::where('user_id',$userID)->where('is_interconsult',1)->count();
-        
+
         $user = User::where('id',$userID)->with('specialty','roles')->first();
-    
+
         return inertia('Dashboard/Profile',[
 
             'data' => [
@@ -238,25 +226,18 @@ class UserController extends Controller
                 'nroEvol' => $nroEvolutions,
                 'nroInter' => $nroInter,
                 'user' => new UserResource($user),
-                
-            ],
-            'filters' => array_filter([
-                'status' => $request->input('status') ?? '',
-                'condition' => $request->input('condition') ?? '',
-                'area_id' => $request->input('area_id') ?? '',
-                'search' => $request->input('search') ?? '',
-                'start_date' => $request->input('start_date') ?? '',
-                'end_date' => $request->input('end_date') ?? '',
-                'case_id' => $request->input('case_id') ?? '',
 
-            ]),
+            ],
+           'filters' => array_filter($request->validated(), function ($value) {
+                return $value !== null;
+            }),
         ]);
     }
 
-    public function updateProfilePicture(Request $request, User $user){
-        
-        $data = $request->all();
-        $fileName = $this->userService->handleUpdatePhoto($data, $user);
+    public function updateProfilePicture(UpdateProfilePictureRequest $request, User $user){
+
+
+        $fileName = $this->userService->handleUpdatePhoto($request->validated(), $user);
         $user->update(['photo' => $fileName]);
 
         return redirect('/admin/perfil/'.$user->id);
@@ -280,12 +261,12 @@ class UserController extends Controller
         ];
 
         $evolutions = $this->userService->getMyEvolutions($userID,$params);
-        
+
         return response()->json(['data' => new EvolutionCollection($evolutions)]);
     }
 
     public function forgotPassword(ForgotPasswordRequest $data){
-        
+
         try {
 
             $this->userService->forgotPassword($data->ci);
@@ -293,14 +274,14 @@ class UserController extends Controller
         } catch (\Exception $e) {
 
             return redirect('/')->withErrors(['data' => $e->getMessage()]);
-            
+
         }
     }
-    
+
     public function checkRecoverToken($token)
-    {   
+    {
         try{
-            
+
             $response = $this->userService->checkRecoverToken($token);
 
             return inertia('ForgotPassword', [
@@ -315,9 +296,9 @@ class UserController extends Controller
     }
 
     public function recoverPassword(RecoverPasswordRequest $request, $token){
-        
+
         try{
-            
+
             $this->userService->recoverPassword($request->all(), $token);
 
             return redirect('/')->with(['message' => 'Contraseña actualizada con éxito']);
@@ -329,5 +310,5 @@ class UserController extends Controller
         }
     }
 
-    
+
 }
