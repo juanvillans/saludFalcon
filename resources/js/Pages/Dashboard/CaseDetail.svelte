@@ -53,6 +53,7 @@
         destiny: "",
         evolution: "",
         bed_number: "",
+        id: caseDetail.data.id,
     });
     let interconsultationForm = useForm(
         structuredClone({
