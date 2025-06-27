@@ -8,7 +8,7 @@
     function toggleNavUser() {
         userNav = !userNav;
     }
-
+    let mainUrl =  import.meta.env.APP_URL
     function clickOutside(element, callbackFunction) {
         function onClick(event) {
             if (!element.contains(event.target)) {
@@ -107,6 +107,7 @@
                 <div
                     class="absolute w-fit rounded-lg flex items-center flex-col bg-color1 overflow-hidden z-50 top-10 right-3 rounded-tr-none text-gray-100 shadow-xl"
                 >
+
                 <a
                         href={`/admin/casos/`}
                         use:inertia

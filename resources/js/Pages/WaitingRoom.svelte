@@ -474,7 +474,7 @@
     </div>
 
     {#if !$page.props.auth.user_id}
-        <div class=" bottom-7 right-2 hidden 2xl:block fixed">
+        <div class=" bottom-7 right-2  fixed">
             {#if qrDataUrl}
                 <div class="shadow-xl rounded-md bg-white">
                     <div class="py-2 px-2">Buscas a tu familiar?</div>

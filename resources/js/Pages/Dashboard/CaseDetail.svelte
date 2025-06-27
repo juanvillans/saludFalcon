@@ -526,10 +526,9 @@
                                 </div>
                                 <Input
                                     type="number"
-                                    required={true}
-                                    label={"Cama *"}
-                                    bind:value={$form.bed_number}
-                                    error={$form.errors?.bed_number}
+                                    label={"Cama "}
+                                    bind:value={$evolutionForm.bed_number}
+                                    error={$evolutionForm.errors?.bed_number}
                                     classes={"max-w-[100px] mb-2"}
                                     labelClasses={"font-semibold"}
 
@@ -537,10 +536,9 @@
 
                                 <Input
                                     type="textarea"
-                                    required={true}
                                     labelClasses={"font-semibold"}
                                     classes={"col-span-2"}
-                                    label={"Evolución *"}
+                                    label={"Evolución "}
                                     bind:value={$evolutionForm.evolution}
                                     error={$evolutionForm.errors?.evolution}
                                 />

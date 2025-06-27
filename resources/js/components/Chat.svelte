@@ -129,7 +129,7 @@
         {#if $page.props.auth.user_id && selectedPatient && showLink}
             <a
                 class="text-xs underline text-color3"
-                href="http://localhost:8000/admin/casos/detalle-caso/{selectedPatient?.id}"
+                href="/admin/casos/detalle-caso/{selectedPatient?.id}"
                 target="_blank"
                 rel="noopener noreferrer">Actualizar caso</a
             >
