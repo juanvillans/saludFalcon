@@ -52,7 +52,7 @@
         status_id: 6,
         destiny: "",
         evolution: "",
-        bed_number: "",
+        bed_number: 1,
         id: caseDetail.data.id,
     });
     let interconsultationForm = useForm(

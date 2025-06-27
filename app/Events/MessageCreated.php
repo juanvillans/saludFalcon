@@ -27,14 +27,12 @@ class MessageCreated implements ShouldBroadcast
 
   public function broadcastOn()
   {
-      Log::info('Llamando broadcast');
 
       return ['generalChat', 'chat-'. $this->caseID];
   }
 
   public function broadcastAs()
   {
-     Log::info('Llamando broadcast 2');
 
       return 'newMessage';
   }

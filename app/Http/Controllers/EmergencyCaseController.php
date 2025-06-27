@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CaseCreated;
+use App\Events\EvolutionCreated;
 use App\Http\Requests\CaseRequest;
 use App\Http\Requests\CreateEmergencyCaseRequest;
 use App\Http\Requests\EvolutionRequest;
@@ -11,6 +13,7 @@ use App\Http\Resources\CaseResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Area;
 use App\Models\EmergencyCase;
+use App\Models\Evolution;
 use App\Models\Municipality;
 use App\Models\Patient;
 use App\Models\PatientCondition;
@@ -61,6 +64,8 @@ class EmergencyCaseController extends Controller
         try
         {
             $this->emergencyCaseService->createCase($request->validated());
+
+            broadcast(new CaseCreated())->toOthers();
 
             return redirect()->back()->with(['message' => 'Operación realizada con exito']);
 
@@ -141,6 +146,9 @@ class EmergencyCaseController extends Controller
         {
 
             $this->evolutionService->addEvolution($case,$request->validated());
+
+            broadcast(new EvolutionCreated())->toOthers();
+
 
             DB::commit();
 
