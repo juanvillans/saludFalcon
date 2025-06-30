@@ -573,7 +573,6 @@
 
                                 <Input
                                     type="textarea"
-                                    required={true}
                                     labelClasses={"font-semibold"}
                                     classes={"col-span-2"}
                                     bind:value={$evolutionForm.diagnosis}
@@ -583,10 +582,9 @@
 
                             <Input
                                 type="textarea"
-                                required={true}
                                 classes={"col-span-2"}
                                 labelClasses={"font-semibold"}
-                                label={"Orden médica *"}
+                                label={"Orden médica "}
                                 bind:value={$evolutionForm.treatment}
                                 error={$evolutionForm.errors?.treatment}
                             />
