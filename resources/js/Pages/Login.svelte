@@ -40,14 +40,14 @@
             },
         });
     }
-    let showPassword = false
+    let showPassword = false;
 
     function handleForgetPsw() {
-        console.log('h');
-        
+        console.log("h");
+
         if ($forgotPassword.ci.length < 6) {
             displayAlert({ type: "error", message: "Escriba su Cédula" });
-            return
+            return;
         }
         $forgotPassword.clearErrors();
         $forgotPassword.post("olvidar-contraseña", {
@@ -61,18 +61,17 @@
                 displayAlert({
                     type: "success",
                     message: "Se le envió un correo para cambiar su contraseña",
-                    time: 10000
+                    time: 10000,
                 });
             },
         });
     }
-
 </script>
 
 <Alert />
 
 <section
-    class="sm:overflow-clip dark:bg-gray-800 bg-white sm:min-h-screen justify-center items-center px-2 relative"
+    class="parent_container sm:overflow-clip dark:bg-gray-800 bg-white sm:min-h-screen justify-center items-center px-2 relative"
 >
     <div
         class="animate-slide-in bg-red w-[99%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute sm:translate-x-[110%]"
@@ -81,8 +80,14 @@
         class="delay-1 animate-slide-in bg-color1 w-[96.6%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute sm:translate-x-[110%]"
     ></div>
     <div
-        class="delay-2 animate-slide-in bg-gray-100 w-[92%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute sm:translate-x-[110%] flex flex-col sm:flex-row sm:justify-between p-3 md:p-5 lg:p-8 md:gap-5"
+        class="img-background delay-2 animate-slide-in 0 w-[92%] h-[calc(100vh-14px)] right-2 top-1.5 rounded-3xl absolute sm:translate-x-[110%] flex flex-col sm:flex-row sm:justify-between p-3 md:p-5 lg:p-8 md:gap-5"
     >
+    <div class="video">
+        <!-- <video autoplay muted loop playsinline>
+            <source src="/img/hospital.mp4" type="video/mp4" />
+        </video> -->
+
+    </div>
         <div class="relative">
             <header class="flex items-center gap-3">
                 <img
@@ -99,88 +104,82 @@
             >
                 HOSPITAL DR ALFREDO VAN GRIEKEN
             </h1>
-            <img
-                class="w-28 sm:w-40 lg:w-80 fixed -left-2 md:absolute bottom-0"
-                src="/img/doctor.png"
-                alt=""
-                srcset=""
-            />
-
-            <img
-                src="/img/4logos.png"
-                alt=""
-                srcset=""
-                class="target fixed md:absolute bottom-2 md:bottom-0 left-1/2 -translate-x-1/2 mx-auto mt-5 md:mt-12 lg:mt-16 max-w-[200px] md:max-w-[300px]"
-            />
-        </div>
-
-        <form
-            on:submit={handleSubmit}
-            class="sm:min-w-[290px] lg:sm:min-w-[350px] mx-2 py-7 px-4 md:px-6 lg:px-8 bg-gray-200 bg-opacity-30 rounded-3xl md:h-full neumorphism"
-        >
-            <legend class="text-center opacity-70 mt-3 md:mt-7"
-                >INICIAR SESIÓN</legend
+            <form
+                on:submit={handleSubmit}
+                class="sm:min-w-[290px] lg:sm:min-w-[350px] mx-2 py-7 px-4 md:px-6 lg:px-8 bg-black bg-opacity-5 rounded-3xl md:h-max backdrop-blur-sm"
             >
-            <div>
-                <Input
-                    type="text"
-                    name="ci"
-                    required={true}
-                    label={"Cédula *"}
-                    on:input={(e) => {
-                        $form.ci = e.target.value
-                        $forgotPassword.ci = e.target.value
-                    }}
-                    error={$form.errors?.ci}
-                />
-                <div class="relative">
+                <div class="grid md:grid-cols-7 gap-3 items-center">
                     <Input
-                    type={showPassword ? "text" : "password"}
-
+                        type="text"
+                        name="ci"
                         required={true}
-                        name="password"
-                        label={"Contraseña *"}
-                        bind:value={$form.password}
+                        label={"Cédula *"}
+                        classes={"col-span-3"}
+                        labelClasses={"text-color1 col-span-3"}
+                        on:input={(e) => {
+                            $form.ci = e.target.value;
+                            $forgotPassword.ci = e.target.value;
+                        }}
+                        error={$form.errors?.ci}
                     />
-                    {#if showPassword}
-                        <iconify-icon
-                            title="Ocultar contraseña"
-                            on:click={() => (showPassword = !showPassword)}
-                            class="absolute top-9 text-gray-600 right-2 cursor-pointer hover:text-gray-800"
-                            icon="charm:eye-slash"
-                            width="16"
-                            height="16"
-                        ></iconify-icon>
+                    <div class="relative col-span-3">
+                        <Input
+                            type={showPassword ? "text" : "password"}
+                            labelClasses={"text-color1"}
+                            required={true}
+                            classes={"mt-0"}
+                            name="password"
+                            label={"Contraseña *"}
+                            bind:value={$form.password}
+                        />
+                        {#if showPassword}
+                            <iconify-icon
+                                title="Ocultar contraseña"
+                                on:click={() => (showPassword = !showPassword)}
+                                class="absolute top-9 text-gray-600 right-2 cursor-pointer hover:text-gray-800"
+                                icon="charm:eye-slash"
+                                width="16"
+                                height="16"
+                            ></iconify-icon>
+                        {:else}
+                            <iconify-icon
+                                title="Ver contraseña"
+                                on:click={() => (showPassword = !showPassword)}
+                                class="absolute top-9 text-gray-600 right-2 cursor-pointer hover:text-gray-800"
+                                icon="charm:eye"
+                                width="16"
+                                height="16"
+                            ></iconify-icon>
+                        {/if}
+                    </div>
+                    <input
+                        type="submit"
+                        disabled={$form.processing}
+                        value={$form.processing ? "..." : ">"}
+                        class="block py-2 mt-auto col-span-1 mx-auto w-full h-max rounded-md cursor-pointer hover:text-color2 bg-color4 text-color1 border-color1 border"
+                    />
+                </div>
+                <div class="w-full flex-col md:flex-row   flex justify-between mt-3">
+                    <a
+                        href="/registrarse"
+                        class="inline-block text-lg text-center underline md:text-color1"
+                        use:inertia>Registrarme</a
+                    >
+                    {#if $forgotPassword.processing}
+                        <p>Enviando link a su correo...</p>
                     {:else}
-                        <iconify-icon
-                            title="Ver contraseña"
-                            on:click={() => (showPassword = !showPassword)}
-                            class="absolute top-9 text-gray-600 right-2 cursor-pointer hover:text-gray-800"
-                            icon="charm:eye"
-                            width="16"
-                            height="16"
-                        ></iconify-icon>
+                        <button
+                            on:click={handleForgetPsw}
+                            type="button"
+                            class=" text-right inline-block w-max float-right hover:underline md:text-gray-800"
+                        >
+                            Olvidé mi contraseña</button
+                        >
                     {/if}
                 </div>
-            </div>
-            {#if $forgotPassword.processing }
-                <p>Enviando link a su correo...</p>
-            {:else}
-            
-            <button on:click={handleForgetPsw} type="button" class="text-right block float-right mt-2 p-1 hover:underline text-gray-800"> Olvidé mi contraseña</button>
-            {/if}
-            <input
-                type="submit"
-                disabled={$form.processing}
-                value={$form.processing ? "Cargando..." : "ENTRAR"}
-                class=" py-3 mx-auto w-full mt-4 lg:mt-6 rounded-md cursor-pointer hover:text-color2 bg-color4 text-color1 border-color1 border"
-            />
-            <a
-                href="/registrarse"
-                class="mt-4 inline-block text-lg w-full  text-center underline text-color1"
-                use:inertia>Registrarme</a
-            >
-        </form>
+            </form>
+        </div>
+
     </div>
 </section>
 
@@ -212,4 +211,26 @@
     .delay-2 {
         animation-delay: 0.3s; /* Second div delay */
     }
+    .img-background {
+        background: url("/img/hospital.webp");
+        background-size: cover;
+        background-position: center;
+    }
+    .img-background div.video  {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        overflow: hidden;
+        transform: translate(-50%, -50%);
+        object-fit: cover; /* This mimics background-size: cover */
+        z-index: -1;
+    }
+    video{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }   
 </style>
