@@ -233,6 +233,7 @@
                 label={"Nombres"}
                 bind:value={$formCreate.name}
                 error={$formCreate.errors?.name}
+                
             />
             <Input
                 type="text"
