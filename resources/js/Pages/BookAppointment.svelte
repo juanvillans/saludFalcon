@@ -183,7 +183,7 @@
 
     $: frontCalendar, updateShiftsForCalendar();
 
-    $: console.log({ $form });
+    $: console.log(shiftsForCalendar);
 
     let frontCalendar = [];
     function getNextNDays(startDate, n) {
@@ -221,7 +221,7 @@
         ) {
             updateCalendar(true);
         } else {
-            console.log(calendar_month);
+            console.log({calendar_month});
 
             updateCalendar(calendar_month == null);
         }
@@ -280,11 +280,12 @@
         router.get(
             window.location.pathname,
             {
-                calendar_month: type,
+                calendar_month: true,
                 start_date: frontCalendar[0].date,
                 end_date: frontCalendar[frontCalendar.length - 1].date,
             },
             {
+                preserveState: true,
                 onSuccess: (page) => {
                     updateShiftsForCalendar();
                     if (document.querySelector(".bookButton")) {
