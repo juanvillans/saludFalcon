@@ -199,12 +199,16 @@ class CalendarService
             ? null // No hay fecha final
             : Carbon::parse($programmingSlot['interval_date']['custom_end_date'] ?? null)->endOfDay();
     
-        $appointments = Appointment::whereBetween('day_reserved', [
+        // Indexar las citas del mes por fecha una sola vez
+        $appointmentsByDate = Appointment::whereBetween('day_reserved', [
             $firstDay->format('Y-m-d'), 
             $lastDay->format('Y-m-d')
         ])
         ->where('calendar_id', $calendar->id)
-        ->get();
+        ->get()
+        ->groupBy(function ($appointment) {
+            return Carbon::parse($appointment->day_reserved)->format('Y-m-d');
+        });
     
         $availability = [];
         $currentDay = $firstDay->copy();
@@ -229,10 +233,25 @@ class CalendarService
     
             if ($adjustedDay) {
                 $shifts = $adjustedDay['shifts'] ?? [];
-                $hasAvailability = !empty($shifts) && !$this->checkAppointments($dateStr, $shifts, $appointments);
             } else {
-                $regularAvailability = $calendar->availability[$dayOfWeek] ?? [];
-                $hasAvailability = !empty($regularAvailability) && !$this->checkAppointments($dateStr, $regularAvailability, $appointments);
+                $shifts = $calendar->availability[$dayOfWeek] ?? [];
+            }
+    
+            $hasAvailability = false;
+            if (!empty($shifts)) {
+                $bookedHours = collect($shifts)
+                    ->flatMap(function ($shift) {
+                        return collect($shift['appointments'] ?? [])
+                            ->pluck('start_appo')
+                            ->toArray();
+                    })
+                    ->toArray();
+    
+                $hasAppointments = ($appointmentsByDate->get($dateStr, collect()))
+                    ->whereIn('time_reserved', $bookedHours)
+                    ->isNotEmpty();
+    
+                $hasAvailability = !$hasAppointments;
             }
     
             $availability[$dayOfMonth] = $hasAvailability;
@@ -240,29 +259,6 @@ class CalendarService
         }
     
         return $availability;
-    }
-    
-    private function checkAppointments($date, $shifts, $appointments) {
-        if (empty($shifts)) return false;
-    
-        $bookedHours = collect($shifts)
-            ->flatMap(function ($shift) {
-                return collect($shift['appointments'] ?? [])
-                    ->pluck('start_appo')
-                    ->toArray();
-            })
-            ->toArray();
-    
-        $date = Carbon::parse($date)->startOfDay();
-    
-        $hasAppointments = $appointments
-            ->filter(function ($appointment) use ($date) {
-                return Carbon::parse($appointment->day_reserved)->startOfDay()->eq($date);
-            })
-            ->whereIn('time_reserved', $bookedHours)
-            ->isNotEmpty();
-    
-        return $hasAppointments;
     }
 
 

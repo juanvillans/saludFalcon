@@ -18,7 +18,6 @@
     let isThereSomeAppointment = "loading";
     function updateWidth() {
         const screenZise = document.documentElement.clientWidth;
-        console.log(screenZise);
         if (screenZise <= 1220) {
             numberOfDays = 5;
         }
@@ -183,8 +182,6 @@
 
     $: frontCalendar, updateShiftsForCalendar();
 
-    $: console.log(shiftsForCalendar);
-
     let frontCalendar = [];
     function getNextNDays(startDate, n) {
         // console.log({ startDate });
@@ -221,8 +218,6 @@
         ) {
             updateCalendar(true);
         } else {
-            console.log({calendar_month});
-
             updateCalendar(calendar_month == null);
         }
         return result;
@@ -271,8 +266,6 @@
     // $: console.log(availableDays);
 
     function updateCalendar(type) {
-        console.log({ type });
-
         if (type) {
             calendar_month = {};
         }
@@ -286,6 +279,7 @@
             },
             {
                 preserveState: true,
+                only: ["calendar", "calendar_month"],
                 onSuccess: (page) => {
                     updateShiftsForCalendar();
                     if (document.querySelector(".bookButton")) {
@@ -297,8 +291,6 @@
             },
         );
     }
-
-    $: console.log({ calendar, data, frontCalendar });
 
     function convertTo12HourFormat(time24) {
         const [hours, minutes] = time24.split(":").map(Number);

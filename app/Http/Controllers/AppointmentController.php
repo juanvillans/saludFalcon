@@ -58,27 +58,29 @@ class AppointmentController extends Controller
         }
             
 
-        $calendar->load('specialty', 'appointments');
+        $calendar->load('specialty');
 
+        $partialProps = $request->header('X-Inertia-Partial-Data');
+        $wantsData = $partialProps === null || in_array('data', explode(',', $partialProps));
 
         $structure = $this->calendarService->getDinamicStructureCalendar($this->params, $calendar);
 
         $calendarMonth = $request->input('calendar_month') ?? null;
         $getCalendarMonth = ($calendarMonth !== "false" && $calendarMonth !== null);
 
-        if($getCalendarMonth){
-            $calendarMonth = $this->calendarService->getDaysAvailableOfMonth($this->params, $calendar);
-            
-            return inertia('BookAppointment', [
-                'calendar_month' => $calendarMonth,    
-                'calendar' => $structure,
-                'data' => new CalendarResource($calendar),
-            ]);
-        }
-        return inertia('BookAppointment', [
+        $props = [
             'calendar' => $structure,
-            'data' => new CalendarResource($calendar),
-        ]);
+        ];
+
+        if ($wantsData) {
+            $props['data'] = new CalendarResource($calendar);
+        }
+
+        if ($getCalendarMonth) {
+            $props['calendar_month'] = $this->calendarService->getDaysAvailableOfMonth($this->params, $calendar);
+        }
+
+        return inertia('BookAppointment', $props);
 
         
 
