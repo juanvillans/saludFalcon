@@ -26,7 +26,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/sala-de-espera', [WaitingRoomController::class, 'index'])->name('waitingRoom.index');
 Route::get('/general-data',[AppController::class,'generalData']);
+Route::get('/citas', [AppointmentController::class, 'index']);
 
+Route::get('/citas/{calendar}', [AppointmentController::class, 'showCalendar']);
+Route::post('/citas/{calendar}', [AppointmentController::class, 'bookAppointment']);
+
+Route::get('/citas/cancelar/{token}', [AppointmentController::class, 'cancelAppointmentFromPatient'])->name('agenda.cancel-appointment-patient');
 
 Route::group(['middleware' => ['guest']], function () {
 
@@ -46,12 +51,7 @@ Route::group(['middleware' => ['guest']], function () {
     Route::get('/recuperar-contraseña/{token}', [UserController::class, 'checkRecoverToken'])->name('recoverPassword');
     Route::post('/recuperar-contraseña/{token}', [UserController::class, 'recoverPassword'])->name('recoverPassword.post');
 
-    Route::get('/citas', [AppointmentController::class, 'index']);
 
-    Route::get('/citas/{calendar}', [AppointmentController::class, 'showCalendar']);
-    Route::post('/citas/{calendar}', [AppointmentController::class, 'bookAppointment']);
-
-    Route::get('/citas/cancelar/{token}', [AppointmentController::class, 'cancelAppointmentFromPatient'])->name('agenda.cancel-appointment-patient');
 });
 
 
